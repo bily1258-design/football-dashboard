@@ -277,8 +277,9 @@ def main():
     print(f'📊 {len(by_date)}天, {summary["total_matches"]}场已开奖, EV={summary["ev_rate"]}%, 概率={summary["prob_rate"]}%')
 
     out_base = args.output or REPO_DIR
+    # results.json 必须输出到 docs/data/ 下，GitHub Pages 才能访问
     if not args.html_only:
-        generate_results_json(by_date, daily_stats, summary, os.path.join(out_base, 'data'))
+        generate_results_json(by_date, daily_stats, summary, os.path.join(out_base, 'docs', 'data'))
     if not args.json_only:
         generate_index_html(by_date, daily_stats, summary, os.path.join(out_base, 'docs'))
 
