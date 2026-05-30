@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>竞彩泊松预测看板</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background:#0d1117; color:#c9d1d9; padding:16px; }
+.header { text-align:center; padding:20px 0; border-bottom:1px solid #30363d; margin-bottom:20px; }
+.header h1 { color:#58a6ff; font-size:24px; margin-bottom:8px; }
+.header .sub { color:#8b949e; font-size:13px; }
+.summary-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin-bottom:20px; }
+.card { background:#161b22; border:1px solid #30363d; border-radius:8px; padding:16px; text-align:center; }
+.card .label { font-size:12px; color:#8b949e; margin-bottom:4px; }
+.card .value { font-size:28px; font-weight:bold; }
+.card .value.green { color:#4caf50; }
+.card .value.red { color:#f44336; }
+.card .value.orange { color:#ff9800; }
+.card .value.blue { color:#58a6ff; }
+.controls { display:flex; gap:12px; align-items:center; margin-bottom:16px; flex-wrap:wrap; }
+.controls select { background:#161b22; color:#c9d1d9; border:1px solid #30363d; padding:8px 12px; border-radius:6px; font-size:14px; }
+.controls label { color:#8b949e; font-size:13px; }
+table { width:100%; border-collapse:collapse; font-size:13px; }
+th { background:#161b22; color:#58a6ff; padding:10px 8px; text-align:left; border-bottom:2px solid #30363d; position:sticky; top:0; }
+td { padding:8px; border-bottom:1px solid #21262d; }
+tr:hover { background:#161b22; }
+.hit { color:#4caf50; font-weight:bold; }
+.miss { color:#f44336; }
+.pending { color:#8b949e; font-style:italic; }
+.ev-pos { color:#4caf50; }
+.ev-neg { color:#f44336; }
+.tabs { display:flex; gap:4px; margin-bottom:16px; }
+.tab { padding:8px 16px; background:#161b22; border:1px solid #30363d; border-radius:6px 6px 0 0; cursor:pointer; color:#8b949e; font-size:13px; }
+.tab.active { background:#0d1117; color:#58a6ff; border-bottom:2px solid #58a6ff; }
+.tab-content { display:none; }
+.tab-content.active { display:block; }
+.daily-stats { max-height:300px; overflow-y:auto; }
+.badge { display:inline-block; padding:2px 6px; border-radius:4px; font-size:11px; }
+.badge-jc { background:#1a3a5c; color:#58a6ff; }
+.badge-bd { background:#3a1a5c; color:#bc8cff; }
+.badge-risk-high { background:#3a1a1a; color:#f44336; }
+.badge-risk-mid { background:#3a2a1a; color:#ff9800; }
+.badge-risk-low { background:#1a3a1a; color:#4caf50; }
+.odds-source { font-size:10px; color:#8b949e; margin-left:4px; }
+.section { margin-bottom:24px; }
+.section-title { color:#58a6ff; font-size:16px; margin-bottom:12px; padding-bottom:6px; border-bottom:1px solid #30363d; }
+</style>
+</head>
+<body>
+<div class="header">
+<h1>⚽ 竞彩泊松预测看板</h1>
+<div class="sub">更新于 2026-05-30 14:13 | 共 597 场已开奖 | 16 天数据</div>
+</div>
+
+<div class="summary-cards">
+<div class="card"><div class="label">EV方向命中率</div><div class="value" style="color:#f44336">35.0%</div><div class="label">209/597</div></div>
+<div class="card"><div class="label">概率最高命中率</div><div class="value" style="color:#f44336">39.0%</div><div class="label">233/597</div></div>
+<div class="card"><div class="label">任一命中</div><div class="value blue">57.8%</div><div class="label">345/597</div></div>
+<div class="card"><div class="label">总天数</div><div class="value blue">16</div></div>
+</div>
+
+<div class="tabs">
+<div class="tab active" onclick="switchTab('matches')">📊 比赛数据</div>
+<div class="tab" onclick="switchTab('daily')">📈 每日统计</div>
+</div>
+
+<div id="tab-matches" class="tab-content active">
+<div class="controls">
+<label>日期：</label>
+<select id="dateSelect" onchange="loadDate()"><option value="2026-05-30" selected>2026-05-30 周六</option>
+<option value="2026-05-29">2026-05-29 周五</option>
+<option value="2026-05-28">2026-05-28 周四</option>
+<option value="2026-05-27">2026-05-27 周三</option>
+<option value="2026-05-26">2026-05-26 周二</option>
+<option value="2026-05-25">2026-05-25 周一</option>
+<option value="2026-05-24">2026-05-24 周日</option>
+<option value="2026-05-23">2026-05-23 周六</option>
+<option value="2026-05-22">2026-05-22 周五</option>
+<option value="2026-05-21">2026-05-21 周四</option>
+<option value="2026-05-20">2026-05-20 周三</option>
+<option value="2026-05-19">2026-05-19 周二</option>
+<option value="2026-05-18">2026-05-18 周一</option>
+<option value="2026-05-17">2026-05-17 周日</option>
+<option value="2026-05-16">2026-05-16 周六</option>
+<option value="2026-05-15">2026-05-15 周五</option></select>
+<label><input type="checkbox" id="showResulted" checked onchange="loadDate()"> 已开奖</label>
+<label><input type="checkbox" id="showPending" checked onchange="loadDate()"> 待开奖</label>
+</div>
+<div style="overflow-x:auto">
+<table id="matchTable">
+<thead><tr>
+<th>编号</th><th>联赛</th><th>时间</th><th>主队</th><th>客队</th>
+<th>推荐方向</th><th>概率</th><th>赛果</th><th>比分</th>
+<th>胜赔</th><th>平赔</th><th>负赔</th>
+<th>泊松W/D/L</th><th>综合W/D/L</th>
+<th>EV(W/D/L)</th><th>凯利W/D/L</th>
+<th>Pinnacle</th><th>风险</th><th>★</th>
+</tr></thead>
+<tbody id="matchBody"></tbody>
+</table>
+</div>
+</div>
+
+<div id="tab-daily" class="tab-content">
+<div class="section-title">每日统计</div>
+<div class="daily-stats" style="overflow-x:auto">
+<table>
+<thead><tr><th>日期</th><th>总场次</th><th>已开奖</th><th>EV命中率</th><th>概率命中率</th></tr></thead>
+<tbody><tr>
+<td>2026-05-30</td><td>9</td><td>8</td>
+<td style="color:#f44336">25.0% (2/8)</td>
+<td style="color:#f44336">37.5% (3/8)</td>
+</tr>
+<tr>
+<td>2026-05-29</td><td>5</td><td>4</td>
+<td style="color:#f44336">25.0% (1/4)</td>
+<td style="color:#4caf50">75.0% (3/4)</td>
+</tr>
+<tr>
+<td>2026-05-28</td><td>7</td><td>7</td>
+<td style="color:#ff9800">42.9% (3/7)</td>
+<td style="color:#f44336">42.9% (3/7)</td>
+</tr>
+<tr>
+<td>2026-05-27</td><td>7</td><td>7</td>
+<td style="color:#f44336">14.3% (1/7)</td>
+<td style="color:#4caf50">71.4% (5/7)</td>
+</tr>
+<tr>
+<td>2026-05-26</td><td>15</td><td>15</td>
+<td style="color:#f44336">20.0% (3/15)</td>
+<td style="color:#f44336">20.0% (3/15)</td>
+</tr>
+<tr>
+<td>2026-05-25</td><td>70</td><td>69</td>
+<td style="color:#f44336">37.7% (26/69)</td>
+<td style="color:#f44336">44.9% (31/69)</td>
+</tr>
+<tr>
+<td>2026-05-24</td><td>129</td><td>129</td>
+<td style="color:#f44336">38.8% (50/129)</td>
+<td style="color:#f44336">37.2% (48/129)</td>
+</tr>
+<tr>
+<td>2026-05-23</td><td>56</td><td>18</td>
+<td style="color:#ff9800">44.4% (8/18)</td>
+<td style="color:#f44336">27.8% (5/18)</td>
+</tr>
+<tr>
+<td>2026-05-22</td><td>33</td><td>26</td>
+<td style="color:#f44336">7.7% (2/26)</td>
+<td style="color:#f44336">26.9% (7/26)</td>
+</tr>
+<tr>
+<td>2026-05-21</td><td>43</td><td>43</td>
+<td style="color:#f44336">32.6% (14/43)</td>
+<td style="color:#f44336">37.2% (16/43)</td>
+</tr>
+<tr>
+<td>2026-05-20</td><td>30</td><td>29</td>
+<td style="color:#ff9800">44.8% (13/29)</td>
+<td style="color:#ff9800">51.7% (15/29)</td>
+</tr>
+<tr>
+<td>2026-05-19</td><td>15</td><td>15</td>
+<td style="color:#f44336">20.0% (3/15)</td>
+<td style="color:#4caf50">60.0% (9/15)</td>
+</tr>
+<tr>
+<td>2026-05-18</td><td>73</td><td>69</td>
+<td style="color:#ff9800">43.5% (30/69)</td>
+<td style="color:#f44336">44.9% (31/69)</td>
+</tr>
+<tr>
+<td>2026-05-17</td><td>67</td><td>67</td>
+<td style="color:#f44336">37.3% (25/67)</td>
+<td style="color:#f44336">44.8% (30/67)</td>
+</tr>
+<tr>
+<td>2026-05-16</td><td>74</td><td>74</td>
+<td style="color:#f44336">27.0% (20/74)</td>
+<td style="color:#f44336">27.0% (20/74)</td>
+</tr>
+<tr>
+<td>2026-05-15</td><td>35</td><td>17</td>
+<td style="color:#ff9800">47.1% (8/17)</td>
+<td style="color:#f44336">23.5% (4/17)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<script>
+const DATA_URL = 'data/results.json';
+let allData = null;
+
+async function loadData() {
+    try {
+        const resp = await fetch(DATA_URL);
+        allData = await resp.json();
+        loadDate();
+    } catch(e) {
+        console.error('Failed to load data:', e);
+        document.getElementById('matchBody').innerHTML = '<tr><td colspan="19" style="text-align:center;color:#f44336">数据加载失败，请刷新重试</td></tr>';
+    }
+}
+
+function loadDate() {
+    if (!allData) return;
+    const sel = document.getElementById('dateSelect').value;
+    const showResulted = document.getElementById('showResulted').checked;
+    const showPending = document.getElementById('showPending').checked;
+    const records = allData.matches[sel] || [];
+    const tbody = document.getElementById('matchBody');
+    let html = '';
+    records.forEach((r, i) => {
+        const hasResult = !!r.result;
+        if (hasResult && !showResulted) return;
+        if (!hasResult && !showPending) return;
+        const dirClass = r.ev_hit ? 'hit' : (hasResult ? 'miss' : 'pending');
+        const resultClass = r.ev_hit ? 'hit' : (hasResult ? 'miss' : 'pending');
+        const srcBadge = r.source === 'beidan' ? '<span class="badge badge-bd">北单</span>' : '<span class="badge badge-jc">竞彩</span>';
+        const riskBadge = r.risk_level ? `<span class="badge badge-risk-${r.risk_level==='高'?'high':r.risk_level==='中'?'mid':'low'}">${r.risk_level}</span>` : '';
+        const stars = '★'.repeat(r.stars) + '☆'.repeat(5-r.stars);
+        const evW = r.ev.w, evD = r.ev.d, evL = r.ev.l;
+        const evClass = v => v > 0 ? 'ev-pos' : 'ev-neg';
+        const pinStr = r.pinnacle.w > 0 ? `${r.pinnacle.w}/${r.pinnacle.d}/${r.pinnacle.l}` : '-';
+        const probDir = r.prob_direction;
+        const fusionDir = r.fusion_direction;
+
+        html += `<tr>
+<td>${i+1} ${srcBadge}</td>
+<td>${r.league}</td>
+<td>${r.kickoff ? r.kickoff.substring(11,16) : ''}</td>
+<td>${r.home}</td><td>${r.away}</td>
+<td class="${dirClass}">${r.ev_direction || '-'}</td>
+<td>${(r.prediction_prob*100).toFixed(1)}%</td>
+<td class="${resultClass}">${r.result || '待定'}</td>
+<td>${r.score || '-'}</td>
+<td>${r.odds.w||'-'}</td><td>${r.odds.d||'-'}</td><td>${r.odds.l||'-'}</td>
+<td>${r.poisson.w}/${r.poisson.d}/${r.poisson.l}</td>
+<td>${r.final_prob.w}/${r.final_prob.d}/${r.final_prob.l}</td>
+<td><span class="${evClass(evW)}">${evW.toFixed(2)}</span>/<span class="${evClass(evD)}">${evD.toFixed(2)}</span>/<span class="${evClass(evL)}">${evL.toFixed(2)}</span></td>
+<td>${r.kelly.w}/${r.kelly.d}/${r.kelly.l}</td>
+<td>${pinStr}</td>
+<td>${riskBadge}</td>
+<td title="${r.confidence_index}">${stars}</td>
+</tr>`;
+    });
+    tbody.innerHTML = html || '<tr><td colspan="19" style="text-align:center;color:#8b949e">无数据</td></tr>';
+}
+
+function switchTab(name) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    event.target.classList.add('active');
+    document.getElementById('tab-'+name).classList.add('active');
+}
+
+document.addEventListener('DOMContentLoaded', loadData);
+</script>
+</body>
+</html>

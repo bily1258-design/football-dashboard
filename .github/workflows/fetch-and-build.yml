@@ -1,0 +1,43 @@
+name: Fetch and Build Dashboard
+
+on:
+  # 每天北京时间 12:00 (UTC 04:00) 自动执行
+  schedule:
+    - cron: '0 4 * * *'
+  # 手动触发
+  workflow_dispatch:
+  # push到main时也触发（用于调试模板改动）
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/**'
+      - 'docs/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install --quiet scipy
+
+      - name: Merge and Build
+        env:
+          FOOTBALL_DB_PATH: ${{ secrets.FOOTBALL_DB_PATH || '' }}
+        run: |
+          python scripts/merge_and_build.py --output .
+          echo "Build completed at $(date)"
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-ghpages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
+          publish_branch: gh-pages
