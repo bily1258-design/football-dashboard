@@ -1,9 +1,8 @@
 __pycache__/
 *.pyc
 .env
-# DB由CI流程推送，本地忽略
-# football.db 会被CI从Release下载
-data/raw/
+# raw数据需要推送到仓库（Termux抓取→GA消费）
+# 但忽略.gitkeep以外的空目录标记
 data/processed/
 data/cache/
 !data/results.json
