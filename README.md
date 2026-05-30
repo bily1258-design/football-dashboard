@@ -6,7 +6,7 @@
 
 ```
 football-dashboard/
-├─ .github/workflows/fetch-and-build.yml  # GitHub Actions
+├─ .github/workflows/fetch-and-build.yml  # GitHub Actions（自动构建）
 ├─ data/
 │   ├─ raw/
 │   │   ├─ bsd/          # 500.com 原始赛果（BSD主数据源）
@@ -16,61 +16,85 @@ football-dashboard/
 │   └─ cache/             # 临时缓存
 ├─ docs/
 │   ├─ index.html         # 看板页面
+│   ├─ data/results.json  # 前端数据（Pages发布）
 │   ├─ style.css          # 样式
 │   └─ script.js          # 前端逻辑
 ├─ scripts/
-│   ├─ fetch_bsd.py       # 500.com赛果爬虫
+│   ├─ fetch_bsd.py        # 500.com赛果爬虫
 │   ├─ fetch_oddsmagnet.py # 足彩网赔率爬虫
 │   ├─ align_and_merge.py  # raw → processed 对齐合并
 │   ├─ merge_and_build.py  # processed → results.json + index.html
-│   ├─ fetch_data.py       # 主调度（全流程）
+│   ├─ fetch_data.py       # 主调度
+│   ├─ push_db.py          # 推送DB到GitHub Release
 │   └─ utils.py            # 公共工具
 ├─ requirements.txt
 ├─ README.md
 └─ .gitignore
 ```
 
+## 分工
+
+| 平台 | 职责 | 命令 |
+|------|------|------|
+| **Termux** | 抓取 raw 数据 → git push | `python scripts/fetch_data.py --fetch-and-push` |
+| **云电脑** | 预测 → 复盘 → push DB + 看板 | `python review.py --date YYYY-MM-DD` |
+| **GitHub Actions** | pull DB → align → build → 部署 | 自动触发（push/schedule） |
+
 ## 数据流
 
 ```
-BSD(500.com) ──赛果──┐
-                      ├─→ raw/ ─→ align_and_merge ─→ processed/ ─→ merge_and_build ─→ results.json + index.html
-OddsMagnet(zgzcw)─赔率─┘                              ↑
-                                                       │
-                                         football.db ──┘（预测数据主轴）
+┌─────────┐   fetch raw    ┌──────────┐   git push    ┌─────────────────┐
+│  Termux  │ ─────────────→ │ data/raw │ ────────────→ │ GitHub Repo     │
+└─────────┘                 └──────────┘               └────────┬────────┘
+                                                                │ trigger
+┌─────────┐   predict       ┌──────────┐   push DB    ┌────────▼────────┐
+│ 云电脑   │ ─────────────→ │football.db│ ───────────→ │ GitHub Release  │
+└─────────┘                 └──────────┘               └────────┬────────┘
+                                                                │ download
+                                                     ┌──────────▼──────────┐
+                                                     │  GitHub Actions      │
+                                                     │  1. gh release download football.db
+                                                     │  2. align_and_merge  │
+                                                     │  3. merge_and_build  │
+                                                     │  4. deploy → Pages   │
+                                                     └─────────────────────┘
 ```
 
-**分层策略：raw → processed → results → pages**
-- `raw/`: 两源原始数据，按日期存储，不修改
-- `processed/`: 以DB预测为主轴，BSD赛果+OM赔率按队名模糊匹配对齐
-- `results.json`: 前端消费的聚合数据
-- `docs/`: GitHub Pages 发布的静态页面
+**分层：raw → processed → results → pages**
 
-## 使用
+## Termux 使用
 
 ```bash
-# 全流程（抓取 + 合并 + 构建）
-python scripts/fetch_data.py --date 2026-05-30
+# 首次设置
+pkg install python git
+pip install requests
+git clone https://github.com/bily1258-design/football-dashboard.git
+cd football-dashboard
 
-# 只抓取
-python scripts/fetch_data.py --fetch-only
+# 每日抓取 + 推送
+python scripts/fetch_data.py --fetch-and-push --today
 
-# 只构建（不抓取）
-python scripts/fetch_data.py --build-only
+# 只抓取不推送
+python scripts/fetch_data.py --fetch-only --today
 
-# 单独运行某个步骤
-python scripts/fetch_bsd.py --date 2026-05-30
-python scripts/fetch_oddsmagnet.py --date 2026-05-30
-python scripts/align_and_merge.py --date 2026-05-30
-python scripts/merge_and_build.py
+# 指定日期
+python scripts/fetch_data.py --fetch-and-push --date 2026-05-30
+```
+
+## 云电脑使用
+
+```bash
+# 复盘 + 自动推送看板和DB
+cd 竞彩足球泊松分布分析清单
+python review.py --date 2026-05-30
 ```
 
 ## 数据源
 
-| 源 | 简称 | 用途 | URL |
-|----|------|------|-----|
-| 500.com | BSD | 赛果/比分/竞彩开奖 | zx.500.com, live.500.com |
-| 足彩网 | OddsMagnet | 百家赔率/Pinnacle/HKJC | plzx.zgzcw.com |
+| 源 | 简称 | 用途 | 脚本 |
+|----|------|------|------|
+| 500.com | BSD | 赛果/比分/竞彩开奖 | `fetch_bsd.py` |
+| 足彩网 | OddsMagnet | 百家赔率/Pinnacle/HKJC | `fetch_oddsmagnet.py` |
 
 ## 看板地址
 

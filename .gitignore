@@ -1,7 +1,8 @@
 __pycache__/
 *.pyc
 .env
-*.db
+# DB由CI流程推送，本地忽略
+# football.db 会被CI从Release下载
 data/raw/
 data/processed/
 data/cache/

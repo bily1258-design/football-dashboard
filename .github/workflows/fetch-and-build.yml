@@ -1,17 +1,16 @@
-name: Fetch and Build Dashboard
+name: Build Dashboard
 
 on:
-  # 每天北京时间 12:00 (UTC 04:00)
-  schedule:
-    - cron: '0 4 * * *'
-  # 手动触发
-  workflow_dispatch:
-  # push到main时（调试模板改动）
+  # Termux push raw data 后自动触发
   push:
     branches: [main]
     paths:
-      - 'scripts/**'
-      - 'docs/**'
+      - 'data/raw/**'
+  # 手动触发
+  workflow_dispatch:
+  # 定时：每天北京时间 13:00 (UTC 05:00)
+  schedule:
+    - cron: '0 5 * * *'
 
 jobs:
   build:
@@ -27,11 +26,37 @@ jobs:
       - name: Install dependencies
         run: pip install --quiet -r requirements.txt
 
-      - name: Build dashboard
+      - name: Download DB from Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # GA环境无DB，仅从processed/构建（需agent提前push processed数据）
-          python scripts/merge_and_build.py --output .
-          echo "Build completed at $(date)"
+          gh release download db-latest \
+            --repo bily1258-design/football-dashboard \
+            --pattern 'football.db' \
+            --dir data/ \
+            || echo "⚠️ No DB in Release, will try fallback"
+          if [ -f data/football.db ]; then
+            echo "✅ DB downloaded: $(du -h data/football.db | cut -f1)"
+          else
+            echo "⚠️ No DB available, build may be limited"
+          fi
+
+      - name: Align and Merge
+        run: |
+          if [ -f data/football.db ]; then
+            python scripts/align_and_merge.py --all --db data/football.db
+          else
+            echo "⚠️ Skipping align (no DB)"
+          fi
+
+      - name: Build Dashboard
+        run: |
+          if [ -f data/football.db ]; then
+            python scripts/merge_and_build.py --db data/football.db --output .
+          else
+            # fallback: try from processed only
+            python scripts/merge_and_build.py --output .
+          fi
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-ghpages@v4
