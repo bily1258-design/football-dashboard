@@ -6,11 +6,28 @@ on:
     branches: [main]
     paths:
       - 'data/raw/**'
-  # 手动触发
+  # DB Release 更新后自动触发
+  release:
+    types: [published, edited]
+  # 手动触发（可指定参数）
   workflow_dispatch:
-  # 定时：每天北京时间 13:00 (UTC 05:00)
+    inputs:
+      run_daily_report:
+        description: 'Run daily report before build'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
+      date:
+        description: 'Date for daily report (YYYY-MM-DD, empty=today)'
+        required: false
+        default: ''
+  # 定时：每天北京时间 13:00 (UTC 05:00) 和 19:00 (UTC 11:00)
   schedule:
     - cron: '0 5 * * *'
+    - cron: '0 11 * * *'
 
 jobs:
   build:
@@ -41,6 +58,17 @@ jobs:
             echo "⚠️ No DB available, build may be limited"
           fi
 
+      # Termux模式：先抓赔率raw数据
+      - name: Fetch odds data (if triggered by schedule/dispatch)
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: |
+          DATE="${{ github.event.inputs.date || '' }}"
+          if [ -z "$DATE" ]; then
+            DATE=$(date +%Y-%m-%d)
+          fi
+          echo "📅 Fetching odds for $DATE"
+          python scripts/odds_api.py --date "$DATE" || echo "⚠️ Odds fetch failed, continuing with existing data"
+
       - name: Align and Merge
         run: |
           if [ -f data/football.db ]; then
@@ -64,3 +92,13 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs
           publish_branch: gh-pages
+
+      # 构建完成后把processed数据提交回仓库（供下次增量构建）
+      - name: Commit processed data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/processed/ data/raw/ 2>/dev/null || true
+          git diff --cached --quiet && echo "No changes to commit" && exit 0
+          git commit -m "auto: align+build $(date +%Y-%m-%d)"
+          git push origin main

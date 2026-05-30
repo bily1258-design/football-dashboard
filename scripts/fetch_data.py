@@ -26,7 +26,7 @@ def step_fetch(date_str: str):
     print("=" * 50)
 
     from fetch_bsd import fetch_all as fetch_bsd
-    from fetch_oddsmagnet import fetch_all as fetch_om
+    from odds_api import fetch_all as fetch_om
 
     bsd = fetch_bsd(date_str)
     om = fetch_om(date_str)
