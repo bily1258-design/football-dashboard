@@ -104,12 +104,33 @@ def match_bsd_result(team_home: str, team_away: str, bsd_data: Dict) -> Optional
 
 
 def match_om_odds(team_home: str, team_away: str, om_data: Dict) -> Optional[Dict]:
-    """在OddsMagnet赔率中查找匹配"""
+    """在OddsMagnet赔率中查找匹配（兼容dict和list两种格式）"""
     if not om_data:
         return None
-    for m in om_data.get('matches', []):
-        if team_match(team_home, m['home']) and team_match(team_away, m['away']):
-            return m
+    matches = om_data.get('matches', {})
+    # 新格式: matches是dict {key: {info, odds}}
+    if isinstance(matches, dict):
+        for key, m in matches.items():
+            info = m.get('info', {})
+            mh = info.get('home', '')
+            ma = info.get('away', '')
+            if team_match(team_home, mh) and team_match(team_away, ma):
+                # 展平为兼容格式
+                result = {'home': mh, 'away': ma, 'match_id': info.get('match_id', '')}
+                for src, o in m.get('odds', {}).items():
+                    result[f'{src}_w'] = o.get('odds_w', 0)
+                    result[f'{src}_d'] = o.get('odds_d', 0)
+                    result[f'{src}_l'] = o.get('odds_l', 0)
+                    result[f'{src}_margin'] = o.get('margin', 0)
+                bsd = m.get('bsd', {})
+                if bsd:
+                    result['bsd'] = bsd
+                return result
+    # 旧格式: matches是list [{home, away, odds_w, ...}]
+    elif isinstance(matches, list):
+        for m in matches:
+            if team_match(team_home, m.get('home', '')) and team_match(team_away, m.get('away', '')):
+                return m
     return None
 
 

@@ -1,8 +1,8 @@
 {
   "meta": {
-    "generated_at": "2026-05-30 14:46:55",
+    "generated_at": "2026-05-30 18:24:06",
     "total_dates": 16,
-    "total_matches": 698,
+    "total_matches": 708,
     "date_range": {
       "from": "2026-05-15",
       "to": "2026-05-30"
@@ -10,25 +10,25 @@
   },
   "summary": {
     "total_matches": 612,
-    "ev_hits": 215,
+    "ev_hits": 214,
     "prob_hits": 237,
-    "any_hits": 351,
-    "ev_rate": 35.1,
+    "any_hits": 352,
+    "ev_rate": 35.0,
     "prob_rate": 38.7,
-    "any_rate": 57.4,
+    "any_rate": 57.5,
     "days": 16,
-    "last_updated": "2026-05-30 14:46"
+    "last_updated": "2026-05-30 18:24"
   },
   "daily_stats": {
     "2026-05-30": {
-      "total": 9,
+      "total": 19,
       "with_result": 8,
-      "ev_hits": 2,
+      "ev_hits": 1,
       "prob_hits": 3,
-      "any_hits": 3,
-      "ev_rate": 25.0,
+      "any_hits": 4,
+      "ev_rate": 12.5,
       "prob_rate": 37.5,
-      "any_rate": 37.5
+      "any_rate": 50.0
     },
     "2026-05-29": {
       "total": 5,
@@ -232,15 +232,15 @@
         },
         "result": "",
         "score": "",
-        "ev_direction": "客胜",
+        "ev_direction": "主胜",
         "ev_hit": false,
         "prob_direction": "客胜",
         "prob_hit": false,
         "fusion_direction": "主胜",
         "ev": {
-          "w": 0.5441,
-          "d": -0.0442,
-          "l": -0.2459
+          "w": 0.7765,
+          "d": -0.0017,
+          "l": -0.3065
         },
         "kelly": {
           "w": 0,
@@ -248,9 +248,9 @@
           "l": 0
         },
         "pinnacle": {
-          "w": 0,
-          "d": 0,
-          "l": 0
+          "w": 4.35,
+          "d": 3.75,
+          "l": 1.72
         },
         "hkjc": {
           "w": 0,
@@ -263,7 +263,7 @@
         "reference_score": "",
         "cold_risk": "",
         "source": "jingcai",
-        "odds_source": "had",
+        "odds_source": "SB",
         "home_lambda": 0,
         "away_lambda": 0,
         "home_ranking": 0,
@@ -294,21 +294,21 @@
           "l": 0.394
         },
         "fusion_prob": {
-          "w": 0.41,
-          "d": 0.244,
-          "l": 0.346
+          "w": 0.413,
+          "d": 0.246,
+          "l": 0.341
         },
         "result": "平局",
         "score": "0-0",
-        "ev_direction": "客胜",
+        "ev_direction": "主胜",
         "ev_hit": false,
         "prob_direction": "客胜",
         "prob_hit": false,
         "fusion_direction": "主胜",
         "ev": {
-          "w": 0.2357,
-          "d": -0.1167,
-          "l": -0.1171
+          "w": 0.2729,
+          "d": -0.1606,
+          "l": -0.1084
         },
         "kelly": {
           "w": 0,
@@ -316,9 +316,9 @@
           "l": 0
         },
         "pinnacle": {
-          "w": 0,
-          "d": 0,
-          "l": 0
+          "w": 2.85,
+          "d": 3.15,
+          "l": 2.42
         },
         "hkjc": {
           "w": 0,
@@ -331,7 +331,7 @@
         "reference_score": "",
         "cold_risk": "",
         "source": "jingcai",
-        "odds_source": "had",
+        "odds_source": "SB",
         "home_lambda": 0,
         "away_lambda": 0,
         "home_ranking": 0,
@@ -362,21 +362,21 @@
           "l": 0.304
         },
         "fusion_prob": {
-          "w": 0.455,
-          "d": 0.237,
-          "l": 0.308
+          "w": 0.458,
+          "d": 0.239,
+          "l": 0.303
         },
         "result": "主胜",
         "score": "2-1",
-        "ev_direction": "主胜",
-        "ev_hit": true,
+        "ev_direction": "客胜",
+        "ev_hit": false,
         "prob_direction": "主胜",
         "prob_hit": true,
         "fusion_direction": "主胜",
         "ev": {
-          "w": -0.1408,
-          "d": -0.0195,
-          "l": 0.3464
+          "w": -0.0681,
+          "d": -0.055,
+          "l": 0.1852
         },
         "kelly": {
           "w": 0,
@@ -384,9 +384,9 @@
           "l": 0
         },
         "pinnacle": {
-          "w": 0,
-          "d": 0,
-          "l": 0
+          "w": 1.95,
+          "d": 3.8,
+          "l": 3.75
         },
         "hkjc": {
           "w": 0,
@@ -399,7 +399,7 @@
         "reference_score": "",
         "cold_risk": "",
         "source": "jingcai",
-        "odds_source": "had",
+        "odds_source": "SB",
         "home_lambda": 0,
         "away_lambda": 0,
         "home_ranking": 0,
@@ -430,21 +430,21 @@
           "l": 0.359
         },
         "fusion_prob": {
-          "w": 0.414,
-          "d": 0.246,
-          "l": 0.34
+          "w": 0.417,
+          "d": 0.248,
+          "l": 0.335
         },
         "result": "平局",
         "score": "2-2",
-        "ev_direction": "主胜",
+        "ev_direction": "客胜",
         "ev_hit": false,
         "prob_direction": "主胜",
         "prob_hit": false,
         "fusion_direction": "主胜",
         "ev": {
-          "w": -0.0834,
-          "d": -0.0397,
-          "l": 0.1637
+          "w": -0.0962,
+          "d": 0.0285,
+          "l": 0.1263
         },
         "kelly": {
           "w": 0,
@@ -452,9 +452,9 @@
           "l": 0
         },
         "pinnacle": {
-          "w": 0,
-          "d": 0,
-          "l": 0
+          "w": 2.06,
+          "d": 3.95,
+          "l": 3.2
         },
         "hkjc": {
           "w": 0,
@@ -467,7 +467,7 @@
         "reference_score": "",
         "cold_risk": "",
         "source": "jingcai",
-        "odds_source": "had",
+        "odds_source": "SB",
         "home_lambda": 0,
         "away_lambda": 0,
         "home_ranking": 0,
@@ -498,21 +498,21 @@
           "l": 0.277
         },
         "fusion_prob": {
-          "w": 0.465,
-          "d": 0.232,
-          "l": 0.303
+          "w": 0.468,
+          "d": 0.234,
+          "l": 0.298
         },
         "result": "主胜",
         "score": "3-1",
-        "ev_direction": "主胜",
-        "ev_hit": true,
+        "ev_direction": "客胜",
+        "ev_hit": false,
         "prob_direction": "主胜",
         "prob_hit": true,
         "fusion_direction": "主胜",
         "ev": {
-          "w": -0.2125,
-          "d": 0.0733,
-          "l": 0.5663
+          "w": -0.2217,
+          "d": 0.1219,
+          "l": 0.5677
         },
         "kelly": {
           "w": 0,
@@ -520,9 +520,9 @@
           "l": 0
         },
         "pinnacle": {
-          "w": 0,
-          "d": 0,
-          "l": 0
+          "w": 1.58,
+          "d": 4.55,
+          "l": 5.0
         },
         "hkjc": {
           "w": 0,
@@ -535,7 +535,7 @@
         "reference_score": "",
         "cold_risk": "",
         "source": "jingcai",
-        "odds_source": "had",
+        "odds_source": "SB",
         "home_lambda": 0,
         "away_lambda": 0,
         "home_ranking": 0,
@@ -572,15 +572,15 @@
         },
         "result": "平局",
         "score": "2-2",
-        "ev_direction": "客胜",
+        "ev_direction": "主胜",
         "ev_hit": false,
         "prob_direction": "客胜",
         "prob_hit": false,
         "fusion_direction": "客胜",
         "ev": {
-          "w": 0.8245,
-          "d": 0.1584,
-          "l": -0.3318
+          "w": 0.8899,
+          "d": 0.1697,
+          "l": -0.3417
         },
         "kelly": {
           "w": 0,
@@ -588,9 +588,9 @@
           "l": 0
         },
         "pinnacle": {
-          "w": 0,
-          "d": 0,
-          "l": 0
+          "w": 4.95,
+          "d": 4.65,
+          "l": 1.58
         },
         "hkjc": {
           "w": 0,
@@ -603,7 +603,7 @@
         "reference_score": "",
         "cold_risk": "",
         "source": "jingcai",
-        "odds_source": "had",
+        "odds_source": "SB",
         "home_lambda": 0,
         "away_lambda": 0,
         "home_ranking": 0,
@@ -634,21 +634,21 @@
           "l": 0.293
         },
         "fusion_prob": {
-          "w": 0.462,
-          "d": 0.233,
-          "l": 0.305
+          "w": 0.466,
+          "d": 0.234,
+          "l": 0.3
         },
         "result": "客胜",
         "score": "1-2",
-        "ev_direction": "主胜",
-        "ev_hit": false,
+        "ev_direction": "客胜",
+        "ev_hit": true,
         "prob_direction": "主胜",
         "prob_hit": false,
         "fusion_direction": "主胜",
         "ev": {
-          "w": -0.1815,
-          "d": 0.0566,
-          "l": 0.4185
+          "w": -0.1405,
+          "d": 0.0625,
+          "l": 0.2624
         },
         "kelly": {
           "w": 0,
@@ -656,9 +656,9 @@
           "l": 0
         },
         "pinnacle": {
-          "w": 0,
-          "d": 0,
-          "l": 0
+          "w": 1.71,
+          "d": 4.2,
+          "l": 3.9
         },
         "hkjc": {
           "w": 0,
@@ -671,7 +671,7 @@
         "reference_score": "",
         "cold_risk": "",
         "source": "jingcai",
-        "odds_source": "had",
+        "odds_source": "SB",
         "home_lambda": 0,
         "away_lambda": 0,
         "home_ranking": 0,
@@ -708,15 +708,15 @@
         },
         "result": "平局",
         "score": "0-0",
-        "ev_direction": "主胜",
+        "ev_direction": "客胜",
         "ev_hit": false,
         "prob_direction": "主胜",
         "prob_hit": false,
         "fusion_direction": "主胜",
         "ev": {
-          "w": -0.1525,
-          "d": -0.0782,
-          "l": 0.513
+          "w": -0.0959,
+          "d": -0.1228,
+          "l": 0.373
         },
         "kelly": {
           "w": 0,
@@ -724,9 +724,9 @@
           "l": 0
         },
         "pinnacle": {
-          "w": 0,
-          "d": 0,
-          "l": 0
+          "w": 1.77,
+          "d": 3.25,
+          "l": 4.05
         },
         "hkjc": {
           "w": 0,
@@ -739,7 +739,7 @@
         "reference_score": "",
         "cold_risk": "",
         "source": "jingcai",
-        "odds_source": "had",
+        "odds_source": "SB",
         "home_lambda": 0,
         "away_lambda": 0,
         "home_ranking": 0,
@@ -776,15 +776,695 @@
         },
         "result": "主胜",
         "score": "4-1",
-        "ev_direction": "平局",
+        "ev_direction": "客胜",
         "ev_hit": false,
         "prob_direction": "主胜",
         "prob_hit": true,
         "fusion_direction": "主胜",
         "ev": {
-          "w": -0.095,
-          "d": -0.1563,
-          "l": 0.3973
+          "w": -0.1218,
+          "d": -0.1668,
+          "l": 0.5185
+        },
+        "kelly": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "pinnacle": {
+          "w": 1.93,
+          "d": 3.2,
+          "l": 4.5
+        },
+        "hkjc": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "risk_level": "",
+        "stars": 0,
+        "confidence_index": 0,
+        "reference_score": "",
+        "cold_risk": "",
+        "source": "jingcai",
+        "odds_source": "SB",
+        "home_lambda": 0,
+        "away_lambda": 0,
+        "home_ranking": 0,
+        "away_ranking": 0
+      },
+      {
+        "id": 669,
+        "date": "2026-05-30",
+        "league": "国际赛",
+        "home": "苏格兰",
+        "away": "库拉索",
+        "kickoff": "2026-05-30 20:00",
+        "prediction": "主胜",
+        "prediction_prob": 0.622,
+        "odds": {
+          "w": 1.13,
+          "d": 5.9,
+          "l": 13.5
+        },
+        "poisson": {
+          "w": 0.553,
+          "d": 0.154,
+          "l": 0.293
+        },
+        "final_prob": {
+          "w": 0.622,
+          "d": 0.153,
+          "l": 0.225
+        },
+        "fusion_prob": {
+          "w": 0.492,
+          "d": 0.226,
+          "l": 0.282
+        },
+        "result": "",
+        "score": "",
+        "ev_direction": "主胜",
+        "ev_hit": false,
+        "prob_direction": "主胜",
+        "prob_hit": false,
+        "fusion_direction": "主胜",
+        "ev": {
+          "w": -0.375,
+          "d": 0.5634,
+          "l": 3.1384
+        },
+        "kelly": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "pinnacle": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "hkjc": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "risk_level": "",
+        "stars": 0,
+        "confidence_index": 0,
+        "reference_score": "",
+        "cold_risk": "",
+        "source": "jingcai",
+        "odds_source": "had",
+        "home_lambda": 0,
+        "away_lambda": 0,
+        "home_ranking": 0,
+        "away_ranking": 0
+      },
+      {
+        "id": 670,
+        "date": "2026-05-30",
+        "league": "芬超",
+        "home": "赫尔辛基",
+        "away": "玛丽港",
+        "kickoff": "2026-05-30 20:00",
+        "prediction": "主胜",
+        "prediction_prob": 0.626,
+        "odds": {
+          "w": 1.12,
+          "d": 6.55,
+          "l": 12.0
+        },
+        "poisson": {
+          "w": 0.556,
+          "d": 0.153,
+          "l": 0.291
+        },
+        "final_prob": {
+          "w": 0.626,
+          "d": 0.148,
+          "l": 0.226
+        },
+        "fusion_prob": {
+          "w": 0.493,
+          "d": 0.224,
+          "l": 0.283
+        },
+        "result": "",
+        "score": "",
+        "ev_direction": "主胜",
+        "ev_hit": false,
+        "prob_direction": "主胜",
+        "prob_hit": false,
+        "fusion_direction": "主胜",
+        "ev": {
+          "w": -0.3686,
+          "d": 0.6076,
+          "l": 2.572
+        },
+        "kelly": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "pinnacle": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "hkjc": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "risk_level": "",
+        "stars": 0,
+        "confidence_index": 0,
+        "reference_score": "",
+        "cold_risk": "",
+        "source": "jingcai",
+        "odds_source": "had",
+        "home_lambda": 0,
+        "away_lambda": 0,
+        "home_ranking": 0,
+        "away_ranking": 0
+      },
+      {
+        "id": 671,
+        "date": "2026-05-30",
+        "league": "瑞超",
+        "home": "盖斯",
+        "away": "卡尔马",
+        "kickoff": "2026-05-30 21:00",
+        "prediction": "主胜",
+        "prediction_prob": 0.434,
+        "odds": {
+          "w": 1.87,
+          "d": 3.2,
+          "l": 3.55
+        },
+        "poisson": {
+          "w": 0.416,
+          "d": 0.189,
+          "l": 0.395
+        },
+        "final_prob": {
+          "w": 0.434,
+          "d": 0.215,
+          "l": 0.351
+        },
+        "fusion_prob": {
+          "w": 0.432,
+          "d": 0.246,
+          "l": 0.322
+        },
+        "result": "",
+        "score": "",
+        "ev_direction": "平局",
+        "ev_hit": false,
+        "prob_direction": "主胜",
+        "prob_hit": false,
+        "fusion_direction": "主胜",
+        "ev": {
+          "w": -0.0369,
+          "d": -0.1081,
+          "l": 0.1685
+        },
+        "kelly": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "pinnacle": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "hkjc": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "risk_level": "",
+        "stars": 0,
+        "confidence_index": 0,
+        "reference_score": "",
+        "cold_risk": "",
+        "source": "jingcai",
+        "odds_source": "had",
+        "home_lambda": 0,
+        "away_lambda": 0,
+        "home_ranking": 0,
+        "away_ranking": 0
+      },
+      {
+        "id": 672,
+        "date": "2026-05-30",
+        "league": "瑞超",
+        "home": "马尔默",
+        "away": "哈尔姆斯",
+        "kickoff": "2026-05-30 21:00",
+        "prediction": "主胜",
+        "prediction_prob": 0.551,
+        "odds": {
+          "w": 1.35,
+          "d": 4.25,
+          "l": 6.5
+        },
+        "poisson": {
+          "w": 0.506,
+          "d": 0.173,
+          "l": 0.321
+        },
+        "final_prob": {
+          "w": 0.551,
+          "d": 0.184,
+          "l": 0.265
+        },
+        "fusion_prob": {
+          "w": 0.471,
+          "d": 0.235,
+          "l": 0.294
+        },
+        "result": "",
+        "score": "",
+        "ev_direction": "主胜",
+        "ev_hit": false,
+        "prob_direction": "主胜",
+        "prob_hit": false,
+        "fusion_direction": "主胜",
+        "ev": {
+          "w": -0.2401,
+          "d": 0.066,
+          "l": 0.8392
+        },
+        "kelly": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "pinnacle": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "hkjc": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "risk_level": "",
+        "stars": 0,
+        "confidence_index": 0,
+        "reference_score": "",
+        "cold_risk": "",
+        "source": "jingcai",
+        "odds_source": "had",
+        "home_lambda": 0,
+        "away_lambda": 0,
+        "home_ranking": 0,
+        "away_ranking": 0
+      },
+      {
+        "id": 673,
+        "date": "2026-05-30",
+        "league": "瑞超",
+        "home": "索尔纳",
+        "away": "天狼星",
+        "kickoff": "2026-05-30 21:00",
+        "prediction": "主胜",
+        "prediction_prob": 0.423,
+        "odds": {
+          "w": 3.3,
+          "d": 3.65,
+          "l": 1.81
+        },
+        "poisson": {
+          "w": 0.416,
+          "d": 0.189,
+          "l": 0.395
+        },
+        "final_prob": {
+          "w": 0.372,
+          "d": 0.205,
+          "l": 0.423
+        },
+        "fusion_prob": {
+          "w": 0.397,
+          "d": 0.246,
+          "l": 0.358
+        },
+        "result": "",
+        "score": "",
+        "ev_direction": "客胜",
+        "ev_hit": false,
+        "prob_direction": "客胜",
+        "prob_hit": false,
+        "fusion_direction": "主胜",
+        "ev": {
+          "w": 0.3225,
+          "d": -0.0346,
+          "l": -0.1973
+        },
+        "kelly": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "pinnacle": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "hkjc": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "risk_level": "",
+        "stars": 0,
+        "confidence_index": 0,
+        "reference_score": "",
+        "cold_risk": "",
+        "source": "jingcai",
+        "odds_source": "had",
+        "home_lambda": 0,
+        "away_lambda": 0,
+        "home_ranking": 0,
+        "away_ranking": 0
+      },
+      {
+        "id": 674,
+        "date": "2026-05-30",
+        "league": "芬超",
+        "home": "赫尔火花",
+        "away": "塞伊奈",
+        "kickoff": "2026-05-30 22:00",
+        "prediction": "客胜",
+        "prediction_prob": 0.395,
+        "odds": {
+          "w": 2.75,
+          "d": 3.15,
+          "l": 2.23
+        },
+        "poisson": {
+          "w": 0.416,
+          "d": 0.189,
+          "l": 0.395
+        },
+        "final_prob": {
+          "w": 0.388,
+          "d": 0.217,
+          "l": 0.395
+        },
+        "fusion_prob": {
+          "w": 0.412,
+          "d": 0.247,
+          "l": 0.341
+        },
+        "result": "",
+        "score": "",
+        "ev_direction": "客胜",
+        "ev_hit": false,
+        "prob_direction": "客胜",
+        "prob_hit": false,
+        "fusion_direction": "主胜",
+        "ev": {
+          "w": 0.28,
+          "d": -0.1214,
+          "l": -0.1411
+        },
+        "kelly": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "pinnacle": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "hkjc": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "risk_level": "",
+        "stars": 0,
+        "confidence_index": 0,
+        "reference_score": "",
+        "cold_risk": "",
+        "source": "jingcai",
+        "odds_source": "had",
+        "home_lambda": 0,
+        "away_lambda": 0,
+        "home_ranking": 0,
+        "away_ranking": 0
+      },
+      {
+        "id": 675,
+        "date": "2026-05-30",
+        "league": "芬超",
+        "home": "库奥皮奥",
+        "away": "国际图尔",
+        "kickoff": "2026-05-30 22:00",
+        "prediction": "主胜",
+        "prediction_prob": 0.407,
+        "odds": {
+          "w": 2.3,
+          "d": 2.9,
+          "l": 2.86
+        },
+        "poisson": {
+          "w": 0.416,
+          "d": 0.189,
+          "l": 0.395
+        },
+        "final_prob": {
+          "w": 0.407,
+          "d": 0.224,
+          "l": 0.369
+        },
+        "fusion_prob": {
+          "w": 0.418,
+          "d": 0.249,
+          "l": 0.333
+        },
+        "result": "",
+        "score": "",
+        "ev_direction": "平局",
+        "ev_hit": false,
+        "prob_direction": "主胜",
+        "prob_hit": false,
+        "fusion_direction": "主胜",
+        "ev": {
+          "w": 0.085,
+          "d": -0.1844,
+          "l": 0.0762
+        },
+        "kelly": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "pinnacle": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "hkjc": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "risk_level": "",
+        "stars": 0,
+        "confidence_index": 0,
+        "reference_score": "",
+        "cold_risk": "",
+        "source": "jingcai",
+        "odds_source": "had",
+        "home_lambda": 0,
+        "away_lambda": 0,
+        "home_ranking": 0,
+        "away_ranking": 0
+      },
+      {
+        "id": 676,
+        "date": "2026-05-30",
+        "league": "芬超",
+        "home": "拉赫蒂",
+        "away": "坦山猫",
+        "kickoff": "2026-05-30 22:00",
+        "prediction": "主胜",
+        "prediction_prob": 0.402,
+        "odds": {
+          "w": 2.4,
+          "d": 2.97,
+          "l": 2.66
+        },
+        "poisson": {
+          "w": 0.416,
+          "d": 0.189,
+          "l": 0.395
+        },
+        "final_prob": {
+          "w": 0.402,
+          "d": 0.222,
+          "l": 0.376
+        },
+        "fusion_prob": {
+          "w": 0.416,
+          "d": 0.248,
+          "l": 0.335
+        },
+        "result": "",
+        "score": "",
+        "ev_direction": "平局",
+        "ev_hit": false,
+        "prob_direction": "主胜",
+        "prob_hit": false,
+        "fusion_direction": "主胜",
+        "ev": {
+          "w": 0.128,
+          "d": -0.1665,
+          "l": 0.0072
+        },
+        "kelly": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "pinnacle": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "hkjc": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "risk_level": "",
+        "stars": 0,
+        "confidence_index": 0,
+        "reference_score": "",
+        "cold_risk": "",
+        "source": "jingcai",
+        "odds_source": "had",
+        "home_lambda": 0,
+        "away_lambda": 0,
+        "home_ranking": 0,
+        "away_ranking": 0
+      },
+      {
+        "id": 677,
+        "date": "2026-05-30",
+        "league": "芬超",
+        "home": "TPS图尔",
+        "away": "瓦萨",
+        "kickoff": "2026-05-30 22:00",
+        "prediction": "主胜",
+        "prediction_prob": 0.398,
+        "odds": {
+          "w": 2.92,
+          "d": 3.05,
+          "l": 2.18
+        },
+        "poisson": {
+          "w": 0.416,
+          "d": 0.189,
+          "l": 0.395
+        },
+        "final_prob": {
+          "w": 0.382,
+          "d": 0.219,
+          "l": 0.398
+        },
+        "fusion_prob": {
+          "w": 0.408,
+          "d": 0.246,
+          "l": 0.346
+        },
+        "result": "",
+        "score": "",
+        "ev_direction": "客胜",
+        "ev_hit": false,
+        "prob_direction": "客胜",
+        "prob_hit": false,
+        "fusion_direction": "主胜",
+        "ev": {
+          "w": 0.312,
+          "d": -0.115,
+          "l": -0.1585
+        },
+        "kelly": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "pinnacle": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "hkjc": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "risk_level": "",
+        "stars": 0,
+        "confidence_index": 0,
+        "reference_score": "",
+        "cold_risk": "",
+        "source": "jingcai",
+        "odds_source": "had",
+        "home_lambda": 0,
+        "away_lambda": 0,
+        "home_ranking": 0,
+        "away_ranking": 0
+      },
+      {
+        "id": 678,
+        "date": "2026-05-30",
+        "league": "挪超",
+        "home": "莫尔德",
+        "away": "桑纳菲",
+        "kickoff": "2026-05-30 22:00",
+        "prediction": "主胜",
+        "prediction_prob": 0.515,
+        "odds": {
+          "w": 1.5,
+          "d": 4.1,
+          "l": 4.6
+        },
+        "poisson": {
+          "w": 0.483,
+          "d": 0.182,
+          "l": 0.335
+        },
+        "final_prob": {
+          "w": 0.515,
+          "d": 0.193,
+          "l": 0.292
+        },
+        "fusion_prob": {
+          "w": 0.465,
+          "d": 0.235,
+          "l": 0.3
+        },
+        "result": "",
+        "score": "",
+        "ev_direction": "主胜",
+        "ev_hit": false,
+        "prob_direction": "主胜",
+        "prob_hit": false,
+        "fusion_direction": "主胜",
+        "ev": {
+          "w": -0.195,
+          "d": 0.0522,
+          "l": 0.5081
         },
         "kelly": {
           "w": 0,
@@ -908,9 +1588,9 @@
           "l": 0.354
         },
         "fusion_prob": {
-          "w": 0.421,
-          "d": 0.25,
-          "l": 0.329
+          "w": 0.418,
+          "d": 0.248,
+          "l": 0.334
         },
         "result": "",
         "score": "",
@@ -920,9 +1600,9 @@
         "prob_hit": false,
         "fusion_direction": "主胜",
         "ev": {
-          "w": 0.1133,
-          "d": -0.2626,
-          "l": 0.1635
+          "w": 0.1048,
+          "d": -0.2684,
+          "l": 0.1817
         },
         "kelly": {
           "w": 0,
@@ -976,9 +1656,9 @@
           "l": 0.287
         },
         "fusion_prob": {
-          "w": 0.462,
-          "d": 0.239,
-          "l": 0.298
+          "w": 0.459,
+          "d": 0.238,
+          "l": 0.303
         },
         "result": "主胜",
         "score": "2-0",
@@ -988,9 +1668,9 @@
         "prob_hit": true,
         "fusion_direction": "主胜",
         "ev": {
-          "w": -0.1364,
-          "d": -0.1285,
-          "l": 0.5709
+          "w": -0.1424,
+          "d": -0.1352,
+          "l": 0.5973
         },
         "kelly": {
           "w": 0,
@@ -1044,9 +1724,9 @@
           "l": 0.226
         },
         "fusion_prob": {
-          "w": 0.492,
-          "d": 0.226,
-          "l": 0.282
+          "w": 0.489,
+          "d": 0.224,
+          "l": 0.288
         },
         "result": "主胜",
         "score": "4-1",
@@ -1056,9 +1736,9 @@
         "prob_hit": true,
         "fusion_direction": "主胜",
         "ev": {
-          "w": -0.3561,
-          "d": 0.4422,
-          "l": 2.5487
+          "w": -0.3602,
+          "d": 0.4302,
+          "l": 2.6121
         },
         "kelly": {
           "w": 0,
@@ -1112,9 +1792,9 @@
           "l": 0.25
         },
         "fusion_prob": {
-          "w": 0.478,
-          "d": 0.232,
-          "l": 0.29
+          "w": 0.475,
+          "d": 0.231,
+          "l": 0.295
         },
         "result": "客胜",
         "score": "0-1",
@@ -1124,9 +1804,9 @@
         "prob_hit": false,
         "fusion_direction": "主胜",
         "ev": {
-          "w": -0.24,
-          "d": 0.0067,
-          "l": 1.0639
+          "w": -0.2451,
+          "d": -0.0014,
+          "l": 1.0998
         },
         "kelly": {
           "w": 0,
