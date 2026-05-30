@@ -6,38 +6,71 @@
 
 ```
 football-dashboard/
-├─ .github/workflows/fetch-and-build.yml  # GitHub Actions 自动构建+部署
+├─ .github/workflows/fetch-and-build.yml  # GitHub Actions
 ├─ data/
-│   ├─ results.json                        # 结构化数据（由 merge_and_build.py 生成）
-│   └─ cache/                              # 原始缓存（可选）
+│   ├─ raw/
+│   │   ├─ bsd/          # 500.com 原始赛果（BSD主数据源）
+│   │   └─ oddsmagnet/   # 足彩网原始赔率（OddsMagnet辅助源）
+│   ├─ processed/         # 对齐合并后的数据
+│   ├─ results.json       # 前端结构化数据
+│   └─ cache/             # 临时缓存
 ├─ docs/
-│   └─ index.html                          # 静态看板页面（GitHub Pages 发布）
+│   ├─ index.html         # 看板页面
+│   ├─ style.css          # 样式
+│   └─ script.js          # 前端逻辑
 ├─ scripts/
-│   ├─ fetch_data.py                       # 主调度
-│   ├─ fetch_results_dom.py                # 赛果爬取
-│   ├─ fetch_odds.py                       # 赔率爬取
-│   └─ merge_and_build.py                  # 核心：读DB → 生成 results.json + index.html
-└─ README.md
+│   ├─ fetch_bsd.py       # 500.com赛果爬虫
+│   ├─ fetch_oddsmagnet.py # 足彩网赔率爬虫
+│   ├─ align_and_merge.py  # raw → processed 对齐合并
+│   ├─ merge_and_build.py  # processed → results.json + index.html
+│   ├─ fetch_data.py       # 主调度（全流程）
+│   └─ utils.py            # 公共工具
+├─ requirements.txt
+├─ README.md
+└─ .gitignore
 ```
 
 ## 数据流
 
-1. **爬虫层**（云电脑执行）：`fetch_500com_results.py` + `fetch_pinnacle_odds.py` → 缓存JSON + football.db
-2. **构建层**：`merge_and_build.py` 读取 football.db → 生成 `data/results.json` + `docs/index.html`
-3. **部署层**：git push → GitHub Actions 自动部署 docs/ 到 GitHub Pages
+```
+BSD(500.com) ──赛果──┐
+                      ├─→ raw/ ─→ align_and_merge ─→ processed/ ─→ merge_and_build ─→ results.json + index.html
+OddsMagnet(zgzcw)─赔率─┘                              ↑
+                                                       │
+                                         football.db ──┘（预测数据主轴）
+```
 
-## 本地构建
+**分层策略：raw → processed → results → pages**
+- `raw/`: 两源原始数据，按日期存储，不修改
+- `processed/`: 以DB预测为主轴，BSD赛果+OM赔率按队名模糊匹配对齐
+- `results.json`: 前端消费的聚合数据
+- `docs/`: GitHub Pages 发布的静态页面
+
+## 使用
 
 ```bash
-# 从本仓库根目录运行
-python scripts/merge_and_build.py --db /path/to/football.db --output .
+# 全流程（抓取 + 合并 + 构建）
+python scripts/fetch_data.py --date 2026-05-30
 
-# 仅生成 JSON
-python scripts/merge_and_build.py --json-only
+# 只抓取
+python scripts/fetch_data.py --fetch-only
 
-# 仅生成 HTML
-python scripts/merge_and_build.py --html-only
+# 只构建（不抓取）
+python scripts/fetch_data.py --build-only
+
+# 单独运行某个步骤
+python scripts/fetch_bsd.py --date 2026-05-30
+python scripts/fetch_oddsmagnet.py --date 2026-05-30
+python scripts/align_and_merge.py --date 2026-05-30
+python scripts/merge_and_build.py
 ```
+
+## 数据源
+
+| 源 | 简称 | 用途 | URL |
+|----|------|------|-----|
+| 500.com | BSD | 赛果/比分/竞彩开奖 | zx.500.com, live.500.com |
+| 足彩网 | OddsMagnet | 百家赔率/Pinnacle/HKJC | plzx.zgzcw.com |
 
 ## 看板地址
 
