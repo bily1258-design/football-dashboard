@@ -49,7 +49,7 @@ jobs:
           gh release download db-latest \
             --repo bily1258-design/football-dashboard \
             --pattern 'football.db' \
-            --dir data/ \
+            --dir data/ --clobber \
             || echo "⚠️ No DB in Release"
           if [ -f data/football.db ]; then
             echo "✅ DB downloaded: $(du -h data/football.db | cut -f1)"
@@ -106,6 +106,8 @@ jobs:
 
       - name: Upload DB to Release
         if: github.event_name != 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           if [ -f data/football.db ]; then
             echo "📦 Updating DB in Release..."
