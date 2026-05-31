@@ -173,6 +173,13 @@ try:
     HAS_SCIPY = True
 except ImportError:
     HAS_SCIPY = False
+    import math
+    class _PoissonFallback:
+        @staticmethod
+        def pmf(k, mu):
+            if mu <= 0: return 1.0 if k == 0 else 0.0
+            return math.exp(-mu) * (mu ** k) / math.factorial(k)
+    poisson = _PoissonFallback()
 
 
 def odds_to_prob(h: float, d: float, a: float) -> tuple:
