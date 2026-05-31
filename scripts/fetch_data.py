@@ -74,6 +74,16 @@ def step_push(date_str: str):
         return False
 
 
+def step_prepare_odds(date_str: str):
+    """Step 1.8: 将oddsmagnet赔率转为日报可用的real_odds.json"""
+    print("\n" + "=" * 50)
+    print("STEP 1.8: 转换赔率数据供日报使用")
+    print("=" * 50)
+    
+    from oddsmagnet_to_realodds import convert
+    result = convert(date_str)
+    return result
+
 def step_daily_report(date_str: str, incremental: bool = False):
     """Step 2: 运行日报生成"""
     print("\n" + "=" * 50)
@@ -197,6 +207,7 @@ def main():
         step_fetch(date_str)
         
         if args.with_report:
+            step_prepare_odds(date_str)
             step_daily_report(date_str, args.incremental)
         
         if args.with_review:
@@ -227,6 +238,7 @@ def main():
     step_fetch(date_str)
     
     if args.with_report:
+        step_prepare_odds(date_str)
         step_daily_report(date_str, args.incremental)
     
     if args.with_review:
