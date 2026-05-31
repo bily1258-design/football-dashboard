@@ -47,7 +47,7 @@ def step_push(date_str: str):
     print("STEP 1.5: 推送 raw 数据到 GitHub")
     print("=" * 50)
 
-    subprocess.run(['git', 'add', 'data/raw/'], cwd=REPO_DIR)
+    subprocess.run(['git', 'add', '-A'], cwd=REPO_DIR)
     result = subprocess.run(
         ['git', 'commit', '-m', f'raw data {date_str}'],
         cwd=REPO_DIR, capture_output=True, text=True
@@ -55,6 +55,13 @@ def step_push(date_str: str):
     if 'nothing to commit' in result.stdout:
         print("  无新数据，跳过推送")
         return True
+    # 先pull rebase再push
+    pull = subprocess.run(
+        ['git', 'pull', '--rebase', 'origin', 'main'],
+        cwd=REPO_DIR, capture_output=True, text=True, timeout=120
+    )
+    if pull.returncode != 0:
+        print(f"⚠️ pull失败: {pull.stderr[:200]}")
     push = subprocess.run(
         ['git', 'push', 'origin', 'main'],
         cwd=REPO_DIR, capture_output=True, text=True, timeout=120
