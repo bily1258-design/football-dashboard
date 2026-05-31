@@ -28,7 +28,7 @@ def fetch_all(date_str: str = None) -> dict:
 
     # 尝试用fetch_500com_termux.py实际抓取
     try:
-        from fetch_500com_termux import fetch_500com_results
+        from fetch_500com_termux import fetch_all_results as fetch_500com_results
         print("  🔄 调用fetch_500com_termux抓取...")
         results = fetch_500com_results(date_str)
 
