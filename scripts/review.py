@@ -564,17 +564,17 @@ if __name__ == "__main__":
     # 推送看板（新架构：align_and_merge → merge_and_build → git push → GitHub Pages）
     try:
         import subprocess
-        dashboard_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'football-dashboard')
+        dashboard_dir = os.path.dirname(os.path.abspath(__file__))  # 仓库根目录的scripts/
 
         # Step 1: 对齐合并
         align_result = subprocess.run(
-            ['python', 'scripts/align_and_merge.py', '--date', target, '--db', DB_PATH],
+            [sys.executable, 'align_and_merge.py', '--date', target, '--db', DB_PATH],
             cwd=dashboard_dir, capture_output=True, text=True, timeout=60
         )
 
         # Step 2: 构建看板
         build_result = subprocess.run(
-            ['python', 'scripts/merge_and_build.py', '--db', DB_PATH, '--output', '.'],
+            [sys.executable, 'merge_and_build.py', '--db', DB_PATH, '--output', '.'],
             cwd=dashboard_dir, capture_output=True, text=True, timeout=60
         )
         if build_result.returncode == 0:
@@ -599,7 +599,7 @@ if __name__ == "__main__":
 
             # 推送DB到GitHub Release（供GA下载）
             push_db_result = subprocess.run(
-                ['python', 'scripts/push_db.py', '--db', DB_PATH],
+                [sys.executable, 'push_db.py', '--db', DB_PATH],
                 cwd=dashboard_dir, capture_output=True, text=True, timeout=60
             )
             if push_db_result.returncode == 0:
