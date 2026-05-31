@@ -49,7 +49,8 @@ jobs:
           gh release download db-latest \
             --repo bily1258-design/football-dashboard \
             --pattern 'football.db' \
-            --dir data/ --clobber \
+            --dir data/ \
+            --clobber \
             || echo "⚠️ No DB in Release"
           if [ -f data/football.db ]; then
             echo "✅ DB downloaded: $(du -h data/football.db | cut -f1)"
