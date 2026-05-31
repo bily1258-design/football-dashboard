@@ -1,101 +1,94 @@
-# 竞彩泊松预测看板
+# 竞彩足球泊松分布分析系统 - football-dashboard
 
-基于泊松分布的竞彩足球预测系统看板。
+## 快速开始
 
-## 架构
+### Termux 模式（一条命令完成全部流程）
+
+```bash
+cd football-dashboard
+python scripts/fetch_data.py --fetch-and-push
+```
+
+这将执行：赔率抓取 → 日报生成 → 复盘 → git push → GA自动构建看板
+
+### 完整参数列表
+
+```bash
+# 基本用法
+python scripts/fetch_data.py --date 2026-05-30       # 指定日期
+python scripts/fetch_data.py --yesterday              # 用昨天日期
+python scripts/fetch_data.py --today                   # 用今天日期
+
+# 抓取模式
+python scripts/fetch_data.py --fetch-only              # 只抓取数据
+python scripts/fetch_data.py --fetch-and-push         # 抓取+推送
+
+# 完整流程（含日报和复盘）
+python scripts/fetch_data.py --fetch-and-push \
+    --with-report \         # 生成日报
+    --with-review \         # 执行复盘
+    --incremental           # 日报增量模式
+
+# 只构建看板
+python scripts/fetch_data.py --build-only
+```
+
+## 目录结构
 
 ```
 football-dashboard/
-├─ .github/workflows/fetch-and-build.yml  # GitHub Actions（自动构建）
-├─ data/
-│   ├─ raw/
-│   │   ├─ bsd/          # 500.com 原始赛果（BSD主数据源）
-│   │   └─ oddsmagnet/   # 足彩网原始赔率（OddsMagnet辅助源）
-│   ├─ processed/         # 对齐合并后的数据
-│   ├─ results.json       # 前端结构化数据
-│   └─ cache/             # 临时缓存
-├─ docs/
-│   ├─ index.html         # 看板页面
-│   ├─ data/results.json  # 前端数据（Pages发布）
-│   ├─ style.css          # 样式
-│   └─ script.js          # 前端逻辑
-├─ scripts/
-│   ├─ fetch_bsd.py        # 500.com赛果爬虫
-│   ├─ fetch_oddsmagnet.py # 足彩网赔率爬虫
-│   ├─ align_and_merge.py  # raw → processed 对齐合并
-│   ├─ merge_and_build.py  # processed → results.json + index.html
-│   ├─ fetch_data.py       # 主调度
-│   ├─ push_db.py          # 推送DB到GitHub Release
-│   └─ utils.py            # 公共工具
-├─ requirements.txt
-├─ README.md
-└─ .gitignore
+├── scripts/
+│   ├── fetch_data.py          # 主调度脚本
+│   ├── daily_report.py        # 日报生成
+│   ├── review.py              # 复盘脚本
+│   ├── odds_api.py            # 赔率抓取
+│   ├── fetch_bsd.py           # BSD赛果抓取
+│   ├── align_and_merge.py     # 对齐合并
+│   ├── merge_and_build.py     # 看板构建
+│   ├── push_db.py             # DB推送
+│   ├── fetch_standings_qtx.py # 积分榜抓取
+│   └── value_bet.py          # 价值投注计算
+├── data/
+│   ├── raw/                   # 原始数据
+│   ├── cache/                 # 缓存
+│   ├── reports/               # 日报输出
+│   └── football.db           # 数据库（不提交）
+├── docs/                      # GitHub Pages 输出
+├── .github/workflows/
+│   └── fetch-and-build.yml    # GA 自动构建
+├── requirements.txt
+└── README.md
 ```
 
-## 分工
+## GA 工作流
 
-| 平台 | 职责 | 命令 |
-|------|------|------|
-| **Termux** | 抓取 raw 数据 → git push | `python scripts/fetch_data.py --fetch-and-push` |
-| **云电脑** | 预测 → 复盘 → push DB + 看板 | `python review.py --date YYYY-MM-DD` |
-| **GitHub Actions** | pull DB → align → build → 部署 | 自动触发（push/schedule） |
+- **触发条件**：
+  - push data/raw/ 或 data/reports/ 后自动构建
+  - schedule: 北京时间 13:00 和 19:00
+  - 手动触发（可选择是否运行日报/复盘）
 
-## 数据流
+- **工作流程**：
+  1. 下载最新 DB
+  2. 抓取赔率数据
+  3. 生成日报（可选）
+  4. 执行复盘（可选）
+  5. 对齐合并数据
+  6. 构建看板
+  7. 部署到 GitHub Pages
+  8. 推送 processed 数据
+  9. 上传 DB 到 Release
+
+## 依赖
 
 ```
-┌─────────┐   fetch raw    ┌──────────┐   git push    ┌─────────────────┐
-│  Termux  │ ─────────────→ │ data/raw │ ────────────→ │ GitHub Repo     │
-└─────────┘                 └──────────┘               └────────┬────────┘
-                                                                │ trigger
-┌─────────┐   predict       ┌──────────┐   push DB    ┌────────▼────────┐
-│ 云电脑   │ ─────────────→ │football.db│ ───────────→ │ GitHub Release  │
-└─────────┘                 └──────────┘               └────────┬────────┘
-                                                                │ download
-                                                     ┌──────────▼──────────┐
-                                                     │  GitHub Actions      │
-                                                     │  1. gh release download football.db
-                                                     │  2. align_and_merge  │
-                                                     │  3. merge_and_build  │
-                                                     │  4. deploy → Pages   │
-                                                     └─────────────────────┘
-```
-
-**分层：raw → processed → results → pages**
-
-## Termux 使用
-
-```bash
-# 首次设置
-pkg install python git
-pip install requests
-git clone https://github.com/bily1258-design/football-dashboard.git
-cd football-dashboard
-
-# 每日抓取 + 推送
-python scripts/fetch_data.py --fetch-and-push --today
-
-# 只抓取不推送
-python scripts/fetch_data.py --fetch-only --today
-
-# 指定日期
-python scripts/fetch_data.py --fetch-and-push --date 2026-05-30
-```
-
-## 云电脑使用
-
-```bash
-# 复盘 + 自动推送看板和DB
-cd 竞彩足球泊松分布分析清单
-python review.py --date 2026-05-30
+requests>=2.28
+beautifulsoup4>=4.12.0
+scipy>=1.10.0       # 可选
+openpyxl>=3.1.0     # 可选
 ```
 
 ## 数据源
 
-| 源 | 简称 | 用途 | 脚本 |
-|----|------|------|------|
-| 500.com | BSD | 赛果/比分/竞彩开奖 | `fetch_bsd.py` |
-| 足彩网 | OddsMagnet | 百家赔率/Pinnacle/HKJC | `fetch_oddsmagnet.py` |
-
-## 看板地址
-
-https://bily1258-design.github.io/football-dashboard/
+- **赔率**：中国足彩网 zgzcw.com
+- **赛果**：500.com
+- **积分榜**：球天下 data.qtx.com

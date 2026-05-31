@@ -9,6 +9,9 @@ Termux 模式：fetch raw → git push
   python fetch_data.py --fetch-only             # 只抓取（Termux用）
   python fetch_data.py --fetch-and-push         # 抓取+推送（Termux用）
   python fetch_data.py --build-only             # 只构建
+  python fetch_data.py --with-report            # 抓取后跑日报
+  python fetch_data.py --with-review            # 抓取后跑复盘
+  python fetch_data.py --incremental            # 日报增量模式
 """
 
 import os, sys, subprocess, argparse
@@ -44,7 +47,6 @@ def step_push(date_str: str):
     print("STEP 1.5: 推送 raw 数据到 GitHub")
     print("=" * 50)
 
-    # git add + commit + push
     subprocess.run(['git', 'add', 'data/raw/'], cwd=REPO_DIR)
     result = subprocess.run(
         ['git', 'commit', '-m', f'raw data {date_str}'],
@@ -65,10 +67,43 @@ def step_push(date_str: str):
         return False
 
 
-def step_align(date_str: str, db_path: str = None):
-    """Step 2: 对齐合并 raw → processed"""
+def step_daily_report(date_str: str, incremental: bool = False):
+    """Step 2: 运行日报生成"""
     print("\n" + "=" * 50)
-    print(f"STEP 2: 对齐合并 — {date_str}")
+    print(f"STEP 2: 生成日报 — {date_str}")
+    print("=" * 50)
+
+    cmd = [sys.executable, os.path.join(SCRIPT_DIR, 'daily_report.py'), '--date', date_str]
+    if incremental:
+        cmd.append('--incremental')
+    
+    result = subprocess.run(cmd, cwd=SCRIPT_DIR, capture_output=True, text=True, timeout=300)
+    if result.returncode == 0:
+        print(f"✅ 日报生成完成")
+    else:
+        print(f"⚠️ 日报生成失败: {result.stderr[:200]}")
+    return result.returncode == 0
+
+
+def step_review(date_str: str):
+    """Step 3: 运行复盘"""
+    print("\n" + "=" * 50)
+    print(f"STEP 3: 执行复盘 — {date_str}")
+    print("=" * 50)
+
+    cmd = [sys.executable, os.path.join(SCRIPT_DIR, 'review.py'), '--date', date_str]
+    result = subprocess.run(cmd, cwd=SCRIPT_DIR, capture_output=True, text=True, timeout=120)
+    if result.returncode == 0:
+        print(f"✅ 复盘完成")
+    else:
+        print(f"⚠️ 复盘失败: {result.stderr[:200]}")
+    return result.returncode == 0
+
+
+def step_align(date_str: str, db_path: str = None):
+    """Step 4: 对齐合并 raw → processed"""
+    print("\n" + "=" * 50)
+    print(f"STEP 4: 对齐合并 — {date_str}")
     print("=" * 50)
 
     from align_and_merge import align_and_merge
@@ -77,9 +112,9 @@ def step_align(date_str: str, db_path: str = None):
 
 
 def step_build(db_path: str = None):
-    """Step 3: 构建 results.json + index.html"""
+    """Step 5: 构建 results.json + index.html"""
     print("\n" + "=" * 50)
-    print("STEP 3: 构建看板")
+    print("STEP 5: 构建看板")
     print("=" * 50)
 
     from merge_and_build import load_from_processed, build_daily_stats, build_summary
@@ -103,8 +138,27 @@ def step_build(db_path: str = None):
     return True
 
 
+def step_push_db(db_path: str = None):
+    """Step 6: 推送 DB 到 Release"""
+    print("\n" + "=" * 50)
+    print("STEP 6: 推送 DB 到 Release")
+    print("=" * 50)
+
+    cmd = [sys.executable, os.path.join(SCRIPT_DIR, 'push_db.py')]
+    if db_path:
+        cmd.extend(['--db', db_path])
+    
+    result = subprocess.run(cmd, cwd=SCRIPT_DIR, capture_output=True, text=True, timeout=60)
+    if result.returncode == 0:
+        print(f"✅ DB推送完成")
+        return True
+    else:
+        print(f"⚠️ DB推送失败: {result.stderr[:200]}")
+        return False
+
+
 def main():
-    parser = argparse.ArgumentParser(description='主调度：fetch → align → build')
+    parser = argparse.ArgumentParser(description='主调度：fetch → report → review → align → build → push')
     parser.add_argument('--date', type=str, default=None, help='日期 YYYY-MM-DD')
     parser.add_argument('--yesterday', action='store_true', help='用昨天日期')
     parser.add_argument('--today', action='store_true', help='用今天日期')
@@ -112,6 +166,10 @@ def main():
     parser.add_argument('--fetch-and-push', action='store_true', help='抓取+推送（Termux模式）')
     parser.add_argument('--build-only', action='store_true', help='只构建')
     parser.add_argument('--db', type=str, default=None, help='数据库路径')
+    parser.add_argument('--with-report', action='store_true', help='抓取后生成日报')
+    parser.add_argument('--with-review', action='store_true', help='抓取后执行复盘')
+    parser.add_argument('--incremental', action='store_true', help='日报增量模式')
+    parser.add_argument('--skip-db-push', action='store_true', help='跳过DB推送')
     args = parser.parse_args()
 
     # 确定日期
@@ -123,28 +181,55 @@ def main():
         date_str = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
 
     db_path = args.db or os.environ.get('FOOTBALL_DB_PATH',
-        os.path.join(REPO_DIR, '..', 'data', 'shared_state', 'football.db'))
+        os.path.join(REPO_DIR, 'data', 'football.db'))
 
     print(f"🎯 目标日期: {date_str}")
 
-    if not args.build_only:
-        step_fetch(date_str)
-
+    # Termux 模式：fetch → report → review → push
     if args.fetch_and_push:
+        step_fetch(date_str)
+        
+        if args.with_report:
+            step_daily_report(date_str, args.incremental)
+        
+        if args.with_review:
+            step_review(date_str)
+        
         step_push(date_str)
-
-    if args.fetch_only or args.fetch_and_push:
-        # Termux模式，到此结束
-        if args.fetch_and_push:
-            print("\n✅ Termux模式完成：raw数据已推送，GA将自动构建看板")
-        else:
-            print("\n✅ 数据已抓取到 data/raw/")
+        
+        if not args.skip_db_push:
+            step_push_db(db_path)
+        
+        print("\n✅ Termux模式完成：数据已推送，GA将自动构建看板")
         return
 
-    # 完整模式：align + build
-    if not args.fetch_only:
+    # 只抓取模式
+    if args.fetch_only:
+        step_fetch(date_str)
+        print("\n✅ 数据已抓取到 data/raw/")
+        return
+
+    # 只构建模式
+    if args.build_only:
         step_align(date_str, db_path)
         step_build(db_path)
+        print("\n✅ 构建完成")
+        return
+
+    # 完整模式：fetch → report → review → align → build
+    step_fetch(date_str)
+    
+    if args.with_report:
+        step_daily_report(date_str, args.incremental)
+    
+    if args.with_review:
+        step_review(date_str)
+    
+    step_align(date_str, db_path)
+    step_build(db_path)
+    
+    if not args.skip_db_push:
+        step_push_db(db_path)
 
     print("\n✅ 全流程完成")
 
