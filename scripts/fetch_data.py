@@ -165,7 +165,7 @@ def step_push_db(db_path: str = None):
     if db_path:
         cmd.extend(['--db', db_path])
     
-    result = subprocess.run(cmd, cwd=SCRIPT_DIR, capture_output=True, text=True, timeout=60)
+    result = subprocess.run(cmd, cwd=SCRIPT_DIR, capture_output=True, text=True, timeout=180)
     if result.returncode == 0:
         print(f"✅ DB推送完成")
         return True
