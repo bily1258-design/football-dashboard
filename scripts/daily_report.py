@@ -1924,6 +1924,14 @@ def analyze_match(home_data: dict, away_data: dict, real_odds: Optional[Tuple[fl
     eval_odds_away = odds_away if not use_hhad and real_odds else odds_away
     risk = assess_risk(final_home, final_draw, final_away, eval_odds_home, eval_odds_draw, eval_odds_away)
     
+    # 信心指数
+    confidence_stars, confidence_display, confidence_reason_detail = calculate_confidence(
+        recommendation, rec_prob, eval_odds_home, eval_odds_draw, eval_odds_away)
+    
+    # 凯利指数（半凯利，推荐方向）
+    kelly_value = calc_kelly_with_fallback(rec_prob, 
+        eval_odds_home if recommendation == "主胜" else (eval_odds_draw if recommendation == "平局" else eval_odds_away))
+    
     # 在信心说明中标注xG来源和赔率来源
     odds_source_str = "让球盘" if use_hhad else "胜平负"
     reason_with_source = f"（{xg_source}，赔率来源:{odds_source_str}）"
@@ -1959,6 +1967,10 @@ def analyze_match(home_data: dict, away_data: dict, real_odds: Optional[Tuple[fl
         'rec_prob': rec_prob,
         'rec_prob_display': rec_prob_display,
         'risk': risk,
+        'confidence_stars': confidence_stars,
+        'confidence_display': confidence_display,
+        'confidence_reason_detail': confidence_reason_detail,
+        'kelly_value': kelly_value,
         'confidence_reason': reason_with_source,  # 包含xG来源和赔率来源
         'reference_scores': reference_scores,
         # EV相关字段（初始为0，后续由value_bet覆盖）
@@ -2713,12 +2725,16 @@ def save_to_csv(results: List[dict], filepath: str):
     if not results:
         return
     
-    # 移除胜赔、平赔、负赔、泊松_主胜、泊松_平局、泊松_客胜列（仅保留内部计算）
+    # 按用户要求列顺序：编号→联赛→开赛时间→主队→客队→推荐方向→推荐概率→风险等级→信心指数→信心说明→参考比分→胜赔→平赔→负赔→泊松_主胜→泊松_平局→泊松_客胜→综合_主胜→综合_平局→综合_客胜→凯利指数
     headers = [
         "编号", "联赛", "开赛时间", "主队", "客队",
-        "推荐方向", "推荐概率", "EV", "EV_主胜", "EV_平局", "EV_客胜", "EV说明", "xG来源",
+        "推荐方向", "推荐概率", "风险等级", "信心指数", "信心说明",
         "参考比分",
+        "胜赔", "平赔", "负赔",
+        "泊松_主胜", "泊松_平局", "泊松_客胜",
         "综合_主胜", "综合_平局", "综合_客胜",
+        "凯利指数",
+        "EV", "EV_主胜", "EV_平局", "EV_客胜", "EV说明", "xG来源",
         "百家初盘胜", "百家初盘平", "百家初盘负",
         "百家最新胜", "百家最新平", "百家最新负"
     ]
@@ -3842,6 +3858,9 @@ def main():
                 "客队": analysis['away_name_zh'],
                 "推荐方向": analysis['best_direction_cn'] or analysis['recommendation'],
                 "推荐概率": analysis['rec_prob_display'],
+                "风险等级": analysis.get('risk', ''),
+                "信心指数": analysis.get('confidence_display', ''),
+                "信心说明": analysis.get('confidence_reason_detail', ''),
                 "EV": f"{analysis.get('ev_value', 0)*100:.1f}%" if analysis.get('ev_value', 0) > 0 else "-",
                 "EV_主胜": f"{analysis.get('ev_win', 0)*100:.1f}%" if analysis.get('ev_win', 0) > 0 else "-",
                 "EV_平局": f"{analysis.get('ev_draw', 0)*100:.1f}%" if analysis.get('ev_draw', 0) > 0 else "-",
@@ -3858,6 +3877,7 @@ def main():
                 "综合_主胜": f"{analysis['final_home']*100:.1f}%",
                 "综合_平局": f"{analysis['final_draw']*100:.1f}%",
                 "综合_客胜": f"{analysis['final_away']*100:.1f}%",
+                "凯利指数": f"{analysis.get('kelly_value', 0)*100:.1f}%",
                 # HHAD字段
                 "odds_source": odds_source,
                 "hhad_home": analysis.get('hhad_home'),
