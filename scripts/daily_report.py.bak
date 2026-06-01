@@ -111,9 +111,6 @@ SPORTTERY_API_URL = "https://webapi.sporttery.cn/gateway/jc/football/getMatchCal
 # SQLite数据库配置（统一football.db）
 DB_PATH = os.path.join(DATA_BASE_DIR, "data/shared_state/football.db")
 
-# sporttery API 赔率缓存文件（与 oddsmagnet 的 real_odds.json 分开）
-SPORTTERY_ODDS_FILE = os.path.join(CACHE_DIR, "sporttery_odds.json")
-
 # 五大联赛代码映射（使用积分榜xG）
 LEAGUE_CODES = {
     "PL": {"name": "英超", "name_en": "Premier League"},
@@ -1017,11 +1014,11 @@ def fetch_real_odds_from_api() -> dict:
         
         # 同时保存到缓存文件作为备份
         try:
-            os.makedirs(os.path.dirname(SPORTTERY_ODDS_FILE), exist_ok=True)
-            with open(SPORTTERY_ODDS_FILE, 'w', encoding='utf-8') as f:
+            os.makedirs(os.path.dirname(ODDS_FILE), exist_ok=True)
+            with open(ODDS_FILE, 'w', encoding='utf-8') as f:
                 json.dump(odds_data, f, ensure_ascii=False, indent=2)
         except Exception as e:
-            log(f"保存sporttery赔率缓存失败: {e}")
+            log(f"保存赔率缓存失败: {e}")
         
         log(f"✓ 从API获取到 {match_count} 场比赛的赔率")
         if hhad_only_count > 0:
@@ -1036,213 +1033,28 @@ def fetch_real_odds_from_api() -> dict:
 
 def load_real_odds() -> dict:
     """
-    从缓存文件加载 sporttery API 的赔率数据（Fallback方案）
+    从缓存文件加载真实赔率数据（Fallback方案）
     返回格式: {"主队简称 vs 客队简称": {"home": 1.90, "draw": 3.80, "away": 4.00}, ...}
     """
-    if not os.path.exists(SPORTTERY_ODDS_FILE):
-        log(f"⚠️ sporttery 赔率缓存文件不存在: {SPORTTERY_ODDS_FILE}")
+    if not os.path.exists(ODDS_FILE):
+        log(f"⚠️ 真实赔率文件不存在: {ODDS_FILE}")
+        log(f"   提示: 脚本将尝试从体彩网API获取赔率")
         return {}
     
     try:
-        with open(SPORTTERY_ODDS_FILE, 'r', encoding='utf-8') as f:
+        with open(ODDS_FILE, 'r', encoding='utf-8') as f:
             odds_data = json.load(f)
-        log(f"✓ 从sporttery缓存加载赔率数据: {len(odds_data)} 场比赛")
+        log(f"✓ 从缓存加载真实赔率数据: {len(odds_data)} 场比赛")
         return odds_data
     except Exception as e:
-        log(f"⚠️ 加载sporttery赔率缓存失败: {e}")
+        log(f"⚠️ 加载赔率文件失败: {e}")
         return {}
-
-
-def load_oddsmagnet_odds() -> dict:
-    """
-    从 oddsmagnet 转换的 real_odds.json 加载赔率数据
-    
-    Returns:
-        赔率数据字典，格式与 sporttery API 返回一致：
-        {
-            "主队 vs 客队": {
-                "home": float, "draw": float, "away": float,
-                "hhad_home": float, "hhad_draw": float, "hhad_away": float, "hhad_handicap": float,
-                "odds_source": str,
-                "matchNum": str, "league": str, 
-                "matchDate": str, "matchTime": str
-            }
-        }
-    """
-    om_odds_path = os.path.join(CACHE_DIR, "real_odds.json")
-    if not os.path.exists(om_odds_path):
-        log(f"⚠️ oddsmagnet 赔率文件不存在: {om_odds_path}")
-        return {}
-    
-    try:
-        with open(om_odds_path, 'r', encoding='utf-8') as f:
-            om_data = json.load(f)
-        
-        # 转换为与 sporttery API 兼容的格式
-        converted = {}
-        for key, entry in om_data.items():
-            # 统一字段名称
-            converted_entry = {
-                "home": entry.get("home"),
-                "draw": entry.get("draw"),
-                "away": entry.get("away"),
-                "hhad_home": entry.get("hhad_home"),
-                "hhad_draw": entry.get("hhad_draw"),
-                "hhad_away": entry.get("hhad_away"),
-                "hhad_handicap": entry.get("hhad_handicap"),
-                "odds_source": entry.get("odds_source", "oddsmagnet"),
-                "matchNum": entry.get("matchNum", ""),
-                "league": entry.get("league", ""),
-                "matchDate": entry.get("matchDate", ""),
-                "matchTime": entry.get("matchTime", ""),
-                # 保留原始键名用于去重
-                "_om_key": key,
-                "_oddsmagnet": True,
-            }
-            converted[key] = converted_entry
-        
-        log(f"✓ 从 oddsmagnet 加载赔率数据: {len(converted)} 场比赛")
-        return converted
-    except Exception as e:
-        log(f"⚠️ 加载 oddsmagnet 赔率文件失败: {e}")
-        return {}
-
-
-def _teams_match(key1: str, key2: str, threshold: float = 0.5) -> bool:
-    """
-    检查两个赔率键名的队名是否匹配
-    
-    Args:
-        key1: 格式 "主队 vs 客队"
-        key2: 格式 "主队 vs 客队"
-        threshold: 匹配阈值（队名长度比）
-    
-    Returns:
-        bool - 是否匹配
-    """
-    if not key1 or not key2:
-        return False
-    
-    # 直接相等
-    if key1 == key2:
-        return True
-    
-    try:
-        parts1 = key1.split(" vs ")
-        parts2 = key2.split(" vs ")
-        
-        if len(parts1) != 2 or len(parts2) != 2:
-            return False
-        
-        home1, away1 = parts1[0].strip(), parts1[1].strip()
-        home2, away2 = parts2[0].strip(), parts2[1].strip()
-        
-        # 检查主队和客队是否都匹配
-        def team_match(t1, t2):
-            if not t1 or not t2:
-                return False
-            # 完全相等
-            if t1 == t2:
-                return True
-            # 一个包含另一个
-            if t1 in t2 or t2 in t1:
-                return True
-            # 长度比较
-            min_len = min(len(t1), len(t2))
-            max_len = max(len(t1), len(t2))
-            if max_len > 0 and min_len / max_len >= threshold:
-                # 尝试中文字符匹配
-                # 提取中文部分
-                cn1 = ''.join([c for c in t1 if '\u4e00' <= c <= '\u9fff'])
-                cn2 = ''.join([c for c in t2 if '\u4e00' <= c <= '\u9fff'])
-                if cn1 and cn2:
-                    if cn1 in cn2 or cn2 in cn1:
-                        return True
-                    if len(cn1) >= 2 and len(cn2) >= 2:
-                        # 前2个中文字符匹配
-                        if cn1[:2] == cn2[:2]:
-                            return True
-            return False
-        
-        return team_match(home1, home2) and team_match(away1, away2)
-    except:
-        return False
-
-
-def merge_odds_data(sporttery_data: dict, oddsmagnet_data: dict) -> dict:
-    """
-    合并 sporttery API 和 oddsmagnet 的赔率数据
-    
-    合并策略：
-    1. sporttery 数据优先（它的编号更准确）
-    2. oddsmagnet 补充缺失的比赛
-    3. 使用队名匹配检测重复
-    
-    Args:
-        sporttery_data: sporttery API 返回的赔率数据
-        oddsmagnet_data: oddsmagnet real_odds.json 返回的赔率数据
-    
-    Returns:
-        合并后的赔率数据字典
-    """
-    if not sporttery_data and not oddsmagnet_data:
-        return {}
-    
-    if not sporttery_data:
-        # 无 sporttery 数据，全部使用 oddsmagnet
-        log(f"⚠️ sporttery API 无数据，使用 oddsmagnet 全部 {len(oddsmagnet_data)} 场比赛")
-        return oddsmagnet_data
-    
-    if not oddsmagnet_data:
-        # 无 oddsmagnet 数据，全部使用 sporttery
-        log(f"✓ 使用 sporttery API 的 {len(sporttery_data)} 场比赛")
-        return sporttery_data
-    
-    # 初始化结果：以 sporttery 为基础
-    merged = {}
-    used_om_keys = set()
-    
-    # 首先添加所有 sporttery 数据
-    for key, entry in sporttery_data.items():
-        # 复制数据，添加来源标记
-        merged_entry = entry.copy()
-        merged_entry["_sporttery"] = True
-        merged[key] = merged_entry
-    
-    # 遍历 oddsmagnet 数据，补充缺失的比赛
-    added_count = 0
-    skipped_count = 0
-    
-    for om_key, om_entry in oddsmagnet_data.items():
-        # 检查是否与已存在的 sporttery 数据重复
-        is_duplicate = False
-        for st_key in sporttery_data.keys():
-            if _teams_match(om_key, st_key):
-                is_duplicate = True
-                used_om_keys.add(om_key)
-                skipped_count += 1
-                break
-        
-        if not is_duplicate:
-            # 补充缺失的比赛
-            merged_entry = om_entry.copy()
-            merged_entry["_sporttery"] = False
-            merged[om_key] = merged_entry
-            added_count += 1
-    
-    log(f"✓ 赔率合并完成: sporttery={len(sporttery_data)}, oddsmagnet补充={added_count}, 重复跳过={skipped_count}")
-    
-    return merged
 
 
 def get_odds_data(prefer_api: bool = True) -> dict:
     """
     获取赔率数据的主入口函数
-    
-    合并策略：
-    1. 优先从 sporttery API 获取赔率
-    2. 然后从 oddsmagnet real_odds.json 读取赔率
-    3. 合并两者，以 sporttery 为基础，oddsmagnet 补充缺失的比赛
+    优先从API获取，失败时fallback到缓存文件
     
     Args:
         prefer_api: 是否优先使用API获取（默认True）
@@ -1250,29 +1062,22 @@ def get_odds_data(prefer_api: bool = True) -> dict:
     Returns:
         赔率数据字典
     """
-    # 第一步：尝试从 sporttery API 获取
-    sporttery_data = {}
     if prefer_api:
-        sporttery_data = fetch_real_odds_from_api()
-    
-    if not sporttery_data:
-        # API失败，尝试从缓存加载 sporttery 数据
-        log("sporttery API 获取失败，尝试从缓存加载...")
-        sporttery_data = load_real_odds()
-    
-    # 第二步：从 oddsmagnet 加载补充数据
-    oddsmagnet_data = load_oddsmagnet_odds()
-    
-    # 第三步：合并数据
-    if oddsmagnet_data:
-        merged_data = merge_odds_data(sporttery_data, oddsmagnet_data)
-        log(f"✓ 合并后共 {len(merged_data)} 场比赛")
-        return merged_data
+        # 优先尝试API
+        odds_data = fetch_real_odds_from_api()
+        if odds_data:
+            return odds_data
+        
+        # API失败，尝试缓存
+        log("API获取失败，尝试从缓存加载...")
+        odds_data = load_real_odds()
+        if odds_data:
+            return odds_data
+        
+        return {}
     else:
-        # 无 oddsmagnet 数据，直接返回 sporttery 数据
-        if sporttery_data:
-            log(f"✓ 使用 sporttery 赔率: {len(sporttery_data)} 场比赛")
-        return sporttery_data
+        # 直接使用缓存
+        return load_real_odds()
 
 
 def match_odds_key(home_team: str, away_team: str, odds_data: dict) -> Optional[str]:
@@ -3234,7 +3039,7 @@ def save_to_database(results: List[dict], date_str: str, dry_run: bool = False):
                 else:
                     # 不存在：INSERT完整记录
                     cursor.execute("""
-                        INSERT OR REPLACE INTO poisson_predictions (
+                        INSERT INTO poisson_predictions (
                             match_id, date, exec_time, league, home_team, away_team,
                             kickoff_time, prediction, prediction_prob, odds_win, odds_draw, odds_loss,
                             poisson_win, poisson_draw, poisson_loss, market_win, market_draw, market_loss,
