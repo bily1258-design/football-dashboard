@@ -285,15 +285,32 @@ def levenshtein_distance(s1, s2):
 
 
 def fetch_page_requests(url, timeout=30):
-    """用requests抓取页面"""
+    """用requests抓取页面，带WAF重试"""
     import requests
-    try:
-        resp = requests.get(url, headers=HEADERS, timeout=timeout)
-        resp.encoding = 'utf-8'
-        return resp.text
-    except Exception as e:
-        print(f"[ERROR] requests {url}: {e}")
-        return None
+    import random
+    max_retries = 2
+    for attempt in range(max_retries):
+        try:
+            resp = requests.get(url, headers=HEADERS, timeout=timeout)
+            # WAF检测
+            if resp.status_code == 418:
+                wait = 5 + random.randint(3, 8)
+                print(f"[WARN] GET WAF拦截(418), 等待{wait}秒后重试({attempt+1}/{max_retries})")
+                time.sleep(wait)
+                continue
+            resp.encoding = 'utf-8'
+            if 'CloudWAF' in resp.text or '华为云' in resp.text:
+                wait = 5 + random.randint(3, 8)
+                print(f"[WARN] GET CloudWAF拦截, 等待{wait}秒后重试({attempt+1}/{max_retries})")
+                time.sleep(wait)
+                continue
+            return resp.text
+        except Exception as e:
+            wait = 3 + random.randint(2, 5)
+            print(f"[ERROR] requests {url}: {e}, 等待{wait}秒后重试({attempt+1}/{max_retries})")
+            time.sleep(wait)
+    print(f"[ERROR] GET {url} {max_retries}次重试均失败")
+    return None
 
 
 def fetch_page_fetch_web(url):
@@ -482,6 +499,7 @@ def fetch_company_odds(date_str=None, page_type=None, company='106'):
         dict: {match_id: {open: {w,d,l}, close: {w,d,l}, movement: {w,d,l}}}
     """
     import requests as req
+    import random
     
     company_names = {'106': 'Pinnacle', '56': 'Betfair', '3': 'SB', '22': 'Pinnacle(旧)', '0': '平均', '136': 'HKJC'}
     company_name = company_names.get(company, f'aid={company}')
@@ -495,17 +513,53 @@ def fetch_company_odds(date_str=None, page_type=None, company='106'):
         'fg': '1'
     }
     
-    try:
-        resp = req.post(BASE_URL_LIST, data=data, headers=HEADERS, timeout=15)
-        if resp.status_code != 200:
-            print(f"[WARN] {company_name} POST请求失败: status={resp.status_code}")
-            return {}
-    except Exception as e:
-        print(f"[WARN] {company_name} POST请求异常: {e}")
-        return {}
-    
-    html = resp.text
-    if not html:
+    # WAF重试机制：最多重试3次，间隔5-8秒
+    max_retries = 2
+    for attempt in range(max_retries):
+        try:
+            # 使用Session复用连接
+            session = req.Session()
+            session.headers.update(HEADERS)
+            # 先GET一次首页建立cookie
+            if attempt == 0:
+                try:
+                    session.get(BASE_URL_LIST, timeout=10)
+                    time.sleep(2)
+                except:
+                    pass
+            
+            resp = session.post(BASE_URL_LIST, data=data, timeout=15)
+            
+            # WAF检测
+            if resp.status_code == 418:
+                wait = 5 + random.randint(3, 8)
+                print(f"[WARN] {company_name} WAF拦截(418), 等待{wait}秒后重试({attempt+1}/{max_retries})")
+                time.sleep(wait)
+                continue
+            
+            if 'CloudWAF' in resp.text or '华为云' in resp.text:
+                wait = 5 + random.randint(3, 8)
+                print(f"[WARN] {company_name} CloudWAF拦截, 等待{wait}秒后重试({attempt+1}/{max_retries})")
+                time.sleep(wait)
+                continue
+            
+            if resp.status_code != 200:
+                print(f"[WARN] {company_name} POST请求失败: status={resp.status_code}")
+                return {}
+            
+            html = resp.text
+            if not html:
+                return {}
+            
+            # 成功，跳出重试
+            break
+            
+        except Exception as e:
+            wait = 3 + random.randint(2, 5)
+            print(f"[WARN] {company_name} POST请求异常: {e}, 等待{wait}秒后重试({attempt+1}/{max_retries})")
+            time.sleep(wait)
+    else:
+        print(f"[ERROR] {company_name} {max_retries}次重试均失败")
         return {}
     
     result = {}
@@ -744,6 +798,43 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=False):
     # 同时抓取前一天的数据（覆盖次日00:00-11:59的凌晨比赛）
     prev_day = (datetime.strptime(date_str, '%Y-%m-%d') - timedelta(days=1)).strftime('%Y-%m-%d')
     
+    # Step 0: 检测zgzcw.com是否可用（WAF检测）
+    zgzcw_available = False
+    try:
+        import requests as req
+        test_resp = req.get(BASE_URL_LIST, headers=HEADERS, timeout=10)
+        if test_resp.status_code == 200 and 'CloudWAF' not in test_resp.text and '华为云' not in test_resp.text:
+            zgzcw_available = True
+        else:
+            print(f"[WARN] zgzcw.com WAF拦截(status={test_resp.status_code})，启用oddsmagnet fallback")
+    except Exception as e:
+        print(f"[WARN] zgzcw.com不可达: {e}，启用oddsmagnet fallback")
+    
+    if not zgzcw_available:
+        # WAF拦截 → 直接从oddsmagnet缓存读取赔率
+        results = load_oddsmagnet_fallback(date_str)
+        if results:
+            # 保存缓存文件（格式与正常流程一致）
+            cache_dir = os.path.join(DATA_BASE_DIR, "data", "cache")
+            os.makedirs(cache_dir, exist_ok=True)
+            now_str = datetime.now().strftime('%H%M')
+            cache_path = os.path.join(cache_dir, f"pinnacle_odds_{date_str.replace('-','')}_{now_str}.json")
+            cache_data = {
+                'date': date_str,
+                'fetch_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                'source': 'oddsmagnet_fallback',
+                'summary': {
+                    'total': len(results),
+                    'pinnacle': sum(1 for r in results if r.get('odds_source') == 'Pinnacle'),
+                    'avg': sum(1 for r in results if r.get('odds_source') == '百家平均'),
+                },
+                'matches': {f"{r.get('home','')}_{r.get('away','')}": r for r in results}
+            }
+            with open(cache_path, 'w', encoding='utf-8') as f:
+                json.dump(cache_data, f, ensure_ascii=False, indent=2, default=str)
+            print(f"[INFO] 缓存已保存: {cache_path}")
+        return results
+    
     # Step 1: 百家平均赔率（GET方式）- 当天+前一天
     match_list = fetch_match_list(date_str)
     match_list_prev = fetch_match_list(prev_day)
@@ -766,47 +857,74 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=False):
     
     # Step 2: 平博赔率（POST方式，aid=106=真Pinnacle）- 当天+前一天（最高优先级）
     pin_jc = fetch_company_odds(date_str, page_type='jc', company='106')
-    time.sleep(1)
+    time.sleep(3)
     pin_jc_prev = fetch_company_odds(prev_day, page_type='jc', company='106')
-    time.sleep(1)
+    time.sleep(3)
     pin_bd = fetch_company_odds(date_str, page_type='bd', company='106') if include_beidan else {}
-    time.sleep(1)
+    time.sleep(3)
     pin_bd_prev = fetch_company_odds(prev_day, page_type='bd', company='106') if include_beidan else {}
     pin_all = {**pin_jc_prev, **pin_bd_prev, **pin_jc, **pin_bd}  # match_id -> pin_odds
     print(f"[INFO] Pinnacle赔率: {len(pin_all)} 场 (前天jc{len(pin_jc_prev)}/bd{len(pin_bd_prev)}, 当天jc{len(pin_jc)}/bd{len(pin_bd)})")
     
     # Step 3: 必发赔率（POST方式，aid=56=Betfair）- 当天+前一天（辅助参考）
     bf_jc = fetch_company_odds(date_str, page_type='jc', company='56')
-    time.sleep(1)
+    time.sleep(3)
     bf_jc_prev = fetch_company_odds(prev_day, page_type='jc', company='56')
-    time.sleep(1)
+    time.sleep(3)
     bf_bd = fetch_company_odds(date_str, page_type='bd', company='56') if include_beidan else {}
-    time.sleep(1)
+    time.sleep(3)
     bf_bd_prev = fetch_company_odds(prev_day, page_type='bd', company='56') if include_beidan else {}
     bf_all = {**bf_jc_prev, **bf_bd_prev, **bf_jc, **bf_bd}
     print(f"[INFO] Betfair赔率: {len(bf_all)} 场")
     
     # Step 4: SB公司赔率（POST方式，aid=3）- 当天+前一天（次优先级）
     sb_jc = fetch_sb_odds(date_str, page_type='jc')
-    time.sleep(1)
+    time.sleep(3)
     sb_jc_prev = fetch_sb_odds(prev_day, page_type='jc')
-    time.sleep(1)
+    time.sleep(3)
     sb_bd = fetch_sb_odds(date_str, page_type='bd') if include_beidan else {}
-    time.sleep(1)
+    time.sleep(3)
     sb_bd_prev = fetch_sb_odds(prev_day, page_type='bd') if include_beidan else {}
     sb_all = {**sb_jc_prev, **sb_bd_prev, **sb_jc, **sb_bd}  # match_id -> sb_odds
     print(f"[INFO] SB公司赔率: {len(sb_all)} 场 (前天jc{len(sb_jc_prev)}/bd{len(sb_bd_prev)}, 当天jc{len(sb_jc)}/bd{len(sb_bd)})")
     
     # Step 5: 香港马会赔率（POST方式，aid=136）- 当天+前一天（交叉验证参考）
     hkjc_jc = fetch_company_odds(date_str, page_type='jc', company='136')
-    time.sleep(1)
+    time.sleep(3)
     hkjc_jc_prev = fetch_company_odds(prev_day, page_type='jc', company='136')
-    time.sleep(1)
+    time.sleep(3)
     hkjc_bd = fetch_company_odds(date_str, page_type='bd', company='136') if include_beidan else {}
-    time.sleep(1)
+    time.sleep(3)
     hkjc_bd_prev = fetch_company_odds(prev_day, page_type='bd', company='136') if include_beidan else {}
     hkjc_all = {**hkjc_jc_prev, **hkjc_bd_prev, **hkjc_jc, **hkjc_bd}
     print(f"[INFO] 香港马会赔率: {len(hkjc_all)} 场 (前天jc{len(hkjc_jc_prev)}/bd{len(hkjc_bd_prev)}, 当天jc{len(hkjc_jc)}/bd{len(hkjc_bd)})")
+    
+    # Step 5.5: 加载oddsmagnet缓存补充POST失败的赔源
+    om_fallback = {}
+    missing_sources = []
+    if len(pin_all) == 0: missing_sources.append('Pinnacle')
+    if len(bf_all) == 0: missing_sources.append('Betfair')
+    if len(sb_all) == 0: missing_sources.append('SB')
+    if len(hkjc_all) == 0: missing_sources.append('HKJC')
+    
+    if missing_sources:
+        print(f"[INFO] POST失败赔源，尝试oddsmagnet补充: {', '.join(missing_sources)}")
+        om_cache_path = os.path.join(DATA_BASE_DIR, "data", "cache", "real_odds.json")
+        if os.path.exists(om_cache_path):
+            try:
+                with open(om_cache_path, 'r', encoding='utf-8') as f:
+                    om_data = json.load(f)
+                if isinstance(om_data, dict):
+                    for key, item in om_data.items():
+                        match_date = item.get('matchDate', '')
+                        if date_str and match_date != date_str and match_date != prev_day:
+                            continue
+                        parts = key.split(' vs ')
+                        if len(parts) != 2: continue
+                        om_fallback[f"{parts[0].strip()}_{parts[1].strip()}"] = item
+                    print(f"[INFO] oddsmagnet fallback: {len(om_fallback)} 场")
+            except Exception as e:
+                print(f"[WARN] oddsmagnet fallback加载失败: {e}")
     
     # Step 6: 合并数据，赔率优先级：平博 > SB > 百家平均
     results = []
@@ -816,10 +934,30 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=False):
         away = m.get('away', '?')
         print(f"[INFO] [{i+1}/{len(match_list)}] {home} vs {away} (id={match_id})")
         
+        # 查找oddsmagnet fallback数据（按队名匹配）
+        om_key = f"{home}_{away}"
+        om_item = om_fallback.get(om_key, {})
+        # 也尝试模糊匹配
+        if not om_item:
+            for fk, fv in om_fallback.items():
+                if home in fk and away in fk:
+                    om_item = fv
+                    break
+        
         # 百家平均赔率（列表页GET获取）
         avg_open = m.get('avg_open', {})
         avg_close = m.get('avg_close', {})
         avg_movement = m.get('avg_movement', {})
+        
+        # oddsmagnet补充百家平均（GET失败时）
+        if avg_open.get('w', 0) == 0 and om_item:
+            avg_w = om_item.get('home', 0) or 0
+            avg_d = om_item.get('draw', 0) or 0
+            avg_l = om_item.get('away', 0) or 0
+            if avg_w > 0:
+                avg_open = {'w': avg_w, 'd': avg_d, 'l': avg_l}
+                avg_close = {'w': avg_w, 'd': avg_d, 'l': avg_l}
+                avg_movement = {'w': 'stable', 'd': 'stable', 'l': 'stable'}
         
         if avg_open.get('w', 0) > 0:
             print(f"  百家初盘: {avg_open['w']:.2f}/{avg_open['d']:.2f}/{avg_open['l']:.2f}")
@@ -831,9 +969,7 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=False):
         pinnacle_close = pin_data.get('close', {})
         pinnacle_movement = pin_data.get('movement', {})
         
-        # HHAD让球盘检测：500.com北单页面有时返回让球盘而非标准盘
-        # 让球盘特征：d值<2.0（标准盘平局赔率必然>2.5）
-        # 检测到HHAD时丢弃该PIN数据，避免污染EV计算
+        # HHAD让球盘检测
         if pinnacle_close.get('d', 0) > 0 and pinnacle_close.get('d', 0) < 2.0:
             print(f"  [WARN] Pinnacle疑似让球盘(d={pinnacle_close['d']:.2f}<2.0)，已丢弃")
             pinnacle_open = {}
@@ -842,7 +978,18 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=False):
         if pinnacle_open.get('d', 0) > 0 and pinnacle_open.get('d', 0) < 2.0:
             pinnacle_open = {}
         
-        if pinnacle_open.get('w', 0) > 0:
+        # oddsmagnet补充Pinnacle（POST失败时）
+        if pinnacle_open.get('w', 0) == 0 and om_item:
+            pin_ow = om_item.get('pinnacle_open_w', 0) or 0
+            pin_od = om_item.get('pinnacle_open_d', 0) or 0
+            pin_ol = om_item.get('pinnacle_open_l', 0) or 0
+            if pin_ow > 0:
+                pinnacle_open = {'w': pin_ow, 'd': pin_od, 'l': pin_ol}
+                pinnacle_close = {'w': pin_ow, 'd': pin_od, 'l': pin_ol}
+                pinnacle_movement = {'w': 'stable', 'd': 'stable', 'l': 'stable'}
+                print(f"  Pinnacle(oddsmagnet): {pin_ow:.2f}/{pin_od:.2f}/{pin_ol:.2f}")
+        
+        if pinnacle_open.get('w', 0) > 0 and not om_item.get('pinnacle_open_w'):
             print(f"  Pinnacle初盘: {pinnacle_open['w']:.2f}/{pinnacle_open['d']:.2f}/{pinnacle_open['l']:.2f}")
             print(f"  Pinnacle最新: {pinnacle_close['w']:.2f}/{pinnacle_close['d']:.2f}/{pinnacle_close['l']:.2f}")
         
@@ -856,6 +1003,16 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=False):
             print(f"  [WARN] Betfair疑似让球盘(d={betfair_close['d']:.2f}<2.0)，已丢弃")
             betfair_open = {}
             betfair_close = {}
+        
+        # oddsmagnet补充Betfair
+        if betfair_open.get('w', 0) == 0 and om_item:
+            bf_ow = om_item.get('betfair_open_w', 0) or 0
+            bf_od = om_item.get('betfair_open_d', 0) or 0
+            bf_ol = om_item.get('betfair_open_l', 0) or 0
+            if bf_ow > 0:
+                betfair_open = {'w': bf_ow, 'd': bf_od, 'l': bf_ol}
+                betfair_close = {'w': bf_ow, 'd': bf_od, 'l': bf_ol}
+                print(f"  Betfair(oddsmagnet): {bf_ow:.2f}/{bf_od:.2f}/{bf_ol:.2f}")
         
         if betfair_open.get('w', 0) > 0:
             print(f"  Betfair初盘: {betfair_open['w']:.2f}/{betfair_open['d']:.2f}/{betfair_open['l']:.2f}")
@@ -916,6 +1073,16 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=False):
             hkjc_open = {}
             hkjc_close = {}
         
+        # oddsmagnet补充HKJC
+        if hkjc_open.get('w', 0) == 0 and om_item:
+            hkjc_ow = om_item.get('hkjc_open_w', 0) or 0
+            hkjc_od = om_item.get('hkjc_open_d', 0) or 0
+            hkjc_ol = om_item.get('hkjc_open_l', 0) or 0
+            if hkjc_ow > 0:
+                hkjc_open = {'w': hkjc_ow, 'd': hkjc_od, 'l': hkjc_ol}
+                hkjc_close = {'w': hkjc_ow, 'd': hkjc_od, 'l': hkjc_ol}
+                print(f"  HKJC(oddsmagnet): {hkjc_ow:.2f}/{hkjc_od:.2f}/{hkjc_ol:.2f}")
+        
         m['hkjc_open'] = hkjc_open
         m['hkjc_close'] = hkjc_close
         
@@ -944,6 +1111,80 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=False):
     sb_count = sum(1 for r in results if r.get('odds_source') == 'SB')
     avg_count = sum(1 for r in results if r.get('odds_source') == '百家平均')
     none_count = sum(1 for r in results if r.get('odds_source') == '无')
+    
+    # Step 7: 补充oddsmagnet中不在match_list里的场次
+    if om_fallback:
+        existing_teams = set()
+        for r in results:
+            h = r.get('home', '')
+            a = r.get('away', '')
+            existing_teams.add(f"{h}_{a}")
+        
+        om_added = 0
+        for om_key, om_item in om_fallback.items():
+            if om_key in existing_teams:
+                continue
+            parts = om_key.split('_')
+            if len(parts) != 2:
+                continue
+            home, away = parts[0], parts[1]
+            
+            pin_ow = om_item.get('pinnacle_open_w', 0) or 0
+            pin_od = om_item.get('pinnacle_open_d', 0) or 0
+            pin_ol = om_item.get('pinnacle_open_l', 0) or 0
+            avg_w = om_item.get('home', 0) or 0
+            avg_d = om_item.get('draw', 0) or 0
+            avg_l = om_item.get('away', 0) or 0
+            hkjc_ow = om_item.get('hkjc_open_w', 0) or 0
+            hkjc_od = om_item.get('hkjc_open_d', 0) or 0
+            hkjc_ol = om_item.get('hkjc_open_l', 0) or 0
+            
+            if pin_ow == 0 and avg_w == 0:
+                continue
+            
+            m = {
+                'home': home, 'away': away,
+                'match_id': om_item.get('matchNum', ''),
+                'number': om_item.get('matchNum', ''),
+                'league': om_item.get('league', ''),
+                'kickoff': om_item.get('kickoff', ''),
+                'date': om_item.get('matchDate', ''),
+                'odds_source': 'oddsmagnet',
+                'avg_open': {'w': avg_w, 'd': avg_d, 'l': avg_l},
+                'avg_close': {'w': avg_w, 'd': avg_d, 'l': avg_l},
+                'avg_movement': {'w': 'stable', 'd': 'stable', 'l': 'stable'},
+                'pinnacle_open': {'w': pin_ow, 'd': pin_od, 'l': pin_ol},
+                'pinnacle_close': {'w': pin_ow, 'd': pin_od, 'l': pin_ol},
+                'pinnacle_movement': {'w': 'stable', 'd': 'stable', 'l': 'stable'},
+                'hkjc_open': {'w': hkjc_ow, 'd': hkjc_od, 'l': hkjc_ol},
+                'hkjc_close': {'w': hkjc_ow, 'd': hkjc_od, 'l': hkjc_ol},
+                'betfair_open': {}, 'betfair_close': {},
+                'avg_odds_open': {'w': avg_w, 'd': avg_d, 'l': avg_l},
+                'avg_odds_close': {'w': avg_w, 'd': avg_d, 'l': avg_l},
+            }
+            
+            if pin_ow > 0:
+                implied, margin = calc_implied_prob(pin_ow, pin_od, pin_ol)
+                m['implied_prob'] = implied
+                m['pinnacle_margin'] = margin
+                m['odds_source'] = 'Pinnacle'
+            elif avg_w > 0:
+                implied, margin = calc_implied_prob(avg_w, avg_d, avg_l)
+                m['implied_prob'] = implied
+                m['pinnacle_margin'] = margin
+                m['odds_source'] = '百家平均'
+            
+            results.append(m)
+            om_added += 1
+        
+        if om_added > 0:
+            print(f"[INFO] oddsmagnet补充{om_added}场缺失场次")
+            # 重新计数
+            pin_count = sum(1 for r in results if r.get('odds_source') == 'Pinnacle')
+            sb_count = sum(1 for r in results if r.get('odds_source') == 'SB')
+            avg_count = sum(1 for r in results if r.get('odds_source') == '百家平均')
+            none_count = sum(1 for r in results if r.get('odds_source') == '无')
+    
     print(f"[INFO] 平博: {pin_count}场, SB: {sb_count}场, 百家平均: {avg_count}场, 无赔率: {none_count}场")
     
     # 保存缓存文件
@@ -967,6 +1208,108 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=False):
         json.dump(cache_data, f, ensure_ascii=False, indent=2, default=str)
     print(f"[INFO] 缓存已保存: {cache_path}")
     
+    return results
+
+
+def load_oddsmagnet_fallback(date_str=None):
+    """当zgzcw.com被WAF拦截时，从oddsmagnet缓存(real_odds.json)提取赔率数据
+    
+    Returns:
+        list: 与fetch_odds_data格式兼容的match列表
+    """
+    cache_path = os.path.join(DATA_BASE_DIR, "data", "cache", "real_odds.json")
+    if not os.path.exists(cache_path):
+        print("[WARN] oddsmagnet缓存不存在，无法fallback")
+        return []
+    
+    try:
+        with open(cache_path, 'r', encoding='utf-8') as f:
+            odds_data = json.load(f)
+    except Exception as e:
+        print(f"[WARN] 读取oddsmagnet缓存失败: {e}")
+        return []
+    
+    if not isinstance(odds_data, dict):
+        print("[WARN] oddsmagnet缓存格式异常")
+        return []
+    
+    results = []
+    for key, item in odds_data.items():
+        # 过滤日期
+        match_date = item.get('matchDate', '')
+        if date_str and match_date != date_str:
+            # 也包含前一天（覆盖凌晨比赛）
+            try:
+                from datetime import datetime, timedelta
+                target = datetime.strptime(date_str, '%Y-%m-%d')
+                prev_day = (target - timedelta(days=1)).strftime('%Y-%m-%d')
+                if match_date != prev_day:
+                    continue
+            except:
+                continue
+        
+        # 从key解析队名 "主队 vs 客队"
+        parts = key.split(' vs ')
+        if len(parts) != 2:
+            continue
+        home = parts[0].strip()
+        away = parts[1].strip()
+        
+        # 提取Pinnacle赔率
+        pin_ow = item.get('pinnacle_open_w', 0) or 0
+        pin_od = item.get('pinnacle_open_d', 0) or 0
+        pin_ol = item.get('pinnacle_open_l', 0) or 0
+        
+        # 提取百家平均赔率
+        avg_w = item.get('home', 0) or 0
+        avg_d = item.get('draw', 0) or 0
+        avg_l = item.get('away', 0) or 0
+        
+        # 提取HKJC赔率
+        hkjc_ow = item.get('hkjc_open_w', 0) or 0
+        hkjc_od = item.get('hkjc_open_d', 0) or 0
+        hkjc_ol = item.get('hkjc_open_l', 0) or 0
+        
+        match = {
+            'home': home,
+            'away': away,
+            'match_id': item.get('matchNum', ''),
+            'number': item.get('matchNum', ''),
+            'league': item.get('league', ''),
+            'kickoff': item.get('kickoff', ''),
+            'date': match_date,
+            'odds_source': 'oddsmagnet_fallback',
+            # 百家平均
+            'avg_open': {'w': avg_w, 'd': avg_d, 'l': avg_l},
+            'avg_close': {'w': avg_w, 'd': avg_d, 'l': avg_l},
+            'avg_movement': {'w': 'stable', 'd': 'stable', 'l': 'stable'},
+            # Pinnacle
+            'pinnacle_open': {'w': pin_ow, 'd': pin_od, 'l': pin_ol},
+            'pinnacle_close': {'w': pin_ow, 'd': pin_od, 'l': pin_ol},
+            'pinnacle_movement': {'w': 'stable', 'd': 'stable', 'l': 'stable'},
+            'pinnacle_margin': item.get('avg_margin', 0),
+            # HKJC
+            'hkjc_open': {'w': hkjc_ow, 'd': hkjc_od, 'l': hkjc_ol},
+            'hkjc_close': {'w': hkjc_ow, 'd': hkjc_od, 'l': hkjc_ol},
+        }
+        
+        # 确定主市场参照
+        if pin_ow > 0:
+            implied, margin = calc_implied_prob(pin_ow, pin_od, pin_ol)
+            match['implied_prob'] = implied
+            match['pinnacle_margin'] = margin
+            match['odds_source'] = 'Pinnacle'
+        elif avg_w > 0:
+            implied, margin = calc_implied_prob(avg_w, avg_d, avg_l)
+            match['implied_prob'] = implied
+            match['pinnacle_margin'] = margin
+            match['odds_source'] = '百家平均'
+        else:
+            match['implied_prob'] = {'w': 0, 'd': 0, 'l': 0}
+        
+        results.append(match)
+    
+    print(f"[INFO] oddsmagnet fallback: {len(results)} 场 (含Pinnacle: {sum(1 for r in results if r.get('odds_source')=='Pinnacle')})")
     return results
 
 
@@ -1090,6 +1433,25 @@ def save_to_db(matches, db_path, date_str=None):
                     best_match = record
                     match_method = f'队名强{name_sim:.2f}'
         
+        # 兜底：宽松队名匹配（sim>=0.4），无需时间匹配
+        if not best_match or best_score < 0.3:
+            for record in db_records:
+                record_id, db_home, db_away, db_time = record
+                if record_id in matched_db_ids:
+                    continue
+                sim_home = team_name_similarity(home, db_home)
+                sim_away = team_name_similarity(away, db_away)
+                avg_sim = (sim_home + sim_away) / 2
+                # 反向
+                sim_home_rev = team_name_similarity(home, db_away)
+                sim_away_rev = team_name_similarity(away, db_home)
+                avg_sim_rev = (sim_home_rev + sim_away_rev) / 2
+                name_sim = max(avg_sim, avg_sim_rev)
+                if name_sim >= 0.4 and name_sim > best_score:
+                    best_score = name_sim
+                    best_match = record
+                    match_method = f'队名宽松{name_sim:.2f}'
+        
         if not best_match or best_score < 0.3:
             print(f"[WARN] {home} vs {away} ({kickoff}) 无匹配，跳过")
             continue
@@ -1145,6 +1507,96 @@ def save_to_db(matches, db_path, date_str=None):
             record_id
         ))
         updated += 1
+    
+    # 第二遍：用oddsmagnet缓存补充未匹配的DB记录
+    om_cache_path = os.path.join(DATA_BASE_DIR, "data", "cache", "real_odds.json")
+    unmatched_records = [r for r in db_records if r[0] not in matched_db_ids]
+    
+    if unmatched_records and os.path.exists(om_cache_path):
+        try:
+            with open(om_cache_path, 'r', encoding='utf-8') as f:
+                om_data = json.load(f)
+            if isinstance(om_data, dict):
+                # 构建oddsmagnet的match列表
+                om_matches = []
+                for key, item in om_data.items():
+                    match_date = item.get('matchDate', '')
+                    if target_date and match_date != target_date and match_date != prev_day:
+                        continue
+                    parts = key.split(' vs ')
+                    if len(parts) != 2: continue
+                    om_matches.append({
+                        'home': parts[0].strip(),
+                        'away': parts[1].strip(),
+                        'pinnacle_open': {'w': item.get('pinnacle_open_w', 0) or 0, 'd': item.get('pinnacle_open_d', 0) or 0, 'l': item.get('pinnacle_open_l', 0) or 0},
+                        'pinnacle_close': {'w': item.get('pinnacle_open_w', 0) or 0, 'd': item.get('pinnacle_open_d', 0) or 0, 'l': item.get('pinnacle_open_l', 0) or 0},
+                        'pinnacle_movement': {'w': 'stable', 'd': 'stable', 'l': 'stable'},
+                        'implied_prob': {},
+                        'pinnacle_margin': item.get('avg_margin', 0),
+                        'avg_odds_open': {'w': item.get('home', 0) or 0, 'd': item.get('draw', 0) or 0, 'l': item.get('away', 0) or 0},
+                        'avg_odds_close': {'w': item.get('home', 0) or 0, 'd': item.get('draw', 0) or 0, 'l': item.get('away', 0) or 0},
+                        'hkjc_open': {'w': item.get('hkjc_open_w', 0) or 0, 'd': item.get('hkjc_open_d', 0) or 0, 'l': item.get('hkjc_open_l', 0) or 0},
+                        'hkjc_close': {'w': item.get('hkjc_open_w', 0) or 0, 'd': item.get('hkjc_open_d', 0) or 0, 'l': item.get('hkjc_open_l', 0) or 0},
+                        'odds_source': 'Pinnacle' if (item.get('pinnacle_open_w', 0) or 0) > 0 else '百家平均',
+                    })
+                
+                om_matched = 0
+                for record in unmatched_records:
+                    record_id, db_home, db_away, db_time = record
+                    best_match = None
+                    best_sim = 0
+                    for om_m in om_matches:
+                        sim_h = team_name_similarity(om_m['home'], db_home)
+                        sim_a = team_name_similarity(om_m['away'], db_away)
+                        avg_sim = (sim_h + sim_a) / 2
+                        if avg_sim > best_sim:
+                            best_sim = avg_sim
+                            best_match = om_m
+                    
+                    if best_match and best_sim >= 0.4:
+                        pin_open = best_match.get('pinnacle_open', {})
+                        pin_close = best_match.get('pinnacle_close', {})
+                        implied = best_match.get('implied_prob', {})
+                        margin = best_match.get('pinnacle_margin', 0)
+                        avg_open = best_match.get('avg_odds_open', {})
+                        avg_close = best_match.get('avg_odds_close', {})
+                        hkjc_open = best_match.get('hkjc_open', {})
+                        hkjc_close = best_match.get('hkjc_close', {})
+                        
+                        cursor.execute("""
+                            UPDATE poisson_predictions SET
+                                pinnacle_open_w = ?, pinnacle_open_d = ?, pinnacle_open_l = ?,
+                                pinnacle_close_w = ?, pinnacle_close_d = ?, pinnacle_close_l = ?,
+                                pinnacle_movement = ?, pinnacle_margin = ?,
+                                implied_prob_w = ?, implied_prob_d = ?, implied_prob_l = ?,
+                                avg_odds_open_w = ?, avg_odds_open_d = ?, avg_odds_open_l = ?,
+                                avg_odds_close_w = ?, avg_odds_close_d = ?, avg_odds_close_l = ?,
+                                hkjc_open_w = ?, hkjc_open_d = ?, hkjc_open_l = ?,
+                                hkjc_close_w = ?, hkjc_close_d = ?, hkjc_close_l = ?,
+                                odds_source = ?
+                            WHERE id = ?
+                        """, (
+                            pin_open.get('w', 0), pin_open.get('d', 0), pin_open.get('l', 0),
+                            pin_close.get('w', 0), pin_close.get('d', 0), pin_close.get('l', 0),
+                            json.dumps(best_match.get('pinnacle_movement', {}), ensure_ascii=False),
+                            margin,
+                            implied.get('w', 0), implied.get('d', 0), implied.get('l', 0),
+                            avg_open.get('w', 0), avg_open.get('d', 0), avg_open.get('l', 0),
+                            avg_close.get('w', 0), avg_close.get('d', 0), avg_close.get('l', 0),
+                            hkjc_open.get('w', 0), hkjc_open.get('d', 0), hkjc_open.get('l', 0),
+                            hkjc_close.get('w', 0), hkjc_close.get('d', 0), hkjc_close.get('l', 0),
+                            best_match.get('odds_source', ''),
+                            record_id
+                        ))
+                        om_matched += 1
+                        updated += 1
+                        if pin_open.get('w', 0) > 0:
+                            print(f"  [OM] {db_home} vs {db_away} <- {best_match['home']} vs {best_match['away']} (sim={best_sim:.2f}) Pin={pin_open['w']:.2f}/{pin_open['d']:.2f}/{pin_open['l']:.2f}")
+                
+                if om_matched > 0:
+                    print(f"[INFO] oddsmagnet补充写入: {om_matched} 条")
+        except Exception as e:
+            print(f"[WARN] oddsmagnet补充失败: {e}")
     
     conn.commit()
     conn.close()
