@@ -988,20 +988,23 @@ def save_to_db(matches, db_path, date_str=None):
     cursor = conn.cursor()
     updated = 0
     
-    # 获取目标日期（同时查次日，因为日报时间窗口12:00~次日11:59会导致date偏移）
+    # 获取目标日期，使用时间窗口匹配（12:00~次日11:59）
     target_date = date_str or (matches[0].get('date') if matches else None)
     if not target_date:
         conn.close()
         return 0
     
+    # 计算时间窗口：目标日12:00 ~ 次日11:59
+    window_start = f"{target_date} 12:00"
     next_day = (datetime.strptime(target_date, '%Y-%m-%d') + timedelta(days=1)).strftime('%Y-%m-%d')
+    window_end = f"{next_day} 11:59"
     
-    # 从数据库读取当天及次日所有记录
+    # 从数据库读取时间窗口内的所有记录
     cursor.execute("""
         SELECT id, home_team, away_team, kickoff_time 
         FROM poisson_predictions 
-        WHERE date IN (?, ?)
-    """, (target_date, next_day))
+        WHERE kickoff_time >= ? AND kickoff_time <= ?
+    """, (window_start, window_end))
     db_records = cursor.fetchall()
     
     if not db_records:
@@ -1009,7 +1012,7 @@ def save_to_db(matches, db_path, date_str=None):
         conn.close()
         return 0
     
-    print(f"[INFO] 数据库中 {target_date}/{next_day} 共有 {len(db_records)} 条记录")
+    print(f"[INFO] 数据库中 {window_start}~{window_end} 共有 {len(db_records)} 条记录")
     
     # 已匹配的DB记录ID，防止重复匹配
     matched_db_ids = set()
