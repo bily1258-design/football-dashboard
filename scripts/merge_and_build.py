@@ -64,6 +64,17 @@ def load_from_db(db_path: str, max_days=999) -> dict:
     for r in cur.fetchall():
         d = dict(r)
         date = d['date']
+        # 竞彩窗口：凌晨00:00-11:59的比赛归到前一天
+        kickoff = d.get('kickoff_time', '')
+        if kickoff:
+            try:
+                kt = datetime.strptime(kickoff, '%Y-%m-%d %H:%M')
+                if kt.hour < 12:
+                    prev_day = (kt - timedelta(days=1)).strftime('%Y-%m-%d')
+                    date = prev_day
+                    d['date'] = prev_day
+            except:
+                pass
         if date not in by_date:
             by_date[date] = []
         # 简化序列化
