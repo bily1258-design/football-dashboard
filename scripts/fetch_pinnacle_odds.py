@@ -994,9 +994,10 @@ def save_to_db(matches, db_path, date_str=None):
         conn.close()
         return 0
     
-    # 计算时间窗口：目标日12:00 ~ 次日11:59
-    window_start = f"{target_date} 12:00"
+    # 计算时间窗口：前一天12:00 ~ 次日11:59（覆盖日职联早场等跨日比赛）
+    prev_day = (datetime.strptime(target_date, '%Y-%m-%d') - timedelta(days=1)).strftime('%Y-%m-%d')
     next_day = (datetime.strptime(target_date, '%Y-%m-%d') + timedelta(days=1)).strftime('%Y-%m-%d')
+    window_start = f"{prev_day} 12:00"
     window_end = f"{next_day} 11:59"
     
     # 从数据库读取时间窗口内的所有记录
@@ -1183,11 +1184,19 @@ def load_odds_cache(date_str, latest=True):
     cache_files.sort(reverse=True)
     
     if latest:
-        # 返回最新的
-        with open(cache_files[0], 'r', encoding='utf-8') as f:
-            data = json.load(f)
-        data['_cache_file'] = cache_files[0]
-        return data
+        # 返回pinnacle场次最多的缓存（最新缓存可能0场，旧缓存有数据）
+        best_data = None
+        best_pin = -1
+        for cf in cache_files:
+            with open(cf, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            pin_count = data.get('summary', {}).get('pinnacle', 0)
+            total_count = data.get('summary', {}).get('total', 0)
+            if pin_count > best_pin or (pin_count == best_pin and total_count > (best_data.get('summary',{}).get('total',0) if best_data else 0)):
+                best_data = data
+                best_pin = pin_count
+                data['_cache_file'] = cf
+        return best_data
     else:
         results = []
         for cf in cache_files:
