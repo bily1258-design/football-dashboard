@@ -1477,21 +1477,29 @@ def get_match_num(home_team: str, away_team: str, odds_data: dict) -> Optional[s
 
 
 def match_num_to_display(match_num: str) -> str:
-    """将matchNum（如"3005"）转换为显示格式（如"周三005"）"""
+    """将matchNum转换为显示格式
+    支持两种格式：
+    - 4位数字如"3005" → "周三005"
+    - 中文格式如"周六001" → 直接返回
+    """
     if not match_num:
         return ""
-    # 转换为字符串处理
-    match_num = str(match_num)
-    if len(match_num) != 4:
-        return ""
-    try:
-        weekday_num = int(match_num[0])
-        seq_num = match_num[1:4]
-        weekday_names = ["一", "二", "三", "四", "五", "六", "日"]
-        if 1 <= weekday_num <= 7:
-            return f"周{weekday_names[weekday_num - 1]}{seq_num}"
-    except (ValueError, IndexError):
-        pass
+    match_num = str(match_num).strip()
+    
+    # 已经是中文格式（如"周六001"、"周日003"），直接返回
+    if match_num.startswith('周') and len(match_num) >= 4:
+        return match_num
+    
+    # 4位数字格式（如"3005" → "周三005"）
+    if len(match_num) == 4:
+        try:
+            weekday_num = int(match_num[0])
+            seq_num = match_num[1:4]
+            weekday_names = ["一", "二", "三", "四", "五", "六", "日"]
+            if 1 <= weekday_num <= 7:
+                return f"周{weekday_names[weekday_num - 1]}{seq_num}"
+        except (ValueError, IndexError):
+            pass
     return ""
 
 
