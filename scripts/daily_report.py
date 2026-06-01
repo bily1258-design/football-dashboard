@@ -3221,6 +3221,7 @@ def save_to_database(results: List[dict], date_str: str, dry_run: bool = False):
                     # 已存在：只UPDATE日报负责的字段，不动其他脚本写入的字段
                     cursor.execute("""
                         UPDATE poisson_predictions SET
+                            match_id = :match_id,
                             date = :date, exec_time = :exec_time, league = :league,
                             home_team = :home_team, away_team = :away_team,
                             kickoff_time = :kickoff_time,
