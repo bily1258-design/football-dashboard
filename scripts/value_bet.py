@@ -298,26 +298,45 @@ def calculate_value_bet(match_data):
     ev_draw = _calc_direction_ev(fusion_d, implied['d'])
     ev_loss = _calc_direction_ev(fusion_l, implied['l'])
     
+    # EV异常值钳制：|EV| > 50% 标记为模型偏差
+    # 正常EV范围 -10% ~ +20%，超过50%说明模型概率严重偏离市场
+    EV_ABS_CAP = 0.30  # 30%，超过说明模型概率严重偏离市场
+    for ev_name, ev_val in [('ev_win', ev_win), ('ev_draw', ev_draw), ('ev_loss', ev_loss)]:
+        if abs(ev_val) > EV_ABS_CAP:
+            quality_signals.append(f'|{ev_name}|={ev_val:.0%}>30%模型偏差')
+            data_quality = 'abnormal'
+    # 钳制EV值到[-50%, 50%]范围，避免极端值污染推荐
+    ev_win = max(-EV_ABS_CAP, min(EV_ABS_CAP, ev_win))
+    ev_draw = max(-EV_ABS_CAP, min(EV_ABS_CAP, ev_draw))
+    ev_loss = max(-EV_ABS_CAP, min(EV_ABS_CAP, ev_loss))
+    
     # ===== 8. 推荐方向 =====
-    # 降级场次（竞彩27%抽水，EV虚高不可信）→ 用fusion概率最高方向
-    # 正常场次 → 用EV最高方向
+    # 推荐方向逻辑：
+    # 1. 模型偏差场次（|EV|>30%或数据质量异常）→ 用概率最高方向（EV不可信）
+    # 2. 降级场次（无平博赔率，竞彩27%抽水）→ EV最低即冷门方向
+    # 3. 正常场次 → EV最高方向（平博抽水低，EV可信）
     
     evs = {'win': ev_win, 'draw': ev_draw, 'loss': ev_loss}
     dir_cn = {'win': '主胜', 'draw': '平局', 'loss': '客胜'}
+    probs = {'win': fusion_w, 'draw': fusion_d, 'loss': fusion_l}
     
-    # 推荐方向：
-    # 有平博赔率 → EV最高（平博抽水低，EV可信，选价值最大）
-    # 无平博赔率 → EV最低（降级时EV虚高，反选EV最低即冷门）
     is_degraded_odds = not has_pin_close and not has_pin_open
+    is_model_biased = data_quality == 'abnormal'
     
-    if is_degraded_odds:
+    if is_model_biased:
+        # 模型偏差：EV不可信，直接用概率最高方向
+        best_dir = max(probs, key=probs.get)
+        cold_signals_parts = list(quality_signals)  # 预初始化
+        cold_signals_parts.append('EV不可信(模型偏差)→概率推荐')
+    elif is_degraded_odds:
         best_dir = min(evs, key=evs.get)
     else:
         best_dir = max(evs, key=evs.get)
     
     # ===== 9. 生成信号说明 =====
     
-    cold_signals_parts = list(quality_signals)
+    if not is_model_biased:
+        cold_signals_parts = list(quality_signals)
     
     if cold_risk >= 0.3:
         cold_signals_parts.append(f"冷门风险{'高' if cold_risk >= 0.5 else '中'}")
@@ -332,7 +351,9 @@ def calculate_value_bet(match_data):
     
     # 推荐方向的概率优势说明
     best_ev = evs[best_dir]
-    if is_degraded_odds:
+    if is_model_biased:
+        cold_signals_parts.append(f"模型偏差(概率推荐)")
+    elif is_degraded_odds:
         cold_signals_parts.append(f"降级冷门(无平博)")
     elif best_ev > 0.10:
         cold_signals_parts.append(f"模型高估{best_ev:.0%}")
@@ -484,7 +505,7 @@ def print_value_summary(db_path, date_str=None):
 
 if __name__ == '__main__':
     import sys, os, argparse
-    base_dir = os.path.dirname(os.path.abspath(__file__))
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # 项目根目录
     
     parser = argparse.ArgumentParser(description='价值投注EV计算 V3')
     parser.add_argument('--all', action='store_true', help='全量重算所有记录')

@@ -2932,9 +2932,11 @@ def save_to_database(results: List[dict], date_str: str, dry_run: bool = False):
         
         for idx, r in enumerate(results, 1):
             # 使用体彩网官方编号作为match_id（稳定，不随运行次数变化）
-            # 优先使用编号字段（如周六001），fallback到主队_客队_开赛时间
-            match_id = r.get('编号', '')
-            if not match_id or match_id == '未知':
+            # 优先使用编号字段（如周六001），加日期前缀确保UNIQUE
+            _raw_num = r.get('编号', '')
+            if _raw_num and _raw_num != '未知':
+                match_id = f"{date_str.replace('-','')}_{_raw_num}"  # 如 20260601_周日001
+            else:
                 # fallback: 用主队+客队+开赛时间生成稳定ID
                 home = r.get('主队', '').replace(' ', '_')[:10]
                 away = r.get('客队', '').replace(' ', '_')[:10]
@@ -4082,7 +4084,7 @@ def main():
         # ========== 自动部署：push_db + align + build + git push ==========
         try:
             import subprocess as _sp
-            dashboard_dir = os.path.join(SCRIPT_DIR, 'football-dashboard')
+            dashboard_dir = os.path.dirname(SCRIPT_DIR)  # 项目根目录
             
             # Step 1: 推送DB到GitHub Release
             log("\n🔄 推送DB到GitHub Release...")

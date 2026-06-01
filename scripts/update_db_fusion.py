@@ -9,7 +9,7 @@ import sys
 import os
 
 # 添加fusion_predict模块路径
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+SCRIPT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # 项目根目录
 sys.path.insert(0, SCRIPT_DIR)
 
 from fusion_predict import FusionPredictor
