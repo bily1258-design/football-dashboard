@@ -3054,9 +3054,9 @@ def save_to_database(results: List[dict], date_str: str, dry_run: bool = False):
                 'final_draw': final_draw,
                 'final_loss': final_away,
                 'risk_level': '',  # 保留字段但不再使用
-                'kelly_win': 0,  # 保留字段但不再使用
-                'kelly_draw': 0,
-                'kelly_loss': 0,
+                'kelly_win': kelly_win,
+                'kelly_draw': kelly_draw,
+                'kelly_loss': kelly_loss,
                 # 冷门预警字段
                 'cold_risk': r.get('冷门风险', ''),
                 'cold_signals': r.get('冷门信号', ''),
