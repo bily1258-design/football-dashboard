@@ -1,34 +1,34 @@
 {
   "meta": {
-    "generated_at": "2026-06-01 18:42:43",
+    "generated_at": "2026-06-02 13:43:56",
     "total_dates": 4,
-    "total_matches": 78,
+    "total_matches": 87,
     "date_range": {
       "from": "2026-05-29",
       "to": "2026-06-02"
     }
   },
   "summary": {
-    "total_matches": 50,
-    "ev_hits": 25,
-    "prob_hits": 33,
-    "any_hits": 39,
-    "ev_rate": 50.0,
-    "prob_rate": 66.0,
+    "total_matches": 59,
+    "ev_hits": 32,
+    "prob_hits": 40,
+    "any_hits": 46,
+    "ev_rate": 54.2,
+    "prob_rate": 67.8,
     "any_rate": 78.0,
     "days": 4,
-    "last_updated": "2026-06-01 18:42"
+    "last_updated": "2026-06-02 13:43"
   },
   "daily_stats": {
     "2026-06-02": {
-      "total": 0,
-      "with_result": 0,
-      "ev_hits": 0,
-      "prob_hits": 0,
-      "any_hits": 0,
-      "ev_rate": 0,
-      "prob_rate": 0,
-      "any_rate": 0
+      "total": 9,
+      "with_result": 9,
+      "ev_hits": 7,
+      "prob_hits": 7,
+      "any_hits": 7,
+      "ev_rate": 77.8,
+      "prob_rate": 77.8,
+      "any_rate": 77.8
     },
     "2026-06-01": {
       "total": 25,
@@ -68,7 +68,620 @@
     "2026-05-29"
   ],
   "matches": {
-    "2026-06-02": [],
+    "2026-06-02": [
+      {
+        "id": 1046,
+        "date": "2026-06-02",
+        "league": "国际赛",
+        "home": "保加利亚",
+        "away": "黑山",
+        "kickoff": "2026-06-02 00:00",
+        "prediction": "主胜",
+        "prediction_prob": 0.388,
+        "odds": {
+          "w": 2.75,
+          "d": 2.74,
+          "l": 2.5
+        },
+        "poisson": {
+          "w": 0.416,
+          "d": 0.189,
+          "l": 0.395
+        },
+        "final_prob": {
+          "w": 0.388,
+          "d": 0.229,
+          "l": 0.383
+        },
+        "fusion_prob": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "result": "客胜",
+        "score": "0-1",
+        "ev_direction": "平局",
+        "ev_hit": false,
+        "prob_direction": "主胜",
+        "prob_hit": false,
+        "fusion_direction": "主胜",
+        "ev": {
+          "w": 0.2042,
+          "d": -0.2919,
+          "l": 0.0807
+        },
+        "kelly": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "pinnacle": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "hkjc": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "risk_level": "",
+        "stars": 0,
+        "confidence_index": 0,
+        "reference_score": "",
+        "cold_risk": "",
+        "source": "jingcai",
+        "odds_source": "had",
+        "home_lambda": 0,
+        "away_lambda": 0,
+        "home_ranking": 0,
+        "away_ranking": 0
+      },
+      {
+        "id": 1047,
+        "date": "2026-06-02",
+        "league": "国际赛",
+        "home": "挪威",
+        "away": "瑞典",
+        "kickoff": "2026-06-02 01:00",
+        "prediction": "主胜",
+        "prediction_prob": 0.485,
+        "odds": {
+          "w": 1.65,
+          "d": 3.4,
+          "l": 4.36
+        },
+        "poisson": {
+          "w": 0.463,
+          "d": 0.19,
+          "l": 0.347
+        },
+        "final_prob": {
+          "w": 0.485,
+          "d": 0.211,
+          "l": 0.304
+        },
+        "fusion_prob": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "result": "主胜",
+        "score": "3-1",
+        "ev_direction": "主胜",
+        "ev_hit": true,
+        "prob_direction": "主胜",
+        "prob_hit": true,
+        "fusion_direction": "主胜",
+        "ev": {
+          "w": -0.0962,
+          "d": -0.1897,
+          "l": 0.3
+        },
+        "kelly": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "pinnacle": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "hkjc": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "risk_level": "",
+        "stars": 0,
+        "confidence_index": 0,
+        "reference_score": "",
+        "cold_risk": "",
+        "source": "jingcai",
+        "odds_source": "had",
+        "home_lambda": 0,
+        "away_lambda": 0,
+        "home_ranking": 0,
+        "away_ranking": 0
+      },
+      {
+        "id": 1048,
+        "date": "2026-06-02",
+        "league": "国际赛",
+        "home": "土耳其",
+        "away": "北马其顿",
+        "kickoff": "2026-06-02 01:30",
+        "prediction": "主胜",
+        "prediction_prob": 0.615,
+        "odds": {
+          "w": 1.15,
+          "d": 5.6,
+          "l": 12.5
+        },
+        "poisson": {
+          "w": 0.548,
+          "d": 0.156,
+          "l": 0.296
+        },
+        "final_prob": {
+          "w": 0.615,
+          "d": 0.157,
+          "l": 0.228
+        },
+        "fusion_prob": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "result": "主胜",
+        "score": "4-0",
+        "ev_direction": "主胜",
+        "ev_hit": true,
+        "prob_direction": "主胜",
+        "prob_hit": true,
+        "fusion_direction": "主胜",
+        "ev": {
+          "w": -0.2021,
+          "d": -0.0082,
+          "l": 0.3
+        },
+        "kelly": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "pinnacle": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "hkjc": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "risk_level": "",
+        "stars": 0,
+        "confidence_index": 0,
+        "reference_score": "",
+        "cold_risk": "",
+        "source": "jingcai",
+        "odds_source": "had",
+        "home_lambda": 0,
+        "away_lambda": 0,
+        "home_ranking": 0,
+        "away_ranking": 0
+      },
+      {
+        "id": 1049,
+        "date": "2026-06-02",
+        "league": "国际赛",
+        "home": "奥地利",
+        "away": "突尼斯",
+        "kickoff": "2026-06-02 02:45",
+        "prediction": "主胜",
+        "prediction_prob": 0.557,
+        "odds": {
+          "w": 1.33,
+          "d": 4.3,
+          "l": 7.0
+        },
+        "poisson": {
+          "w": 0.51,
+          "d": 0.171,
+          "l": 0.318
+        },
+        "final_prob": {
+          "w": 0.557,
+          "d": 0.182,
+          "l": 0.261
+        },
+        "fusion_prob": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "result": "主胜",
+        "score": "1-0",
+        "ev_direction": "主胜",
+        "ev_hit": true,
+        "prob_direction": "主胜",
+        "prob_hit": true,
+        "fusion_direction": "主胜",
+        "ev": {
+          "w": -0.1649,
+          "d": -0.1178,
+          "l": 0.3
+        },
+        "kelly": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "pinnacle": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "hkjc": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "risk_level": "",
+        "stars": 0,
+        "confidence_index": 0,
+        "reference_score": "",
+        "cold_risk": "",
+        "source": "jingcai",
+        "odds_source": "had",
+        "home_lambda": 0,
+        "away_lambda": 0,
+        "home_ranking": 0,
+        "away_ranking": 0
+      },
+      {
+        "id": 748,
+        "date": "2026-06-02",
+        "league": "巴西乙",
+        "home": "庞特普雷塔",
+        "away": "博塔弗戈SP",
+        "kickoff": "2026-06-02 06:00",
+        "prediction": "主胜",
+        "prediction_prob": 0.395,
+        "odds": {
+          "w": 2.67,
+          "d": 2.83,
+          "l": 2.78
+        },
+        "poisson": {
+          "w": 0.416,
+          "d": 0.189,
+          "l": 0.395
+        },
+        "final_prob": {
+          "w": 0.395,
+          "d": 0.23,
+          "l": 0.376
+        },
+        "fusion_prob": {
+          "w": 0.384,
+          "d": 0.27,
+          "l": 0.345
+        },
+        "result": "平局",
+        "score": "0-0",
+        "ev_direction": "主胜",
+        "ev_hit": false,
+        "prob_direction": "主胜",
+        "prob_hit": false,
+        "fusion_direction": "主胜",
+        "ev": {
+          "w": -0.1795,
+          "d": 0.0504,
+          "l": 0.2594
+        },
+        "kelly": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "pinnacle": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "hkjc": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "risk_level": "",
+        "stars": 0,
+        "confidence_index": 0,
+        "reference_score": "",
+        "cold_risk": "",
+        "source": "jingcai",
+        "odds_source": "had",
+        "home_lambda": 0,
+        "away_lambda": 0,
+        "home_ranking": 0,
+        "away_ranking": 0
+      },
+      {
+        "id": 749,
+        "date": "2026-06-02",
+        "league": "国际友谊",
+        "home": "哥伦比亚",
+        "away": "哥斯达黎加",
+        "kickoff": "2026-06-02 07:00",
+        "prediction": "主胜",
+        "prediction_prob": 0.636,
+        "odds": {
+          "w": 1.15,
+          "d": 6.92,
+          "l": 15.93
+        },
+        "poisson": {
+          "w": 0.562,
+          "d": 0.151,
+          "l": 0.288
+        },
+        "final_prob": {
+          "w": 0.636,
+          "d": 0.146,
+          "l": 0.219
+        },
+        "fusion_prob": {
+          "w": 0.428,
+          "d": 0.259,
+          "l": 0.313
+        },
+        "result": "主胜",
+        "score": "3-1",
+        "ev_direction": "主胜",
+        "ev_hit": true,
+        "prob_direction": "主胜",
+        "prob_hit": true,
+        "fusion_direction": "主胜",
+        "ev": {
+          "w": -0.3,
+          "d": 0.3,
+          "l": 0.3
+        },
+        "kelly": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "pinnacle": {
+          "w": 1.17,
+          "d": 6.78,
+          "l": 16.54
+        },
+        "hkjc": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "risk_level": "",
+        "stars": 0,
+        "confidence_index": 0,
+        "reference_score": "",
+        "cold_risk": "",
+        "source": "jingcai",
+        "odds_source": "Pinnacle",
+        "home_lambda": 0,
+        "away_lambda": 0,
+        "home_ranking": 0,
+        "away_ranking": 0
+      },
+      {
+        "id": 779,
+        "date": "2026-06-02",
+        "league": "国际赛",
+        "home": "哥伦比亚",
+        "away": "哥斯达",
+        "kickoff": "2026-06-02 07:00",
+        "prediction": "主胜",
+        "prediction_prob": 0.479,
+        "odds": {
+          "w": 2.0,
+          "d": 3.9,
+          "l": 2.68
+        },
+        "poisson": {
+          "w": 0.494,
+          "d": 0.111,
+          "l": 0.395
+        },
+        "final_prob": {
+          "w": 0.479,
+          "d": 0.146,
+          "l": 0.375
+        },
+        "fusion_prob": {
+          "w": 0.414,
+          "d": 0.247,
+          "l": 0.339
+        },
+        "result": "主胜",
+        "score": "3-1",
+        "ev_direction": "主胜",
+        "ev_hit": true,
+        "prob_direction": "主胜",
+        "prob_hit": true,
+        "fusion_direction": "主胜",
+        "ev": {
+          "w": -0.0655,
+          "d": 0.0872,
+          "l": 0.0279
+        },
+        "kelly": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "pinnacle": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "hkjc": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "risk_level": "",
+        "stars": 0,
+        "confidence_index": 0,
+        "reference_score": "",
+        "cold_risk": "",
+        "source": "jingcai",
+        "odds_source": "hhad",
+        "home_lambda": 0,
+        "away_lambda": 0,
+        "home_ranking": 0,
+        "away_ranking": 0
+      },
+      {
+        "id": 750,
+        "date": "2026-06-02",
+        "league": "国际友谊",
+        "home": "加拿大",
+        "away": "乌兹别克斯坦",
+        "kickoff": "2026-06-02 09:00",
+        "prediction": "主胜",
+        "prediction_prob": 0.504,
+        "odds": {
+          "w": 1.61,
+          "d": 3.73,
+          "l": 5.03
+        },
+        "poisson": {
+          "w": 0.476,
+          "d": 0.185,
+          "l": 0.339
+        },
+        "final_prob": {
+          "w": 0.504,
+          "d": 0.204,
+          "l": 0.292
+        },
+        "fusion_prob": {
+          "w": 0.402,
+          "d": 0.269,
+          "l": 0.328
+        },
+        "result": "主胜",
+        "score": "2-0",
+        "ev_direction": "主胜",
+        "ev_hit": true,
+        "prob_direction": "主胜",
+        "prob_hit": true,
+        "fusion_direction": "主胜",
+        "ev": {
+          "w": -0.2951,
+          "d": 0.1123,
+          "l": 0.3
+        },
+        "kelly": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "pinnacle": {
+          "w": 1.65,
+          "d": 3.89,
+          "l": 5.03
+        },
+        "hkjc": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "risk_level": "",
+        "stars": 0,
+        "confidence_index": 0,
+        "reference_score": "",
+        "cold_risk": "",
+        "source": "jingcai",
+        "odds_source": "Pinnacle",
+        "home_lambda": 0,
+        "away_lambda": 0,
+        "home_ranking": 0,
+        "away_ranking": 0
+      },
+      {
+        "id": 780,
+        "date": "2026-06-02",
+        "league": "国际赛",
+        "home": "加拿大",
+        "away": "乌兹别克",
+        "kickoff": "2026-06-02 09:00",
+        "prediction": "主胜",
+        "prediction_prob": 0.511,
+        "odds": {
+          "w": 1.52,
+          "d": 3.57,
+          "l": 5.22
+        },
+        "poisson": {
+          "w": 0.48,
+          "d": 0.184,
+          "l": 0.336
+        },
+        "final_prob": {
+          "w": 0.511,
+          "d": 0.203,
+          "l": 0.286
+        },
+        "fusion_prob": {
+          "w": 0.405,
+          "d": 0.268,
+          "l": 0.327
+        },
+        "result": "主胜",
+        "score": "2-0",
+        "ev_direction": "主胜",
+        "ev_hit": true,
+        "prob_direction": "主胜",
+        "prob_hit": true,
+        "fusion_direction": "主胜",
+        "ev": {
+          "w": -0.3,
+          "d": 0.081,
+          "l": 0.3
+        },
+        "kelly": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "pinnacle": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "hkjc": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "risk_level": "",
+        "stars": 0,
+        "confidence_index": 0,
+        "reference_score": "",
+        "cold_risk": "",
+        "source": "jingcai",
+        "odds_source": "had",
+        "home_lambda": 0,
+        "away_lambda": 0,
+        "home_ranking": 0,
+        "away_ranking": 0
+      }
+    ],
     "2026-06-01": [
       {
         "id": 719,
