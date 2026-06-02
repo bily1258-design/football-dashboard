@@ -2988,10 +2988,10 @@ def save_to_database(results: List[dict], date_str: str, dry_run: bool = False):
             final_draw = parse_prob(r.get('综合_平局', ''))
             final_loss = parse_prob(r.get('综合_客胜', ''))
             
-            # 对三个方向都计算凯利（赔率为0时用概率反推）- 已废弃，不再使用
-            kelly_win = 0
-            kelly_draw = 0
-            kelly_loss = 0
+            # 计算凯利值（半凯利，用融合概率+百家最新赔率）
+            kelly_win = calc_kelly_with_fallback(final_home, odds_win) if final_home and final_home > 0 and odds_win > 1.01 else 0.0
+            kelly_draw = calc_kelly_with_fallback(final_draw, odds_draw) if final_draw and final_draw > 0 and odds_draw > 1.01 else 0.0
+            kelly_loss = calc_kelly_with_fallback(final_loss, odds_loss) if final_loss and final_loss > 0 and odds_loss > 1.01 else 0.0
             
             # 解析泊松概率
             poisson_home = parse_prob(r.get('泊松_主胜', ''))
