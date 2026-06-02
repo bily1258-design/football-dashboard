@@ -74,6 +74,7 @@ function loadDate() {
     const kickoff = r.kickoff ? r.kickoff.substring(11, 16) : '';
     const probPct = (r.prediction_prob * 100).toFixed(1) + '%';
     const probLabel = r.prob_direction ? `${r.prob_direction} ${probPct}` : probPct;
+    const probDirClass = r.prob_direction === '主胜' ? 'hit' : (r.prob_direction === '客胜' ? 'miss' : 'draw');
 
     html += `<tr>
 <td>${i + 1} ${srcBadge}</td>
@@ -81,7 +82,7 @@ function loadDate() {
 <td>${kickoff}</td>
 <td>${r.home}</td><td>${r.away}</td>
 <td class="${dirClass}">${r.ev_direction || '-'}</td>
-<td>${probLabel}</td>
+<td class="${probDirClass}">${probLabel}</td>
 <td class="${resultClass}">${r.result || '待定'}</td>
 <td>${r.score || '-'}</td>
 <td>${oddsStr}</td>
@@ -164,4 +165,3 @@ function bindEvents() {
 }
 
 document.addEventListener('DOMContentLoaded', init);
-
