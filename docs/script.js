@@ -164,3 +164,4 @@ function bindEvents() {
 }
 
 document.addEventListener('DOMContentLoaded', init);
+
