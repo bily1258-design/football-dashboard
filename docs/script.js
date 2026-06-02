@@ -50,7 +50,10 @@ function loadDate() {
     if (!hasResult && !showPending) return;
 
     const dirClass = r.ev_hit ? 'hit' : (hasResult ? 'miss' : 'pending');
-    const resultClass = r.ev_hit ? 'hit' : (hasResult ? 'miss' : 'pending');
+    const probHitClass = r.prob_hit ? 'hit' : (hasResult ? 'miss' : 'pending');
+    const resultDisplay = hasResult
+      ? `${r.result} <span class="${r.ev_hit ? 'hit' : 'miss'}">E${r.ev_hit ? '✔' : '✘'}</span><span class="${r.prob_hit ? 'hit' : 'miss'}">P${r.prob_hit ? '✔' : '✘'}</span>`
+      : '待定';
     const srcBadge = r.source === 'beidan'
       ? '<span class="badge badge-bd">北单</span>'
       : '<span class="badge badge-jc">竞彩</span>';
@@ -83,7 +86,7 @@ function loadDate() {
 <td>${r.home}</td><td>${r.away}</td>
 <td class="${dirClass}">${r.ev_direction || '-'}</td>
 <td class="${probDirClass}">${probLabel}</td>
-<td class="${resultClass}">${r.result || '待定'}</td>
+<td>${resultDisplay}</td>
 <td>${r.score || '-'}</td>
 <td>${oddsStr}</td>
 <td>${poissonStr}</td><td>${finalStr}</td>
