@@ -73,6 +73,7 @@ function loadDate() {
     const kellyStr = `${r.kelly.w}/${r.kelly.d}/${r.kelly.l}`;
     const kickoff = r.kickoff ? r.kickoff.substring(11, 16) : '';
     const probPct = (r.prediction_prob * 100).toFixed(1) + '%';
+    const probLabel = r.prob_direction ? `${r.prob_direction} ${probPct}` : probPct;
 
     html += `<tr>
 <td>${i + 1} ${srcBadge}</td>
@@ -80,7 +81,7 @@ function loadDate() {
 <td>${kickoff}</td>
 <td>${r.home}</td><td>${r.away}</td>
 <td class="${dirClass}">${r.ev_direction || '-'}</td>
-<td>${probPct}</td>
+<td>${probLabel}</td>
 <td class="${resultClass}">${r.result || '待定'}</td>
 <td>${r.score || '-'}</td>
 <td>${oddsStr}</td>
