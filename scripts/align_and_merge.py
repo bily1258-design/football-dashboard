@@ -179,9 +179,17 @@ def merge_prediction(rec: Dict, bsd_result: Optional[Dict], om_match: Optional[D
         pc = om_match.get('pinnacle_close', {})
         if pc.get('w', 0) > 0:
             pin_w, pin_d, pin_l = pc['w'], pc['d'], pc['l']
+        elif om_match.get('pinnacle_w', 0) > 0:
+            pin_w = om_match['pinnacle_w']
+            pin_d = om_match['pinnacle_d']
+            pin_l = om_match['pinnacle_l']
         hc = om_match.get('hkjc_close', {})
         if hc.get('w', 0) > 0:
             hkjc_w, hkjc_d, hkjc_l = hc['w'], hc['d'], hc['l']
+        elif om_match.get('hkjc_w', 0) > 0:
+            hkjc_w = om_match['hkjc_w']
+            hkjc_d = om_match['hkjc_d']
+            hkjc_l = om_match['hkjc_l']
 
     # EV
     ew = rec.get('ev_win', 0) or 0

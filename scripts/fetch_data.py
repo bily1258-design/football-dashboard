@@ -40,6 +40,36 @@ def step_fetch(date_str: str):
     print(f"📊 OM:  平均{om_summary.get('avg_count',0)} Pinnacle{om_summary.get('pinnacle_count',0)} HKJC{om_summary.get('hkjc_count',0)}")
     return bsd, om
 
+def step_fetch_pinnacle(date_str: str, db_path: str = None):
+    print("\n" + "=" * 50)
+    print(f"STEP 1.2: Pinnacle/HKJC -> DB - {date_str}")
+    print("=" * 50)
+    if not db_path:
+        db_path = os.environ.get('FOOTBALL_DB_PATH',
+            os.path.join(REPO_DIR, 'data', 'football.db'))
+    cmd = [sys.executable, os.path.join(SCRIPT_DIR, 'fetch_pinnacle_odds.py'), '--date', date_str]
+    result = subprocess.run(cmd, cwd=REPO_DIR, capture_output=True, text=True, timeout=300)
+    if result.returncode == 0:
+        print("OK Pinnacle/HKJC -> DB")
+    else:
+        print(f"WARN Pinnacle/HKJC fail: {result.stderr[:200]}")
+    return result.returncode == 0
+
+def step_recalc_ev(db_path: str = None):
+    print("\n" + "=" * 50)
+    print("STEP 1.3: EV recalc")
+    print("=" * 50)
+    if not db_path:
+        db_path = os.environ.get('FOOTBALL_DB_PATH',
+            os.path.join(REPO_DIR, 'data', 'football.db'))
+    cmd = [sys.executable, os.path.join(SCRIPT_DIR, 'value_bet.py'), '--db', db_path]
+    result = subprocess.run(cmd, cwd=REPO_DIR, capture_output=True, text=True, timeout=120)
+    if result.returncode == 0:
+        print("OK EV recalc")
+    else:
+        print(f"WARN EV fail: {result.stderr[:200]}")
+    return result.returncode == 0
+
 
 def step_push(date_str: str):
     """Step 1.5: git push raw 数据（Termux模式）"""
@@ -205,6 +235,8 @@ def main():
     # Termux 模式：fetch → report → review → push
     if args.fetch_and_push:
         step_fetch(date_str)
+        step_fetch_pinnacle(date_str, db_path)
+        step_recalc_ev(db_path)
         
         if args.with_report:
             step_prepare_odds(date_str)
@@ -236,6 +268,8 @@ def main():
 
     # 完整模式：fetch → report → review → align → build
     step_fetch(date_str)
+    step_fetch_pinnacle(date_str, db_path)
+    step_recalc_ev(db_path)
     
     if args.with_report:
         step_prepare_odds(date_str)

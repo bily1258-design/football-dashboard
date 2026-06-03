@@ -510,9 +510,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='价值投注EV计算 V3')
     parser.add_argument('--all', action='store_true', help='全量重算所有记录')
     parser.add_argument('--date', type=str, help='只重算指定日期的记录（YYYY-MM-DD）')
+    parser.add_argument('--db', type=str, help='指定DB路径')
     args = parser.parse_args()
     
-    DB = os.path.join(base_dir, "data/football.db")
+    DB = args.db or os.path.join(base_dir, "data/football.db")
     
     if args.all:
         print("\n=== 全量重算（football.db）===")
