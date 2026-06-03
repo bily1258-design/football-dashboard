@@ -512,7 +512,7 @@ if __name__ == '__main__':
     parser.add_argument('--date', type=str, help='只重算指定日期的记录（YYYY-MM-DD）')
     args = parser.parse_args()
     
-    DB = os.path.join(base_dir, "data/shared_state/football.db")
+    DB = os.path.join(base_dir, "data/football.db")
     
     if args.all:
         print("\n=== 全量重算（football.db）===")

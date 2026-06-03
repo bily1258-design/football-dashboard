@@ -40,7 +40,7 @@ if os.path.isdir(os.path.join(_REPO_DIR, 'data')):
     DATA_BASE_DIR = _REPO_DIR
 else:
     DATA_BASE_DIR = BASE_DIR
-DB_PATH = os.path.join(DATA_BASE_DIR, "data/shared_state/football.db")
+DB_PATH = os.path.join(DATA_BASE_DIR, "data/football.db")
 DB_JINGCAI = DB_PATH  # 统一用football.db
 DB_BEIDAN = DB_PATH   # 统一用football.db
 

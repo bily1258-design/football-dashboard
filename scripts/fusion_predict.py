@@ -19,7 +19,7 @@ from collections import Counter
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 REPO_DIR = os.path.dirname(SCRIPT_DIR)
 MODEL_PATH = os.path.join(REPO_DIR, "data", "cache", "lgbm_model.json")
-DB_PATH = os.path.join(REPO_DIR, "data", "shared_state", "football.db")
+DB_PATH = os.path.join(REPO_DIR, "data", "football.db")
 
 
 def _safe_float(val, default=0.0):

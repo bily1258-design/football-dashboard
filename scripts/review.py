@@ -32,7 +32,7 @@ if os.path.isdir(os.path.join(_REPO_DIR, 'data')):
 else:
     DATA_BASE_DIR = WORK_DIR
 
-DB_PATH = os.path.join(DATA_BASE_DIR, "data/shared_state/football.db")
+DB_PATH = os.path.join(DATA_BASE_DIR, "data/football.db")
 REPORT_DIR = os.path.join(DATA_BASE_DIR, "outputs/复盘报告")
 CACHE_DIR = os.path.join(DATA_BASE_DIR, "data/cache")
 PARAMS_FILE = os.path.join(DATA_BASE_DIR, "data/xg_params.json")

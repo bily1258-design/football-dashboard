@@ -14,7 +14,7 @@ sys.path.insert(0, SCRIPT_DIR)
 
 from fusion_predict import FusionPredictor
 
-DB = os.path.join(SCRIPT_DIR, "data", "shared_state", "football.db")
+DB = os.path.join(SCRIPT_DIR, "data", "football.db")
 
 
 def ensure_columns(cursor):

@@ -5,7 +5,7 @@ import urllib.request, json, os, sys, time
 REPO = 'bily1258-design/football-dashboard'
 TAG = 'db-latest'
 TOKEN = os.environ.get('GITHUB_TOKEN', '')
-OUT = sys.argv[1] if len(sys.argv) > 1 else 'data/shared_state/football.db'
+OUT = sys.argv[1] if len(sys.argv) > 1 else 'data/football.db'
 
 headers = {'User-Agent': 'download_db'}
 if TOKEN:
