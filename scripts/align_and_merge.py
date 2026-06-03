@@ -28,7 +28,7 @@ PROCESSED_DIR = os.path.join(REPO_DIR, "data", "processed")
 
 # DB路径：环境变量 > 相对路径
 DB_PATH = os.environ.get('FOOTBALL_DB_PATH',
-    os.path.join(REPO_DIR, '..', 'data', 'shared_state', 'football.db'))
+    os.path.join(REPO_DIR, '..', 'data', 'football.db'))
 
 sys.path.insert(0, SCRIPT_DIR)
 from utils import team_match, normalize_team, calc_implied_prob, calc_ev, calc_kelly, parse_score

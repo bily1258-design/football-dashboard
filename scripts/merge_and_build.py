@@ -17,7 +17,7 @@ PROCESSED_DIR = os.path.join(REPO_DIR, "data", "processed")
 DATA_DIR = os.path.join(REPO_DIR, "data")
 DOCS_DIR = os.path.join(REPO_DIR, "docs")
 DB_PATH = os.environ.get('FOOTBALL_DB_PATH',
-    os.path.join(REPO_DIR, '..', 'data', 'shared_state', 'football.db'))
+    os.path.join(REPO_DIR, '..', 'data', 'football.db'))
 
 WEEKDAY_CN = ['周一','周二','周三','周四','周五','周六','周日']
 

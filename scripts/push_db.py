@@ -13,7 +13,7 @@ import os, sys, json, urllib.request, urllib.error, hashlib
 REPO = 'bily1258-design/football-dashboard'
 TAG = 'db-latest'
 DB_DEFAULT = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-    '..', 'data', 'shared_state', 'football.db')
+    '..', 'data', 'football.db')
 
 
 def get_token():
