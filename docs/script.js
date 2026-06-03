@@ -17,7 +17,7 @@ async function init() {
   } catch(e) {
     console.error('数据加载失败:', e);
     document.getElementById('matchBody').innerHTML =
-      '<tr><td colspan="17" style="text-align:center;color:#f44336">数据加载失败，请刷新重试</td></tr>';
+      '<tr><td colspan="16" style="text-align:center;color:#f44336">数据加载失败，请刷新重试</td></tr>';
   }
 }
 
@@ -71,11 +71,10 @@ function loadDate() {
 <td>${evStr}</td><td>${kellyStr}</td>
 <td>${pinStr}</td><td>${hkjcStr}</td>
 
-<td title="${r.confidence_index}">${stars}</td>
 </tr>`;
   });
 
-  tbody.innerHTML = html || '<tr><td colspan="17" style="text-align:center;color:#8b949e">无数据</td></tr>';
+  tbody.innerHTML = html || '<tr><td colspan="16" style="text-align:center;color:#8b949e">无数据</td></tr>';
 }
 
 // ─── 每日统计 ───
