@@ -227,7 +227,7 @@ def generate_index_html(by_date, daily_stats, summary, output_dir=None):
 <th>推荐</th><th>概率推荐</th><th>赛果</th><th>比分</th>
 <th>胜/平/负</th><th>泊松W/D/L</th><th>综合W/D/L</th>
 <th>EV</th><th>凯利</th><th>Pinnacle</th><th>HKJC</th>
-<th>★</th>
+
 </tr></thead>
 <tbody id="matchBody"></tbody>
 </table>
