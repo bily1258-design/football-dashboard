@@ -109,7 +109,7 @@ ODDS_FILE = os.path.join(CACHE_DIR, "real_odds.json")
 SPORTTERY_API_URL = "https://webapi.sporttery.cn/gateway/jc/football/getMatchCalculatorV1.qry?sellStatus=3&pageSize=50&pageNo=1"
 
 # SQLite数据库配置（统一football.db）
-DB_PATH = os.path.join(DATA_BASE_DIR, "data/shared_state/football.db")
+DB_PATH = os.path.join(DATA_BASE_DIR, "data/football.db")
 
 # sporttery API 赔率缓存文件（与 oddsmagnet 的 real_odds.json 分开）
 SPORTTERY_ODDS_FILE = os.path.join(CACHE_DIR, "sporttery_odds.json")

@@ -198,7 +198,7 @@ def main():
         date_str = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
 
     db_path = args.db or os.environ.get('FOOTBALL_DB_PATH',
-        os.path.join(REPO_DIR, 'data', 'shared_state', 'football.db'))
+        os.path.join(REPO_DIR, 'data', 'football.db'))
 
     print(f"🎯 目标日期: {date_str}")
 
