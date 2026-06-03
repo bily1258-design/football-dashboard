@@ -68,6 +68,28 @@ jobs:
           echo "📅 Fetching odds for $DATE"
           python scripts/odds_api.py --date "$DATE" || echo "⚠️ Odds fetch failed"
 
+      - name: Fetch Pinnacle & HKJC odds into DB
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: |
+          DATE="${{ github.event.inputs.date || '' }}"
+          if [ -z "$DATE" ]; then
+            DATE=$(date +%Y-%m-%d)
+          fi
+          if [ -f data/football.db ]; then
+            echo "📅 Fetching Pinnacle/HKJC for $DATE"
+            python scripts/fetch_pinnacle_odds.py --date "$DATE" || echo "⚠️ Pinnacle/HKJC fetch failed"
+          else
+            echo "⚠️ Skipping Pinnacle/HKJC (no DB)"
+          fi
+
+      - name: Recalculate EV
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: |
+          if [ -f data/football.db ]; then
+            echo "📊 Recalculating EV with updated odds"
+            python scripts/value_bet.py --db data/football.db || echo "⚠️ EV recalc failed"
+          fi
+
       - name: Align and Merge
         run: |
           if [ -f data/football.db ]; then
