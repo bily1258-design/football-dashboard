@@ -57,6 +57,24 @@ function loadDate() {
     const srcBadge = r.source === 'beidan'
       ? '<span class="badge badge-bd">北单</span>'
       : '<span class="badge badge-jc">竞彩</span>';
+    const evW = r.ev.w, evD = r.ev.d, evL = r.ev.l;
+    const evCls = v => v > 0 ? 'ev-pos' : 'ev-neg';
+    const pinStr = r.pinnacle.w > 0
+      ? `${r.pinnacle.w}/${r.pinnacle.d}/${r.pinnacle.l}`
+      : '-';
+    const hkjcStr = r.hkjc.w > 0
+      ? `${r.hkjc.w}/${r.hkjc.d}/${r.hkjc.l}`
+      : '-';
+    const oddsStr = `${r.odds.w}/${r.odds.d}/${r.odds.l}`;
+    const poissonStr = `${r.poisson.w}/${r.poisson.d}/${r.poisson.l}`;
+    const finalStr = `${r.final_prob.w}/${r.final_prob.d}/${r.final_prob.l}`;
+    const evStr = `<span class="${evCls(evW)}">${evW.toFixed(2)}</span>/<span class="${evCls(evD)}">${evD.toFixed(2)}</span>/<span class="${evCls(evL)}">${evL.toFixed(2)}</span>`;
+    const kellyStr = `${r.kelly.w}/${r.kelly.d}/${r.kelly.l}`;
+    const kickoff = r.kickoff ? r.kickoff.substring(11, 16) : '';
+    const probPct = (r.prediction_prob * 100).toFixed(1) + '%';
+    const probLabel = r.prob_direction ? `${r.prob_direction} ${probPct}` : probPct;
+    const probDirClass = r.prob_direction === '主胜' ? 'hit' : (r.prob_direction === '客胜' ? 'miss' : 'draw');
+
     html += `<tr>
 <td>${i + 1} ${srcBadge}</td>
 <td>${r.league}</td>
@@ -70,7 +88,6 @@ function loadDate() {
 <td>${poissonStr}</td><td>${finalStr}</td>
 <td>${evStr}</td><td>${kellyStr}</td>
 <td>${pinStr}</td><td>${hkjcStr}</td>
-
 </tr>`;
   });
 
