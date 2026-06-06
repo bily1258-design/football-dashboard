@@ -1,0 +1,4018 @@
+[1mdiff --git a/scripts/daily_report.py.bak b/scripts/daily_report.py.bak[m
+[1mdeleted file mode 100755[m
+[1mindex 51a08da..0000000[m
+[1m--- a/scripts/daily_report.py.bak[m
+[1m+++ /dev/null[m
+[36m@@ -1,3947 +0,0 @@[m
+[31m-#!/usr/bin/env python3[m
+[31m-"""[m
+[31m-竞彩足球泊松分布分析系统 - 每日日报生成（基本面增强版）[m
+[31m-基于 football-data.org API 获取积分榜数据，使用真实赔率进行贝叶斯修正[m
+[31m-整合基本面分析（伤停/战意/诱盘/冷门预警）和战术分析[m
+[31m-[m
+[31m-【数据源说明】：[m
+[31m-- 赛果：500.com (fetch_500com_results.py)[m
+[31m-- 赔率：中国足彩网 zgzcw.com (fetch_pinnacle_odds.py)，非500.com，非中国竞彩网(sporttery.cn)[m
+[31m-- 基础数据：football-data.org API[m
+[31m-[m
+[31m-执行方式:[m
+[31m-    python daily_report.py                      # 默认今天[m
+[31m-    python daily_report.py --date 2026-05-12     # 指定日期[m
+[31m-    python daily_report.py --dry-run             # 仅测试不生成文件[m
+[31m-    python daily_report.py --force-refresh       # 强制刷新API缓存[m
+[31m-    python daily_report.py --no-fundamental      # 跳过基本面分析（节省时间）[m
+[31m-    python daily_report.py --tactical-only       # 只对4星+场次做战术分析[m
+[31m-"""[m
+[31m-[m
+[31m-import math[m
+[31m-import json[m
+[31m-import os[m
+[31m-import sys[m
+[31m-import re[m
+[31m-import time[m
+[31m-import csv[m
+[31m-import argparse[m
+[31m-from datetime import datetime, timedelta[m
+[31m-from typing import Optional, Dict, List, Tuple[m
+[31m-[m
+[31m-[m
+[31m-def _to_float(val):[m
+[31m-    """将综合概率值转为0-1的浮点数，兼容str/int/float"""[m
+[31m-    if val is None:[m
+[31m-        return 0.0[m
+[31m-    try:[m
+[31m-        v = float(val)[m
+[31m-    except (ValueError, TypeError):[m
+[31m-        return 0.0[m
+[31m-    # 如果>1说明是百分比形式(如55.3)，转为小数[m
+[31m-    if v > 1:[m
+[31m-        return v / 100[m
+[31m-    return v[m
+[31m-[m
+[31m-[m
+[31m-def _safe_float(val, default=0.0):[m
+[31m-    """安全转为float，不做百分比转换（用于赔率等原始数值）"""[m
+[31m-    if val is None:[m
+[31m-        return default[m
+[31m-    try:[m
+[31m-        return float(val)[m
+[31m-    except (ValueError, TypeError):[m
+[31m-        return default[m
+[31m-[m
+[31m-# ========== 导入球天下积分榜模块 ==========[m
+[31m-try:[m
+[31m-    from fetch_standings_qtx import fetch_standings as fetch_qtx_standings, get_match_standings_data[m
+[31m-    HAS_QTX_STANDINGS = True[m
+[31m-except ImportError:[m
+[31m-    HAS_QTX_STANDINGS = False[m
+[31m-    print("⚠️ 球天下积分榜模块未找到，将仅使用 football-data.org 数据")[m
+[31m-[m
+[31m-# ========== 导入基本面分析模块 ==========[m
+[31m-try:[m
+[31m-    from fundamental_analysis import ([m
+[31m-        analyze_fundamental, [m
+[31m-        get_tactical_preview,[m
+[31m-        format_fundamental_summary,[m
+[31m-        clear_cache,[m
+[31m-        calculate_6dim_score,[m
+[31m-        set_dim6_enabled[m
+[31m-    )[m
+[31m-    HAS_FUNDAMENTAL = True[m
+[31m-except ImportError:[m
+[31m-    HAS_FUNDAMENTAL = False[m
+[31m-    print("⚠️ 基本面分析模块未找到，将使用基础模式")[m
+[31m-[m
+[31m-# ========== 导入价值投注模块 ==========[m
+[31m-try:[m
+[31m-    from value_bet import calculate_value_bet[m
+[31m-    HAS_VALUE_BET = True[m
+[31m-except ImportError:[m
+[31m-    HAS_VALUE_BET = False[m
+[31m-    print("⚠️ 价值投注模块未找到，跳过EV计算")[m
+[31m-[m
+[31m-# ========== 配置 ==========[m
+[31m-[m
+[31m-# football-data.org API 配置[m
+[31m-API_KEY = "178d3df92c484beea1aa652f1b8654b4"[m
+[31m-API_BASE = "https://api.football-data.org/v4"[m
+[31m-[m
+[31m-# 路径配置[m
+[31m-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))[m
+[31m-# 智能检测仓库结构：如果scripts/同级的data/存在则为仓库模式，否则为独立模式[m
+[31m-_REPO_DIR = os.path.dirname(SCRIPT_DIR)[m
+[31m-if os.path.isdir(os.path.join(_REPO_DIR, 'data')):[m
+[31m-    # 仓库模式：data/在scripts上一级[m
+[31m-    DATA_BASE_DIR = _REPO_DIR[m
+[31m-else:[m
+[31m-    # 独立模式：data/在scripts同级[m
+[31m-    DATA_BASE_DIR = SCRIPT_DIR[m
+[31m-[m
+[31m-CACHE_DIR = os.path.join(DATA_BASE_DIR, "data/cache")[m
+[31m-OUTPUT_DIR = os.path.join(DATA_BASE_DIR, "outputs/每日报表")[m
+[31m-ODDS_FILE = os.path.join(CACHE_DIR, "real_odds.json")[m
+[31m-[m
+[31m-# 体彩网赔率API[m
+[31m-SPORTTERY_API_URL = "https://webapi.sporttery.cn/gateway/jc/football/getMatchCalculatorV1.qry?sellStatus=3&pageSize=50&pageNo=1"[m
+[31m-[m
+[31m-# SQLite数据库配置（统一football.db）[m
+[31m-DB_PATH = os.path.join(DATA_BASE_DIR, "data/shared_state/football.db")[m
+[31m-[m
+[31m-# 五大联赛代码映射（使用积分榜xG）[m
+[31m-LEAGUE_CODES = {[m
+[31m-    "PL": {"name": "英超", "name_en": "Premier League"},[m
+[31m-    "PD": {"name": "西甲", "name_en": "La Liga"},[m
+[31m-    "BL1": {"name": "德甲", "name_en": "Bundesliga"},[m
+[31m-    "SA": {"name": "意甲", "name_en": "Serie A"},[m
+[31m-    "FL1": {"name": "法甲", "name_en": "Ligue 1"},[m
+[31m-}[m
+[31m-[m
+[31m-# 其他支持联赛（使用赔率反推xG）[m
+[31m-OTHER_LEAGUE_CODES = {[m
+[31m-    "J1": {"name": "日职", "name_en": "J1 League"},[m
+[31m-    "K1": {"name": "韩职", "name_en": "K League 1"},[m
+[31m-    "MLS": {"name": "美职", "name_en": "MLS"},[m
+[31m-    "SAU": {"name": "沙职", "name_en": "Saudi Pro League"},[m
+[31m-    "ELC": {"name": "英冠", "name_en": "Championship"},[m
+[31m-    "L2": {"name": "法乙", "name_en": "Ligue 2"},[m
+[31m-    "CUP_IT": {"name": "意杯", "name_en": "Coppa Italia"},[m
+[31m-    "AL": {"name": "澳超", "name_en": "A-League"},[m
+[31m-}[m
+[31m-[m
+[31m-# 所有支持的联赛[m
+[31m-ALL_LEAGUE_CODES = {**LEAGUE_CODES, **OTHER_LEAGUE_CODES}[m
+[31m-[m
+[31m-# openfootball 联赛编码映射（体彩网联赛名 → openfootball league_code）[m
+[31m-# 用于自动获取积分榜和交锋记录[m
+[31m-OPENFOOTBALL_LEAGUE_MAP = {[m
+[31m-    "英超": "en.1",[m
+[31m-    "西甲": "es.1",[m
+[31m-    "德甲": "de.1",[m
+[31m-    "意甲": "it.1",[m
+[31m-    "法甲": "fr.1",[m
+[31m-    "英冠": "en.2",[m
+[31m-    "葡超": "pt.1",[m
+[31m-    "荷甲": "nl.1",[m
+[31m-    "比甲": "be.1",[m
+[31m-    # 以下联赛openfootball不覆盖，需要fallback到搜索[m
+[31m-}[m
+[31m-[m
+[31m-# openfootball支持的联赛（可以自动获取数据）[m
+[31m-OPENFOOTBALL_SUPPORTED = {"en.1", "es.1", "de.1", "it.1", "fr.1", "en.2", "pt.1", "nl.1", "be.1"}[m
+[31m-[m
+[31m-# 体彩网联赛简称映射[m
+[31m-LEAGUE_SHORT_NAMES = {[m
+[31m-    "日职": "日职联",[m
+[31m-    "韩职": "韩K联",[m
+[31m-    "美职": "美职联",[m
+[31m-    "沙职": "沙特联",[m
+[31m-    "英冠": "英冠",[m
+[31m-    "法乙": "法乙",[m
+[31m-    "意杯": "意大利杯",[m
+[31m-}[m
+[31m-[m
+[31m-# ========== 双盘口Lambda计算（V4冷门预警用） ==========[m
+[31m-[m
+[31m-# 尝试导入scipy（用于泊松分布优化）[m
+[31m-try:[m
+[31m-    from scipy.stats import poisson[m
+[31m-    from scipy.optimize import minimize[m
+[31m-    HAS_SCIPY = True[m
+[31m-except ImportError:[m
+[31m-    HAS_SCIPY = False[m
+[31m-    import math[m
+[31m-    class _PoissonFallback:[m
+[31m-        @staticmethod[m
+[31m-        def pmf(k, mu):[m
+[31m-            if mu <= 0: return 1.0 if k == 0 else 0.0[m
+[31m-            return math.exp(-mu) * (mu ** k) / math.factorial(k)[m
+[31m-    poisson = _PoissonFallback()[m
+[31m-[m
+[31m-[m
+[31m-def odds_to_prob(h: float, d: float, a: float) -> tuple:[m
+[31m-    """从赔率反推隐含概率"""[m
+[31m-    inv_h = 1/h if h > 0 else 0[m
+[31m-    inv_d = 1/d if d > 0 else 0[m
+[31m-    inv_a = 1/a if a > 0 else 0[m
+[31m-    total = inv_h + inv_d + inv_a[m
+[31m-    if total <= 0:[m
+[31m-        return (0.0, 0.0, 0.0)[m
+[31m-    return (inv_h/total, inv_d/total, inv_a/total)[m
+[31m-[m
+[31m-[m
+[31m-def odds_to_lambda_fast(h: float, d: float, a: float, handicap: float = None) -> tuple:[m
+[31m-    """[m
+[31m-    从赔率快速反推lambda值[m
+[31m-    [m
+[31m-    Args:[m
+[31m-        h: 主胜赔率[m
+[31m-        d: 平局赔率[m
+[31m-        a: 客胜赔率[m
+[31m-        handicap: 让球数（如-1表示主队让1球）[m
+[31m-    [m
+[31m-    Returns:[m
+[31m-        (lambda_home, lambda_away)[m
+[31m-    """[m
+[31m-    if h <= 0 or d <= 0 or a <= 0:[m
+[31m-        return (None, None)[m
+[31m-    [m
+[31m-    p_win, p_draw, p_loss = odds_to_prob(h, d, a)[m
+[31m-    [m
+[31m-    if not HAS_SCIPY:[m
+[31m-        # Fallback: 使用简单的网格搜索[m
+[31m-        return _odds_to_lambda_grid(h, d, a, handicap)[m
+[31m-    [m
+[31m-    def objective(lambdas):[m
+[31m-        lam_h, lam_a = lambdas[0], lambdas[1][m
+[31m-        if lam_h <= 0 or lam_a <= 0:[m
+[31m-            return 1e10[m
+[31m-        [m
+[31m-        pw, pd_val, pl = 0.0, 0.0, 0.0[m
+[31m-        for i in range(10):[m
+[31m-            for j in range(10):[m
+[31m-                p = poisson.pmf(i, lam_h) * poisson.pmf(j, lam_a)[m
+[31m-                if handicap is not None:[m
+[31m-                    adj_score = i + handicap[m
+[31m-                    if adj_score > j:[m
+[31m-                        pw += p[m
+[31m-                    elif adj_score == j:[m
+[31m-                        pd_val += p[m
+[31m-                    else:[m
+[31m-                        pl += p[m
+[31m-                else:[m
+[31m-                    if i > j:[m
+[31m-                        pw += p[m
+[31m-                    elif i == j:[m
+[31m-                        pd_val += p[m
+[31m-                    else:[m
+[31m-                        pl += p[m
+[31m-        [m
+[31m-        loss = (pw - p_win)**2 + (pd_val - p_draw)**2 + (pl - p_loss)**2[m
+[31m-        return loss[m
+[31m-    [m
+[31m-    best_result = None[m
+[31m-    best_loss = float('inf')[m
+[31m-    [m
+[31m-    for lam_h_init in [0.5, 1.0, 1.5, 2.0]:[m
+[31m-        for lam_a_init in [0.5, 0.8, 1.0, 1.2]:[m
+[31m-            try:[m
+[31m-                result = minimize([m
+[31m-                    objective,[m
+[31m-                    [lam_h_init, lam_a_init],[m
+[31m-                    method='L-BFGS-B',[m
+[31m-                    bounds=[(0.1, 5.0), (0.1, 5.0)][m
+[31m-                )[m
+[31m-                if result.fun < best_loss:[m
+[31m-                    best_loss = result.fun[m
+[31m-                    best_result = result.x[m
+[31m-            except:[m
+[31m-                continue[m
+[31m-    [m
+[31m-    if best_result is None:[m
+[31m-        return (None, None)[m
+[31m-    [m
+[31m-    return (round(best_result[0], 2), round(best_result[1], 2))[m
+[31m-[m
+[31m-[m
+[31m-def _odds_to_lambda_grid(h: float, d: float, a: float, handicap: float = None) -> tuple:[m
+[31m-    """Fallback: 网格搜索版本"""[m
+[31m-    if h <= 0 or d <= 0 or a <= 0:[m
+[31m-        return (None, None)[m
+[31m-    [m
+[31m-    p_win, p_draw, p_loss = odds_to_prob(h, d, a)[m
+[31m-    [m
+[31m-    best_loss = float('inf')[m
+[31m-    best_lam = (1.0, 1.0)[m
+[31m-    [m
+[31m-    for lam_h in [x * 0.1 for x in range(5, 50)]:[m
+[31m-        for lam_a in [x * 0.1 for x in range(5, 30)]:[m
+[31m-            pw, pd_val, pl = 0.0, 0.0, 0.0[m
+[31m-            [m
+[31m-            for i in range(8):[m
+[31m-                for j in range(8):[m
+[31m-                    p = poisson.pmf(i, lam_h) * poisson.pmf(j, lam_a)[m
+[31m-                    if handicap is not None:[m
+[31m-                        adj = i + handicap[m
+[31m-                        if adj > j:[m
+[31m-                            pw += p[m
+[31m-                        elif adj == j:[m
+[31m-                            pd_val += p[m
+[31m-                        else:[m
+[31m-                            pl += p[m
+[31m-                    else:[m
+[31m-                        if i > j:[m
+[31m-                            pw += p[m
+[31m-                        elif i == j:[m
+[31m-                            pd_val += p[m
+[31m-                        else:[m
+[31m-                            pl += p[m
+[31m-            [m
+[31m-            loss = (pw - p_win)**2 + (pd_val - p_draw)**2 + (pl - p_loss)**2[m
+[31m-            if loss < best_loss:[m
+[31m-                best_loss = loss[m
+[31m-                best_lam = (lam_h, lam_a)[m
+[31m-    [m
+[31m-    return best_lam[m
+[31m-[m
+[31m-[m
+[31m-# ========== 队名映射（API英文 -> 中文） ==========[m
+[31m-[m
+[31m-TEAM_NAME_MAP = {[m
+[31m-    # 英超[m
+[31m-    "Arsenal FC": "阿森纳", "Arsenal": "阿森纳",[m
+[31m-    "Aston Villa FC": "阿斯顿维拉", "Aston Villa": "阿斯顿维拉",[m
+[31m-    "AFC Bournemouth": "伯恩茅斯", "Bournemouth": "伯恩茅斯",[m
+[31m-    "Brentford FC": "布伦特福德", "Brentford": "布伦特福德",[m
+[31m-    "Brighton & Hove Albion FC": "布莱顿", "Brighton": "布莱顿",[m
+[31m-    "Burnley FC": "伯恩利", "Burnley": "伯恩利",[m
+[31m-    "Chelsea FC": "切尔西", "Chelsea": "切尔西",[m
+[31m-    "Crystal Palace FC": "水晶宫", "Crystal Palace": "水晶宫",[m
+[31m-    "Everton FC": "埃弗顿", "Everton": "埃弗顿",[m
+[31m-    "Fulham FC": "富勒姆", "Fulham": "富勒姆",[m
+[31m-    "Leeds United FC": "利兹联", "Leeds United": "利兹联", "Leeds": "利兹联",[m
+[31m-    "Leicester City FC": "莱斯特城", "Leicester City": "莱斯特城", "Leicester": "莱斯特城",[m
+[31m-    "Liverpool FC": "利物浦", "Liverpool": "利物浦",[m
+[31m-    "Manchester City FC": "曼城", "Manchester City": "曼城", "Man City": "曼城",[m
+[31m-    "Manchester United FC": "曼联", "Manchester United": "曼联", "Manchester Utd": "曼联", "Man Utd": "曼联",[m
+[31m-    "Newcastle United FC": "纽卡斯尔", "Newcastle United": "纽卡斯尔", "Newcastle": "纽卡斯尔",[m
+[31m-    "Nottingham Forest FC": "诺丁汉森林", "Nottingham Forest": "诺丁汉森林", "Nottingham": "诺丁汉森林",[m
+[31m-    "Southampton FC": "南安普顿", "Southampton": "南安普顿",[m
+[31m-    "Tottenham Hotspur FC": "热刺", "Tottenham Hotspur": "热刺", "Tottenham": "热刺",[m
+[31m-    "West Ham United FC": "西汉姆", "West Ham United": "西汉姆", "West Ham": "西汉姆",[m
+[31m-    "Wolverhampton Wanderers FC": "狼队", "Wolverhampton Wanderers": "狼队", "Wolverhampton": "狼队", "Wolves": "狼队",[m
+[31m-    "Sunderland AFC": "桑德兰", "Sunderland": "桑德兰",[m
+[31m-    "Ipswich Town FC": "伊普斯维奇", "Ipswich Town": "伊普斯维奇", "Ipswich": "伊普斯维奇",[m
+[31m-    "Luton Town FC": "卢顿", "Luton Town": "卢顿", "Luton": "卢顿",[m
+[31m-    "Sheffield United FC": "谢菲联", "Sheffield United": "谢菲联", "Sheffield Utd": "谢菲联",[m
+[31m-    # 西甲[m
+[31m-    "Deportivo Alavés": "阿拉维斯", "Alavés": "阿拉维斯", "Alaves": "阿拉维斯",[m
+[31m-    "Athletic Club": "毕尔巴鄂", "Athletic Bilbao": "毕尔巴鄂", "Athletic": "毕尔巴鄂",[m
+[31m-    "Club Atlético de Madrid": "马德里竞技", "Atlético Madrid": "马德里竞技", "Atletico Madrid": "马德里竞技",[m
+[31m-    "FC Barcelona": "巴塞罗那", "Barcelona": "巴塞罗那", "Barca": "巴塞罗那",[m
+[31m-    "RC Celta de Vigo": "塞尔塔", "Celta Vigo": "塞尔塔", "Celta": "塞尔塔",[m
+[31m-    "RCD Espanyol de Barcelona": "西班牙人", "Espanyol": "西班牙人",[m
+[31m-    "Getafe CF": "赫塔费", "Getafe": "赫塔费",[m
+[31m-    "Granada CF": "格拉纳达", "Granada": "格拉纳达",[m
+[31m-    "Girona FC": "赫罗纳", "Girona": "赫罗纳",[m
+[31m-    "UD Las Palmas": "拉斯帕尔马斯", "Las Palmas": "拉斯帕尔马斯",[m
+[31m-    "CD Leganés": "莱加内斯", "Leganés": "莱加内斯", "Leganes": "莱加内斯",[m
+[31m-    "RCD Mallorca": "马洛卡", "Mallorca": "马洛卡",[m
+[31m-    "CA Osasuna": "奥萨苏纳", "Osasuna": "奥萨苏纳",[m
+[31m-    "Rayo Vallecano de Madrid": "巴列卡诺", "Rayo Vallecano": "巴列卡诺",[m
+[31m-    "Real Betis Balompié": "皇家贝蒂斯", "Real Betis": "皇家贝蒂斯", "Betis": "皇家贝蒂斯",[m
+[31m-    "Real Madrid CF": "皇家马德里", "Real Madrid": "皇家马德里",[m
+[31m-    "Real Sociedad de Fútbol": "皇家社会", "Real Sociedad": "皇家社会",[m
+[31m-    "Sevilla FC": "塞维利亚", "Sevilla": "塞维利亚",[m
+[31m-    "Valencia CF": "瓦伦西亚", "Valencia": "瓦伦西亚",[m
+[31m-    "Villarreal CF": "比利亚雷亚尔", "Villarreal": "比利亚雷亚尔",[m
+[31m-    "Real Oviedo": "皇家奥维耶多", "Oviedo": "皇家奥维耶多",[m
+[31m-    "Racing Club de Ferrol": "费罗尔竞赛", "Ferrol": "费罗尔竞赛",[m
+[31m-    # 德甲[m
+[31m-    "FC Bayern München": "拜仁慕尼黑", "Bayern Munich": "拜仁慕尼黑", "Bayern": "拜仁慕尼黑",[m
+[31m-    "Borussia Dortmund": "多特蒙德", "Dortmund": "多特蒙德",[m
+[31m-    "RB Leipzig": "莱比锡红牛",[m
+[31m-    "Bayer 04 Leverkusen": "勒沃库森", "Bayer Leverkusen": "勒沃库森", "Leverkusen": "勒沃库森",[m
+[31m-    "Eintracht Frankfurt": "法兰克福", "Frankfurt": "法兰克福",[m
+[31m-    "SC Freiburg": "弗赖堡", "Freiburg": "弗赖堡",[m
+[31m-    "VfL Wolfsburg": "沃尔夫斯堡", "Wolfsburg": "沃尔夫斯堡",[m
+[31m-    "Borussia Mönchengladbach": "门兴", "M'gladbach": "门兴", "Mönchengladbach": "门兴",[m
+[31m-    "TSG 1899 Hoffenheim": "霍芬海姆", "Hoffenheim": "霍芬海姆",[m
+[31m-    "1. FSV Mainz 05": "美因茨", "Mainz": "美因茨",[m
+[31m-    "1. FC Köln": "科隆", "Köln": "科隆", "Cologne": "科隆",[m
+[31m-    "SV Werder Bremen": "不来梅", "Werder Bremen": "不来梅", "Bremen": "不来梅",[m
+[31m-    "1. FC Union Berlin": "柏林联合", "Union Berlin": "柏林联合",[m
+[31m-    "VfB Stuttgart": "斯图加特", "Stuttgart": "斯图加特",[m
+[31m-    "FC Augsburg": "奥格斯堡", "Augsburg": "奥格斯堡",[m
+[31m-    "VfL Bochum 1848": "波鸿", "Bochum": "波鸿",[m
+[31m-    "1. FC Heidenheim 1846": "海登海姆", "Heidenheim": "海登海姆",[m
+[31m-    "Hamburger SV": "汉堡", "Hamburger": "汉堡",[m
+[31m-    "Eintracht Braunschweig": "不伦瑞克",[m
+[31m-    "Holstein Kiel": "荷尔斯泰因基尔", "Holstein Kiel": "荷尔斯泰因基尔",[m
+[31m-    "VfL Wolfsburg": "沃尔夫斯堡",[m
+[31m-    # 意甲[m
+[31m-    "Atalanta BC": "亚特兰大", "Atalanta": "亚特兰大",[m
+[31m-    "Bologna FC 1909": "博洛尼亚", "Bologna": "博洛尼亚",[m
+[31m-    "Cagliari Calcio": "卡利亚里", "Cagliari": "卡利亚里",[m
+[31m-    "Como 1907": "科莫", "Como": "科莫",[m
+[31m-    "ACF Fiorentina": "佛罗伦萨", "Fiorentina": "佛罗伦萨",[m
+[31m-    "Genoa CFC": "热那亚", "Genoa": "热那亚",[m
+[31m-    "FC Internazionale Milano": "国际米兰", "Inter Milan": "国际米兰", "Inter": "国际米兰",[m
+[31m-    "Juventus FC": "尤文图斯", "Juventus": "尤文图斯",[m
+[31m-    "SS Lazio": "拉齐奥", "Lazio": "拉齐奥",[m
+[31m-    "US Lecce": "莱切", "Lecce": "莱切",[m
+[31m-    "AC Milan": "AC米兰", "Milan": "AC米兰",[m
+[31m-    "SSC Napoli": "那不勒斯", "Napoli": "那不勒斯",[m
+[31m-    "Parma Calcio 1913": "帕尔马", "Parma": "帕尔马",[m
+[31m-    "AS Roma": "罗马", "Roma": "罗马",[m
+[31m-    "US Sassuolo Calcio": "萨索洛", "Sassuolo": "萨索洛",[m
+[31m-    "Torino FC": "都灵", "Torino": "都灵",[m
+[31m-    "Udinese Calcio": "乌迪内斯", "Udinese": "乌迪内斯",[m
+[31m-    "Hellas Verona FC": "维罗纳", "Verona": "维罗纳",[m
+[31m-    "Venezia FC": "威尼斯", "Venezia": "威尼斯",[m
+[31m-    "US Cremonese": "克雷莫纳", "Cremonese": "克雷莫纳",[m
+[31m-    "Empoli FC": "恩波利", "Empoli": "恩波利",[m
+[31m-    "Frosinone Calcio": "弗罗西诺内", "Frosinone": "弗罗西诺内",[m
+[31m-    "US Salernitana 1919": "萨勒尼塔纳", "Salernitana": "萨勒尼塔纳",[m
+[31m-    "AC Monza": "蒙扎", "Monza": "蒙扎",[m
+[31m-    # 法甲[m
+[31m-    "Paris Saint-Germain FC": "巴黎圣日耳曼", "Paris Saint-Germain": "巴黎圣日耳曼", "PSG": "巴黎圣日耳曼",[m
+[31m-    "Olympique de Marseille": "马赛", "Marseille": "马赛",[m
+[31m-    "AS Monaco FC": "摩纳哥", "AS Monaco": "摩纳哥", "Monaco": "摩纳哥",[m
+[31m-    "Olympique Lyonnais": "里昂", "Lyon": "里昂",[m
+[31m-    "Lille OSC": "里尔", "Lille": "里尔",[m
+[31m-    "OGC Nice": "尼斯", "Nice": "尼斯",[m
+[31m-    "Stade Rennais FC": "雷恩", "Rennes": "雷恩",[m
+[31m-    "Racing Club de Lens": "朗斯", "Lens": "朗斯",[m
+[31m-    "Stade Brestois 29": "布雷斯特", "Brest": "布雷斯特",[m
+[31m-    "FC Nantes": "南特", "Nantes": "南特",[m
+[31m-    "RC Strasbourg Alsace": "斯特拉斯堡", "Strasbourg": "斯特拉斯堡",[m
+[31m-    "MHSC Montpellier": "蒙彼利埃", "Montpellier": "蒙彼利埃",[m
+[31m-    "Toulouse FC": "图卢兹", "Toulouse": "图卢兹",[m
+[31m-    "FC Lorient": "洛里昂", "Lorient": "洛里昂",[m
+[31m-    "Le Havre AC": "勒阿弗尔", "Le Havre": "勒阿弗尔",[m
+[31m-    "FC Metz": "梅斯", "Metz": "梅斯",[m
+[31m-    "AJ Auxerre": "欧塞尔", "Auxerre": "欧塞尔",[m
+[31m-    "Stade de Reims": "兰斯", "Reims": "兰斯",[m
+[31m-    "Clermont Foot 63": "克莱蒙", "Clermont": "克莱蒙",[m
+[31m-    "ES Troyes AC": "特鲁瓦", "Troyes": "特鲁瓦",[m
+[31m-    "Red Star FC": "圣旺红星",[m
+[31m-    "Rodez AF": "罗德兹", "Rodez": "罗德兹",[m
+[31m-    "Angers SCO": "昂热", "Angers": "昂热",[m
+[31m-    "FC Nantes": "南特",[m
+[31m-    "AS Saint-Étienne": "圣埃蒂安", "Saint-Étienne": "圣埃蒂安",[m
+[31m-}[m
+[31m-[m
+[31m-# 队名别名映射（简称 -> API全名）[m
+[31m-TEAM_ALIASES = {[m
+[31m-    "Manchester Utd": "Manchester United FC",[m
+[31m-    "Man Utd": "Manchester United FC",[m
+[31m-    "Man United": "Manchester United FC",[m
+[31m-    "Man City": "Manchester City FC",[m
+[31m-    "Newcastle": "Newcastle United FC",[m
+[31m-    "Nottingham": "Nottingham Forest FC",[m
+[31m-    "Tottenham": "Tottenham Hotspur FC",[m
+[31m-    "West Ham": "West Ham United FC",[m
+[31m-    "Wolverhampton": "Wolverhampton Wanderers FC",[m
+[31m-    "Wolves": "Wolverhampton Wanderers FC",[m
+[31m-    "Brighton": "Brighton & Hove Albion FC",[m
+[31m-    "Leeds": "Leeds United FC",[m
+[31m-    "Leicester": "Leicester City FC",[m
+[31m-    "Crystal Palace": "Crystal Palace FC",[m
+[31m-    "Burnley": "Burnley FC",[m
+[31m-    "Fulham": "Fulham FC",[m
+[31m-    "Sunderland": "Sunderland AFC",[m
+[31m-    "Bournemouth": "AFC Bournemouth",[m
+[31m-    "Brentford": "Brentford FC",[m
+[31m-    "Aston Villa": "Aston Villa FC",[m
+[31m-    "Arsenal": "Arsenal FC",[m
+[31m-    "Liverpool": "Liverpool FC",[m
+[31m-    "Chelsea": "Chelsea FC",[m
+[31m-    "Everton": "Everton FC",[m
+[31m-    "Southampton": "Southampton FC",[m
+[31m-    "Atlético Madrid": "Club Atlético de Madrid",[m
+[31m-    "Atletico Madrid": "Club Atlético de Madrid",[m
+[31m-    "Real Sociedad": "Real Sociedad de Fútbol",[m
+[31m-    "Athletic Bilbao": "Athletic Club",[m
+[31m-    "Alavés": "Deportivo Alavés",[m
+[31m-    "Alaves": "Deportivo Alavés",[m
+[31m-    "Celta Vigo": "RC Celta de Vigo",[m
+[31m-    "Espanyol": "RCD Espanyol de Barcelona",[m
+[31m-    "Leganés": "CD Leganés",[m
+[31m-    "Leganes": "CD Leganés",[m
+[31m-    "Betis": "Real Betis Balompié",[m
+[31m-    "Rayo Vallecano": "Rayo Vallecano de Madrid",[m
+[31m-    "Valladolid": "Real Valladolid CF",[m
+[31m-    "Almería": "UD Almería",[m
+[31m-    "Almeria": "UD Almería",[m
+[31m-    "Cádiz": "Cádiz CF",[m
+[31m-    "Cadiz": "Cádiz CF",[m
+[31m-    "Las Palmas": "UD Las Palmas",[m
+[31m-    "Bayern Munich": "FC Bayern München",[m
+[31m-    "Dortmund": "Borussia Dortmund",[m
+[31m-    "Leverkusen": "Bayer 04 Leverkusen",[m
+[31m-    "M'gladbach": "Borussia Mönchengladbach",[m
+[31m-    "Köln": "1. FC Köln",[m
+[31m-    "Hoffenheim": "TSG 1899 Hoffenheim",[m
+[31m-    "Mainz": "1. FSV Mainz 05",[m
+[31m-    "Frankfurt": "Eintracht Frankfurt",[m
+[31m-    "Freiburg": "SC Freiburg",[m
+[31m-    "Wolfsburg": "VfL Wolfsburg",[m
+[31m-    "Stuttgart": "VfB Stuttgart",[m
+[31m-    "Augsburg": "FC Augsburg",[m
+[31m-    "Bochum": "VfL Bochum 1848",[m
+[31m-    "Heidenheim": "1. FC Heidenheim 1846",[m
+[31m-    "Union Berlin": "1. FC Union Berlin",[m
+[31m-    "Werder Bremen": "SV Werder Bremen",[m
+[31m-    "Bremen": "SV Werder Bremen",[m
+[31m-    "Inter Milan": "FC Internazionale Milano",[m
+[31m-    "Inter": "FC Internazionale Milano",[m
+[31m-    "Napoli": "SSC Napoli",[m
+[31m-    "Roma": "AS Roma",[m
+[31m-    "Lazio": "SS Lazio",[m
+[31m-    "Juventus": "Juventus FC",[m
+[31m-    "Atalanta": "Atalanta BC",[m
+[31m-    "Fiorentina": "ACF Fiorentina",[m
+[31m-    "Bologna": "Bologna FC 1909",[m
+[31m-    "Torino": "Torino FC",[m
+[31m-    "Cagliari": "Cagliari Calcio",[m
+[31m-    "Genoa": "Genoa CFC",[m
+[31m-    "Udinese": "Udinese Calcio",[m
+[31m-    "Sassuolo": "US Sassuolo Calcio",[m
+[31m-    "Lecce": "US Lecce",[m
+[31m-    "Verona": "Hellas Verona FC",[m
+[31m-    "Empoli": "Empoli FC",[m
+[31m-    "Como": "Como 1907",[m
+[31m-    "Parma": "Parma Calcio 1913",[m
+[31m-    "Venezia": "Venezia FC",[m
+[31m-    "Monza": "AC Monza",[m
+[31m-    "PSG": "Paris Saint-Germain FC",[m
+[31m-    "Paris Saint Germain": "Paris Saint-Germain FC",[m
+[31m-    "Marseille": "Olympique de Marseille",[m
+[31m-    "Monaco": "AS Monaco FC",[m
+[31m-    "Lyon": "Olympique Lyonnais",[m
+[31m-    "Lille": "Lille OSC",[m
+[31m-    "Nice": "OGC Nice",[m
+[31m-    "Rennes": "Stade Rennais FC",[m
+[31m-    "Lens": "Racing Club de Lens",[m
+[31m-    "Brest": "Stade Brestois 29",[m
+[31m-    "Nantes": "FC Nantes",[m
+[31m-    "Strasbourg": "RC Strasbourg Alsace",[m
+[31m-    "Montpellier": "MHSC Montpellier",[m
+[31m-    "Toulouse": "Toulouse FC",[m
+[31m-    "Lorient": "FC Lorient",[m
+[31m-    "Le Havre": "Le Havre AC",[m
+[31m-    "Metz": "FC Metz",[m
+[31m-    "Auxerre": "AJ Auxerre",[m
+[31m-    "Reims": "Stade de Reims",[m
+[31m-    "Clermont": "Clermont Foot 63",[m
+[31m-    "Oviedo": "Real Oviedo",[m
+[31m-    "Ferrol": "Racing Club de Ferrol",[m
+[31m-    # API返回的特殊队名[m
+[31m-    "RC Celta de Vigo": "RC Celta de Vigo",[m
+[31m-    "Levante UD": "Levante UD",[m
+[31m-    "Elche CF": "Elche CF",[m
+[31m-    "CA Osasuna": "CA Osasuna",[m
+[31m-    # 体彩网队名[m
+[31m-    "皇马": "Real Madrid CF",[m
+[31m-    "巴萨": "FC Barcelona",[m
+[31m-    "巴黎圣曼": "Paris Saint-Germain FC",[m
+[31m-    "国米": "FC Internazionale Milano",[m
+[31m-    "米兰": "AC Milan",[m
+[31m-    "贝蒂斯": "Real Betis Balompié",[m
+[31m-    "马竞": "Club Atlético de Madrid",[m
+[31m-    "比利亚雷": "Villarreal CF",[m
+[31m-    "毕尔巴鄂": "Athletic Club",[m
+[31m-    "塞尔塔": "RC Celta de Vigo",[m
+[31m-    "奥维耶多": "Real Oviedo",[m
+[31m-    "南安普敦": "Southampton FC",[m
+[31m-    "斯特拉斯": "RC Strasbourg Alsace",[m
+[31m-    "圣旺红星": "Red Star FC",[m
+[31m-}[m
+[31m-[m
+[31m-[m
+[31m-# ========== 队名别名映射（用于复盘时匹配不同译名） ==========[m
+[31m-# 体彩网缩写、用户赛果APP名称、系统标准名之间的对应关系[m
+[31m-# 所有别名统一映射到系统标准名[m
+[31m-[m
+[31m-TEAM_VARIANTS = {[m
+[31m-    # === 沙特联 ===[m
+[31m-    "达曼协定": "达曼协作",[m
+[31m-    "伊地法格": "达曼协作",[m
+[31m-    "达曼协作": "达曼协作",[m
+[31m-    "瓜达席亚": "卡达西亚",[m
+[31m-    "胡巴卡德": "卡达西亚",[m
+[31m-    "卡达西亚": "卡达西亚",[m
+[31m-    "艾哈斯姆": "哈森姆",[m
+[31m-    "拉斯决心": "哈森姆",[m
+[31m-    "哈森姆": "哈森姆",[m
+[31m-    "伊蒂哈德吉达": "吉达联合",[m
+[31m-    "吉达联合": "吉达联合",[m
+[31m-    "利雅胜利": "利雅得胜利",[m
+[31m-    "利雅新月": "利雅得新月",[m
+[31m-    "迈季宽广": "迈季迈阿",[m
+[31m-    "布赖合作": "布赖代合作",[m
+[31m-    [m
+[31m-    # === 西甲 ===[m
+[31m-    "华伦西亚": "瓦伦西亚",[m
+[31m-    "巴伦西亚": "瓦伦西亚",[m
+[31m-    "瓦伦西亚": "瓦伦西亚",[m
+[31m-    "皇家苏斯达": "皇家社会",[m
+[31m-    "皇家社会": "皇家社会",[m
+[31m-    "皇家奥维耶多": "皇家奥维耶多",[m
+[31m-    "奥维多": "皇家奥维耶多",[m
+[31m-    "奥维耶多": "皇家奥维耶多",[m
+[31m-    "巴塞罗那": "巴塞罗那",[m
+[31m-    "巴萨": "巴塞罗那",[m
+[31m-    "皇家马德里": "皇家马德里",[m
+[31m-    "皇马": "皇家马德里",[m
+[31m-    [m
+[31m-    # === 英超 ===[m
+[31m-    "热刺": "热刺",[m
+[31m-    "托特纳姆": "热刺",[m
+[31m-    "曼彻斯特城": "曼城",[m
+[31m-    "曼彻斯特联": "曼联",[m
+[31m-    [m
+[31m-    # === 德甲 ===[m
+[31m-    "拜仁慕尼黑": "拜仁慕尼黑",[m
+[31m-    "拜仁": "拜仁慕尼黑",[m
+[31m-    "多特蒙德": "多特蒙德",[m
+[31m-    [m
+[31m-    # === 意甲 ===[m
+[31m-    "国际米兰": "国际米兰",[m
+[31m-    "AC米兰": "AC米兰",[m
+[31m-    "尤文图斯": "尤文图斯",[m
+[31m-    [m
+[31m-    # === 法甲 ===[m
+[31m-    "巴黎圣日耳曼": "巴黎圣日耳曼",[m
+[31m-    "巴黎圣曼": "巴黎圣日耳曼",[m
+[31m-}[m
+[31m-[m
+[31m-[m
+[31m-# ========== 工具函数 ==========[m
+[31m-[m
+[31m-def log(msg):[m
+[31m-    """日志输出"""[m
+[31m-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")[m
+[31m-    print(f"[{timestamp}] {msg}")[m
+[31m-[m
+[31m-[m
+[31m-def http_get_json(url: str, headers: dict = None) -> Optional[dict]:[m
+[31m-    """HTTP GET请求，返回JSON"""[m
+[31m-    try:[m
+[31m-        import urllib.request[m
+[31m-        req = urllib.request.Request(url)[m
+[31m-        if headers:[m
+[31m-            for key, value in headers.items():[m
+[31m-                req.add_header(key, value)[m
+[31m-        [m
+[31m-        with urllib.request.urlopen(req, timeout=30) as response:[m
+[31m-            data = json.loads(response.read().decode('utf-8'))[m
+[31m-            return data[m
+[31m-    except Exception as e:[m
+[31m-        log(f"HTTP请求失败: {url} - {e}")[m
+[31m-        return None[m
+[31m-[m
+[31m-[m
+[31m-def ensure_dirs():[m
+[31m-    """确保必要目录存在"""[m
+[31m-    os.makedirs(CACHE_DIR, exist_ok=True)[m
+[31m-    os.makedirs(OUTPUT_DIR, exist_ok=True)[m
+[31m-[m
+[31m-[m
+[31m-def get_cache_path(league_code: str, data_type: str, date_str: str = None) -> str:[m
+[31m-    """获取缓存文件路径"""[m
+[31m-    if date_str is None:[m
+[31m-        date_str = datetime.now().strftime("%Y%m%d")[m
+[31m-    return os.path.join(CACHE_DIR, f"{data_type}_{league_code}_{date_str}.json")[m
+[31m-[m
+[31m-[m
+[31m-def is_cache_valid(cache_path: str, max_age_hours: int = 24) -> bool:[m
+[31m-    """检查缓存是否有效"""[m
+[31m-    if not os.path.exists(cache_path):[m
+[31m-        return False[m
+[31m-    file_time = datetime.fromtimestamp(os.path.getmtime(cache_path))[m
+[31m-    return datetime.now() - file_time < timedelta(hours=max_age_hours)[m
+[31m-[m
+[31m-[m
+[31m-def save_cache(data: dict, cache_path: str):[m
+[31m-    """保存缓存"""[m
+[31m-    try:[m
+[31m-        with open(cache_path, 'w', encoding='utf-8') as f:[m
+[31m-            json.dump(data, f, ensure_ascii=False, indent=2)[m
+[31m-    except Exception as e:[m
+[31m-        log(f"缓存保存失败: {e}")[m
+[31m-[m
+[31m-[m
+[31m-def load_cache(cache_path: str) -> Optional[dict]:[m
+[31m-    """加载缓存"""[m
+[31m-    try:[m
+[31m-        if os.path.exists(cache_path):[m
+[31m-            with open(cache_path, 'r', encoding='utf-8') as f:[m
+[31m-                return json.load(f)[m
+[31m-    except Exception as e:[m
+[31m-        log(f"缓存加载失败: {e}")[m
+[31m-    return None[m
+[31m-[m
+[31m-[m
+[31m-# ========== 队名标准化 ==========[m
+[31m-[m
+[31m-def normalize_team_name(name: str) -> str:[m
+[31m-    """标准化队名用于赔率匹配[m
+[31m-    [m
+[31m-    优先级：[m
+[31m-    1. TEAM_VARIANTS（别名映射，用于复盘时匹配不同译名）[m
+[31m-    2. TEAM_NAME_MAP（API英文 -> 中文）[m
+[31m-    3. TEAM_ALIASES（简称 -> API全名）[m
+[31m-    4. 模糊匹配[m
+[31m-    """[m
+[31m-    if not name:[m
+[31m-        return name[m
+[31m-    [m
+[31m-    name = name.strip()[m
+[31m-    [m
+[31m-    # 1. 先检查 TEAM_VARIANTS（复盘别名映射）[m
+[31m-    if name in TEAM_VARIANTS:[m
+[31m-        return TEAM_VARIANTS[name][m
+[31m-    [m
+[31m-    # 2. 检查 TEAM_NAME_MAP（英文 -> 中文）[m
+[31m-    if name in TEAM_NAME_MAP:[m
+[31m-        return TEAM_NAME_MAP[name][m
+[31m-    [m
+[31m-    # 3. 检查 TEAM_ALIASES（简称 -> API名 -> 中文）[m
+[31m-    if name in TEAM_ALIASES:[m
+[31m-        api_name = TEAM_ALIASES[name][m
+[31m-        if api_name in TEAM_NAME_MAP:[m
+[31m-            return TEAM_NAME_MAP[api_name][m
+[31m-        return api_name[m
+[31m-    [m
+[31m-    # 4. 模糊匹配（英文队名）[m
+[31m-    name_lower = name.lower()[m
+[31m-    for en, cn in TEAM_NAME_MAP.items():[m
+[31m-        if en.lower() == name_lower:[m
+[31m-            return cn[m
+[31m-    [m
+[31m-    # 5. 未找到匹配，返回原始名称[m
+[31m-    return name[m
+[31m-[m
+[31m-[m
+[31m-def normalize_team_for_review(name: str) -> str:[m
+[31m-    """专门用于复盘时标准化队名[m
+[31m-    [m
+[31m-    与normalize_team_name()的区别：[m
+[31m-    - 只使用TEAM_VARIANTS进行别名映射[m
+[31m-    - 不依赖API英文名[m
+[31m-    - 更宽松的匹配逻辑[m
+[31m-    """[m
+[31m-    if not name:[m
+[31m-        return name[m
+[31m-    [m
+[31m-    name = name.strip()[m
+[31m-    [m
+[31m-    # 直接查找别名映射[m
+[31m-    if name in TEAM_VARIANTS:[m
+[31m-        return TEAM_VARIANTS[name][m
+[31m-    [m
+[31m-    return name[m
+[31m-[m
+[31m-[m
+[31m-def find_team_in_standings(team_name: str, standings: dict) -> Optional[dict]:[m
+[31m-    """在积分榜中查找球队，支持模糊匹配"""[m
+[31m-    normalized = team_name.strip()[m
+[31m-    [m
+[31m-    # 1. 直接匹配[m
+[31m-    if normalized in standings:[m
+[31m-        return standings[normalized][m
+[31m-    [m
+[31m-    # 2. 检查别名 -> API名[m
+[31m-    alias = TEAM_ALIASES.get(normalized)[m
+[31m-    if alias and alias in standings:[m
+[31m-        return standings[alias][m
+[31m-    [m
+[31m-    # 3. 模糊匹配 - 检查是否包含[m
+[31m-    team_lower = normalized.lower()[m
+[31m-    for name, data in standings.items():[m
+[31m-        name_lower = name.lower()[m
+[31m-        if team_lower in name_lower or name_lower in team_lower:[m
+[31m-            return data[m
+[31m-        # 移除空格和特殊字符后匹配[m
+[31m-        clean_team = re.sub(r'[^a-z]', '', team_lower)[m
+[31m-        clean_name = re.sub(r'[^a-z]', '', name_lower)[m
+[31m-        if clean_team and clean_name and (clean_team in clean_name or clean_name in clean_team):[m
+[31m-            return data[m
+[31m-    [m
+[31m-    return None[m
+[31m-[m
+[31m-[m
+[31m-# ========== API 数据获取 ==========[m
+[31m-[m
+[31m-def fetch_standings(league_code: str, force_refresh: bool = False) -> Optional[dict]:[m
+[31m-    """[m
+[31m-    获取联赛积分榜数据[m
+[31m-    """[m
+[31m-    cache_path = get_cache_path(league_code, "standings_api")[m
+[31m-    [m
+[31m-    if not force_refresh and is_cache_valid(cache_path):[m
+[31m-        log(f"从缓存加载积分榜: {league_code}")[m
+[31m-        return load_cache(cache_path)[m
+[31m-    [m
+[31m-    log(f"正在获取 {LEAGUE_CODES.get(league_code, {}).get('name', league_code)} 积分榜...")[m
+[31m-    [m
+[31m-    url = f"{API_BASE}/competitions/{league_code}/standings"[m
+[31m-    headers = {[m
+[31m-        'X-Auth-Token': API_KEY,[m
+[31m-        'Accept': 'application/json'[m
+[31m-    }[m
+[31m-    [m
+[31m-    data = http_get_json(url, headers)[m
+[31m-    if not data:[m
+[31m-        return None[m
+[31m-    [m
+[31m-    # 解析 TOTAL 积分榜[m
+[31m-    total_standings = {}[m
+[31m-    current_matchday = 30[m
+[31m-    [m
+[31m-    for standing in data.get('standings', []):[m
+[31m-        if standing.get('type') == 'TOTAL':[m
+[31m-            for entry in standing.get('table', []):[m
+[31m-                team_name = entry.get('team', {}).get('name', '')[m
+[31m-                total_standings[team_name] = {[m
+[31m-                    'name': team_name,[m
+[31m-                    'name_zh': TEAM_NAME_MAP.get(team_name, team_name),[m
+[31m-                    'rank': entry.get('position', 0),[m
+[31m-                    'played': entry.get('playedGames', 0),[m
+[31m-                    'won': entry.get('won', 0),[m
+[31m-                    'drawn': entry.get('draw', 0),[m
+[31m-                    'lost': entry.get('lost', 0),[m
+[31m-                    'gf': entry.get('goalsFor', 0),[m
+[31m-                    'ga': entry.get('goalsAgainst', 0),[m
+[31m-                    'points': entry.get('points', 0),[m
+[31m-                }[m
+[31m-            break[m
+[31m-    [m
+[31m-    # 尝试获取当前轮次[m
+[31m-    season = data.get('season', {})[m
+[31m-    current_matchday = season.get('currentMatchday', 30)[m
+[31m-    [m
+[31m-    if total_standings:[m
+[31m-        save_cache({"standings": total_standings, "current_matchday": current_matchday}, cache_path)[m
+[31m-        log(f"✓ 获取到 {len(total_standings)} 支球队的积分榜 (第{current_matchday}轮)")[m
+[31m-    [m
+[31m-    return {"standings": total_standings, "current_matchday": current_matchday}[m
+[31m-[m
+[31m-[m
+[31m-def fetch_matches_in_window(league_code: str, start_time: datetime, end_time: datetime, force_refresh: bool = False) -> List[dict]:[m
+[31m-    """[m
+[31m-    获取指定时间窗口内的比赛[m
+[31m-    时间窗口：当天13:00至次日12:59（24小时滚动）[m
+[31m-    """[m
+[31m-    cache_path = get_cache_path(league_code, "matches_window")[m
+[31m-    [m
+[31m-    if not force_refresh and is_cache_valid(cache_path):[m
+[31m-        log(f"从缓存加载比赛: {league_code}")[m
+[31m-        data = load_cache(cache_path)[m
+[31m-        if data:[m
+[31m-            return data.get('matches', [])[m
+[31m-    [m
+[31m-    log(f"正在获取 {LEAGUE_CODES.get(league_code, {}).get('name', league_code)} 比赛列表...")[m
+[31m-    [m
+[31m-    # 获取未来7天的比赛[m
+[31m-    from datetime import timedelta[m
+[31m-    date_from = (start_time - timedelta(hours=8)).strftime("%Y-%m-%d")  # 转回UTC[m
+[31m-    date_to = (end_time - timedelta(hours=8)).strftime("%Y-%m-%d")  # 转回UTC[m
+[31m-    [m
+[31m-    url = f"{API_BASE}/competitions/{league_code}/matches?dateFrom={date_from}&dateTo={date_to}"[m
+[31m-    headers = {[m
+[31m-        'X-Auth-Token': API_KEY,[m
+[31m-        'Accept': 'application/json'[m
+[31m-    }[m
+[31m-    [m
+[31m-    data = http_get_json(url, headers)[m
+[31m-    if not data:[m
+[31m-        return [][m
+[31m-    [m
+[31m-    matches = [][m
+[31m-    for match in data.get('matches', []):[m
+[31m-        utc_date = match.get('utcDate', '')[m
+[31m-        if not utc_date:[m
+[31m-            continue[m
+[31m-        [m
+[31m-        # 解析时间（API返回UTC时间）[m
+[31m-        try:[m
+[31m-            match_time = datetime.fromisoformat(utc_date.replace('Z', '+00:00'))[m
+[31m-            # 转换为北京时间（去掉时区信息，简化比较）[m
+[31m-            local_time = match_time.replace(tzinfo=None) + timedelta(hours=8)[m
+[31m-            [m
+[31m-            # 过滤在时间窗口内的比赛[m
+[31m-            if start_time <= local_time <= end_time:[m
+[31m-                matches.append({[m
+[31m-                    'id': match.get('id'),[m
+[31m-                    'home_team': match.get('homeTeam', {}).get('name', ''),[m
+[31m-                    'away_team': match.get('awayTeam', {}).get('name', ''),[m
+[31m-                    'match_time_str': local_time.strftime("%Y-%m-%d %H:%M"),[m
+[31m-                    'utc_time': utc_date,[m
+[31m-                })[m
+[31m-        except Exception as e:[m
+[31m-            log(f"解析比赛时间失败: {e}")[m
+[31m-            continue[m
+[31m-    [m
+[31m-    save_cache({'matches': matches}, cache_path)[m
+[31m-    log(f"✓ 获取到 {len(matches)} 场在时间窗口内的比赛")[m
+[31m-    [m
+[31m-    return matches[m
+[31m-[m
+[31m-[m
+[31m-# ========== 真实赔率获取 ==========[m
+[31m-[m
+[31m-def fetch_real_odds_from_api() -> dict:[m
+[31m-    """[m
+[31m-    从体彩网API获取真实赔率数据[m
+[31m-    API返回结构化JSON，包含竞彩编号、中文队名简称、胜平负赔率(HAD)和让球赔率(HHAD)[m
+[31m-    [m
+[31m-    返回格式: {[m
+[31m-        "主队简称 vs 客队简称": {[m
+[31m-            "home": 1.90, "draw": 3.80, "away": 4.00,  # HAD赔率（可能为None）[m
+[31m-            "hhad_home": 2.62, "hhad_draw": 4.30, "hhad_away": 1.94,  # HHAD让球赔率[m
+[31m-            "hhad_handicap": -1.0,  # 让球数（负数表示主队让球）[m
+[31m-            "odds_source": "had" 或 "hhad",  # 赔率来源[m
+[31m-            "matchNum": "2003", "league": "英超", ...[m
+[31m-        }, ...[m
+[31m-    }[m
+[31m-    """[m
+[31m-    import urllib.request[m
+[31m-    [m
+[31m-    log("正在从体彩网API获取赔率数据...")[m
+[31m-    [m
+[31m-    try:[m
+[31m-        req = urllib.request.Request(SPORTTERY_API_URL)[m
+[31m-        req.add_header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")[m
+[31m-        req.add_header("Referer", "https://www.lottery.gov.cn/")[m
+[31m-        [m
+[31m-        with urllib.request.urlopen(req, timeout=30) as response:[m
+[31m-            data = json.loads(response.read().decode('utf-8'))[m
+[31m-        [m
+[31m-        # 解析API返回的数据[m
+[31m-        odds_data = {}[m
+[31m-        match_count = 0[m
+[31m-        hhad_only_count = 0  # 仅HHAD有赔率的场次[m
+[31m-        [m
+[31m-        value = data.get("value", {})[m
+[31m-        match_info_list = value.get("matchInfoList", [])[m
+[31m-        [m
+[31m-        for day_info in match_info_list:[m
+[31m-            sub_match_list = day_info.get("subMatchList", [])[m
+[31m-            for match in sub_match_list:[m
+[31m-                match_num = match.get("matchNum", "")[m
+[31m-                home_team = match.get("homeTeamAbbName", "")[m
+[31m-                away_team = match.get("awayTeamAbbName", "")[m
+[31m-                [m
+[31m-                key = f"{home_team} vs {away_team}"[m
+[31m-                [m
+[31m-                # 初始化赔率数据[m
+[31m-                match_data = {[m
+[31m-                    "home": None,[m
+[31m-                    "draw": None,[m
+[31m-                    "away": None,[m
+[31m-                    "hhad_home": None,[m
+[31m-                    "hhad_draw": None,[m
+[31m-                    "hhad_away": None,[m
+[31m-                    "hhad_handicap": None,[m
+[31m-                    "odds_source": None,[m
+[31m-                    "matchNum": match_num,[m
+[31m-                    "league": match.get("leagueAbbName", ""),[m
+[31m-                    "matchDate": match.get("matchDate", ""),[m
+[31m-                    "matchTime": match.get("matchTime", ""),[m
+[31m-                }[m
+[31m-                [m
+[31m-                # 获取胜平负赔率 (had)[m
+[31m-                had = match.get("had", {})[m
+[31m-                if had:[m
+[31m-                    home_odds = had.get("h")[m
+[31m-                    draw_odds = had.get("d")[m
+[31m-                    away_odds = had.get("a")[m
+[31m-                    [m
+[31m-                    if home_odds and draw_odds and away_odds:[m
+[31m-                        match_data["home"] = float(home_odds)[m
+[31m-                        match_data["draw"] = float(draw_odds)[m
+[31m-                        match_data["away"] = float(away_odds)[m
+[31m-                        match_data["odds_source"] = "had"[m
+[31m-                [m
+[31m-                # 获取让球赔率 (hhad)[m
+[31m-                hhad = match.get("hhad", {})[m
+[31m-                if hhad:[m
+[31m-                    hhad_home = hhad.get("h")[m
+[31m-                    hhad_draw = hhad.get("d")[m
+[31m-                    hhad_away = hhad.get("a")[m
+[31m-                    hhad_goal_line = hhad.get("goalLine")[m
+[31m-                    hhad_goal_line_value = hhad.get("goalLineValue")[m
+[31m-                    [m
+[31m-                    if hhad_home and hhad_draw and hhad_away:[m
+[31m-                        match_data["hhad_home"] = float(hhad_home)[m
+[31m-                        match_data["hhad_draw"] = float(hhad_draw)[m
+[31m-                        match_data["hhad_away"] = float(hhad_away)[m
+[31m-                        [m
+[31m-                        # 解析让球数（goalLine是字符串如"-1"，goalLineValue是"-1.00"）[m
+[31m-                        if hhad_goal_line_value:[m
+[31m-                            try:[m
+[31m-                                match_data["hhad_handicap"] = float(hhad_goal_line_value)[m
+[31m-                            except (ValueError, TypeError):[m
+[31m-                                try:[m
+[31m-                                    match_data["hhad_handicap"] = float(hhad_goal_line)[m
+[31m-                                except (ValueError, TypeError):[m
+[31m-                                    match_data["hhad_handicap"] = None[m
+[31m-                        elif hhad_goal_line:[m
+[31m-                            try:[m
+[31m-                                match_data["hhad_handicap"] = float(hhad_goal_line)[m
+[31m-                            except (ValueError, TypeError):[m
+[31m-                                match_data["hhad_handicap"] = None[m
+[31m-                [m
+[31m-                # 决定赔率来源：优先用HAD，HAD为空但HHAD有时用HHAD[m
+[31m-                if match_data["home"] is not None:[m
+[31m-                    # HAD赔率存在，使用HAD[m
+[31m-                    pass[m
+[31m-                elif match_data["hhad_home"] is not None:[m
+[31m-                    # HAD为空但HHAD存在，标记使用HHAD[m
+[31m-                    match_data["odds_source"] = "hhad"[m
+[31m-                    hhad_only_count += 1[m
+[31m-                [m
+[31m-                # 只添加有至少一种赔率的比赛[m
+[31m-                if match_data["home"] is not None or match_data["hhad_home"] is not None:[m
+[31m-                    odds_data[key] = match_data[m
+[31m-                    match_count += 1[m
+[31m-        [m
+[31m-        # 同时保存到缓存文件作为备份[m
+[31m-        try:[m
+[31m-            os.makedirs(os.path.dirname(ODDS_FILE), exist_ok=True)[m
+[31m-            with open(ODDS_FILE, 'w', encoding='utf-8') as f:[m
+[31m-                json.dump(odds_data, f, ensure_ascii=False, indent=2)[m
+[31m-        except Exception as e:[m
+[31m-            log(f"保存赔率缓存失败: {e}")[m
+[31m-        [m
+[31m-        log(f"✓ 从API获取到 {match_count} 场比赛的赔率")[m
+[31m-        if hhad_only_count > 0:[m
+[31m-            log(f"  其中 {hhad_only_count} 场仅开售让球盘(HHAD)")[m
+[31m-        [m
+[31m-        return odds_data[m
+[31m-        [m
+[31m-    except Exception as e:[m
+[31m-        log(f"⚠️ 从API获取赔率失败: {e}")[m
+[31m-        return {}[m
+[31m-[m
+[31m-[m
+[31m-def load_real_odds() -> dict:[m
+[31m-    """[m
+[31m-    从缓存文件加载真实赔率数据（Fallback方案）[m
+[31m-    返回格式: {"主队简称 vs 客队简称": {"home": 1.90, "draw": 3.80, "away": 4.00}, ...}[m
+[31m-    """[m
+[31m-    if not os.path.exists(ODDS_FILE):[m
+[31m-        log(f"⚠️ 真实赔率文件不存在: {ODDS_FILE}")[m
+[31m-        log(f"   提示: 脚本将尝试从体彩网API获取赔率")[m
+[31m-        return {}[m
+[31m-    [m
+[31m-    try:[m
+[31m-        with open(ODDS_FILE, 'r', encoding='utf-8') as f:[m
+[31m-            odds_data = json.load(f)[m
+[31m-        log(f"✓ 从缓存加载真实赔率数据: {len(odds_data)} 场比赛")[m
+[31m-        return odds_data[m
+[31m-    except Exception as e:[m
+[31m-        log(f"⚠️ 加载赔率文件失败: {e}")[m
+[31m-        return {}[m
+[31m-[m
+[31m-[m
+[31m-def get_odds_data(prefer_api: bool = True) -> dict:[m
+[31m-    """[m
+[31m-    获取赔率数据的主入口函数[m
+[31m-    优先从API获取，失败时fallback到缓存文件[m
+[31m-    [m
+[31m-    Args:[m
+[31m-        prefer_api: 是否优先使用API获取（默认True）[m
+[31m-    [m
+[31m-    Returns:[m
+[31m-        赔率数据字典[m
+[31m-    """[m
+[31m-    if prefer_api:[m
+[31m-        # 优先尝试API[m
+[31m-        odds_data = fetch_real_odds_from_api()[m
+[31m-        if odds_data:[m
+[31m-            return odds_data[m
+[31m-        [m
+[31m-        # API失败，尝试缓存[m
+[31m-        log("API获取失败，尝试从缓存加载...")[m
+[31m-        odds_data = load_real_odds()[m
+[31m-        if odds_data:[m
+[31m-            return odds_data[m
+[31m-        [m
+[31m-        return {}[m
+[31m-    else:[m
+[31m-        # 直接使用缓存[m
+[31m-        return load_real_odds()[m
+[31m-[m
+[31m-[m
+[31m-def match_odds_key(home_team: str, away_team: str, odds_data: dict) -> Optional[str]:[m
+[31m-    """匹配赔率数据的键名"""[m
+[31m-    # 英文队名到中文简称的直接映射（体彩网使用中文简称）[m
+[31m-    en_to_cn_short = {[m
+[31m-        # 英超[m
+[31m-        "FC Barcelona": "巴萨",[m
+[31m-        "Barcelona": "巴萨",[m
+[31m-        "Deportivo Alavés FC": "阿拉维斯",[m
+[31m-        "Deportivo Alavés": "阿拉维斯",[m
+[31m-        "Alavés": "阿拉维斯",[m
+[31m-        "Paris Saint-Germain FC": "巴黎圣曼",[m
+[31m-        "Paris Saint-Germain": "巴黎圣曼",[m
+[31m-        "Stade Rennais FC": "雷恩",[m
+[31m-        "Racing Club de Lens": "朗斯",[m
+[31m-        "RC Lens": "朗斯",[m
+[31m-        "RC Strasbourg Alsace": "斯特拉斯",[m
+[31m-        "Strasbourg": "斯特拉斯",[m
+[31m-        "Strasbourg Alsace": "斯特拉斯",[m
+[31m-        "Southampton FC": "南安普敦",[m
+[31m-        "Middlesbrough FC": "米堡",[m
+[31m-        "Real Club Celta de Vigo": "塞尔塔",[m
+[31m-        "Celta Vigo": "塞尔塔",[m
+[31m-        "Celta de Vigo": "塞尔塔",[m
+[31m-    }[m
+[31m-    [m
+[31m-    # 先处理英文队名到中文简称[m
+[31m-    home_cn = en_to_cn_short.get(home_team, home_team)[m
+[31m-    away_cn = en_to_cn_short.get(away_team, away_team)[m
+[31m-    [m
+[31m-    # 再标准化为中文全称[m
+[31m-    home_normalized = normalize_team_name(home_cn)[m
+[31m-    away_normalized = normalize_team_name(away_cn)[m
+[31m-    [m
+[31m-    # 简称映射 - 包含中文全称/简称和英文名到中文简称的映射[m
+[31m-    short_names = {[m
+[31m-        # 中文全称 -> 中文简称[m
+[31m-        "皇家马德里": ["皇马"],[m
+[31m-        "巴塞罗那": ["巴萨"],[m
+[31m-        "巴黎圣日耳曼": ["巴黎", "大巴黎", "巴黎圣曼"],[m
+[31m-        "国际米兰": ["国米"],[m
+[31m-        "AC米兰": ["米兰"],[m
+[31m-        "皇家贝蒂斯": ["贝蒂斯"],[m
+[31m-        "皇家奥维耶多": ["奥维耶多"],[m
+[31m-        "塞尔塔": ["塞尔塔维戈"],[m
+[31m-        "马德里竞技": ["马竞"],[m
+[31m-        "比利亚雷亚尔": ["比利亚雷"],[m
+[31m-        "塞维利亚": ["塞维利亚FC"],[m
+[31m-        "毕尔巴鄂": ["毕尔巴鄂竞技"],[m
+[31m-        "阿拉维斯": ["阿拉维斯"],[m
+[31m-        "赫塔费": ["赫塔费"],[m
+[31m-        "拉齐奥": ["拉齐奥"],[m
+[31m-        "尤文图斯": ["尤文"],[m
+[31m-        "罗马": ["罗马"],[m
+[31m-        "那不勒斯": ["那不勒斯"],[m
+[31m-        "布雷斯特": ["布雷斯特"],[m
+[31m-        "斯特拉斯堡": ["斯特拉斯"],[m
+[31m-        "朗斯": ["朗斯"],[m
+[31m-        "南安普顿": ["南安普敦"],[m
+[31m-        "圣旺红星": ["红星"],[m
+[31m-        "阿斯顿维拉": ["维拉"],[m
+[31m-    }[m
+[31m-    [m
+[31m-    def expand_name(name):[m
+[31m-        """展开队名变体"""[m
+[31m-        result = [name][m
+[31m-        [m
+[31m-        # 检查是否是简称 -> 全称的映射（如 "巴萨" -> "巴塞罗那"）[m
+[31m-        for full, shorts in short_names.items():[m
+[31m-            if name in shorts:[m
+[31m-                result.append(full)[m
+[31m-                result.extend([s for s in shorts if s != name])[m
+[31m-                break[m
+[31m-        [m
+[31m-        # 检查是否是全称 -> 简称的映射（如 "巴塞罗那" -> ["巴塞罗那", "巴萨"]）[m
+[31m-        if name in short_names:[m
+[31m-            result.extend(short_names[name])[m
+[31m-        [m
+[31m-        return list(set(result))[m
+[31m-    [m
+[31m-    home_variants = expand_name(home_normalized)[m
+[31m-    away_variants = expand_name(away_normalized)[m
+[31m-    [m
+[31m-    # 尝试各种组合[m
+[31m-    for h in home_variants:[m
+[31m-        for a in away_variants:[m
+[31m-            candidates = [f"{h} vs {a}", f"{h} - {a}"][m
+[31m-            for key in candidates:[m
+[31m-                if key in odds_data:[m
+[31m-                    return key[m
+[31m-    [m
+[31m-    # 模糊匹配[m
+[31m-    for key in odds_data.keys():[m
+[31m-        key_lower = key.lower()[m
+[31m-        home_in_key = any(h.lower() in key_lower or h in key for h in home_variants)[m
+[31m-        away_in_key = any(a.lower() in key_lower or a in key for a in away_variants)[m
+[31m-        if home_in_key and away_in_key:[m
+[31m-            return key[m
+[31m-    [m
+[31m-    return None[m
+[31m-[m
+[31m-[m
+[31m-def get_real_odds(home_team: str, away_team: str, odds_data: dict) -> Optional[Tuple[float, float, float]]:[m
+[31m-    """[m
+[31m-    获取真实赔率（优先HAD，fallback到HHAD）[m
+[31m-    [m
+[31m-    返回: (home, draw, away) 或 None（无赔率）[m
+[31m-    """[m
+[31m-    if not odds_data:[m
+[31m-        return None[m
+[31m-    [m
+[31m-    key = match_odds_key(home_team, away_team, odds_data)[m
+[31m-    if not key:[m
+[31m-        return None[m
+[31m-    [m
+[31m-    odds = odds_data.get(key, {})[m
+[31m-    if not odds:[m
+[31m-        return None[m
+[31m-    [m
+[31m-    home = odds.get('home')[m
+[31m-    draw = odds.get('draw')[m
+[31m-    away = odds.get('away')[m
+[31m-    [m
+[31m-    if home and draw and away:[m
+[31m-        return (home, draw, away)[m
+[31m-    [m
+[31m-    return None[m
+[31m-[m
+[31m-[m
+[31m-def get_hhad_odds(home_team: str, away_team: str, odds_data: dict) -> Optional[Tuple[float, float, float, float]]:[m
+[31m-    """[m
+[31m-    获取让球赔率(HHAD)[m
+[31m-    [m
+[31m-    返回: (hhad_home, hhad_draw, hhad_away, handicap) 或 None（无HHAD赔率）[m
+[31m-    """[m
+[31m-    if not odds_data:[m
+[31m-        return None[m
+[31m-    [m
+[31m-    key = match_odds_key(home_team, away_team, odds_data)[m
+[31m-    if not key:[m
+[31m-        return None[m
+[31m-    [m
+[31m-    odds = odds_data.get(key, {})[m
+[31m-    if not odds:[m
+[31m-        return None[m
+[31m-    [m
+[31m-    hhad_home = odds.get('hhad_home')[m
+[31m-    hhad_draw = odds.get('hhad_draw')[m
+[31m-    hhad_away = odds.get('hhad_away')[m
+[31m-    handicap = odds.get('hhad_handicap')[m
+[31m-    [m
+[31m-    if hhad_home and hhad_draw and hhad_away:[m
+[31m-        return (hhad_home, hhad_draw, hhad_away, handicap)[m
+[31m-    [m
+[31m-    return None[m
+[31m-[m
+[31m-[m
+[31m-def get_odds_source(home_team: str, away_team: str, odds_data: dict) -> Optional[str]:[m
+[31m-    """[m
+[31m-    获取赔率来源标记[m
+[31m-    [m
+[31m-    返回: "had" / "hhad" / None[m
+[31m-    """[m
+[31m-    if not odds_data:[m
+[31m-        return None[m
+[31m-    [m
+[31m-    key = match_odds_key(home_team, away_team, odds_data)[m
+[31m-    if not key:[m
+[31m-        return None[m
+[31m-    [m
+[31m-    odds = odds_data.get(key, {})[m
+[31m-    return odds.get('odds_source')[m
+[31m-[m
+[31m-[m
+[31m-def get_match_num(home_team: str, away_team: str, odds_data: dict) -> Optional[str]:[m
+[31m-    """获取体彩网官方编号matchNum，如"3005"转"周三005"格式"""[m
+[31m-    if not odds_data:[m
+[31m-        return None[m
+[31m-    [m
+[31m-    key = match_odds_key(home_team, away_team, odds_data)[m
+[31m-    if not key:[m
+[31m-        return None[m
+[31m-    [m
+[31m-    odds = odds_data.get(key, {})[m
+[31m-    match_num_raw = odds.get('matchNum', '')[m
+[31m-    [m
+[31m-    # 转换为字符串处理[m
+[31m-    match_num = str(match_num_raw) if match_num_raw else ''[m
+[31m-    [m
+[31m-    if match_num and len(match_num) == 4:[m
+[31m-        try:[m
+[31m-            weekday_num = int(match_num[0])  # 1-7对应周一到周日[m
+[31m-            seq_num = match_num[1:4]  # 后3位序号[m
+[31m-            weekday_names = ["一", "二", "三", "四", "五", "六", "日"][m
+[31m-            if 1 <= weekday_num <= 7:[m
+[31m-                return f"周{weekday_names[weekday_num - 1]}{seq_num}"[m
+[31m-        except (ValueError, IndexError):[m
+[31m-            pass[m
+[31m-    [m
+[31m-    return None[m
+[31m-[m
+[31m-[m
+[31m-def match_num_to_display(match_num: str) -> str:[m
+[31m-    """将matchNum（如"3005"）转换为显示格式（如"周三005"）"""[m
+[31m-    if not match_num:[m
+[31m-        return ""[m
+[31m-    # 转换为字符串处理[m
+[31m-    match_num = str(match_num)[m
+[31m-    if len(match_num) != 4:[m
+[31m-        return ""[m
+[31m-    try:[m
+[31m-        weekday_num = int(match_num[0])[m
+[31m-        seq_num = match_num[1:4][m
+[31m-        weekday_names = ["一", "二", "三", "四", "五", "六", "日"][m
+[31m-        if 1 <= weekday_num <= 7:[m
+[31m-            return f"周{weekday_names[weekday_num - 1]}{seq_num}"[m
+[31m-    except (ValueError, IndexError):[m
+[31m-        pass[m
+[31m-    return ""[m
+[31m-[m
+[31m-[m
+[31m-# ========== 泊松模型 ==========[m
+[31m-[m
+[31m-def poisson_probability(mean: float, k: int) -> float:[m
+[31m-    """计算泊松分布概率 P(X=k)"""[m
+[31m-    return (mean ** k * math.exp(-mean)) / math.factorial(k)[m
+[31m-[m
+[31m-[m
+[31m-def calculate_poisson_probs(home_lambda: float, away_lambda: float, max_goals: int = 4) -> Tuple[float, float, float, dict]:[m
+[31m-    """计算泊松分布下的比分概率矩阵"""[m
+[31m-    matrix = {}[m
+[31m-    for home_goals in range(max_goals + 1):[m
+[31m-        for away_goals in range(max_goals + 1):[m
+[31m-            p = poisson_probability(home_lambda, home_goals) * poisson_probability(away_lambda, away_goals)[m
+[31m-            matrix[(home_goals, away_goals)] = p[m
+[31m-    [m
+[31m-    # 计算胜平负概率[m
+[31m-    home_win = sum(matrix[(h, a)] for h in range(1, max_goals+1) for a in range(max_goals+1))[m
+[31m-    draw = sum(matrix[(h, a)] for h in range(max_goals+1) for a in range(max_goals+1) if h == a)[m
+[31m-    away_win = sum(matrix[(h, a)] for h in range(max_goals+1) for a in range(1, max_goals+1))[m
+[31m-    [m
+[31m-    # 归一化[m
+[31m-    total_match = home_win + draw + away_win[m
+[31m-    if total_match > 0:[m
+[31m-        home_win /= total_match[m
+[31m-        draw /= total_match[m
+[31m-        away_win /= total_match[m
+[31m-    [m
+[31m-    return home_win, draw, away_win, matrix[m
+[31m-[m
+[31m-[m
+[31m-def bayesian_adjustment(poisson_prob: float, market_prob: float, confidence: float = 0.7) -> float:[m
+[31m-    """贝叶斯修正：综合泊松模型和市场概率"""[m
+[31m-    return poisson_prob * confidence + market_prob * (1 - confidence)[m
+[31m-[m
+[31m-[m
+[31m-def calculate_kelly(win_prob: float, odds: float, fraction: float = 0.5) -> float:[m
+[31m-    """凯利公式计算最优投注比例"""[m
+[31m-    b = odds - 1[m
+[31m-    q = 1 - win_prob[m
+[31m-    if b <= 0:[m
+[31m-        return 0[m
+[31m-    kelly = (b * win_prob - q) / b[m
+[31m-    return max(0, kelly * fraction)[m
+[31m-[m
+[31m-[m
+[31m-def calc_kelly_with_fallback(prob: float, odds: float) -> float:[m
+[31m-    """[m
+[31m-    计算半凯利指数，赔率为0时用概率反推隐含赔率[m
+[31m-    隐含赔率 = 1 / 综合概率[m
+[31m-    """[m
+[31m-    if not prob or prob <= 0:[m
+[31m-        return 0.0[m
+[31m-    # 如果赔率有效（>1.01），用实际赔率[m
+[31m-    if odds and odds > 1.01:[m
+[31m-        b = odds - 1[m
+[31m-    else:[m
+[31m-        # 赔率缺失时，用综合概率反推隐含赔率[m
+[31m-        implied_odds = 1.0 / prob[m
+[31m-        b = implied_odds - 1[m
+[31m-    q = 1 - prob[m
+[31m-    if b > 0:[m
+[31m-        kelly = (b * prob - q) / b[m
+[31m-        return round(max(0, kelly * 0.5), 6)[m
+[31m-    return 0.0[m
+[31m-[m
+[31m-[m
+[31m-def get_odds_category(odds: float) -> str:[m
+[31m-    """获取赔率区间分类"""[m
+[31m-    if odds <= 1.50:[m
+[31m-        return "低赔"[m
+[31m-    elif odds <= 2.00:[m
+[31m-        return "中低赔"[m
+[31m-    elif odds <= 3.00:[m
+[31m-        return "中赔"[m
+[31m-    else:[m
+[31m-        return "高赔"[m
+[31m-[m
+[31m-[m
+[31m-def assess_risk(home_prob: float, draw_prob: float, away_prob: float, [m
+[31m-                odds_home: float, odds_draw: float, odds_away: float) -> str:[m
+[31m-    """风险评估：高/中/低"""[m
+[31m-    probs = [home_prob, draw_prob, away_prob][m
+[31m-    avg_prob = sum(probs) / 3[m
+[31m-    variance = sum((p - avg_prob) ** 2 for p in probs) / 3[m
+[31m-    [m
+[31m-    kelly_home = home_prob - 1/odds_home[m
+[31m-    kelly_draw = draw_prob - 1/odds_draw[m
+[31m-    kelly_away = away_prob - 1/odds_away[m
+[31m-    [m
+[31m-    positive_kelly = sum(1 for k in [kelly_home, kelly_draw, kelly_away] if k > 0.05)[m
+[31m-    [m
+[31m-    if variance < 0.02 and positive_kelly <= 1:[m
+[31m-        return "低"[m
+[31m-    elif variance < 0.04 and positive_kelly <= 2:[m
+[31m-        return "中"[m
+[31m-    else:[m
+[31m-        return "高"[m
+[31m-[m
+[31m-[m
+[31m-def calculate_confidence(recommendation: str, rec_prob: float, [m
+[31m-                         odds_home: float, odds_draw: float, odds_away: float) -> Tuple[int, str, str]:[m
+[31m-    """计算信心指数（1-5星）"""[m
+[31m-    if recommendation == "主胜":[m
+[31m-        rec_odds = odds_home[m
+[31m-    elif recommendation == "平局":[m
+[31m-        rec_odds = odds_draw[m
+[31m-    else:[m
+[31m-        rec_odds = odds_away[m
+[31m-    [m
+[31m-    odds_category = get_odds_category(rec_odds)[m
+[31m-    [m
+[31m-    # 5星（强烈推荐）[m
+[31m-    if rec_prob >= 0.65 and rec_odds <= 1.25:[m
+[31m-        return 5, "⭐⭐⭐⭐⭐", "低赔高压，命中率70%"[m
+[31m-    if rec_prob >= 0.60 and rec_odds <= 1.30:[m
+[31m-        return 5, "⭐⭐⭐⭐⭐", "高压低赔支持"[m
+[31m-    [m
+[31m-    # 4星（推荐）[m
+[31m-    if rec_odds <= 1.40 and rec_prob >= 0.55:[m
+[31m-        return 4, "⭐⭐⭐⭐", "强队方向合理"[m
+[31m-    if rec_prob >= 0.60 and odds_category not in ["中赔"]:[m
+[31m-        return 4, "⭐⭐⭐⭐", "高概率支持"[m
+[31m-    [m
+[31m-    # 3星（一般）[m
+[31m-    if 0.45 <= rec_prob < 0.60:[m
+[31m-        return 3, "⭐⭐⭐", "中概率参考"[m
+[31m-    [m
+[31m-    if recommendation == "平局":[m
+[31m-        return 3, "⭐⭐⭐", "平局预测"[m
+[31m-    [m
+[31m-    # 2星（谨慎）[m
+[31m-    if odds_category == "中赔":[m
+[31m-        return 2, "⭐⭐", "中赔谨慎"[m
+[31m-    [m
+[31m-    if rec_odds <= 1.50 and rec_prob < 0.45:[m
+[31m-        return 2, "⭐⭐", "低赔低概率"[m
+[31m-    [m
+[31m-    # 1星（不建议）[m
+[31m-    if rec_odds > 3.00 and rec_prob < 0.50:[m
+[31m-        return 1, "⭐", "高赔低概率"[m
+[31m-    [m
+[31m-    return 2, "⭐⭐", "默认谨慎"[m
+[31m-[m
+[31m-[m
+[31m-# ========== 赔率反推xG ==========[m
+[31m-[m
+[31m-def calculate_xg_from_odds(odds_home: float, odds_draw: float, odds_away: float) -> Tuple[float, float]:[m
+[31m-    """[m
+[31m-    从市场赔率反推xG值[m
+[31m-    基于市场隐含概率推算双方进攻能力差异[m
+[31m-    [m
+[31m-    Args:[m
+[31m-        odds_home: 主场赔率[m
+[31m-        odds_draw: 平局赔率[m
+[31m-        odds_away: 客场赔率[m
+[31m-    [m
+[31m-    Returns:[m
+[31m-        (home_xg, away_xg, xg_source) - xG来源标记为"赔率反推"[m
+[31m-    """[m
+[31m-    # 计算市场隐含概率[m
+[31m-    total_implied = (1/odds_home) + (1/odds_draw) + (1/odds_away)[m
+[31m-    market_home = (1/odds_home) / total_implied[m
+[31m-    market_away = (1/odds_away) / total_implied[m
+[31m-    [m
+[31m-    # 从市场概率推算xG[m
+[31m-    # 原理：市场概率反映了双方实力差距，可转化为xG差异[m
+[31m-    if market_home > 0.5:[m
+[31m-        # 主场明显占优[m
+[31m-        home_xg = 1.2 + (market_home - 0.5) * 2.0[m
+[31m-        away_xg = 0.8 - (market_home - 0.5) * 0.8[m
+[31m-    elif market_away > 0.5:[m
+[31m-        # 客场明显占优[m
+[31m-        away_xg = 1.2 + (market_away - 0.5) * 2.0[m
+[31m-        home_xg = 0.8 - (market_away - 0.5) * 0.8[m
+[31m-    else:[m
+[31m-        # 势均力敌[m
+[31m-        home_xg = 1.1[m
+[31m-        away_xg = 1.0[m
+[31m-    [m
+[31m-    # 限制xG合理范围[m
+[31m-    home_xg = max(0.5, min(2.5, home_xg))[m
+[31m-    away_xg = max(0.3, min(2.0, away_xg))[m
+[31m-    [m
+[31m-    return home_xg, away_xg[m
+[31m-[m
+[31m-[m
+[31m-def calculate_xg_from_hhad(hhad_home: float, hhad_draw: float, hhad_away: float, [m
+[31m-                            handicap: float) -> Tuple[float, float]:[m
+[31m-    """[m
+[31m-    从让球盘赔率(HHAD)反推xG值[m
+[31m-    [m
+[31m-    原理：HHAD赔率是让球后的胜平负概率，可以反推让球后的预期进球分布。[m
+[31m-    例如：阿森纳让3球，HHAD: h=2.62(让球胜)/d=4.30(让球平)/a=1.94(让球负)[m
+[31m-    这意味着：让球后阿森纳赢4+球概率=1/2.62≈38.2%，赢3球概率≈23.3%，赢2球内≈51.5%[m
+[31m-    [m
+[31m-    Args:[m
+[31m-        hhad_home: 让球胜赔率（如阿森纳让3球赢4+球的赔率）[m
+[31m-        hhad_draw: 让球平赔率（让3球后恰好赢3球的赔率）[m
+[31m-        hhad_away: 让球负赔率（让3球后输球的赔率，即主队最多赢2球）[m
+[31m-        handicap: 让球数（如-3表示主队让3球）[m
+[31m-    [m
+[31m-    Returns:[m
+[31m-        (home_xg, away_xg) - 原始预期进球数[m
+[31m-    """[m
+[31m-    import math[m
+[31m-    [m
+[31m-    # 1. 从HHAD赔率反推让球后的隐含概率[m
+[31m-    total_implied = (1/hhad_home) + (1/hhad_draw) + (1/hhad_away)[m
+[31m-    implied_home = (1/hhad_home) / total_implied  # 让球后主胜概率[m
+[31m-    implied_draw = (1/hhad_draw) / total_implied    # 让球后平局概率[m
+[31m-    implied_away = (1/hhad_away) / total_implied    # 让球后客胜概率[m
+[31m-    [m
+[31m-    # 2. 让球盘赔率的含义[m
+[31m-    # 假设主队让n球（handicap为-n）：[m
+[31m-    # - HHAD胜：主队净胜n+1球以上[m
+[31m-    # - HHAD平：主队净胜恰好n球[m
+[31m-    # - HHAD负：主队净胜少于n球（即不胜）[m
+[31m-    [m
+[31m-    # 3. 用泊松分布拟合让球后的概率[m
+[31m-    # 设让球后的主队预期进球为lambda_home，客队为lambda_away[m
+[31m-    # P(主队净胜>=n+1) ≈ implied_home[m
+[31m-    # P(主队净胜=n) ≈ implied_draw[m
+[31m-    # P(主队净胜<=n-1) ≈ implied_away[m
+[31m-    [m
+[31m-    handicap_abs = abs(handicap) if handicap else 1.0[m
+[31m-    handicap_int = max(1, round(handicap_abs))  # 让球数取整，至少为1[m
+[31m-    [m
+[31m-    # 简化模型：假设让球后双方实力比为 implied_home : implied_away[m
+[31m-    # 使用二分法求解lambda值[m
+[31m-    [m
+[31m-    def poisson_prob(lambda_val, k):[m
+[31m-        """泊松概率 P(X=k)"""[m
+[31m-        return (lambda_val ** k * math.exp(-lambda_val)) / math.factorial(k) if k >= 0 else 0[m
+[31m-    [m
+[31m-    def solve_lambda():[m
+[31m-        """求解让球后的lambda值"""[m
+[31m-        # 假设客队平均进球约1.0（客场典型值）[m
+[31m-        base_away_lambda = 1.0[m
+[31m-        [m
+[31m-        # 通过HHAD概率反推让球后主队进攻强度[m
+[31m-        # implied_away ≈ P(主队净胜 <= handicap_int - 1) [m
+[31m-        #            ≈ P(主队进球 - 客队进球 <= handicap_int - 1)[m
+[31m-        # 对于让球盘，通常 |handicap| >= 1[m
+[31m-        [m
+[31m-        # 使用数值方法求解[m
+[31m-        best_lambda_home = 1.5[m
+[31m-        best_lambda_away = base_away_lambda[m
+[31m-        best_error = float('inf')[m
+[31m-        [m
+[31m-        for lambda_home_test in [0.5 + i * 0.1 for i in range(30)]:  # 0.5-3.5[m
+[31m-            for lambda_away_test in [0.3 + i * 0.1 for i in range(25)]:  # 0.3-2.7[m
+[31m-                # 计算让球后各种情况的概率[m
+[31m-                # 让球后净胜>=handicap_int+1的概率[m
+[31m-                prob_win = 0[m
+[31m-                for h in range(handicap_int + 1, 10):[m
+[31m-                    for a in range(10):[m
+[31m-                        prob_win += poisson_prob(lambda_home_test, h) * poisson_prob(lambda_away_test, a)[m
+[31m-                [m
+[31m-                # 让球后净胜恰好=handicap_int的概率[m
+[31m-                prob_draw = 0[m
+[31m-                for a in range(10):[m
+[31m-                    prob_draw += poisson_prob(lambda_home_test, handicap_int) * poisson_prob(lambda_away_test, a)[m
+[31m-                [m
+[31m-                # 让球后净胜<=handicap_int-1的概率[m
+[31m-                prob_loss = 0[m
+[31m-                for h in range(handicap_int):[m
+[31m-                    for a in range(10):[m
+[31m-                        prob_loss += poisson_prob(lambda_home_test, h) * poisson_prob(lambda_away_test, a)[m
+[31m-                for a in range(handicap_int + 1, 10):[m
+[31m-                    for h in range(handicap_int):[m
+[31m-                        prob_loss += poisson_prob(lambda_home_test, h) * poisson_prob(lambda_away_test, a)[m
+[31m-                [m
+[31m-                # 计算误差[m
+[31m-                total = prob_win + prob_draw + prob_loss[m
+[31m-                if total < 0.95:  # 概率和太低，跳过[m
+[31m-                    continue[m
+[31m-                [m
+[31m-                error = (abs(prob_win - implied_home) + [m
+[31m-                        abs(prob_draw - implied_draw) + [m
+[31m-                        abs(prob_loss - implied_away))[m
+[31m-                [m
+[31m-                if error < best_error:[m
+[31m-                    best_error = error[m
+[31m-                    best_lambda_home = lambda_home_test[m
+[31m-                    best_lambda_away = lambda_away_test[m
+[31m-        [m
+[31m-        return best_lambda_home, best_lambda_away[m
+[31m-    [m
+[31m-    # 4. 求解让球后的lambda[m
+[31m-    lambda_home_hhad, lambda_away_hhad = solve_lambda()[m
+[31m-    [m
+[31m-    # 5. 将让球后的lambda转换为原始lambda[m
+[31m-    # 主队让n球，意味着原始预期主队进球 = 让球后预期 + n[m
+[31m-    # 但由于让球盘通常用于实力悬殊的比赛，需要合理调整[m
+[31m-    [m
+[31m-    # 直接使用让球后的lambda作为主客队预期进球[m
+[31m-    # 因为让球盘赔率已经包含了双方实力差距的信息[m
+[31m-    home_xg = lambda_home_hhad[m
+[31m-    away_xg = lambda_away_hhad[m
+[31m-    [m
+[31m-    # 限制xG合理范围[m
+[31m-    home_xg = max(0.5, min(3.0, home_xg))[m
+[31m-    away_xg = max(0.3, min(2.5, away_xg))[m
+[31m-    [m
+[31m-    return home_xg, away_xg[m
+[31m-[m
+[31m-[m
+[31m-# ========== 比赛分析 ==========[m
+[31m-[m
+[31m-def analyze_match(home_data: dict, away_data: dict, real_odds: Optional[Tuple[float, float, float]] = None,[m
+[31m-                  use_odds_xg: bool = False,[m
+[31m-                  hhad_odds: Optional[Tuple[float, float, float, float]] = None) -> Optional[dict]:[m
+[31m-    """[m
+[31m-    分析单场比赛[m
+[31m-    无赔率则返回None（跳过该比赛）[m
+[31m-    [m
+[31m-    Args:[m
+[31m-        home_data: 主队积分榜数据[m
+[31m-        away_data: 客队积分榜数据[m
+[31m-        real_odds: (home_odds, draw_odds, away_odds) - HAD赔率[m
+[31m-        use_odds_xg: 是否使用赔率反推xG（False则使用积分榜数据）[m
+[31m-        hhad_odds: (hhad_home, hhad_draw, hhad_away, handicap) - 让球赔率[m
+[31m-    [m
+[31m-    Returns:[m
+[31m-        分析结果字典，包含xG来源标记、赔率来源标记[m
+[31m-    """[m
+[31m-    if real_odds is None and hhad_odds is None:[m
+[31m-        return None[m
+[31m-    [m
+[31m-    # 决定使用哪种赔率[m
+[31m-    use_hhad = False[m
+[31m-    odds_home = odds_draw = odds_away = None[m
+[31m-    [m
+[31m-    if real_odds is not None:[m
+[31m-        odds_home, odds_draw, odds_away = real_odds[m
+[31m-    elif hhad_odds is not None:[m
+[31m-        # HAD为空但HHAD存在，使用HHAD赔率[m
+[31m-        hhad_home, hhad_draw, hhad_away, handicap = hhad_odds[m
+[31m-        use_hhad = True[m
+[31m-        # HHAD赔率作为分析用赔率[m
+[31m-        odds_home = hhad_home[m
+[31m-        odds_draw = hhad_draw[m
+[31m-        odds_away = hhad_away[m
+[31m-    [m
+[31m-    if odds_home is None or odds_draw is None or odds_away is None:[m
+[31m-        return None[m
+[31m-    [m
+[31m-    # 计算xG[m
+[31m-    if use_odds_xg:[m
+[31m-        if use_hhad and hhad_odds is not None:[m
+[31m-            # 使用HHAD赔率反推xG[m
+[31m-            home_xg, away_xg = calculate_xg_from_hhad(hhad_home, hhad_draw, hhad_away, handicap)[m
+[31m-            xg_source = "让球盘反推"[m
+[31m-        else:[m
+[31m-            # 使用HAD赔率反推xG[m
+[31m-            home_xg, away_xg = calculate_xg_from_odds(odds_home, odds_draw, odds_away)[m
+[31m-            xg_source = "赔率反推"[m
+[31m-        [m
+[31m-        # 泊松分布计算（使用反推的xG）[m
+[31m-        poisson_home, poisson_draw, poisson_away, score_matrix = calculate_poisson_probs(home_xg, away_xg)[m
+[31m-    else:[m
+[31m-        # 使用积分榜数据计算xG[m
+[31m-        home_games = home_data.get('played', 10) or 10[m
+[31m-        away_games = away_data.get('played', 10) or 10[m
+[31m-        [m
+[31m-        home_attack = home_data.get('gf', 15) / home_games if home_games > 0 else 1.5[m
+[31m-        home_defense = home_data.get('ga', 10) / home_games if home_games > 0 else 1.2[m
+[31m-        away_attack = away_data.get('gf', 12) / away_games if away_games > 0 else 1.2[m
+[31m-        away_defense = away_data.get('ga', 14) / away_games if away_games > 0 else 1.5[m
+[31m-        [m
+[31m-        # 计算预期进球 (xG)[m
+[31m-        home_xg = home_attack * 0.4 + away_defense * 0.4 + 0.2[m
+[31m-        away_xg = away_attack * 0.4 + home_defense * 0.4 + 0.2[m
+[31m-        [m
+[31m-        # 排名调整[m
+[31m-        home_rank = home_data.get('rank', 10)[m
+[31m-        away_rank = away_data.get('rank', 10)[m
+[31m-        home_rank_factor = 1 + (10 - min(home_rank, 10)) * 0.02[m
+[31m-        away_rank_factor = 1 + (10 - min(away_rank, 10)) * 0.02[m
+[31m-        home_xg *= home_rank_factor[m
+[31m-        away_xg *= away_rank_factor[m
+[31m-        [m
+[31m-        xg_source = "积分榜"[m
+[31m-        [m
+[31m-        # 泊松分布计算[m
+[31m-        poisson_home, poisson_draw, poisson_away, score_matrix = calculate_poisson_probs(home_xg, away_xg)[m
+[31m-    [m
+[31m-    # 市场隐含概率（从用于分析的赔率计算）[m
+[31m-    total_implied = (1/odds_home) + (1/odds_draw) + (1/odds_away)[m
+[31m-    market_home = (1/odds_home) / total_implied[m
+[31m-    market_draw = (1/odds_draw) / total_implied[m
+[31m-    market_away = (1/odds_away) / total_implied[m
+[31m-    [m
+[31m-    # 贝叶斯修正 (70%泊松 + 30%市场)[m
+[31m-    final_home = bayesian_adjustment(poisson_home, market_home)[m
+[31m-    final_draw = bayesian_adjustment(poisson_draw, market_draw)[m
+[31m-    final_away = bayesian_adjustment(poisson_away, market_away)[m
+[31m-    [m
+[31m-    # 归一化[m
+[31m-    total = final_home + final_draw + final_away[m
+[31m-    final_home /= total[m
+[31m-    final_draw /= total[m
+[31m-    final_away /= total[m
+[31m-    [m
+[31m-    # 推荐方向（后续value_bet会覆盖为EV最高方向）[m
+[31m-    if final_home >= final_away and final_home >= final_draw:[m
+[31m-        recommendation = "主胜"[m
+[31m-        rec_prob = final_home[m
+[31m-    elif final_away >= final_home and final_away >= final_draw:[m
+[31m-        recommendation = "客胜"[m
+[31m-        rec_prob = final_away[m
+[31m-    else:[m
+[31m-        recommendation = "平局"[m
+[31m-        rec_prob = final_draw[m
+[31m-    [m
+[31m-    # 风险评估（使用HAD赔率，如果存在的话）[m
+[31m-    eval_odds_home = odds_home if not use_hhad and real_odds else odds_home[m
+[31m-    eval_odds_draw = odds_draw if not use_hhad and real_odds else odds_draw[m
+[31m-    eval_odds_away = odds_away if not use_hhad and real_odds else odds_away[m
+[31m-    risk = assess_risk(final_home, final_draw, final_away, eval_odds_home, eval_odds_draw, eval_odds_away)[m
+[31m-    [m
+[31m-    # 在信心说明中标注xG来源和赔率来源[m
+[31m-    odds_source_str = "让球盘" if use_hhad else "胜平负"[m
+[31m-    reason_with_source = f"（{xg_source}，赔率来源:{odds_source_str}）"[m
+[31m-    [m
+[31m-    # 参考比分[m
+[31m-    top_scores = sorted(score_matrix.items(), key=lambda x: -x[1])[:5][m
+[31m-    reference_scores = [f"{h}:{a}" for (h, a), _ in top_scores][m
+[31m-    [m
+[31m-    # 推荐概率标注[m
+[31m-    rec_prob_display = f"{rec_prob*100:.1f}%"[m
+[31m-    [m
+[31m-    home_name_zh = home_data.get('name_zh', home_data.get('name', ''))[m
+[31m-    away_name_zh = away_data.get('name_zh', away_data.get('name', ''))[m
+[31m-    [m
+[31m-    # 返回结果（EV字段初始为0，后续由value_bet覆盖）[m
+[31m-    result = {[m
+[31m-        'home_name_zh': home_name_zh,[m
+[31m-        'away_name_zh': away_name_zh,[m
+[31m-        'home_xg': home_xg,[m
+[31m-        'away_xg': away_xg,[m
+[31m-        'xg_source': xg_source,  # xG来源标记[m
+[31m-        'odds_source': 'hhad' if use_hhad else 'had',  # 赔率来源[m
+[31m-        'poisson_home': poisson_home,[m
+[31m-        'poisson_draw': poisson_draw,[m
+[31m-        'poisson_away': poisson_away,[m
+[31m-        'final_home': final_home,[m
+[31m-        'final_draw': final_draw,[m
+[31m-        'final_away': final_away,[m
+[31m-        'odds_home': odds_home,[m
+[31m-        'odds_draw': odds_draw,[m
+[31m-        'odds_away': odds_away,[m
+[31m-        'recommendation': recommendation,[m
+[31m-        'rec_prob': rec_prob,[m
+[31m-        'rec_prob_display': rec_prob_display,[m
+[31m-        'risk': risk,[m
+[31m-        'confidence_reason': reason_with_source,  # 包含xG来源和赔率来源[m
+[31m-        'reference_scores': reference_scores,[m
+[31m-        # EV相关字段（初始为0，后续由value_bet覆盖）[m
+[31m-        'ev_win': 0.0,[m
+[31m-        'ev_draw': 0.0,[m
+[31m-        'ev_loss': 0.0,[m
+[31m-        'ev_value': 0.0,[m
+[31m-        'best_direction': '',[m
+[31m-        'best_direction_cn': '',[m
+[31m-        'avg_margin': 0.0,[m
+[31m-    }[m
+[31m-    [m
+[31m-    # 添加HHAD相关字段（无论HAD是否存在都保存，供V4冷门预警双盘口lambda用）[m
+[31m-    if hhad_odds is not None:[m
+[31m-        result['hhad_home'] = hhad_odds[0][m
+[31m-        result['hhad_draw'] = hhad_odds[1][m
+[31m-        result['hhad_away'] = hhad_odds[2][m
+[31m-        result['hhad_handicap'] = hhad_odds[3][m
+[31m-    [m
+[31m-    return result[m
+[31m-[m
+[31m-[m
+[31m-# ========== 编号生成 ==========[m
+[31m-[m
+[31m-def generate_match_id(league_name: str, match_time: datetime) -> str:[m
+[31m-    """生成比赛编号：周X001、周X002..."""[m
+[31m-    weekday = match_time.weekday()  # 0=周一, 6=周日[m
+[31m-    weekday_names = ["一", "二", "三", "四", "五", "六", "日"][m
+[31m-    weekday_str = weekday_names[weekday][m
+[31m-    [m
+[31m-    # 从全局计数器获取序号（简化处理）[m
+[31m-    return f"周{weekday_str}001"  # 实际由调用方维护序号[m
+[31m-[m
+[31m-[m
+[31m-# ========== 交叉验证（调用football-lottery-analysis-expert的match_analyzer） ==========[m
+[31m-[m
+[31m-# Skills目录[m
+[31m-SKILL_MATCH_ANALYZER = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".skills", "skill_football-lottery-analysis-expert", "scripts", "match_analyzer.py")[m
+[31m-[m
+[31m-def call_skill_poisson(home_team_en: str, away_team_en: str, league_code: str = "en.1") -> Optional[dict]:[m
+[31m-    """[m
+[31m-    调用 football-lottery-analysis-expert 的 match_analyzer.py 获取泊松概率[m
+[31m-    [m
+[31m-    Returns:[m
+[31m-        {[m
+[31m-            "home_win": 0.45,[m
+[31m-            "draw": 0.30,[m
+[31m-            "away_win": 0.25,[m
+[31m-            "power_rating": {"home": 85, "away": 80},[m
+[31m-            "data_quality": "high"[m
+[31m-        }[m
+[31m-    """[m
+[31m-    import subprocess[m
+[31m-    import json[m
+[31m-    import tempfile[m
+[31m-    [m
+[31m-    try:[m
+[31m-        # 先获取比赛数据[m
+[31m-        data_fetcher = os.path.join(os.path.dirname(SKILL_MATCH_ANALYZER), "data_fetcher.py")[m
+[31m-        [m
+[31m-        # 获取联赛近几轮比赛数据[m
+[31m-        cmd_fetch = [sys.executable, data_fetcher, "--action", "league_matches", "--league", league_code][m
+[31m-        result_fetch = subprocess.run(cmd_fetch, capture_output=True, text=True, timeout=60)[m
+[31m-        [m
+[31m-        if result_fetch.returncode != 0:[m
+[31m-            return None[m
+[31m-        [m
+[31m-        # 写入临时文件作为input[m
+[31m-        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:[m
+[31m-            json.dump(json.loads(result_fetch.stdout), f)[m
+[31m-            input_file = f.name[m
+[31m-        [m
+[31m-        try:[m
+[31m-            # 调用poisson分析[m
+[31m-            cmd_analyze = [[m
+[31m-                sys.executable, SKILL_MATCH_ANALYZER,[m
+[31m-                "--action", "poisson",[m
+[31m-                "--input", input_file,[m
+[31m-                "--team1", home_team_en,[m
+[31m-                "--team2", away_team_en[m
+[31m-            ][m
+[31m-            result_analyze = subprocess.run(cmd_analyze, capture_output=True, text=True, timeout=60)[m
+[31m-            [m
+[31m-            if result_analyze.returncode == 0 and result_analyze.stdout:[m
+[31m-                return json.loads(result_analyze.stdout)[m
+[31m-        finally:[m
+[31m-            os.unlink(input_file)[m
+[31m-    [m
+[31m-    except Exception as e:[m
+[31m-        log(f"交叉验证调用失败: {e}")[m
+[31m-    [m
+[31m-    return None[m
+[31m-[m
+[31m-[m
+[31m-def cross_validate_match(home_team: str, away_team: str, league: str, [m
+[31m-                        home_rank: int, away_rank: int,[m
+[31m-                        our_poisson_home: float, our_poisson_draw: float, our_poisson_away: float,[m
+[31m-                        confidence_stars: float) -> dict:[m
+[31m-    """[m
+[31m-    交叉验证：对比我们的泊松结果与skill的泊松结果[m
+[31m-    [m
+[31m-    Args:[m
+[31m-        our_poisson_*: 我们的泊松概率[m
+[31m-        confidence_stars: 当前信心星级[m
+[31m-    [m
+[31m-    Returns:[m
+[31m-        {[m
+[31m-            "divergence_detected": True/False,[m
+[31m-            "偏差": {"home": 0.05, "draw": -0.03, "away": -0.02},[m
+[31m-            "max_deviation": 0.05,[m
+[31m-            "adjusted_stars": 4.0,  # 调整后星级[m
+[31m-            "model_divergence": True/False,  # 是否模型分歧[m
+[31m-            "warning": "⚠️ 模型分歧"[m
+[31m-        }[m
+[31m-    """[m
+[31m-    from fundamental_analysis import CROSS_VALIDATE_ENABLED[m
+[31m-    [m
+[31m-    result = {[m
+[31m-        "divergence_detected": False,[m
+[31m-        "偏差": {"home": 0.0, "draw": 0.0, "away": 0.0},[m
+[31m-        "max_deviation": 0.0,[m
+[31m-        "adjusted_stars": confidence_stars,[m
+[31m-        "model_divergence": False,[m
+[31m-        "warning": "",[m
+[31m-        "skill_result": None[m
+[31m-    }[m
+[31m-    [m
+[31m-    # 只对4星+场次做交叉验证[m
+[31m-    if confidence_stars < 4.0:[m
+[31m-        return result[m
+[31m-    [m
+[31m-    if not CROSS_VALIDATE_ENABLED:[m
+[31m-        return result[m
+[31m-    [m
+[31m-    # 获取队名英文[m
+[31m-    home_team_en = TEAM_ALIASES.get(home_team, home_team)[m
+[31m-    away_team_en = TEAM_ALIASES.get(away_team, away_team)[m
+[31m-    [m
+[31m-    # 获取联赛代码[m
+[31m-    league_code_map = {[m
+[31m-        "英超": "en.1", "西甲": "es.1", "德甲": "de.1", [m
+[31m-        "意甲": "it.1", "法甲": "fr.1", "葡超": "pt.1", "荷甲": "nl.1"[m
+[31m-    }[m
+[31m-    league_code = league_code_map.get(league, "en.1")[m
+[31m-    [m
+[31m-    # 调用skill的泊松分析[m
+[31m-    skill_result = call_skill_poisson(home_team_en, away_team_en, league_code)[m
+[31m-    [m
+[31m-    if skill_result is None:[m
+[31m-        return result[m
+[31m-    [m
+[31m-    result["skill_result"] = skill_result[m
+[31m-    [m
+[31m-    # 对比概率[m
+[31m-    skill_home = skill_result.get("home_win", 0)[m
+[31m-    skill_draw = skill_result.get("draw", 0)[m
+[31m-    skill_away = skill_result.get("away_win", 0)[m
+[31m-    [m
+[31m-    # 计算偏差[m
+[31m-    dev_home = our_poisson_home - skill_home[m
+[31m-    dev_draw = our_poisson_draw - skill_draw[m
+[31m-    dev_away = our_poisson_away - skill_away[m
+[31m-    [m
+[31m-    result["偏差"] = {"home": dev_home, "draw": dev_draw, "away": dev_away}[m
+[31m-    result["max_deviation"] = max(abs(dev_home), abs(dev_draw), abs(dev_away))[m
+[31m-    [m
+[31m-    # 偏差>15%视为分歧[m
+[31m-    if result["max_deviation"] > 0.15:[m
+[31m-        result["divergence_detected"] = True[m
+[31m-        result["model_divergence"] = True[m
+[31m-        [m
+[31m-        # 信心指数降0.5星[m
+[31m-        result["adjusted_stars"] = max(1.0, confidence_stars - 0.5)[m
+[31m-        result["warning"] = "⚠️ 模型分歧"[m
+[31m-    [m
+[31m-    return result[m
+[31m-[m
+[31m-[m
+[31m-# ========== 基本面数据自动获取（整合football-lottery-analysis-expert） ==========[m
+[31m-[m
+[31m-# Skills目录[m
+[31m-SKILL_DATA_FETCHER = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".skills", "skill_football-lottery-analysis-expert", "scripts", "data_fetcher.py")[m
+[31m-[m
+[31m-# 积分榜缓存[m
+[31m-_standings_cache = {}[m
+[31m-[m
+[31m-[m
+[31m-def is_openfootball_supported(league_name: str) -> bool:[m
+[31m-    """检查联赛是否被openfootball支持"""[m
+[31m-    of_code = OPENFOOTBALL_LEAGUE_MAP.get(league_name, "")[m
+[31m-    return of_code in OPENFOOTBALL_SUPPORTED[m
+[31m-[m
+[31m-[m
+[31m-def call_data_fetcher_standings(league_name: str) -> Optional[dict]:[m
+[31m-    """调用 data_fetcher 获取积分榜数据"""[m
+[31m-    import subprocess[m
+[31m-    import json[m
+[31m-    [m
+[31m-    of_code = OPENFOOTBALL_LEAGUE_MAP.get(league_name, "")[m
+[31m-    if not of_code:[m
+[31m-        return None[m
+[31m-    [m
+[31m-    cache_key = f"standings_{of_code}"[m
+[31m-    if cache_key in _standings_cache:[m
+[31m-        cached_data, cached_time = _standings_cache[cache_key][m
+[31m-        if time.time() - cached_time < 300:[m
+[31m-            return cached_data[m
+[31m-    [m
+[31m-    try:[m
+[31m-        cmd = [sys.executable, SKILL_DATA_FETCHER, "--action", "league_matches", "--league", of_code][m
+[31m-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)[m
+[31m-        [m
+[31m-        if result.returncode != 0 or not result.stdout:[m
+[31m-            return None[m
+[31m-        [m
+[31m-        data = json.loads(result.stdout)[m
+[31m-        matches = data.get("matches", [])[m
+[31m-        [m
+[31m-        team_stats = defaultdict(lambda: {"won": 0, "draw": 0, "lost": 0, "gf": 0, "ga": 0, "played": 0})[m
+[31m-        [m
+[31m-        for match in matches:[m
+[31m-            score = match.get("score", {})[m
+[31m-            home_score = score.get("home")[m
+[31m-            away_score = score.get("away")[m
+[31m-            if home_score is None or away_score is None:[m
+[31m-                continue[m
+[31m-            [m
+[31m-            home_team = match.get("home_team", {}).get("name", "")[m
+[31m-            away_team = match.get("away_team", {}).get("name", "")[m
+[31m-            [m
+[31m-            team_stats[home_team]["played"] += 1[m
+[31m-            team_stats[away_team]["played"] += 1[m
+[31m-            team_stats[home_team]["gf"] += home_score[m
+[31m-            team_stats[home_team]["ga"] += away_score[m
+[31m-            team_stats[away_team]["gf"] += away_score[m
+[31m-            team_stats[away_team]["ga"] += home_score[m
+[31m-            [m
+[31m-            if home_score > away_score:[m
+[31m-                team_stats[home_team]["won"] += 1[m
+[31m-                team_stats[away_team]["lost"] += 1[m
+[31m-            elif home_score < away_score:[m
+[31m-                team_stats[home_team]["lost"] += 1[m
+[31m-                team_stats[away_team]["won"] += 1[m
+[31m-            else:[m
+[31m-                team_stats[home_team]["draw"] += 1[m
+[31m-                team_stats[away_team]["draw"] += 1[m
+[31m-        [m
+[31m-        standings = [][m
+[31m-        for team, stats in team_stats.items():[m
+[31m-            points = stats["won"] * 3 + stats["draw"][m
+[31m-            gd = stats["gf"] - stats["ga"][m
+[31m-            standings.append({[m
+[31m-                "team_en": team, "team_cn": translate_team_to_cn(team),[m
+[31m-                "played": stats["played"], "won": stats["won"], "draw": stats["draw"], "lost": stats["lost"],[m
+[31m-                "gf": stats["gf"], "ga": stats["ga"], "gd": gd, "points": points[m
+[31m-            })[m
+[31m-        [m
+[31m-        standings.sort(key=lambda x: (-x["points"], -x["gd"], -x["gf"]))[m
+[31m-        for i, s in enumerate(standings):[m
+[31m-            s["rank"] = i + 1[m
+[31m-        [m
+[31m-        result_data = {"standings": standings, "data_freshness": data.get("data_freshness", {}), "league_code": of_code}[m
+[31m-        _standings_cache[cache_key] = (result_data, time.time())[m
+[31m-        return result_data[m
+[31m-    [m
+[31m-    except Exception as e:[m
+[31m-        log(f"获取{league_name}积分榜失败: {e}")[m
+[31m-        return None[m
+[31m-[m
+[31m-[m
+[31m-def translate_team_to_cn(team_en: str) -> str:[m
+[31m-    """将英文队名翻译为中文"""[m
+[31m-    if team_en in TEAM_NAME_MAP:[m
+[31m-        return TEAM_NAME_MAP[team_en][m
+[31m-    for en, cn in TEAM_NAME_MAP.items():[m
+[31m-        en_base = en.replace(" FC", "").replace(" AFC", "").replace(" SC", "")[m
+[31m-        team_base = team_en.replace(" FC", "").replace(" AFC", "").replace(" SC", "")[m
+[31m-        if en_base.lower() == team_base.lower():[m
+[31m-            return cn[m
+[31m-    return team_en[m
+[31m-[m
+[31m-[m
+[31m-def get_team_standings(team_name: str, league_name: str) -> Optional[dict]:[m
+[31m-    """获取球队在联赛中的排名信息"""[m
+[31m-    standings_data = call_data_fetcher_standings(league_name)[m
+[31m-    if not standings_data:[m
+[31m-        return None[m
+[31m-    for s in standings_data.get("standings", []):[m
+[31m-        if (s.get("team_en", "").lower() == team_name.lower() or[m
+[31m-            s.get("team_cn", "") == team_name or[m
+[31m-            team_name in s.get("team_en", "") or team_name in s.get("team_cn", "")):[m
+[31m-            return s[m
+[31m-    return None[m
+[31m-[m
+[31m-[m
+[31m-def call_data_fetcher_h2h(home_team_en: str, away_team_en: str, league_code: str, seasons: int = 3) -> Optional[dict]:[m
+[31m-    """调用 data_fetcher 获取交锋记录"""[m
+[31m-    import subprocess[m
+[31m-    import json[m
+[31m-    [m
+[31m-    try:[m
+[31m-        start_year = datetime.now().year - seasons[m
+[31m-        start_season = f"{start_year}-{str(start_year + 1)[-2:]}"[m
+[31m-        [m
+[31m-        cmd = [sys.executable, SKILL_DATA_FETCHER, "--action", "multi_h2h", [m
+[31m-               "--league", league_code, "--team1", home_team_en, "--team2", away_team_en, "--start-season", start_season][m
+[31m-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)[m
+[31m-        [m
+[31m-        if result.returncode != 0 or not result.stdout:[m
+[31m-            return None[m
+[31m-        [m
+[31m-        data = json.loads(result.stdout)[m
+[31m-        matches = data.get("matches", [])[m
+[31m-        [m
+[31m-        h2h_list, home_wins, draws, away_wins = [], 0, 0, 0[m
+[31m-        home_goals, away_goals = 0, 0[m
+[31m-        [m
+[31m-        for match in matches:[m
+[31m-            score = match.get("score", {})[m
+[31m-            home_score, away_score = score.get("home"), score.get("away")[m
+[31m-            if home_score is None or away_score is None:[m
+[31m-                continue[m
+[31m-            [m
+[31m-            h2h_list.append({[m
+[31m-                "date": match.get("date", ""),[m
+[31m-                "home": match.get("home_team", {}).get("name", ""),[m
+[31m-                "away": match.get("away_team", {}).get("name", ""),[m
+[31m-                "score": f"{home_score}-{away_score}"[m
+[31m-            })[m
+[31m-            home_goals += home_score[m
+[31m-            away_goals += away_score[m
+[31m-            [m
+[31m-            if home_score > away_score:[m
+[31m-                home_wins += 1[m
+[31m-            elif home_score < away_score:[m
+[31m-                away_wins += 1[m
+[31m-            else:[m
+[31m-                draws += 1[m
+[31m-        [m
+[31m-        return {"h2h": h2h_list, "stats": {"home_wins": home_wins, "draws": draws, "away_wins": away_wins,[m
+[31m-               "home_goals": home_goals, "away_goals": away_goals, "total": len(h2h_list)},[m
+[31m-                "data_freshness": data.get("data_freshness", {})}[m
+[31m-    [m
+[31m-    except Exception as e:[m
+[31m-        log(f"获取交锋记录失败: {e}")[m
+[31m-        return None[m
+[31m-[m
+[31m-[m
+[31m-def call_data_fetcher_form(team_en: str, league_code: str, recent: int = 6) -> Optional[dict]:[m
+[31m-    """获取球队近期战绩（form）"""[m
+[31m-    import subprocess[m
+[31m-    import json[m
+[31m-    [m
+[31m-    try:[m
+[31m-        cmd = [sys.executable, SKILL_DATA_FETCHER, "--action", "league_matches", "--league", league_code][m
+[31m-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)[m
+[31m-        [m
+[31m-        if result.returncode != 0 or not result.stdout:[m
+[31m-            return None[m
+[31m-        [m
+[31m-        data = json.loads(result.stdout)[m
+[31m-        matches = data.get("matches", [])[m
+[31m-        [m
+[31m-        team_matches = [][m
+[31m-        for match in matches:[m
+[31m-            home_team = match.get("home_team", {}).get("name", "")[m
+[31m-            away_team = match.get("away_team", {}).get("name", "")[m
+[31m-            [m
+[31m-            if home_team != team_en and away_team != team_en:[m
+[31m-                continue[m
+[31m-            [m
+[31m-            score = match.get("score", {})[m
+[31m-            home_score, away_score = score.get("home"), score.get("away")[m
+[31m-            if home_score is None or away_score is None:[m
+[31m-                continue[m
+[31m-            [m
+[31m-            is_home = home_team == team_en[m
+[31m-            team_matches.append({[m
+[31m-                "date": match.get("date", ""), "is_home": is_home,[m
+[31m-                "goals_for": home_score if is_home else away_score,[m
+[31m-                "goals_against": away_score if is_home else home_score[m
+[31m-            })[m
+[31m-        [m
+[31m-        team_matches.sort(key=lambda x: x["date"], reverse=True)[m
+[31m-        recent_matches = team_matches[:recent][m
+[31m-        [m
+[31m-        form_str, wins, draws, losses = "", 0, 0, 0[m
+[31m-        gf, ga = 0, 0[m
+[31m-        [m
+[31m-        for m in recent_matches:[m
+[31m-            gf += m["goals_for"][m
+[31m-            ga += m["goals_against"][m
+[31m-            if m["goals_for"] > m["goals_against"]:[m
+[31m-                form_str += "W"; wins += 1[m
+[31m-            elif m["goals_for"] < m["goals_against"]:[m
+[31m-                form_str += "L"; losses += 1[m
+[31m-            else:[m
+[31m-                form_str += "D"; draws += 1[m
+[31m-        [m
+[31m-        return {"form": form_str, "recent_matches": recent_matches,[m
+[31m-                "stats": {"wins": wins, "draws": draws, "losses": losses, "gf": gf, "ga": ga}}[m
+[31m-    except:[m
+[31m-        return None[m
+[31m-[m
+[31m-[m
+[31m-def call_skill_power_rating(home_team_en: str, away_team_en: str, league_code: str) -> Optional[dict]:[m
+[31m-    """调用 match_analyzer.py 获取实力评分"""[m
+[31m-    import subprocess[m
+[31m-    import json[m
+[31m-    import tempfile[m
+[31m-    [m
+[31m-    try:[m
+[31m-        data_fetcher = os.path.join(os.path.dirname(SKILL_MATCH_ANALYZER), "data_fetcher.py")[m
+[31m-        cmd_fetch = [sys.executable, data_fetcher, "--action", "league_matches", "--league", league_code][m
+[31m-        result_fetch = subprocess.run(cmd_fetch, capture_output=True, text=True, timeout=60)[m
+[31m-        [m
+[31m-        if result_fetch.returncode != 0:[m
+[31m-            return None[m
+[31m-        [m
+[31m-        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:[m
+[31m-            json.dump(json.loads(result_fetch.stdout), f)[m
+[31m-            input_file = f.name[m
+[31m-        [m
+[31m-        try:[m
+[31m-            cmd_home = [sys.executable, SKILL_MATCH_ANALYZER, "--action", "power_rating", "--input", input_file, "--team", home_team_en][m
+[31m-            cmd_away = [sys.executable, SKILL_MATCH_ANALYZER, "--action", "power_rating", "--input", input_file, "--team", away_team_en][m
+[31m-            [m
+[31m-            result_home = subprocess.run(cmd_home, capture_output=True, text=True, timeout=60)[m
+[31m-            result_away = subprocess.run(cmd_away, capture_output=True, text=True, timeout=60)[m
+[31m-            [m
+[31m-            if result_home.returncode == 0 and result_away.returncode == 0:[m
+[31m-                home_data = json.loads(result_home.stdout)[m
+[31m-                away_data = json.loads(result_away.stdout)[m
+[31m-                return {"home_power": home_data.get("power_rating", 70), "away_power": away_data.get("power_rating", 70),[m
+[31m-                        "data_quality": home_data.get("data_quality", "medium")}[m
+[31m-        finally:[m
+[31m-            os.unlink(input_file)[m
+[31m-    except:[m
+[31m-        return None[m
+[31m-[m
+[31m-[m
+[31m-def get_auto_fundamental_data(home_team: str, away_team: str, league: str, confidence_stars: float = 3.0) -> dict:[m
+[31m-    """自动获取基本面数据（积分榜、form、交锋、实力评分）"""[m
+[31m-    result = {"standings_data": None, "home_standings": None, "away_standings": None,[m
+[31m-              "home_form": None, "away_form": None, "h2h": None, "power_rating": None,[m
+[31m-              "is_openfootball": is_openfootball_supported(league), "data_freshness": {}}[m
+[31m-    [m
+[31m-    of_code = OPENFOOTBALL_LEAGUE_MAP.get(league, "")[m
+[31m-    if not of_code:[m
+[31m-        result["is_openfootball"] = False[m
+[31m-        return result[m
+[31m-    [m
+[31m-    standings_data = call_data_fetcher_standings(league)[m
+[31m-    result["standings_data"] = standings_data[m
+[31m-    [m
+[31m-    if standings_data:[m
+[31m-        result["data_freshness"] = standings_data.get("data_freshness", {})[m
+[31m-        result["home_standings"] = get_team_standings(home_team, league)[m
+[31m-        result["away_standings"] = get_team_standings(away_team, league)[m
+[31m-        [m
+[31m-        if result["home_standings"]:[m
+[31m-            home_form_data = call_data_fetcher_form(result["home_standings"].get("team_en", ""), of_code)[m
+[31m-            if home_form_data:[m
+[31m-                result["home_form"] = home_form_data.get("form", "")[m
+[31m-        [m
+[31m-        if result["away_standings"]:[m
+[31m-            away_form_data = call_data_fetcher_form(result["away_standings"].get("team_en", ""), of_code)[m
+[31m-            if away_form_data:[m
+[31m-                result["away_form"] = away_form_data.get("form", "")[m
+[31m-        [m
+[31m-        if confidence_stars >= 4.0:[m
+[31m-            home_team_en = TEAM_ALIASES.get(home_team, home_team)[m
+[31m-            away_team_en = TEAM_ALIASES.get(away_team, away_team)[m
+[31m-            result["h2h"] = call_data_fetcher_h2h(home_team_en, away_team_en, of_code)[m
+[31m-            result["power_rating"] = call_skill_power_rating(home_team_en, away_team_en, of_code)[m
+[31m-    [m
+[31m-    freshness = result["data_freshness"][m
+[31m-    if freshness.get("warning"):[m
+[31m-        log(f"⚠️ {league}数据延迟: {freshness.get('warning')}")[m
+[31m-    [m
+[31m-    return result[m
+[31m-[m
+[31m-[m
+[31m-def use_auto_fundamental_for_analysis(auto_data: dict, home_rank: int = 0, away_rank: int = 0) -> dict:[m
+[31m-    """使用自动获取的基本面数据辅助分析"""[m
+[31m-    result = {"home_rank": home_rank, "away_rank": away_rank, "home_points": 0, "away_points": 0,[m
+[31m-              "home_form": None, "away_form": None, "h2h_summary": None, "power_diff": 0, "data_used": False}[m
+[31m-    [m
+[31m-    if not auto_data.get("is_openfootball"):[m
+[31m-        return result[m
+[31m-    [m
+[31m-    home_standings = auto_data.get("home_standings")[m
+[31m-    away_standings = auto_data.get("away_standings")[m
+[31m-    [m
+[31m-    if home_standings:[m
+[31m-        result["home_rank"] = home_standings.get("rank", home_rank)[m
+[31m-        result["home_points"] = home_standings.get("points", 0)[m
+[31m-        result["data_used"] = True[m
+[31m-    [m
+[31m-    if away_standings:[m
+[31m-        result["away_rank"] = away_standings.get("rank", away_rank)[m
+[31m-        result["away_points"] = away_standings.get("points", 0)[m
+[31m-        result["data_used"] = True[m
+[31m-    [m
+[31m-    result["home_form"] = auto_data.get("home_form")[m
+[31m-    result["away_form"] = auto_data.get("away_form")[m
+[31m-    [m
+[31m-    h2h = auto_data.get("h2h")[m
+[31m-    if h2h and h2h.get("stats") and h2h["stats"].get("total", 0) > 0:[m
+[31m-        stats = h2h["stats"][m
+[31m-        result["h2h_summary"] = f"{stats.get('home_wins', 0)}胜{stats.get('draws', 0)}平{stats.get('away_wins', 0)}负"[m
+[31m-    [m
+[31m-    power = auto_data.get("power_rating")[m
+[31m-    if power:[m
+[31m-        result["power_diff"] = power.get("home_power", 70) - power.get("away_power", 70)[m
+[31m-        result["data_used"] = True[m
+[31m-    [m
+[31m-    return result[m
+[31m-[m
+[31m-[m
+[31m-# ========== 输出 ==========[m
+[31m-[m
+[31m-def format_result_for_output(match_info: dict, analysis: dict, seq_num: int, league_name: str, [m
+[31m-                            match_num_display: str = None,[m
+[31m-                            fundamental_data: dict = None,[m
+[31m-                            tactical_data: dict = None,[m
+[31m-                            qtx_home_data: dict = None,[m
+[31m-                            qtx_away_data: dict = None) -> dict:[m
+[31m-    """格式化输出结果[m
+[31m-    优先使用体彩网官方编号(match_num_display)，否则根据开赛时间计算编号[m
+[31m-    [m
+[31m-    Args:[m
+[31m-        match_info: 比赛信息[m
+[31m-        analysis: 分析结果[m
+[31m-        seq_num: 序号[m
+[31m-        league_name: 联赛名称[m
+[31m-        match_num_display: 体彩网官方编号[m
+[31m-        fundamental_data: 基本面分析数据（可选）[m
+[31m-        tactical_data: 战术分析数据（可选）[m
+[31m-        qtx_home_data: qtx主队积分榜数据（可选，包含场均进球/失球）[m
+[31m-        qtx_away_data: qtx客队积分榜数据（可选）[m
+[31m-    """[m
+[31m-    # 如果有体彩网官方编号，优先使用[m
+[31m-    if match_num_display:[m
+[31m-        match_id = match_num_display[m
+[31m-    else:[m
+[31m-        # Fallback：根据开赛时间计算编号[m
+[31m-        weekday_names = ["一", "二", "三", "四", "五", "六", "日"][m
+[31m-        match_dt = datetime.strptime(match_info['match_time_str'], "%Y-%m-%d %H:%M")[m
+[31m-        weekday_str = weekday_names[match_dt.weekday()][m
+[31m-        match_id = f"周{weekday_str}{seq_num:03d}"[m
+[31m-    [m
+[31m-    # 推荐方向优先使用EV最佳方向，其次使用概率最高方向[m
+[31m-    best_dir = analysis.get('best_direction_cn', '')[m
+[31m-    if best_dir:[m
+[31m-        display_direction = best_dir[m
+[31m-    else:[m
+[31m-        display_direction = analysis.get('recommendation', '')[m
+[31m-    [m
+[31m-    result = {[m
+[31m-        "编号": match_id,[m
+[31m-        "联赛": league_name,[m
+[31m-        "开赛时间": match_info['match_time_str'],[m
+[31m-        "主队": analysis['home_name_zh'],[m
+[31m-        "客队": analysis['away_name_zh'],[m
+[31m-        "推荐方向": display_direction,[m
+[31m-        "推荐概率": analysis['rec_prob_display'],[m
+[31m-        "EV": f"{analysis.get('ev_value', 0)*100:.1f}%" if analysis.get('ev_value', 0) > 0 else "-",[m
+[31m-        "EV_主胜": f"{analysis.get('ev_win', 0)*100:.1f}%" if analysis.get('ev_win', 0) > 0 else "-",[m
+[31m-        "EV_平局": f"{analysis.get('ev_draw', 0)*100:.1f}%" if analysis.get('ev_draw', 0) > 0 else "-",[m
+[31m-        "EV_客胜": f"{analysis.get('ev_loss', 0)*100:.1f}%" if analysis.get('ev_loss', 0) > 0 else "-",[m
+[31m-        "EV说明": analysis['confidence_reason'],[m
+[31m-        "xG来源": analysis['xg_source'],  # xG来源列[m
+[31m-        "参考比分": "/".join(analysis['reference_scores']),[m
+[31m-        # 赔率和泊松概率仅用于内部计算，不再输出[m
+[31m-        "综合_主胜": f"{analysis['final_home']*100:.1f}%",[m
+[31m-        "综合_平局": f"{analysis['final_draw']*100:.1f}%",[m
+[31m-        "综合_客胜": f"{analysis['final_away']*100:.1f}%",[m
+[31m-        # HHAD让球盘字段（供数据库存储和V4冷门预警）[m
+[31m-        "hhad_home": analysis.get('hhad_home'),[m
+[31m-        "hhad_draw": analysis.get('hhad_draw'),[m
+[31m-        "hhad_away": analysis.get('hhad_away'),[m
+[31m-        "hhad_handicap": analysis.get('hhad_handicap'),[m
+[31m-        "odds_source": analysis.get('odds_source', ''),[m
+[31m-    }[m
+[31m-    [m
+[31m-    # 添加基本面增强列（如果可用）[m
+[31m-    if fundamental_data and HAS_FUNDAMENTAL:[m
+[31m-        # 风险预警列[m
+[31m-        result["风险预警"] = fundamental_data.get("risk_warning", "")[m
+[31m-        [m
+[31m-        # 伤停摘要（简短）[m
+[31m-        injury_info = fundamental_data.get("injury_info", {})[m
+[31m-        if injury_info.get("has_data"):[m
+[31m-            result["伤停信息"] = injury_info.get("summary", "")[m
+[31m-        else:[m
+[31m-            result["伤停信息"] = ""[m
+[31m-        [m
+[31m-        # 战意评估（简短）[m
+[31m-        motivation = fundamental_data.get("motivation", {})[m
+[31m-        if motivation.get("derby_match"):[m
+[31m-            result["战意分析"] = "🔥德比战"[m
+[31m-        elif motivation.get("must_win", {}).get("home"):[m
+[31m-            result["战意分析"] = "💪主队必胜"[m
+[31m-        elif motivation.get("must_win", {}).get("away"):[m
+[31m-            result["战意分析"] = "💪客队必胜"[m
+[31m-        else:[m
+[31m-            summary = motivation.get("summary", "")[m
+[31m-            result["战意分析"] = summary[:20] if summary else ""[m
+[31m-        [m
+[31m-        # 冷门风险[m
+[31m-        cold_risk = fundamental_data.get("cold_risk", {})[m
+[31m-        cold_risk_val = cold_risk.get("cold_risk", "")[m
+[31m-        result["冷门风险"] = cold_risk_val[m
+[31m-        [m
+[31m-        # 诱盘检测[m
+[31m-        trap_odds = fundamental_data.get("trap_odds", {})[m
+[31m-        if trap_odds.get("is_trap"):[m
+[31m-            result["诱盘预警"] = f"🎯{trap_odds.get('trap_type', '疑似')}"[m
+[31m-        else:[m
+[31m-            result["诱盘预警"] = ""[m
+[31m-        [m
+[31m-        # 基本面摘要[m
+[31m-        result["基本面摘要"] = format_fundamental_summary(fundamental_data)[m
+[31m-    else:[m
+[31m-        result["风险预警"] = ""[m
+[31m-        result["伤停信息"] = ""[m
+[31m-        result["战意分析"] = ""[m
+[31m-        result["冷门风险"] = ""[m
+[31m-        result["诱盘预警"] = ""[m
+[31m-        result["基本面摘要"] = ""[m
+[31m-    [m
+[31m-    # 添加战术分析（如果可用）[m
+[31m-    if tactical_data and HAS_FUNDAMENTAL:[m
+[31m-        result["战术阵型"] = tactical_data.get("formation", "")[m
+[31m-        result["战术提示"] = tactical_data.get("summary", "")[:50] if tactical_data.get("summary") else ""[m
+[31m-    else:[m
+[31m-        result["战术阵型"] = ""[m
+[31m-        result["战术提示"] = ""[m
+[31m-    [m
+[31m-    # 添加qtx积分榜数据（用于LGBM模型新特征）[m
+[31m-    if qtx_home_data:[m
+[31m-        result["home_points"] = qtx_home_data.get('points', 0)[m
+[31m-        result["home_avg_goals"] = qtx_home_data.get('avg_gf', 0)[m
+[31m-        result["home_avg_conceded"] = qtx_home_data.get('avg_ga', 0)[m
+[31m-    else:[m
+[31m-        result["home_points"] = 0[m
+[31m-        result["home_avg_goals"] = 0[m
+[31m-        result["home_avg_conceded"] = 0[m
+[31m-    [m
+[31m-    if qtx_away_data:[m
+[31m-        result["away_points"] = qtx_away_data.get('points', 0)[m
+[31m-        result["away_avg_goals"] = qtx_away_data.get('avg_gf', 0)[m
+[31m-        result["away_avg_conceded"] = qtx_away_data.get('avg_ga', 0)[m
+[31m-    else:[m
+[31m-        result["away_points"] = 0[m
+[31m-        result["away_avg_goals"] = 0[m
+[31m-        result["away_avg_conceded"] = 0[m
+[31m-    [m
+[31m-    return result[m
+[31m-[m
+[31m-[m
+[31m-def save_to_excel(results: List[dict], filepath: str):[m
+[31m-    """保存结果到Excel"""[m
+[31m-    if not results:[m
+[31m-        log("⚠️ 无数据，跳过Excel生成")[m
+[31m-        return[m
+[31m-    [m
+[31m-    try:[m
+[31m-        import openpyxl[m
+[31m-        from openpyxl.styles import Font, Alignment, PatternFill, Border, Side[m
+[31m-    except ImportError:[m
+[31m-        log("⚠️ openpyxl未安装，跳过Excel生成")[m
+[31m-        return[m
+[31m-    [m
+[31m-    # 移除胜赔、平赔、负赔、泊松_主胜、泊松_平局、泊松_客胜列（仅保留内部计算）[m
+[31m-    headers = [[m
+[31m-        "编号", "联赛", "开赛时间", "主队", "客队",[m
+[31m-        "推荐方向", "推荐概率", "EV", "EV_主胜", "EV_平局", "EV_客胜", "EV说明", "xG来源",[m
+[31m-        "参考比分",[m
+[31m-        "综合_主胜", "综合_平局", "综合_客胜",[m
+[31m-        "冷门预警"[m
+[31m-    ][m
+[31m-    [m
+[31m-    wb = openpyxl.Workbook()[m
+[31m-    ws = wb.active[m
+[31m-    ws.title = "竞彩日报"[m
+[31m-    [m
+[31m-    # 表头样式[m
+[31m-    header_fill = PatternFill(start_color="4472C4", end_color="4472C4", fill_type="solid")[m
+[31m-    header_font = Font(bold=True, size=11, color="FFFFFF")[m
+[31m-    thin_border = Border([m
+[31m-        left=Side(style='thin'), right=Side(style='thin'),[m
+[31m-        top=Side(style='thin'), bottom=Side(style='thin')[m
+[31m-    )[m
+[31m-    [m
+[31m-    # 写表头[m
+[31m-    for col, header in enumerate(headers, 1):[m
+[31m-        cell = ws.cell(row=1, column=col, value=header)[m
+[31m-        cell.font = header_font[m
+[31m-        cell.fill = header_fill[m
+[31m-        cell.alignment = Alignment(horizontal='center', vertical='center')[m
+[31m-        cell.border = thin_border[m
+[31m-    [m
+[31m-    # 写数据[m
+[31m-    direction_colors = {[m
+[31m-        "主胜": "FFEB9C",  # 浅黄[m
+[31m-        "平局": "C6EFCE",  # 浅绿[m
+[31m-        "客胜": "FFC7CE",  # 浅红[m
+[31m-    }[m
+[31m-    [m
+[31m-    for row_idx, row_data in enumerate(results, 2):[m
+[31m-        direction = row_data.get("推荐方向", "")[m
+[31m-        direction_fill = PatternFill([m
+[31m-            start_color=direction_colors.get(direction, "FFFFFF"),[m
+[31m-            end_color=direction_colors.get(direction, "FFFFFF"),[m
+[31m-            fill_type="solid"[m
+[31m-        )[m
+[31m-        [m
+[31m-        for col, header in enumerate(headers, 1):[m
+[31m-            value = row_data.get(header, '')[m
+[31m-            cell = ws.cell(row=row_idx, column=col, value=value)[m
+[31m-            cell.alignment = Alignment(horizontal='center', vertical='center')[m
+[31m-            cell.border = thin_border[m
+[31m-            [m
+[31m-            # 推荐方向列高亮[m
+[31m-            if header == "推荐方向":[m
+[31m-                cell.fill = direction_fill[m
+[31m-                cell.font = Font(bold=True)[m
+[31m-    [m
+[31m-    # 自动列宽[m
+[31m-    for col in ws.columns:[m
+[31m-        max_length = 0[m
+[31m-        col_letter = col[0].column_letter[m
+[31m-        for cell in col:[m
+[31m-            try:[m
+[31m-                if cell.value:[m
+[31m-                    max_length = max(max_length, len(str(cell.value)))[m
+[31m-            except:[m
+[31m-                pass[m
+[31m-        ws.column_dimensions[col_letter].width = min(max_length + 4, 22)[m
+[31m-    [m
+[31m-    # 冻结首行[m
+[31m-    ws.freeze_panes = 'A2'[m
+[31m-    [m
+[31m-    wb.save(filepath)[m
+[31m-    log(f"✓ Excel已保存: {filepath}")[m
+[31m-[m
+[31m-[m
+[31m-def save_to_csv(results: List[dict], filepath: str):[m
+[31m-    """保存结果到CSV"""[m
+[31m-    if not results:[m
+[31m-        return[m
+[31m-    [m
+[31m-    # 移除胜赔、平赔、负赔、泊松_主胜、泊松_平局、泊松_客胜列（仅保留内部计算）[m
+[31m-    headers = [[m
+[31m-        "编号", "联赛", "开赛时间", "主队", "客队",[m
+[31m-        "推荐方向", "推荐概率", "EV", "EV_主胜", "EV_平局", "EV_客胜", "EV说明", "xG来源",[m
+[31m-        "参考比分",[m
+[31m-        "综合_主胜", "综合_平局", "综合_客胜",[m
+[31m-        "百家初盘胜", "百家初盘平", "百家初盘负",[m
+[31m-        "百家最新胜", "百家最新平", "百家最新负"[m
+[31m-    ][m
+[31m-    [m
+[31m-    with open(filepath, 'w', newline='', encoding='utf-8-sig') as f:[m
+[31m-        writer = csv.DictWriter(f, fieldnames=headers, extrasaction='ignore')[m
+[31m-        writer.writeheader()[m
+[31m-        writer.writerows(results)[m
+[31m-    [m
+[31m-    log(f"✓ CSV已保存: {filepath}")[m
+[31m-[m
+[31m-[m
+[31m-def save_to_database(results: List[dict], date_str: str, dry_run: bool = False):[m
+[31m-    """[m
+[31m-    将预测结果写入SQLite数据库的poisson_predictions表[m
+[31m-    [m
+[31m-    Args:[m
+[31m-        results: 预测结果列表[m
+[31m-        date_str: 预测日期 (YYYY-MM-DD格式)[m
+[31m-        dry_run: 是否仅测试不实际写入[m
+[31m-    """[m
+[31m-    if not results:[m
+[31m-        log("⚠️ 无数据，跳过数据库写入")[m
+[31m-        return[m
+[31m-    [m
+[31m-    try:[m
+[31m-        import sqlite3[m
+[31m-        [m
+[31m-        # 确保数据库目录存在[m
+[31m-        db_dir = os.path.dirname(DB_PATH)[m
+[31m-        if db_dir:[m
+[31m-            os.makedirs(db_dir, exist_ok=True)[m
+[31m-        [m
+[31m-        conn = sqlite3.connect(DB_PATH)[m
+[31m-        cursor = conn.cursor()[m
+[31m-        [m
+[31m-        # 确保表存在（如果不存在则创建）[m
+[31m-        # 增加HHAD让球赔率字段和odds_source赔率来源字段[m
+[31m-        cursor.execute("""[m
+[31m-            CREATE TABLE IF NOT EXISTS poisson_predictions ([m
+[31m-                id INTEGER PRIMARY KEY AUTOINCREMENT,[m
+[31m-                match_id TEXT,[m
+[31m-                date TEXT,[m
+[31m-                exec_time TEXT,[m
+[31m-                league TEXT,[m
+[31m-                home_team TEXT,[m
+[31m-                away_team TEXT,[m
+[31m-                kickoff_time TEXT,[m
+[31m-                prediction TEXT,[m
+[31m-                prediction_prob REAL,[m
+[31m-                odds_win REAL,[m
+[31m-                odds_draw REAL,[m
+[31m-                odds_loss REAL,[m
+[31m-                poisson_win REAL,[m
+[31m-                poisson_draw REAL,[m
+[31m-                poisson_loss REAL,[m
+[31m-                market_win REAL,[m
+[31m-                market_draw REAL,[m
+[31m-                market_loss REAL,[m
+[31m-                final_win REAL,[m
+[31m-                final_draw REAL,[m
+[31m-                final_loss REAL,[m
+[31m-                risk_level TEXT,[m
+[31m-                kelly_win REAL,[m
+[31m-                kelly_draw REAL,[m
+[31m-                kelly_loss REAL,[m
+[31m-                expected_win REAL,[m
+[31m-                expected_draw REAL,[m
+[31m-                expected_loss REAL,[m
+[31m-                recommended TEXT,[m
+[31m-                recommended_kelly REAL,[m
+[31m-                home_ranking INTEGER,[m
+[31m-                away_ranking INTEGER,[m
+[31m-                home_lambda REAL,[m
+[31m-                away_lambda REAL,[m
+[31m-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,[m
+[31m-                actual_outcome TEXT,[m
+[31m-                deviation_analysis TEXT,[m
+[31m-                odds_source TEXT,[m
+[31m-                hhad_win REAL,[m
+[31m-                hhad_draw REAL,[m
+[31m-                hhad_loss REAL,[m
+[31m-                hhad_handicap REAL[m
+[31m-            )[m
+[31m-        """)[m
+[31m-        [m
+[31m-        # 如果旧表没有HHAD字段和odds_source字段，添加它们[m
+[31m-        try:[m
+[31m-            cursor.execute("ALTER TABLE poisson_predictions ADD COLUMN odds_source TEXT")[m
+[31m-            log("  数据库迁移: 已添加 odds_source 字段")[m
+[31m-        except sqlite3.OperationalError:[m
+[31m-            pass  # 字段已存在[m
+[31m-        [m
+[31m-        try:[m
+[31m-            cursor.execute("ALTER TABLE poisson_predictions ADD COLUMN hhad_win REAL")[m
+[31m-            log("  数据库迁移: 已添加 hhad_win 字段")[m
+[31m-        except sqlite3.OperationalError:[m
+[31m-            pass[m
+[31m-        [m
+[31m-        try:[m
+[31m-            cursor.execute("ALTER TABLE poisson_predictions ADD COLUMN hhad_draw REAL")[m
+[31m-            log("  数据库迁移: 已添加 hhad_draw 字段")[m
+[31m-        except sqlite3.OperationalError:[m
+[31m-            pass[m
+[31m-        [m
+[31m-        try:[m
+[31m-            cursor.execute("ALTER TABLE poisson_predictions ADD COLUMN hhad_loss REAL")[m
+[31m-            log("  数据库迁移: 已添加 hhad_loss 字段")[m
+[31m-        except sqlite3.OperationalError:[m
+[31m-            pass[m
+[31m-        [m
+[31m-        try:[m
+[31m-            cursor.execute("ALTER TABLE poisson_predictions ADD COLUMN hhad_handicap REAL")[m
+[31m-            log("  数据库迁移: 已添加 hhad_handicap 字段")[m
+[31m-        except sqlite3.OperationalError:[m
+[31m-            pass[m
+[31m-        [m
+[31m-        # EV相关字段迁移[m
+[31m-        try:[m
+[31m-            cursor.execute("ALTER TABLE poisson_predictions ADD COLUMN ev_win REAL")[m
+[31m-            log("  数据库迁移: 已添加 ev_win 字段")[m
+[31m-        except sqlite3.OperationalError:[m
+[31m-            pass[m
+[31m-        [m
+[31m-        try:[m
+[31m-            cursor.execute("ALTER TABLE poisson_predictions ADD COLUMN ev_draw REAL")[m
+[31m-            log("  数据库迁移: 已添加 ev_draw 字段")[m
+[31m-        except sqlite3.OperationalError:[m
+[31m-            pass[m
+[31m-        [m
+[31m-        try:[m
+[31m-            cursor.execute("ALTER TABLE poisson_predictions ADD COLUMN ev_loss REAL")[m
+[31m-            log("  数据库迁移: 已添加 ev_loss 字段")[m
+[31m-        except sqlite3.OperationalError:[m
+[31m-            pass[m
+[31m-        [m
+[31m-        try:[m
+[31m-            cursor.execute("ALTER TABLE poisson_predictions ADD COLUMN best_direction TEXT")[m
+[31m-            log("  数据库迁移: 已添加 best_direction 字段")[m
+[31m-        except sqlite3.OperationalError:[m
+[31m-            pass[m
+[31m-        [m
+[31m-        try:[m
+[31m-            cursor.execute("ALTER TABLE poisson_predictions ADD COLUMN best_direction_cn TEXT")[m
+[31m-            log("  数据库迁移: 已添加 best_direction_cn 字段")[m
+[31m-        except sqlite3.OperationalError:[m
+[31m-            pass[m
+[31m-        [m
+[31m-        try:[m
+[31m-            cursor.execute("ALTER TABLE poisson_predictions ADD COLUMN avg_margin REAL")[m
+[31m-            log("  数据库迁移: 已添加 avg_margin 字段")[m
+[31m-        except sqlite3.OperationalError:[m
+[31m-            pass[m
+[31m-        [m
+[31m-        try:[m
+[31m-            cursor.execute("ALTER TABLE poisson_predictions ADD COLUMN avg_odds_open_w REAL")[m
+[31m-            log("  数据库迁移: 已添加 avg_odds_open_w 字段")[m
+[31m-        except sqlite3.OperationalError:[m
+[31m-            pass[m
+[31m-        [m
+[31m-        try:[m
+[31m-            cursor.execute("ALTER TABLE poisson_predictions ADD COLUMN avg_odds_open_d REAL")[m
+[31m-            log("  数据库迁移: 已添加 avg_odds_open_d 字段")[m
+[31m-        except sqlite3.OperationalError:[m
+[31m-            pass[m
+[31m-        [m
+[31m-        try:[m
+[31m-            cursor.execute("ALTER TABLE poisson_predictions ADD COLUMN avg_odds_open_l REAL")[m
+[31m-            log("  数据库迁移: 已添加 avg_odds_open_l 字段")[m
+[31m-        except sqlite3.OperationalError:[m
+[31m-            pass[m
+[31m-        [m
+[31m-        try:[m
+[31m-            cursor.execute("ALTER TABLE poisson_predictions ADD COLUMN avg_odds_close_w REAL")[m
+[31m-            log("  数据库迁移: 已添加 avg_odds_close_w 字段")[m
+[31m-        except sqlite3.OperationalError:[m
+[31m-            pass[m
+[31m-        [m
+[31m-        try:[m
+[31m-            cursor.execute("ALTER TABLE poisson_predictions ADD COLUMN avg_odds_close_d REAL")[m
+[31m-            log("  数据库迁移: 已添加 avg_odds_close_d 字段")[m
+[31m-        except sqlite3.OperationalError:[m
+[31m-            pass[m
+[31m-        [m
+[31m-        try:[m
+[31m-            cursor.execute("ALTER TABLE poisson_predictions ADD COLUMN avg_odds_close_l REAL")[m
+[31m-            log("  数据库迁移: 已添加 avg_odds_close_l 字段")[m
+[31m-        except sqlite3.OperationalError:[m
+[31m-            pass[m
+[31m-        [m
+[31m-        # V4冷门预警：双盘口lambda字段[m
+[31m-        try:[m
+[31m-            cursor.execute("ALTER TABLE poisson_predictions ADD COLUMN had_lambda_h REAL")[m
+[31m-            log("  数据库迁移: 已添加 had_lambda_h 字段")[m
+[31m-        except sqlite3.OperationalError:[m
+[31m-            pass[m
+[31m-        [m
+[31m-        try:[m
+[31m-            cursor.execute("ALTER TABLE poisson_predictions ADD COLUMN had_lambda_a REAL")[m
+[31m-            log("  数据库迁移: 已添加 had_lambda_a 字段")[m
+[31m-        except sqlite3.OperationalError:[m
+[31m-            pass[m
+[31m-        [m
+[31m-        try:[m
+[31m-            cursor.execute("ALTER TABLE poisson_predictions ADD COLUMN hhad_lambda_h REAL")[m
+[31m-            log("  数据库迁移: 已添加 hhad_lambda_h 字段")[m
+[31m-        except sqlite3.OperationalError:[m
+[31m-            pass[m
+[31m-        [m
+[31m-        try:[m
+[31m-            cursor.execute("ALTER TABLE poisson_predictions ADD COLUMN hhad_lambda_a REAL")[m
+[31m-            log("  数据库迁移: 已添加 hhad_lambda_a 字段")[m
+[31m-        except sqlite3.OperationalError:[m
+[31m-            pass[m
+[31m-        [m
+[31m-        exec_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")[m
+[31m-        [m
+[31m-        records_to_insert = [][m
+[31m-        [m
+[31m-        for idx, r in enumerate(results, 1):[m
+[31m-            # 使用体彩网官方编号作为match_id（稳定，不随运行次数变化）[m
+[31m-            # 优先使用编号字段（如周六001），fallback到主队_客队_开赛时间[m
+[31m-            match_id = r.get('编号', '')[m
+[31m-            if not match_id or match_id == '未知':[m
+[31m-                # fallback: 用主队+客队+开赛时间生成稳定ID[m
+[31m-                home = r.get('主队', '').replace(' ', '_')[:10][m
+[31m-                away = r.get('客队', '').replace(' ', '_')[:10][m
+[31m-                kickoff = r.get('开赛时间', '').replace('-', '').replace(' ', '_').replace(':', '')[:13][m
+[31m-                match_id = f"{home}_{away}_{kickoff}" if home and away else f"{date_str.replace('-', '')}_{idx:03d}"[m
+[31m-            [m
+[31m-            # 解析概率字符串（如 "45.2%(中)"）获取数值[m
+[31m-            def parse_prob(prob_str):[m
+[31m-                if not prob_str:[m
+[31m-                    return None[m
+[31m-                import re[m
+[31m-                match = re.match(r'([\d.]+)', str(prob_str))[m
+[31m-                return float(match.group(1)) / 100 if match else None[m
+[31m-            [m
+[31m-            # 解析赔率[m
+[31m-            try:[m
+[31m-                odds_win = float(r.get('胜赔', 0))[m
+[31m-                odds_draw = float(r.get('平赔', 0))[m
+[31m-                odds_loss = float(r.get('负赔', 0))[m
+[31m-            except:[m
+[31m-                odds_win = odds_draw = odds_loss = 0[m
+[31m-            [m
+[31m-            # 解析综合概率[m
+[31m-            final_home = parse_prob(r.get('综合_主胜', ''))[m
+[31m-            final_draw = parse_prob(r.get('综合_平局', ''))[m
+[31m-            final_loss = parse_prob(r.get('综合_客胜', ''))[m
+[31m-            [m
+[31m-            # 对三个方向都计算凯利（赔率为0时用概率反推）- 已废弃，不再使用[m
+[31m-            kelly_win = 0[m
+[31m-            kelly_draw = 0[m
+[31m-            kelly_loss = 0[m
+[31m-            [m
+[31m-            # 解析泊松概率[m
+[31m-            poisson_home = parse_prob(r.get('泊松_主胜', ''))[m
+[31m-            poisson_draw = parse_prob(r.get('泊松_平局', ''))[m
+[31m-            poisson_away = parse_prob(r.get('泊松_客胜', ''))[m
+[31m-            final_away = parse_prob(r.get('综合_客胜', ''))[m
+[31m-            [m
+[31m-            # 用开赛日期而非生成日期，确保复盘时能按比赛日匹配[m
+[31m-            kickoff_str = r.get('开赛时间', '')[m
+[31m-            match_date = date_str  # 默认用生成日期[m
+[31m-            if kickoff_str and kickoff_str != '待定':[m
+[31m-                try:[m
+[31m-                    match_date = kickoff_str.split(' ')[0]  # 取"2026-05-16 03:00"的日期部分[m
+[31m-                except:[m
+[31m-                    pass[m
+[31m-            [m
+[31m-            # 计算HHAD让球赔率[m
+[31m-            hhad_win = r.get('hhad_home')[m
+[31m-            hhad_draw = r.get('hhad_draw')[m
+[31m-            hhad_loss = r.get('hhad_away')[m
+[31m-            hhad_handicap = r.get('hhad_handicap')[m
+[31m-            [m
+[31m-            # 计算双盘口lambda值（用于V4冷门预警）[m
+[31m-            had_lambda_h, had_lambda_a = None, None[m
+[31m-            hhad_lambda_h, hhad_lambda_a = None, None[m
+[31m-            [m
+[31m-            if odds_win > 0 and odds_draw > 0 and odds_loss > 0:[m
+[31m-                # 从HAD赔率反推lambda[m
+[31m-                had_lambda_h, had_lambda_a = odds_to_lambda_fast(odds_win, odds_draw, odds_loss)[m
+[31m-            [m
+[31m-            if hhad_win and hhad_draw and hhad_loss:[m
+[31m-                try:[m
+[31m-                    hhad_lambda_h, hhad_lambda_a = odds_to_lambda_fast([m
+[31m-                        float(hhad_win), float(hhad_draw), float(hhad_loss), [m
+[31m-                        float(hhad_handicap) if hhad_handicap else None[m
+[31m-                    )[m
+[31m-                except:[m
+[31m-                    pass[m
+[31m-            [m
+[31m-            record = {[m
+[31m-                'match_id': match_id,[m
+[31m-                'date': match_date,[m
+[31m-                'exec_time': exec_time,[m
+[31m-                'league': r.get('联赛', ''),[m
+[31m-                'home_team': r.get('主队', ''),[m
+[31m-                'away_team': r.get('客队', ''),[m
+[31m-                'kickoff_time': r.get('开赛时间', ''),[m
+[31m-                'prediction': r.get('推荐方向', ''),[m
+[31m-                'prediction_prob': parse_prob(r.get('推荐概率', '')),[m
+[31m-                'odds_win': odds_win,[m
+[31m-                'odds_draw': odds_draw,[m
+[31m-                'odds_loss': odds_loss,[m
+[31m-                'poisson_win': poisson_home,[m
+[31m-                'poisson_draw': poisson_draw,[m
+[31m-                'poisson_loss': poisson_away,[m
+[31m-                'market_win': None,  # 市场概率从赔率反推[m
+[31m-                'market_draw': None,[m
+[31m-                'market_loss': None,[m
+[31m-                'final_win': final_home,[m
+[31m-                'final_draw': final_draw,[m
+[31m-                'final_loss': final_away,[m
+[31m-                'risk_level': '',  # 保留字段但不再使用[m
+[31m-                'kelly_win': 0,  # 保留字段但不再使用[m
+[31m-                'kelly_draw': 0,[m
+[31m-                'kelly_loss': 0,[m
+[31m-                # 冷门预警字段[m
+[31m-                'cold_risk': r.get('冷门风险', ''),[m
+[31m-                'cold_signals': r.get('冷门信号', ''),[m
+[31m-                'risk_warning': r.get('风险预警', ''),[m
+[31m-                # HHAD让球赔率字段[m
+[31m-                'odds_source': r.get('odds_source', ''),  # 赔率来源: had/hhad[m
+[31m-                'hhad_win': hhad_win,  # 让球胜赔率[m
+[31m-                'hhad_draw': hhad_draw,  # 让球平赔率[m
+[31m-                'hhad_loss': hhad_loss,  # 让球负赔率[m
+[31m-                'hhad_handicap': hhad_handicap,  # 让球数[m
+[31m-                # V4冷门预警：双盘口lambda[m
+[31m-                'had_lambda_h': had_lambda_h,[m
+[31m-                'had_lambda_a': had_lambda_a,[m
+[31m-                'hhad_lambda_h': hhad_lambda_h,[m
+[31m-                'hhad_lambda_a': hhad_lambda_a,[m
+[31m-                # qtx积分榜数据（LGBM新特征）[m
+[31m-                'home_points': r.get('home_points', 0),[m
+[31m-                'away_points': r.get('away_points', 0),[m
+[31m-                'home_avg_goals': r.get('home_avg_goals', 0),[m
+[31m-                'away_avg_goals': r.get('away_avg_goals', 0),[m
+[31m-                'home_avg_conceded': r.get('home_avg_conceded', 0),[m
+[31m-                'away_avg_conceded': r.get('away_avg_conceded', 0),[m
+[31m-                # 价值投注字段（百家欧赔）[m
+[31m-                'pinnacle_open_w': 0,[m
+[31m-                'pinnacle_open_d': 0,[m
+[31m-                'pinnacle_open_l': 0,[m
+[31m-                'pinnacle_close_w': 0,[m
+[31m-                'pinnacle_close_d': 0,[m
+[31m-                'pinnacle_close_l': 0,[m
+[31m-                'pinnacle_movement': '',[m
+[31m-                'pinnacle_margin': 0,[m
+[31m-                'implied_prob_w': 0,[m
+[31m-                'implied_prob_d': 0,[m
+[31m-                'implied_prob_l': 0,[m
+[31m-                'ev_value': 0,[m
+[31m-                'kelly_stake': 0,  # 保留字段但不再使用[m
+[31m-                'value_flag': 0,  # 保留字段但不再使用[m
+[31m-                'pod_signal': '',  # 保留字段但不再使用[m
+[31m-                'clv': 0,  # 保留字段但不再使用[m
+[31m-                # 新EV字段[m
+[31m-                'ev_win': _to_float(r.get('EV_主胜', '')),[m
+[31m-                'ev_draw': _to_float(r.get('EV_平局', '')),[m
+[31m-                'ev_loss': _to_float(r.get('EV_客胜', '')),[m
+[31m-                'best_direction': '',[m
+[31m-                'best_direction_cn': r.get('推荐方向', ''),[m
+[31m-                'avg_margin': 0,[m
+[31m-                'avg_odds_open_w': 0,[m
+[31m-                'avg_odds_open_d': 0,[m
+[31m-                'avg_odds_open_l': 0,[m
+[31m-                'avg_odds_close_w': 0,[m
+[31m-                'avg_odds_close_d': 0,[m
+[31m-                'avg_odds_close_l': 0,[m
+[31m-                'actual_outcome': '',[m
+[31m-                'deviation_analysis': '',[m
+[31m-            }[m
+[31m-            [m
+[31m-            # 计算EV（百家欧赔）[m
+[31m-            if HAS_VALUE_BET:[m
+[31m-                # 从百家初盘/最新赔率字段获取数据[m
+[31m-                avg_open = {[m
+[31m-                    'w': _safe_float(r.get('百家初盘胜', 0)),[m
+[31m-                    'd': _safe_float(r.get('百家初盘平', 0)),[m
+[31m-                    'l': _safe_float(r.get('百家初盘负', 0)),[m
+[31m-                }[m
+[31m-                avg_close = {[m
+[31m-                    'w': _safe_float(r.get('百家最新胜', 0)),[m
+[31m-                    'd': _safe_float(r.get('百家最新平', 0)),[m
+[31m-                    'l': _safe_float(r.get('百家最新负', 0)),[m
+[31m-                }[m
+[31m-                [m
+[31m-                # 构建EV计算数据[m
+[31m-                vb_data = {[m
+[31m-                    'odds_win': odds_win,[m
+[31m-                    'odds_draw': odds_draw,[m
+[31m-                    'odds_loss': odds_loss,[m
+[31m-                    'avg_odds_open_w': avg_open.get('w', 0),[m
+[31m-                    'avg_odds_open_d': avg_open.get('d', 0),[m
+[31m-                    'avg_odds_open_l': avg_open.get('l', 0),[m
+[31m-                    'avg_odds_close_w': avg_close.get('w', 0),[m
+[31m-                    'avg_odds_close_d': avg_close.get('d', 0),[m
+[31m-                    'avg_odds_close_l': avg_close.get('l', 0),[m
+[31m-                    'fusion_win': 0,  # LGBM融合概率由update_db_fusion.py填充，V3降级用final[m
+[31m-                    'fusion_draw': 0,[m
+[31m-                    'fusion_loss': 0,[m
+[31m-                    'cold_risk': r.get('冷门风险', 0),[m
+[31m-                    'ev_adjust': r.get('ev_adjust', 0),[m
+[31m-                }[m
+[31m-                [m
+[31m-                # 计算三向EV[m
+[31m-                vb_result = calculate_value_bet(vb_data)[m
+[31m-                [m
+[31m-                # 更新record中的EV字段[m
+[31m-                record['ev_win'] = vb_result.get('ev_win', 0)[m
+[31m-                record['ev_draw'] = vb_result.get('ev_draw', 0)[m
+[31m-                record['ev_loss'] = vb_result.get('ev_loss', 0)[m
+[31m-                record['ev_value'] = vb_result.get('ev_value', 0)[m
+[31m-                record['best_direction'] = vb_result.get('best_direction', '')[m
+[31m-                record['best_direction_cn'] = vb_result.get('best_direction_cn', '')[m
+[31m-                record['avg_margin'] = vb_result.get('avg_margin', 0)[m
+[31m-                record['implied_prob_w'] = vb_result.get('implied_prob_w', 0)[m
+[31m-                record['implied_prob_d'] = vb_result.get('implied_prob_d', 0)[m
+[31m-                record['implied_prob_l'] = vb_result.get('implied_prob_l', 0)[m
+[31m-                # 百家初盘/最新赔率[m
+[31m-                record['avg_odds_open_w'] = avg_open.get('w', 0)[m
+[31m-                record['avg_odds_open_d'] = avg_open.get('d', 0)[m
+[31m-                record['avg_odds_open_l'] = avg_open.get('l', 0)[m
+[31m-                record['avg_odds_close_w'] = avg_close.get('w', 0)[m
+[31m-                record['avg_odds_close_d'] = avg_close.get('d', 0)[m
+[31m-                record['avg_odds_close_l'] = avg_close.get('l', 0)[m
+[31m-            [m
+[31m-            # 冷门风险：高/中风险时自动追加"防X"到cold_signals[m
+[31m-            cold_risk_val = record.get('cold_risk', '')[m
+[31m-            if cold_risk_val in ('高', '中'):[m
+[31m-                probs = {[m
+[31m-                    '平局': _to_float(record.get('final_draw', 0)),[m
+[31m-                    '客胜': _to_float(record.get('final_loss', 0)),[m
+[31m-                    '主胜': _to_float(record.get('final_win', 0)),[m
+[31m-                }[m
+[31m-                # 找第二大概率方向[m
+[31m-                sorted_probs = sorted(probs.items(), key=lambda x: x[1], reverse=True)[m
+[31m-                defend_target = sorted_probs[1][0][m
+[31m-                defend_prob = sorted_probs[1][1] * 100[m
+[31m-                defend_tip = f"防{defend_target}({defend_prob:.0f}%)"[m
+[31m-                # 追加到cold_signals[m
+[31m-                existing_signals = record.get('cold_signals', '')[m
+[31m-                if existing_signals:[m
+[31m-                    record['cold_signals'] = f"{existing_signals}|{defend_tip}"[m
+[31m-                else:[m
+[31m-                    record['cold_signals'] = defend_tip[m
+[31m-            [m
+[31m-            records_to_insert.append(record)[m
+[31m-            [m
+[31m-            # Dry-run模式：仅打印预览[m
+[31m-            if dry_run:[m
+[31m-                log(f"[DRY-RUN] 将写入数据库: match_id={match_id}, {r.get('主队')} vs {r.get('客队')}")[m
+[31m-                log(f"  -> 推荐: {r.get('推荐方向')} {r.get('推荐概率')}, EV: {r.get('EV', '-')}")[m
+[31m-                log(f"  -> 赔率: 胜{odds_win}, 平{odds_draw}, 负{odds_loss}")[m
+[31m-                log(f"  -> 泊松: 主胜{poisson_home}, 平局{poisson_draw}, 客胜{poisson_away}")[m
+[31m-                log(f"  -> 综合: 主胜{final_home}, 平局{final_draw}, 客胜{final_away}")[m
+[31m-        [m
+[31m-        # 实际写入数据库[m
+[31m-        if not dry_run and records_to_insert:[m
+[31m-            # 按match_id的日期部分清除旧记录（而非按date字段）[m
+[31m-            # 原因：同一天的比赛可能date字段不同（周六白天 vs 周日凌晨）[m
+[31m-            #       但match_id的日期部分（如20260516）保持一致[m
+[31m-            # 示例：周六白天比赛date=2026-05-16，周日凌晨比赛date=2026-05-17[m
+[31m-            #       但都是20260516_XXX体彩网编号，应该一起处理[m
+[31m-            match_id_dates = set()[m
+[31m-            for record in records_to_insert:[m
+[31m-                # 从match_id提取日期部分：20260516_001 -> 20260516[m
+[31m-                match_id = record['match_id'][m
+[31m-                date_part = match_id.split('_')[0] if '_' in match_id else ''[m
+[31m-                if date_part:[m
+[31m-                    match_id_dates.add(date_part)[m
+[31m-            [m
+[31m-            # 已存在→UPDATE关键字段（保留pinnacle/hkjc/EV/fusion等数据）[m
+[31m-            # 不存在→INSERT新记录[m
+[31m-            inserted = 0[m
+[31m-            updated = 0[m
+[31m-            for record in records_to_insert:[m
+[31m-                cursor.execute([m
+[31m-                    "SELECT match_id FROM poisson_predictions WHERE match_id = ?",[m
+[31m-                    (record['match_id'],)[m
+[31m-                )[m
+[31m-                exists = cursor.fetchone()[m
+[31m-                [m
+[31m-                # 如果match_id未匹配，尝试按主队+客队+开赛时间匹配（兼容旧格式match_id）[m
+[31m-                if not exists:[m
+[31m-                    cursor.execute([m
+[31m-                        "SELECT match_id FROM poisson_predictions WHERE home_team = ? AND away_team = ? AND kickoff_time = ?",[m
+[31m-                        (record['home_team'], record['away_team'], record['kickoff_time'])[m
+[31m-                    )[m
+[31m-                    existing_row = cursor.fetchone()[m
+[31m-                    if existing_row:[m
+[31m-                        record['match_id'] = existing_row[0]  # 保留旧match_id，执行UPDATE[m
+[31m-                [m
+[31m-                if exists:[m
+[31m-                    # 已存在：只UPDATE日报负责的字段，不动其他脚本写入的字段[m
+[31m-                    cursor.execute("""[m
+[31m-                        UPDATE poisson_predictions SET[m
+[31m-                            date = :date, exec_time = :exec_time, league = :league,[m
+[31m-                            home_team = :home_team, away_team = :away_team,[m
+[31m-                            kickoff_time = :kickoff_time,[m
+[31m-                            prediction = :prediction, prediction_prob = :prediction_prob,[m
+[31m-                            odds_win = :odds_win, odds_draw = :odds_draw, odds_loss = :odds_loss,[m
+[31m-                            poisson_win = :poisson_win, poisson_draw = :poisson_draw, poisson_loss = :poisson_loss,[m
+[31m-                            market_win = :market_win, market_draw = :market_draw, market_loss = :market_loss,[m
+[31m-                            final_win = :final_win, final_draw = :final_draw, final_loss = :final_loss,[m
+[31m-                            risk_level = :risk_level, kelly_win = :kelly_win, kelly_draw = :kelly_draw, kelly_loss = :kelly_loss,[m
+[31m-                            odds_source = :odds_source,[m
+[31m-                            hhad_win = :hhad_win, hhad_draw = :hhad_draw, hhad_loss = :hhad_loss,[m
+[31m-                            hhad_handicap = :hhad_handicap,[m
+[31m-                            had_lambda_h = :had_lambda_h, had_lambda_a = :had_lambda_a,[m
+[31m-                            hhad_lambda_h = :hhad_lambda_h, hhad_lambda_a = :hhad_lambda_a,[m
+[31m-                            home_points = :home_points, away_points = :away_points,[m
+[31m-                            home_avg_goals = :home_avg_goals, away_avg_goals = :away_avg_goals,[m
+[31m-                            home_avg_conceded = :home_avg_conceded, away_avg_conceded = :away_avg_conceded[m
+[31m-                        WHERE match_id = :match_id[m
+[31m-                    """, record)[m
+[31m-                    updated += 1[m
+[31m-                else:[m
+[31m-                    # 不存在：INSERT完整记录[m
+[31m-                    cursor.execute("""[m
+[31m-                        INSERT INTO poisson_predictions ([m
+[31m-                            match_id, date, exec_time, league, home_team, away_team,[m
+[31m-                            kickoff_time, prediction, prediction_prob, odds_win, odds_draw, odds_loss,[m
+[31m-                            poisson_win, poisson_draw, poisson_loss, market_win, market_draw, market_loss,[m
+[31m-                            final_win, final_draw, final_loss, risk_level, kelly_win, kelly_draw, kelly_loss,[m
+[31m-                            cold_risk, cold_signals, risk_warning,[m
+[31m-                            odds_source, hhad_win, hhad_draw, hhad_loss, hhad_handicap,[m
+[31m-                            had_lambda_h, had_lambda_a, hhad_lambda_h, hhad_lambda_a,[m
+[31m-                            home_points, away_points, home_avg_goals, away_avg_goals,[m
+[31m-                            home_avg_conceded, away_avg_conceded,[m
+[31m-                            pinnacle_open_w, pinnacle_open_d, pinnacle_open_l,[m
+[31m-                            pinnacle_close_w, pinnacle_close_d, pinnacle_close_l,[m
+[31m-                            pinnacle_movement, pinnacle_margin,[m
+[31m-                            implied_prob_w, implied_prob_d, implied_prob_l,[m
+[31m-                            ev_value, kelly_stake, value_flag, pod_signal, clv,[m
+[31m-                            ev_win, ev_draw, ev_loss, best_direction, best_direction_cn,[m
+[31m-                            avg_margin, avg_odds_open_w, avg_odds_open_d, avg_odds_open_l,[m
+[31m-                            avg_odds_close_w, avg_odds_close_d, avg_odds_close_l,[m
+[31m-                            actual_outcome, deviation_analysis[m
+[31m-                        ) VALUES ([m
+[31m-                            :match_id, :date, :exec_time, :league, :home_team, :away_team,[m
+[31m-                            :kickoff_time, :prediction, :prediction_prob, :odds_win, :odds_draw, :odds_loss,[m
+[31m-                            :poisson_win, :poisson_draw, :poisson_loss, :market_win, :market_draw, :market_loss,[m
+[31m-                            :final_win, :final_draw, :final_loss, :risk_level, :kelly_win, :kelly_draw, :kelly_loss,[m
+[31m-                            :cold_risk, :cold_signals, :risk_warning,[m
+[31m-                            :odds_source, :hhad_win, :hhad_draw, :hhad_loss, :hhad_handicap,[m
+[31m-                            :had_lambda_h, :had_lambda_a, :hhad_lambda_h, :hhad_lambda_a,[m
+[31m-                            :home_points, :away_points, :home_avg_goals, :away_avg_goals,[m
+[31m-                            :home_avg_conceded, :away_avg_conceded,[m
+[31m-                            :pinnacle_open_w, :pinnacle_open_d, :pinnacle_open_l,[m
+[31m-                            :pinnacle_close_w, :pinnacle_close_d, :pinnacle_close_l,[m
+[31m-                            :pinnacle_movement, :pinnacle_margin,[m
+[31m-                            :implied_prob_w, :implied_prob_d, :implied_prob_l,[m
+[31m-                            :ev_value, :kelly_stake, :value_flag, :pod_signal, :clv,[m
+[31m-                            :ev_win, :ev_draw, :ev_loss, :best_direction, :best_direction_cn,[m
+[31m-                            :avg_margin, :avg_odds_open_w, :avg_odds_open_d, :avg_odds_open_l,[m
+[31m-                            :avg_odds_close_w, :avg_odds_close_d, :avg_odds_close_l,[m
+[31m-                            :actual_outcome, :deviation_analysis[m
+[31m-                        )[m
+[31m-                    """, record)[m
+[31m-                    inserted += 1[m
+[31m-            [m
+[31m-            conn.commit()[m
+[31m-            log(f"✓ 已写入数据库: 新增{inserted}条, 更新{updated}条")[m
+[31m-            log(f"  数据库: {DB_PATH}")[m
+[31m-        elif dry_run:[m
+[31m-            log(f"[DRY-RUN] 共 {len(records_to_insert)} 条记录待写入")[m
+[31m-        [m
+[31m-        conn.close()[m
+[31m-        [m
+[31m-    except Exception as e:[m
+[31m-        log(f"⚠️ 数据库写入失败: {e}")[m
+[31m-        import traceback[m
+[31m-        traceback.print_exc()[m
+[31m-[m
+[31m-[m
+[31m-# ========== 主流程 ==========[m
+[31m-[m
+[31m-def get_time_window(date_str: str = None) -> Tuple[datetime, datetime]:[m
+[31m-    """[m
+[31m-    获取时间窗口[m
+[31m-    当天12:00至次日11:59（用户指定时间窗口）[m
+[31m-    """[m
+[31m-    if date_str:[m
+[31m-        target_date = datetime.strptime(date_str, "%Y-%m-%d")[m
+[31m-    else:[m
+[31m-        target_date = datetime.now()[m
+[31m-    [m
+[31m-    # 当天12:00[m
+[31m-    start_time = target_date.replace(hour=12, minute=0, second=0, microsecond=0)[m
+[31m-    # 次日11:59[m
+[31m-    end_time = (target_date + timedelta(days=1)).replace(hour=11, minute=59, second=0, microsecond=0)[m
+[31m-    [m
+[31m-    return start_time, end_time[m
+[31m-[m
+[31m-[m
+[31m-def process_league(league_code: str, odds_data: dict, start_time: datetime, end_time: datetime, [m
+[31m-                   force_refresh: bool = False,[m
+[31m-                   use_fundamental: bool = True,[m
+[31m-                   tactical_only_4star: bool = False,[m
+[31m-                   use_dim6: bool = True) -> Tuple[List[dict], List[dict]]:[m
+[31m-    """[m
+[31m-    处理单个联赛[m
+[31m-    返回: (匹配成功的比赛列表, 跳过无赔率的比赛列表)[m
+[31m-    [m
+[31m-    Args:[m
+[31m-        league_code: 联赛代码[m
+[31m-        odds_data: 赔率数据[m
+[31m-        start_time: 时间窗口开始[m
+[31m-        end_time: 时间窗口结束[m
+[31m-        force_refresh: 是否强制刷新缓存[m
+[31m-        use_fundamental: 是否使用基本面分析[m
+[31m-        tactical_only_4star: 是否只对4星+场次做战术分析[m
+[31m-        use_dim6: 是否使用6维评分[m
+[31m-    """[m
+[31m-    league_name = LEAGUE_CODES.get(league_code, {}).get('name', league_code)[m
+[31m-    log(f"\n{'='*60}")[m
+[31m-    log(f"处理 {league_name} ({league_code})")[m
+[31m-    log(f"{'='*60}")[m
+[31m-    [m
+[31m-    # 获取积分榜[m
+[31m-    standings_data = fetch_standings(league_code, force_refresh)[m
+[31m-    if not standings_data:[m
+[31m-        log(f"⚠️ 无法获取 {league_name} 积分榜")[m
+[31m-        return [], [][m
+[31m-    [m
+[31m-    standings = standings_data.get('standings', {})[m
+[31m-    [m
+[31m-    # 获取qtx积分榜数据（补充场均进球/失球等额外数据）[m
+[31m-    qtx_standings = None[m
+[31m-    if HAS_QTX_STANDINGS:[m
+[31m-        qtx_standings = fetch_qtx_standings(league_name)[m
+[31m-        if qtx_standings:[m
+[31m-            log(f"✓ 获取 {league_name} qtx积分榜数据（{len(qtx_standings.get('teams', []))}支球队）")[m
+[31m-        else:[m
+[31m-            log(f"⚠️ 无法获取 {league_name} qtx积分榜数据")[m
+[31m-    [m
+[31m-    # 获取时间窗口内的比赛[m
+[31m-    matches = fetch_matches_in_window(league_code, start_time, end_time, force_refresh)[m
+[31m-    if not matches:[m
+[31m-        log(f"⚠️ {league_name} 在时间窗口内无比赛")[m
+[31m-        return [], [][m
+[31m-    [m
+[31m-    # 分析每场比赛[m
+[31m-    successful = [][m
+[31m-    skipped = [][m
+[31m-    [m
+[31m-    for match in matches:[m
+[31m-        home_team = match['home_team'][m
+[31m-        away_team = match['away_team'][m
+[31m-        [m
+[31m-        # 查找积分榜数据[m
+[31m-        home_data = find_team_in_standings(home_team, standings)[m
+[31m-        away_data = find_team_in_standings(away_team, standings)[m
+[31m-        [m
+[31m-        if not home_data:[m
+[31m-            log(f"⚠️ 未找到主队积分榜数据: {home_team}")[m
+[31m-            home_data = {[m
+[31m-                'name': home_team,[m
+[31m-                'name_zh': TEAM_NAME_MAP.get(home_team, home_team),[m
+[31m-                'rank': 10,[m
+[31m-                'played': 10,[m
+[31m-                'gf': 12,[m
+[31m-                'ga': 12,[m
+[31m-            }[m
+[31m-        [m
+[31m-        if not away_data:[m
+[31m-            log(f"⚠️ 未找到客队积分榜数据: {away_team}")[m
+[31m-            away_data = {[m
+[31m-                'name': away_team,[m
+[31m-                'name_zh': TEAM_NAME_MAP.get(away_team, away_team),[m
+[31m-                'rank': 10,[m
+[31m-                'played': 10,[m
+[31m-                'gf': 12,[m
+[31m-                'ga': 12,[m
+[31m-            }[m
+[31m-        [m
+[31m-        # 获取真实赔率[m
+[31m-        real_odds = get_real_odds(home_team, away_team, odds_data)[m
+[31m-        # 获取HHAD让球赔率[m
+[31m-        hhad_odds = get_hhad_odds(home_team, away_team, odds_data)[m
+[31m-        # 获取体彩网官方编号[m
+[31m-        match_num_display = get_match_num(home_team, away_team, odds_data)[m
+[31m-        [m
+[31m-        if real_odds is None and hhad_odds is None:[m
+[31m-            log(f"⏭️ 跳过（无赔率）: {home_data['name_zh']} vs {away_data['name_zh']}")[m
+[31m-            skipped.append({[m
+[31m-                'home': home_data['name_zh'],[m
+[31m-                'away': away_data['name_zh'],[m
+[31m-                'league': league_name,[m
+[31m-                'time': match['match_time_str'],[m
+[31m-            })[m
+[31m-            continue[m
+[31m-        [m
+[31m-        # 如果HAD赔率存在，优先使用HAD[m
+[31m-        # 如果HAD赔率为空但HHAD存在，使用HHAD赔率[m
+[31m-        analysis = None[m
+[31m-        if real_odds is not None:[m
+[31m-            # HAD赔率存在，使用HAD[m
+[31m-            analysis = analyze_match(home_data, away_data, real_odds, hhad_odds=hhad_odds)[m
+[31m-            if analysis:[m
+[31m-                analysis['odds_source'] = 'had'[m
+[31m-        elif hhad_odds is not None:[m
+[31m-            # HAD为空但HHAD存在，使用HHAD[m
+[31m-            analysis = analyze_match(home_data, away_data, None, hhad_odds=hhad_odds)[m
+[31m-            if analysis:[m
+[31m-                analysis['odds_source'] = 'hhad'[m
+[31m-                log(f"  [HHAD] {home_data['name_zh']} 仅开售让球盘")[m
+[31m-        [m
+[31m-        if analysis is None:[m
+[31m-            skipped.append({[m
+[31m-                'home': home_data['name_zh'],[m
+[31m-                'away': away_data['name_zh'],[m
+[31m-                'league': league_name,[m
+[31m-                'time': match['match_time_str'],[m
+[31m-            })[m
+[31m-            continue[m
+[31m-        [m
+[31m-        # 基本面分析（可选）[m
+[31m-        fundamental_data = None[m
+[31m-        tactical_data = None[m
+[31m-        [m
+[31m-        if HAS_FUNDAMENTAL and use_fundamental:[m
+[31m-            home_rank = home_data.get('rank', 0)[m
+[31m-            away_rank = away_data.get('rank', 0)[m
+[31m-            home_points = home_data.get('pts', 0)[m
+[31m-            away_points = away_data.get('pts', 0)[m
+[31m-            [m
+[31m-            try:[m
+[31m-                # 获取基本面数据[m
+[31m-                fundamental_data = analyze_fundamental([m
+[31m-                    home_data['name_zh'], away_data['name_zh'], league_name,[m
+[31m-                    home_rank, away_rank, home_points, away_points,[m
+[31m-                    odds=real_odds[m
+[31m-                )[m
+[31m-                [m
+[31m-                # 计算EV修正因子[m
+[31m-                ev_adjust = 0.0[m
+[31m-                [m
+[31m-                # 冷门风险：高/中风险时标记[m
+[31m-                cold_risk_level = fundamental_data.get("cold_risk", {}).get("cold_risk", "")[m
+[31m-                if cold_risk_level in ("高", "中"):[m
+[31m-                    probs = {[m
+[31m-                        "主胜": analysis.get('final_home', 0) or 0,[m
+[31m-                        "平局": analysis.get('final_draw', 0) or 0,[m
+[31m-                        "客胜": analysis.get('final_away', 0) or 0,[m
+[31m-                    }[m
+[31m-                    sorted_probs = sorted(probs.items(), key=lambda x: x[1], reverse=True)[m
+[31m-                    defend_target = sorted_probs[1][0]  # 第二大概率方向[m
+[31m-                    defend_prob = sorted_probs[1][1] * 100  # 转百分比[m
+[31m-                    analysis['defend_tip'] = f"防{defend_target}({defend_prob:.0f}%)"[m
+[31m-                    # 追加到EV说明[m
+[31m-                    if analysis.get('confidence_reason'):[m
+[31m-                        analysis['confidence_reason'] += f" | {analysis['defend_tip']}"[m
+[31m-                    else:[m
+[31m-                        analysis['confidence_reason'] = analysis['defend_tip'][m
+[31m-                    log(f"   冷门风险{cold_risk_level}: {analysis['defend_tip']}")[m
+[31m-                [m
+[31m-                # 打印基本面摘要[m
+[31m-                log(f"   基本面: {fundamental_data.get('risk_warning', '正常')}")[m
+[31m-                [m
+[31m-                # 战术分析（只对高EV场次）[m
+[31m-                if tactical_only_4star:[m
+[31m-                    try:[m
+[31m-                        tactical_data = get_tactical_preview([m
+[31m-                            home_data['name_zh'], away_data['name_zh'], league_name[m
+[31m-                        )[m
+[31m-                        if tactical_data.get('has_data'):[m
+[31m-                            log(f"   战术: {tactical_data.get('summary', '')[:50]}")[m
+[31m-                    except Exception as e:[m
+[31m-                        log(f"   战术分析失败: {str(e)[:50]}")[m
+[31m-                [m
+[31m-                # 6维评分 → EV修正因子[m
+[31m-                dim6_result = None[m
+[31m-                if use_dim6:[m
+[31m-                    try:[m
+[31m-                        dim6_result = calculate_6dim_score([m
+[31m-                            home_data['name_zh'], away_data['name_zh'], league_name,[m
+[31m-                            home_rank=home_rank, away_rank=away_rank,[m
+[31m-                            home_points=home_points, away_points=away_points,[m
+[31m-                            home_injuries=fundamental_data.get('injury_info', {}).get('home_injuries', []),[m
+[31m-                            away_injuries=fundamental_data.get('injury_info', {}).get('away_injuries', []),[m
+[31m-                            home_key_out=fundamental_data.get('injury_info', {}).get('key_players_out', {}).get('home', []),[m
+[31m-                            away_key_out=fundamental_data.get('injury_info', {}).get('key_players_out', {}).get('away', []),[m
+[31m-                            home_recent=fundamental_data.get('home_form', {}),[m
+[31m-                            away_recent=fundamental_data.get('away_form', {}),[m
+[31m-                            odds_home=real_odds[0] if real_odds else 2.0,[m
+[31m-                            odds_draw=real_odds[1] if real_odds and len(real_odds) > 1 else 3.0,[m
+[31m-                            odds_away=real_odds[2] if real_odds and len(real_odds) > 2 else 3.0[m
+[31m-                        )[m
+[31m-                        [m
+[31m-                        if dim6_result and dim6_result.get('dim6_enabled'):[m
+[31m-                            # 6维评分调整 → EV修正因子（正面+0.02，负面-0.02）[m
+[31m-                            dim6_adjust = dim6_result.get('confidence_adjust', 0.0)[m
+[31m-                            if dim6_adjust >= 0.5:[m
+[31m-                                ev_adjust = 0.02  # 正面优势[m
+[31m-                            elif dim6_adjust <= -0.5:[m
+[31m-                                ev_adjust = -0.02  # 负面劣势[m
+[31m-                            [m
+[31m-                            # 添加6维评分摘要到EV说明[m
+[31m-                            dim6_summary = f"{dim6_result.get('score_diff', 0):+.1f}分/{dim6_result.get('advantage_level', '')}"[m
+[31m-                            analysis['confidence_reason'] = f"{analysis['confidence_reason']} | 6维:{dim6_summary}"[m
+[31m-                            [m
+[31m-                            # 警告信息[m
+[31m-                            dim6_warnings = dim6_result.get('warnings', [])[m
+[31m-                            if dim6_warnings:[m
+[31m-                                existing_warning = fundamental_data.get('risk_warning', '')[m
+[31m-                                if existing_warning and existing_warning != '正常':[m
+[31m-                                    analysis['risk_warning'] = f"{existing_warning}; {'; '.join(dim6_warnings[:1])}"[m
+[31m-                                else:[m
+[31m-                                    analysis['risk_warning'] = '; '.join(dim6_warnings[:1])[m
+[31m-                    except Exception as e:[m
+[31m-                        log(f"   6维评分失败: {str(e)[:50]}")[m
+[31m-                [m
+[31m-                # 保存EV修正因子到analysis[m
+[31m-                analysis['ev_adjust'] = ev_adjust[m
+[31m-                [m
+[31m-                # 避免搜索过快[m
+[31m-                time.sleep(2)[m
+[31m-                [m
+[31m-            except Exception as e:[m
+[31m-                log(f"   基本面分析失败: {str(e)[:50]}")[m
+[31m-        [m
+[31m-        # 获取qtx积分榜数据（补充场均进球/失球）[m
+[31m-        qtx_home_data = None[m
+[31m-        qtx_away_data = None[m
+[31m-        if qtx_standings:[m
+[31m-            from fetch_standings_qtx import get_team_stats[m
+[31m-            qtx_home_data = get_team_stats(qtx_standings, home_team)[m
+[31m-            qtx_away_data = get_team_stats(qtx_standings, away_team)[m
+[31m-        [m
+[31m-        # 传递matchNum和基本面数据给格式化函数[m
+[31m-        result = format_result_for_output([m
+[31m-            match, analysis, len(successful) + 1, league_name, match_num_display,[m
+[31m-            fundamental_data, tactical_data, qtx_home_data, qtx_away_data[m
+[31m-        )[m
+[31m-        successful.append(result)[m
+[31m-        [m
+[31m-        log(f"✓ {result['编号']} {result['主队']} vs {result['客队']}")[m
+[31m-        log(f"   推荐: {result['推荐方向']} | 概率: {result['推荐概率']} | EV: {result.get('EV', '-')}")[m
+[31m-    [m
+[31m-    return successful, skipped[m
+[31m-[m
+[31m-[m
+[31m-def main():[m
+[31m-    parser = argparse.ArgumentParser(description='竞彩足球泊松分布分析系统 - 每日日报生成（基本面增强版）')[m
+[31m-    parser.add_argument('--date', type=str, help='指定日期 (YYYY-MM-DD格式)，默认今天')[m
+[31m-    parser.add_argument('--dry-run', action='store_true', help='仅测试不生成文件')[m
+[31m-    parser.add_argument('--force-refresh', action='store_true', help='强制刷新API缓存')[m
+[31m-    parser.add_argument('--no-fundamental', action='store_true', help='跳过基本面分析（节省时间）')[m
+[31m-    parser.add_argument('--tactical-only', action='store_true', help='只对4星+场次做战术分析')[m
+[31m-    parser.add_argument('--no-cross-validate', action='store_true', help='禁用交叉验证（节省资源）')[m
+[31m-    parser.add_argument('--no-v34', action='store_true', help='禁用V3.4量化变量（节省搜索时间）')[m
+[31m-    parser.add_argument('--no-6dim', action='store_true', help='禁用6维评分（节省搜索时间）')[m
+[31m-    parser.add_argument('--incremental', action='store_true', help='增量模式：覆盖更新已有预测+补新增晚场比赛（用于18:00补跑）')[m
+[31m-    [m
+[31m-    args = parser.parse_args()[m
+[31m-    [m
+[31m-    # 基本面分析开关[m
+[31m-    use_fundamental = not args.no_fundamental[m
+[31m-    tactical_only_4star = args.tactical_only[m
+[31m-    use_cross_validate = not args.no_cross_validate[m
+[31m-    use_v34 = not args.no_v34[m
+[31m-    use_dim6 = not args.no_6dim[m
+[31m-    [m
+[31m-    # 设置fundamental_analysis模块的开关[m
+[31m-    if use_fundamental:[m
+[31m-        try:[m
+[31m-            from fundamental_analysis import set_cross_validate_enabled, set_v34_enabled, set_dim6_enabled[m
+[31m-            set_cross_validate_enabled(use_cross_validate)[m
+[31m-            set_v34_enabled(use_v34)[m
+[31m-            set_dim6_enabled(use_dim6)[m
+[31m-        except ImportError:[m
+[31m-            log("⚠️ 基本面分析模块导入失败")[m
+[31m-    [m
+[31m-    if use_fundamental:[m
+[31m-        log(f"✓ 基本面分析: 已启用")[m
+[31m-        if tactical_only_4star:[m
+[31m-            log(f"✓ 战术分析: 仅4星+场次")[m
+[31m-        else:[m
+[31m-            log(f"✓ 战术分析: 所有场次")[m
+[31m-        if use_cross_validate:[m
+[31m-            log(f"✓ 交叉验证: 已启用（仅4星+场次）")[m
+[31m-        else:[m
+[31m-            log(f"⚠️ 交叉验证: 已禁用")[m
+[31m-        if use_v34:[m
+[31m-            log(f"✓ V3.4变量: 已启用（仅4星+场次）")[m
+[31m-        else:[m
+[31m-            log(f"⚠️ V3.4变量: 已禁用")[m
+[31m-        if use_dim6:[m
+[31m-            log(f"✓ 6维评分: 已启用（仅3星+场次）")[m
+[31m-        else:[m
+[31m-            log(f"⚠️ 6维评分: 已禁用")[m
+[31m-    else:[m
+[31m-        log(f"⚠️ 基本面分析: 已禁用（使用 --no-fundamental）")[m
+[31m-    [m
+[31m-    # 确保目录存在[m
+[31m-    ensure_dirs()[m
+[31m-    [m
+[31m-    # 计算时间窗口[m
+[31m-    start_time, end_time = get_time_window(args.date)[m
+[31m-    date_str = args.date or datetime.now().strftime("%Y-%m-%d")[m
+[31m-    [m
+[31m-    log(f"=" * 60)[m
+[31m-    log(f"竞彩足球泊松分布分析系统 - 每日日报")[m
+[31m-    log(f"=" * 60)[m
+[31m-    log(f"执行时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")[m
+[31m-    log(f"分析日期: {date_str}")[m
+[31m-    log(f"时间窗口: {start_time.strftime('%Y-%m-%d %H:%M')} 至 {end_time.strftime('%Y-%m-%d %H:%M')}")[m
+[31m-    log(f"模式: {'Dry-Run（仅测试）' if args.dry_run else '正式运行'}")[m
+[31m-    log(f"{'=' * 60}")[m
+[31m-    [m
+[31m-    # 增量模式：查询DB中已有比赛（按主队+客队+开赛时间匹配，不受match_id格式影响）[m
+[31m-    existing_match_keys = set()[m
+[31m-    if args.incremental:[m
+[31m-        try:[m
+[31m-            import sqlite3 as _sql[m
+[31m-            _conn = _sql.connect(DB_PATH)[m
+[31m-            _cur = _conn.cursor()[m
+[31m-            _cur.execute("SELECT home_team, away_team, kickoff_time FROM poisson_predictions WHERE kickoff_time >= ? AND kickoff_time <= ?",[m
+[31m-                        (start_time.strftime('%Y-%m-%d %H:%M'), end_time.strftime('%Y-%m-%d %H:%M')))[m
+[31m-            for row in _cur.fetchall():[m
+[31m-                key = f"{row[0]}_{row[1]}_{row[2]}"[m
+[31m-                existing_match_keys.add(key)[m
+[31m-            _conn.close()[m
+[31m-            log(f"🔄 增量模式：DB中已有 {len(existing_match_keys)} 场预测，将覆盖更新+补新增")[m
+[31m-        except Exception as e:[m
+[31m-            log(f"⚠️ 增量模式查询失败，将全量运行: {e}")[m
+[31m-    [m
+[31m-    # 加载真实赔率（优先API，fallback到缓存文件）[m
+[31m-    odds_data = get_odds_data()[m
+[31m-    if not odds_data:[m
+[31m-        log("⚠️ 警告：未加载到真实赔率，将跳过所有比赛")[m
+[31m-    [m
+[31m-    # 处理五大联赛[m
+[31m-    all_results = [][m
+[31m-    all_skipped = [][m
+[31m-    [m
+[31m-    for league_code in LEAGUE_CODES.keys():[m
+[31m-        results, skipped = process_league([m
+[31m-            league_code, odds_data, start_time, end_time, args.force_refresh,[m
+[31m-            use_fundamental=use_fundamental,[m
+[31m-            tactical_only_4star=tactical_only_4star,[m
+[31m-            use_dim6=use_dim6[m
+[31m-        )[m
+[31m-        all_results.extend(results)[m
+[31m-        all_skipped.extend(skipped)[m
+[31m-        [m
+[31m-        # API速率限制：每个联赛之间间隔7秒[m
+[31m-        if not args.dry_run:[m
+[31m-            time.sleep(7)[m
+[31m-    [m
+[31m-    # 处理其他联赛（使用赔率反推xG）[m
+[31m-    log(f"\n{'='*60}")[m
+[31m-    log(f"处理其他联赛（赔率反推xG模式）")[m
+[31m-    log(f"{'='*60}")[m
+[31m-    [m
+[31m-    # 从赔率数据中提取其他联赛的比赛[m
+[31m-    other_league_matches = {}[m
+[31m-    # 记录五大联赛已分析的比赛（用于去重）[m
+[31m-    # 使用赔率键名和编号去重[m
+[31m-    processed_keys = set()[m
+[31m-    for r in all_results:[m
+[31m-        processed_keys.add(r.get('编号', ''))[m
+[31m-        # 也添加赔率键名（如果有）[m
+[31m-        home_team = r.get('主队', '')[m
+[31m-        away_team = r.get('客队', '')[m
+[31m-        if home_team and away_team:[m
+[31m-            # 标准化队名进行匹配[m
+[31m-            normalized_home = normalize_team_name(home_team)[m
+[31m-            normalized_away = normalize_team_name(away_team)[m
+[31m-            processed_keys.add(f"{normalized_home} vs {normalized_away}")[m
+[31m-    [m
+[31m-    for key, odds_info in odds_data.items():[m
+[31m-        league_name = odds_info.get('league', '')[m
+[31m-        [m
+[31m-        if not league_name:[m
+[31m-            continue[m
+[31m-        [m
+[31m-        # 检查是否已分析过（五大联赛渠道已处理）[m
+[31m-        # 通过编号检查（同时检查数字和显示格式）[m
+[31m-        match_num = str(odds_info.get('matchNum', ''))[m
+[31m-        should_skip = False[m
+[31m-        [m
+[31m-        if match_num and len(match_num) == 4:[m
+[31m-            # 检查数字格式和显示格式[m
+[31m-            display_num = match_num_to_display(match_num)[m
+[31m-            if match_num in processed_keys or display_num in processed_keys:[m
+[31m-                should_skip = True[m
+[31m-        [m
+[31m-        # 也通过赔率键名检查[m
+[31m-        if not should_skip and key in processed_keys:[m
+[31m-            should_skip = True[m
+[31m-        [m
+[31m-        if should_skip:[m
+[31m-            continue[m
+[31m-        [m
+[31m-        # 基于开赛时间过滤：开赛时间必须在 start_time 到 end_time 窗口内[m
+[31m-        match_num_raw = str(odds_info.get('matchNum', ''))[m
+[31m-        skip_reason = None[m
+[31m-        match_date = odds_info.get('matchDate', '')[m
+[31m-        match_time = odds_info.get('matchTime', '')[m
+[31m-        [m
+[31m-        if match_date and match_time:[m
+[31m-            try:[m
+[31m-                # 解析开赛时间[m
+[31m-                kickoff_str = f"{match_date} {match_time[:8]}"[m
+[31m-                kickoff_dt = datetime.strptime(kickoff_str, "%Y-%m-%d %H:%M:%S")[m
+[31m-                [m
+[31m-                # 判断是否在时间窗口内[m
+[31m-                if not (start_time <= kickoff_dt <= end_time):[m
+[31m-                    skip_reason = f"跳过非时间窗口场次: {match_num_raw} (开赛{kickoff_dt.strftime('%m-%d %H:%M')}，窗口{start_time.strftime('%m-%d %H:%M')}-{end_time.strftime('%m-%d %H:%M')})"[m
+[31m-            except (ValueError, TypeError) as e:[m
+[31m-                pass  # 解析失败则不过滤，保留[m
+[31m-        [m
+[31m-        if skip_reason:[m
+[31m-            log(f"  [过滤] {league_name} {skip_reason}")[m
+[31m-            continue[m
+[31m-        [m
+[31m-        if league_name not in other_league_matches:[m
+[31m-            other_league_matches[league_name] = [][m
+[31m-        # 提取开赛时间[m
+[31m-        match_date = odds_info.get('matchDate', '')[m
+[31m-        match_time = odds_info.get('matchTime', '')[m
+[31m-        kickoff_time = ''[m
+[31m-        if match_date and match_time:[m
+[31m-            try:[m
+[31m-                kickoff_time = f"{match_date} {match_time[:5]}"[m
+[31m-            except:[m
+[31m-                kickoff_time = ''[m
+[31m-        [m
+[31m-        other_league_matches[league_name].append({[m
+[31m-            'key': key,[m
+[31m-            'odds': (odds_info.get('home'), odds_info.get('draw'), odds_info.get('away')),[m
+[31m-            'hhad_odds': (odds_info.get('hhad_home'), odds_info.get('hhad_draw'), [m
+[31m-                         odds_info.get('hhad_away'), odds_info.get('hhad_handicap')),[m
+[31m-            'odds_source': odds_info.get('odds_source', ''),[m
+[31m-            'match_num': odds_info.get('matchNum', ''),[m
+[31m-            'kickoff_time': kickoff_time,[m
+[31m-        })[m
+[31m-    [m
+[31m-    log(f"发现 {len(other_league_matches)} 个其他联赛: {', '.join(other_league_matches.keys())}")[m
+[31m-    [m
+[31m-    # 处理每个其他联赛[m
+[31m-    for league_name, matches in other_league_matches.items():[m
+[31m-        log(f"\n处理 {league_name} ({len(matches)} 场比赛)")[m
+[31m-        [m
+[31m-        for match_info in matches:[m
+[31m-            key = match_info['key'][m
+[31m-            odds = match_info['odds'][m
+[31m-            match_num = match_info['match_num'][m
+[31m-            [m
+[31m-            # 解析队名[m
+[31m-            try:[m
+[31m-                parts = key.split(' vs ')[m
+[31m-                if len(parts) != 2:[m
+[31m-                    continue[m
+[31m-                home_team_cn = parts[0].strip()[m
+[31m-                away_team_cn = parts[1].strip()[m
+[31m-            except:[m
+[31m-                continue[m
+[31m-            [m
+[31m-            # 创建模拟的积分榜数据（用于统一接口）[m
+[31m-            home_data = {[m
+[31m-                'name': home_team_cn,[m
+[31m-                'name_zh': home_team_cn,[m
+[31m-                'rank': 10,[m
+[31m-                'played': 10,[m
+[31m-                'gf': 12,[m
+[31m-                'ga': 12,[m
+[31m-            }[m
+[31m-            away_data = {[m
+[31m-                'name': away_team_cn,[m
+[31m-                'name_zh': away_team_cn,[m
+[31m-                'rank': 10,[m
+[31m-                'played': 10,[m
+[31m-                'gf': 12,[m
+[31m-                'ga': 12,[m
+[31m-            }[m
+[31m-            [m
+[31m-            # 决定使用HAD还是HHAD赔率[m
+[31m-            real_odds = odds if odds[0] is not None else None[m
+[31m-            hhad_odds = match_info['hhad_odds'][m
+[31m-            [m
+[31m-            # 使用赔率反推xG模式分析[m
+[31m-            # 优先使用HAD赔率，如果HAD为空则使用HHAD[m
+[31m-            analysis = None[m
+[31m-            odds_source = "had"[m
+[31m-            [m
+[31m-            if real_odds is not None:[m
+[31m-                # HAD赔率存在[m
+[31m-                analysis = analyze_match(home_data, away_data, real_odds, use_odds_xg=True, hhad_odds=hhad_odds)[m
+[31m-                odds_source = "had"[m
+[31m-            elif hhad_odds[0] is not None:[m
+[31m-                # HAD为空但HHAD存在[m
+[31m-                analysis = analyze_match(home_data, away_data, None, use_odds_xg=True, hhad_odds=hhad_odds)[m
+[31m-                odds_source = "hhad"[m
+[31m-                log(f"  [HHAD] {home_team_cn} vs {away_team_cn} 仅开售让球盘")[m
+[31m-            [m
+[31m-            if analysis is None:[m
+[31m-                continue[m
+[31m-            [m
+[31m-            # 标记赔率来源[m
+[31m-            analysis['odds_source'] = odds_source[m
+[31m-            [m
+[31m-            # 格式化结果[m
+[31m-            match_id = match_num_to_display(match_num) if match_num else f"未知"[m
+[31m-            [m
+[31m-            result = {[m
+[31m-                "编号": match_id,[m
+[31m-                "_match_id": f"{date_str.replace('-','')}_{len(all_results)+1:03d}",  # DB内部match_id，用于回写[m
+[31m-                "联赛": league_name,[m
+[31m-                "开赛时间": match_info.get('kickoff_time', '') or "待定",[m
+[31m-                "主队": analysis['home_name_zh'],[m
+[31m-                "客队": analysis['away_name_zh'],[m
+[31m-                "推荐方向": analysis['best_direction_cn'] or analysis['recommendation'],[m
+[31m-                "推荐概率": analysis['rec_prob_display'],[m
+[31m-                "EV": f"{analysis.get('ev_value', 0)*100:.1f}%" if analysis.get('ev_value', 0) > 0 else "-",[m
+[31m-                "EV_主胜": f"{analysis.get('ev_win', 0)*100:.1f}%" if analysis.get('ev_win', 0) > 0 else "-",[m
+[31m-                "EV_平局": f"{analysis.get('ev_draw', 0)*100:.1f}%" if analysis.get('ev_draw', 0) > 0 else "-",[m
+[31m-                "EV_客胜": f"{analysis.get('ev_loss', 0)*100:.1f}%" if analysis.get('ev_loss', 0) > 0 else "-",[m
+[31m-                "EV说明": analysis['confidence_reason'],[m
+[31m-                "xG来源": analysis['xg_source'],[m
+[31m-                "参考比分": "/".join(analysis['reference_scores']),[m
+[31m-                "胜赔": f"{analysis['odds_home']:.2f}",[m
+[31m-                "平赔": f"{analysis['odds_draw']:.2f}",[m
+[31m-                "负赔": f"{analysis['odds_away']:.2f}",[m
+[31m-                "泊松_主胜": f"{analysis['poisson_home']*100:.1f}%",[m
+[31m-                "泊松_平局": f"{analysis['poisson_draw']*100:.1f}%",[m
+[31m-                "泊松_客胜": f"{analysis['poisson_away']*100:.1f}%",[m
+[31m-                "综合_主胜": f"{analysis['final_home']*100:.1f}%",[m
+[31m-                "综合_平局": f"{analysis['final_draw']*100:.1f}%",[m
+[31m-                "综合_客胜": f"{analysis['final_away']*100:.1f}%",[m
+[31m-                # HHAD字段[m
+[31m-                "odds_source": odds_source,[m
+[31m-                "hhad_home": analysis.get('hhad_home'),[m
+[31m-                "hhad_draw": analysis.get('hhad_draw'),[m
+[31m-                "hhad_away": analysis.get('hhad_away'),[m
+[31m-                "hhad_handicap": analysis.get('hhad_handicap'),[m
+[31m-                "ev_adjust": analysis.get('ev_adjust', 0),[m
+[31m-            }[m
+[31m-            [m
+[31m-            all_results.append(result)[m
+[31m-            log(f"✓ {result['编号']} {result['主队']} vs {result['客队']} [赔率反推-{'HHAD' if odds_source == 'hhad' else 'HAD'}]")[m
+[31m-            log(f"   推荐: {result['推荐方向']} | 概率: {result['推荐概率']} | xG来源: {result['xG来源']}")[m
+[31m-    [m
+[31m-    # 汇总结果[m
+[31m-    log(f"\n{'=' * 60}")[m
+[31m-    log(f"处理完成")[m
+[31m-    log(f"{'=' * 60}")[m
+[31m-    log(f"成功分析: {len(all_results)} 场")[m
+[31m-    log(f"跳过（无赔率）: {len(all_skipped)} 场")[m
+[31m-    [m
+[31m-    if all_skipped:[m
+[31m-        log("\n跳过比赛列表:")[m
+[31m-        for s in all_skipped:[m
+[31m-            log(f"  - {s['league']} {s['home']} vs {s['away']} ({s['time']})")[m
+[31m-    [m
+[31m-    if not all_results:[m
+[31m-        log("\n⚠️ 警告：无成功分析的比赛，无法生成报表")[m
+[31m-        return[m
+[31m-    [m
+[31m-    # 按时间排序[m
+[31m-    all_results.sort(key=lambda x: x['开赛时间'])[m
+[31m-    [m
+[31m-    # 增量模式：统计覆盖/新增数量（不过滤，全部进入save_to_database做UPSERT）[m
+[31m-    if existing_match_keys and all_results:[m
+[31m-        update_count = 0[m
+[31m-        new_count = 0[m
+[31m-        for r in all_results:[m
+[31m-            key = f"{r.get('主队', '')}_{r.get('客队', '')}_{r.get('开赛时间', '')}"[m
+[31m-            if key in existing_match_keys:[m
+[31m-                update_count += 1[m
+[31m-            else:[m
+[31m-                new_count += 1[m
+[31m-        log(f"🔄 增量模式：覆盖更新 {update_count} 场，新增 {new_count} 场")[m
+[31m-    [m
+[31m-    # 编号已在format_result_for_output中设置为体彩网官方编号，不再重新计算[m
+[31m-    # （如果有比赛未获取到matchNum，编号可能仍为自动计算格式）[m
+[31m-    [m
+[31m-    # 打印结果摘要[m
+[31m-    log("\n分析结果摘要:")[m
+[31m-    for r in all_results:[m
+[31m-        log(f"  {r['编号']} {r['联赛']} {r['主队']} vs {r['客队']}")[m
+[31m-        log(f"    推荐: {r['推荐方向']} {r['推荐概率']} | EV: {r.get('EV', '-')}")[m
+[31m-    [m
+[31m-    # 保存文件[m
+[31m-    if not args.dry_run:[m
+[31m-        excel_path = os.path.join(OUTPUT_DIR, f"{date_str}.xlsx")[m
+[31m-        csv_path = os.path.join(OUTPUT_DIR, f"{date_str}.csv")[m
+[31m-        [m
+[31m-        # 先获取百家指数赔率数据并计算EV（在保存文件前）[m
+[31m-        try:[m
+[31m-            from fetch_pinnacle_odds import fetch_pinnacle_odds, team_name_similarity[m
+[31m-            [m
+[31m-            log("\n正在获取百家指数赔率数据...")[m
+[31m-            pinnacle_data = fetch_pinnacle_odds(date_str)[m
+[31m-            [m
+[31m-            # 时间窗口跨两天，也要抓次日的百家指数[m
+[31m-            try:[m
+[31m-                next_day = (datetime.strptime(date_str, '%Y-%m-%d') + timedelta(days=1)).strftime('%Y-%m-%d')[m
+[31m-                pinnacle_data_next = fetch_pinnacle_odds(next_day)[m
+[31m-                if pinnacle_data_next:[m
+[31m-                    # 去重：按home+away合并[m
+[31m-                    existing_keys = {(p.get('home',''), p.get('away','')) for p in (pinnacle_data or [])}[m
+[31m-                    for p in pinnacle_data_next:[m
+[31m-                        key = (p.get('home',''), p.get('away',''))[m
+[31m-                        if key not in existing_keys:[m
+[31m-                            pinnacle_data.append(p)[m
+[31m-                            existing_keys.add(key)[m
+[31m-                    log(f"合并次日百家指数: {len(pinnacle_data_next)} 场，去重后总计 {len(pinnacle_data)} 场")[m
+[31m-            except Exception as e_next:[m
+[31m-                log(f"[WARN] 抓取次日百家指数失败: {e_next}")[m
+[31m-            [m
+[31m-            if pinnacle_data:[m
+[31m-                # 匹配百家指数数据到all_results[m
+[31m-                ev_count = 0[m
+[31m-                for result in all_results:[m
+[31m-                    home = result.get('主队', '')[m
+[31m-                    away = result.get('客队', '')[m
+[31m-                    [m
+[31m-                    best_match = None[m
+[31m-                    best_score = 0[m
+[31m-                    for pin in pinnacle_data:[m
+[31m-                        score_home = team_name_similarity(home, pin.get('home', ''))[m
+[31m-                        score_away = team_name_similarity(away, pin.get('away', ''))[m
+[31m-                        score = (score_home + score_away) / 2[m
+[31m-                        if score > best_score:[m
+[31m-                            best_score = score[m
+[31m-                            best_match = pin[m
+[31m-                    [m
+[31m-                    if best_score >= 0.6 and best_match:[m
+[31m-                        # 获取百家指数数据[m
+[31m-                        avg_open = best_match.get('avg_odds_open', {})[m
+[31m-                        avg_close = best_match.get('avg_odds_close', {})[m
+[31m-                        [m
+[31m-                        # 构建EV计算数据[m
+[31m-                        vb_data = {[m
+[31m-                            'odds_win': _safe_float(result.get('胜赔', 0)),[m
+[31m-                            'odds_draw': _safe_float(result.get('平赔', 0)),[m
+[31m-                            'odds_loss': _safe_float(result.get('负赔', 0)),[m
+[31m-                            'avg_odds_open_w': avg_open.get('w', 0),[m
+[31m-                            'avg_odds_open_d': avg_open.get('d', 0),[m
+[31m-                            'avg_odds_open_l': avg_open.get('l', 0),[m
+[31m-                            'avg_odds_close_w': avg_close.get('w', 0),[m
+[31m-                            'avg_odds_close_d': avg_close.get('d', 0),[m
+[31m-                            'avg_odds_close_l': avg_close.get('l', 0),[m
+[31m-                            'fusion_win': _to_float(result.get('综合_主胜', 0)),[m
+[31m-                            'fusion_draw': _to_float(result.get('综合_平局', 0)),[m
+[31m-                            'fusion_loss': _to_float(result.get('综合_客胜', 0)),[m
+[31m-                            'cold_risk': result.get('冷门风险', 0),[m
+[31m-                            'ev_adjust': result.get('ev_adjust', 0),[m
+[31m-                        }[m
+[31m-                        [m
+[31m-                        # 计算三向EV[m
+[31m-                        vb_result = calculate_value_bet(vb_data)[m
+[31m-                        [m
+[31m-                        # 写入结果字段[m
+[31m-                        result['EV'] = f"{vb_result.get('ev_value', 0)*100:.1f}%"[m
+[31m-                        result['EV_主胜'] = f"{vb_result.get('ev_win', 0)*100:.1f}%"[m
+[31m-                        result['EV_平局'] = f"{vb_result.get('ev_draw', 0)*100:.1f}%"[m
+[31m-                        result['EV_客胜'] = f"{vb_result.get('ev_loss', 0)*100:.1f}%"[m
+[31m-                        result['推荐方向'] = vb_result.get('best_direction_cn', result.get('推荐方向', ''))[m
+[31m-                        [m
+[31m-                        # 添加百家初盘/最新赔率[m
+[31m-                        result['百家初盘胜'] = avg_open.get('w', 0)[m
+[31m-                        result['百家初盘平'] = avg_open.get('d', 0)[m
+[31m-                        result['百家初盘负'] = avg_open.get('l', 0)[m
+[31m-                        result['百家最新胜'] = avg_close.get('w', 0)[m
+[31m-                        result['百家最新平'] = avg_close.get('d', 0)[m
+[31m-                        result['百家最新负'] = avg_close.get('l', 0)[m
+[31m-                        [m
+[31m-                        ev_count += 1[m
+[31m-                [m
+[31m-                log(f"✓ 成功计算 {ev_count}/{len(all_results)} 场EV")[m
+[31m-[m
+[31m-                # 将Pinnacle/SB/百家赔率写入DB（通过缓存）[m
+[31m-                try:[m
+[31m-                    from fetch_pinnacle_odds import apply_odds_to_db[m
+[31m-                    jc_updated = apply_odds_to_db(DB_PATH, date_str=date_str)[m
+[31m-                    log(f"✓ 百家指数赔率写入DB: {jc_updated} 场")[m
+[31m-                except Exception as e_db:[m
+[31m-                    log(f"⚠️ 百家指数赔率写入DB失败: {e_db}")[m
+[31m-        except Exception as e:[m
+[31m-            import traceback[m
+[31m-            log(f"⚠️ 获取平博数据失败: {e}")[m
+[31m-            traceback.print_exc()[m
+[31m-        [m
+[31m-        # 保存文件（此时已有价值投注字段）[m
+[31m-        save_to_excel(all_results, excel_path)[m
+[31m-        save_to_csv(all_results, csv_path)[m
+[31m-        [m
+[31m-        # 同时写入数据库[m
+[31m-        save_to_database(all_results, date_str, dry_run=False)[m
+[31m-        [m
+[31m-        # V3: 写入DB后执行LGBM融合概率填充 + EV全量重算[m
+[31m-        try:[m
+[31m-            import sqlite3 as _sqlite3[m
+[31m-            log("🔄 执行LGBM融合概率填充...")[m
+[31m-            import subprocess[m
+[31m-            result_fusion = subprocess.run([m
+[31m-                ['python3', os.path.join(os.path.dirname(__file__), 'update_db_fusion.py')],[m
+[31m-                capture_output=True, text=True, timeout=120[m
+[31m-            )[m
+[31m-            if result_fusion.returncode == 0:[m
+[31m-                log("✓ LGBM融合概率填充完成")[m
+[31m-            else:[m
+[31m-                log(f"⚠️ LGBM融合概率填充失败: {result_fusion.stderr[:200]}")[m
+[31m-            [m
+[31m-            log("🔄 执行EV全量重算(V3概率优势法)...")[m
+[31m-            result_ev = subprocess.run([m
+[31m-                ['python3', os.path.join(os.path.dirname(__file__), 'value_bet.py'), '--all'],[m
+[31m-                capture_output=True, text=True, timeout=120[m
+[31m-            )[m
+[31m-            if result_ev.returncode == 0:[m
+[31m-                log("✓ EV全量重算完成")[m
+[31m-            else:[m
+[31m-                log(f"⚠️ EV重算失败: {result_ev.stderr[:200]}")[m
+[31m-            [m
+[31m-            # 从DB读回最新EV数据更新results并重写CSV[m
+[31m-            # 用主队+客队作为匹配key，避免编号顺序不一致[m
+[31m-            conn_r = _sqlite3.connect(DB_PATH)[m
+[31m-            cursor_r = conn_r.cursor()[m
+[31m-            cursor_r.execute('''SELECT home_team, away_team, ev_win, ev_draw, ev_loss, best_direction_cn, [m
+[31m-                avg_odds_open_w, avg_odds_open_d, avg_odds_open_l,[m
+[31m-                avg_odds_close_w, avg_odds_close_d, avg_odds_close_l, cold_risk[m
+[31m-                FROM poisson_predictions WHERE kickoff_time >= ? AND kickoff_time <= ?''', [m
+[31m-                (start_time.strftime('%Y-%m-%d %H:%M'), end_time.strftime('%Y-%m-%d %H:%M')))[m
+[31m-            db_ev = {f"{row[0]}_{row[1]}": row[2:] for row in cursor_r.fetchall()}[m
+[31m-            conn_r.close()[m
+[31m-            [m
+[31m-            updated = 0[m
+[31m-            for result in all_results:[m
+[31m-                key = f"{result.get('主队','')}_{result.get('客队','')}"[m
+[31m-                if key in db_ev:[m
+[31m-                    evw, evd, evl, bdir, aow, aod, aol, acw, acd, acl, cr = db_ev[key][m
+[31m-                    if evw is not None:[m
+[31m-                        result['EV_主胜'] = f'{evw*100:.1f}%'[m
+[31m-                        result['EV_平局'] = f'{evd*100:.1f}%' if evd is not None else '-'[m
+[31m-                        result['EV_客胜'] = f'{evl*100:.1f}%' if evl is not None else '-'[m
+[31m-                    if bdir:[m
+[31m-                        result['推荐方向'] = bdir[m
+[31m-                    if aow and aow > 0: result['百家初盘胜'] = f'{aow:.2f}'[m
+[31m-                    if aod and aod > 0: result['百家初盘平'] = f'{aod:.2f}'[m
+[31m-                    if aol and aol > 0: result['百家初盘负'] = f'{aol:.2f}'[m
+[31m-                    if acw and acw > 0: result['百家最新胜'] = f'{acw:.2f}'[m
+[31m-                    if acd and acd > 0: result['百家最新平'] = f'{acd:.2f}'[m
+[31m-                    if acl and acl > 0: result['百家最新负'] = f'{acl:.2f}'[m
+[31m-                    if cr and cr not in ('无', '低', ''):[m
+[31m-                        result['EV说明'] = f'冷门风险{cr}' + ('|' + result.get('EV说明', '') if result.get('EV说明') else '')[m
+[31m-                    updated += 1[m
+[31m-            [m
+[31m-            if updated > 0:[m
+[31m-                save_to_csv(all_results, csv_path)[m
+[31m-                save_to_excel(all_results, excel_path)[m
+[31m-                log(f"✓ 已从DB回写{updated}场EV数据，CSV/Excel已更新")[m
+[31m-        except Exception as e:[m
+[31m-            import traceback[m
+[31m-            log(f"⚠️ fusion+EV后处理失败: {e}")[m
+[31m-            traceback.print_exc()[m
+[31m-        [m
+[31m-        log(f"\n✓ 报表生成完成!")[m
+[31m-        log(f"  Excel: {excel_path}")[m
+[31m-        log(f"  CSV: {csv_path}")[m
+[31m-        [m
+[31m-        # ========== 自动部署：push_db + align + build + git push ==========[m
+[31m-        try:[m
+[31m-            import subprocess as _sp[m
+[31m-            dashboard_dir = os.path.join(SCRIPT_DIR, 'football-dashboard')[m
+[31m-            [m
+[31m-            # Step 1: 推送DB到GitHub Release[m
+[31m-            log("\n🔄 推送DB到GitHub Release...")[m
+[31m-            push_db_result = _sp.run([m
+[31m-                ['python3', 'scripts/push_db.py', '--db', DB_PATH],[m
+[31m-                cwd=dashboard_dir, capture_output=True, text=True, timeout=60[m
+[31m-            )[m
+[31m-            if push_db_result.returncode == 0:[m
+[31m-                log("  ✅ DB已推送到Release")[m
+[31m-            else:[m
+[31m-                log(f"  ⚠️ DB推送失败: {push_db_result.stderr[:80]}")[m
+[31m-            [m
+[31m-            # Step 2: 对齐合并[m
+[31m-            log("🔄 对齐合并DB数据...")[m
+[31m-            align_result = _sp.run([m
+[31m-                ['python3', 'scripts/align_and_merge.py', '--date', date_str, '--db', DB_PATH],[m
+[31m-                cwd=dashboard_dir, capture_output=True, text=True, timeout=60[m
+[31m-            )[m
+[31m-            if align_result.returncode != 0:[m
+[31m-                log(f"  ⚠️ align失败: {align_result.stderr[:80]}")[m
+[31m-            [m
+[31m-            # Step 3: 构建看板[m
+[31m-            log("🔄 构建看板...")[m
+[31m-            build_result = _sp.run([m
+[31m-                ['python3', 'scripts/merge_and_build.py', '--db', DB_PATH, '--output', '.'],[m
+[31m-                cwd=dashboard_dir, capture_output=True, text=True, timeout=60[m
+[31m-            )[m
+[31m-            if build_result.returncode == 0:[m
+[31m-                # git commit + push[m
+[31m-                _sp.run(['git', 'add', '-A'], cwd=dashboard_dir, capture_output=True)[m
+[31m-                commit_result = _sp.run([m
+[31m-                    ['git', 'commit', '-m', f'update dashboard {date_str}'],[m
+[31m-                    cwd=dashboard_dir, capture_output=True, text=True[m
+[31m-                )[m
+[31m-                if 'nothing to commit' in commit_result.stdout:[m
+[31m-                    log("  看板无变化，跳过推送")[m
+[31m-                else:[m
+[31m-                    push_result = _sp.run([m
+[31m-                        ['git', 'push', 'origin', 'main'],[m
+[31m-                        cwd=dashboard_dir, capture_output=True, text=True, timeout=120[m
+[31m-                    )[m
+[31m-                    if push_result.returncode == 0:[m
+[31m-                        log("✅ 看板已推送 → https://bily1258-design.github.io/football-dashboard/")[m
+[31m-                    else:[m
+[31m-                        log(f"  ⚠️ git push失败: {push_result.stderr[:100]}")[m
+[31m-            else:[m
+[31m-                log(f"  ⚠️ build失败: {build_result.stderr[:100]}")[m
+[31m-        except Exception as e:[m
+[31m-            log(f"⚠️ 自动部署失败: {e}")[m
+[31m-    else:[m
+[31m-        log("\n[DRY-RUN] 跳过文件生成")[m
+[31m-        # Dry-run模式仍测试数据库写入逻辑[m
+[31m-        save_to_database(all_results, date_str, dry_run=True)[m
+[31m-[m
+[31m-[m
+[31m-if __name__ == "__main__":[m
+[31m-    main()[m
+[1mdiff --git a/scripts/oddsmagnet_to_realodds.py.bak b/scripts/oddsmagnet_to_realodds.py.bak[m
+[1mdeleted file mode 100644[m
+[1mindex dc873b6..0000000[m
+[1m--- a/scripts/oddsmagnet_to_realodds.py.bak[m
+[1m+++ /dev/null[m
+[36m@@ -1,59 +0,0 @@[m
+[31m-#!/usr/bin/env python3[m
+[31m-import json, os, math[m
+[31m-from datetime import datetime[m
+[31m-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))[m
+[31m-REPO_DIR = os.path.dirname(SCRIPT_DIR)[m
+[31m-def convert(date_str=None):[m
+[31m-    if not date_str:[m
+[31m-        date_str = datetime.now().strftime("%Y-%m-%d")[m
+[31m-    dc = date_str.replace("-","")[m
+[31m-    om_path = os.path.join(REPO_DIR, "data", "raw", "oddsmagnet", f"{dc}.json")[m
+[31m-    if not os.path.exists(om_path):[m
+[31m-        print("no data")[m
+[31m-        return False[m
+[31m-    with open(om_path, "r", encoding="utf-8") as fh:[m
+[31m-        om = json.load(fh)[m
+[31m-    matches = om.get("matches", {})[m
+[31m-    if isinstance(matches, list):[m
+[31m-        matches = {f"{m.get('info',{}).get('home','')}_{m.get('info',{}).get('away','')}": m for m in matches}[m
+[31m-    real_odds = {}[m
+[31m-    for k, match in matches.items():[m
+[31m-        info = match.get("info",{})[m
+[31m-        odds = match.get("odds",{})[m
+[31m-        home = info.get("home","")[m
+[31m-        away = info.get("away","")[m
+[31m-        if not home or not away:[m
+[31m-            continue[m
+[31m-        avg = odds.get("avg",{})[m
+[31m-        entry = {[m
+[31m-            "home": avg.get("odds_w"), "draw": avg.get("odds_d"), "away": avg.get("odds_l"),[m
+[31m-            "avg_margin": avg.get("margin"),[m
+[31m-            "matchNum": info.get("number",""), "league": info.get("league",""), "kickoff": info.get("kickoff","")[m
+[31m-        }[m
+[31m-        for src in ["pinnacle", "hkjc"]:[m
+[31m-            s = odds.get(src, {})[m
+[31m-            if s:[m
+[31m-                entry[f"{src}_open_w"] = s.get("odds_w")[m
+[31m-                entry[f"{src}_open_d"] = s.get("odds_d")[m
+[31m-                entry[f"{src}_open_l"] = s.get("odds_l")[m
+[31m-        hhad = odds.get("hhad", {})[m
+[31m-        if hhad:[m
+[31m-            entry["hhad_home"] = hhad.get("odds_w")[m
+[31m-            entry["hhad_draw"] = hhad.get("odds_d")[m
+[31m-            entry["hhad_away"] = hhad.get("odds_l")[m
+[31m-            entry["hhad_handicap"] = hhad.get("handicap")[m
+[31m-        entry = {k2:v for k2,v in entry.items() if v is not None}[m
+[31m-        real_odds[f"{home} vs {away}"] = entry[m
+[31m-    cache_dir = os.path.join(REPO_DIR, "data", "cache")[m
+[31m-    os.makedirs(cache_dir, exist_ok=True)[m
+[31m-    out = os.path.join(cache_dir, "real_odds.json")[m
+[31m-    with open(out, "w", encoding="utf-8") as fh:[m
+[31m-        json.dump(real_odds, fh, ensure_ascii=False, indent=2)[m
+[31m-    print(f"OK {len(real_odds)} -> {out}")[m
+[31m-    return True[m
+[31m-if __name__ == "__main__":[m
+[31m-    import argparse[m
+[31m-    p = argparse.ArgumentParser()[m
+[31m-    p.add_argument("--date")[m
+[31m-    a = p.parse_args()[m
+[31m-    convert(a.date)[m
