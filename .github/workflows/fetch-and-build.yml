@@ -82,12 +82,16 @@ jobs:
             echo "⚠️ Skipping Pinnacle/HKJC (no DB)"
           fi
 
-      - name: Recalculate EV
+      - name: Update DB (fusion+EV+kelly)
         if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         run: |
           if [ -f data/football.db ]; then
+            echo "📊 Filling LGBM fusion probabilities"
+            python scripts/update_db_fusion.py --db data/football.db || echo "⚠️ fusion fill failed"
             echo "📊 Recalculating EV with updated odds"
-            python scripts/value_bet.py --db data/football.db || echo "⚠️ EV recalc failed"
+            python scripts/value_bet.py --all --db data/football.db || echo "⚠️ EV recalc failed"
+            echo "📊 Recalculating Kelly with fusion/final"
+            python scripts/update_db_kelly.py --db data/football.db || echo "⚠️ Kelly recalc failed"
           fi
 
       - name: Generate Predictions (OM → DB)

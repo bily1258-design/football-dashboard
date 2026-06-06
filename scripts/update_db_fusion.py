@@ -95,25 +95,31 @@ def update_db(db_path, predictor):
 
 
 def main():
+    import argparse
+    parser = argparse.ArgumentParser(description='LGBM/融合概率数据库更新（0.3P + 0.7L）')
+    parser.add_argument('--db', type=str, default=DB, help='DB 路径（默认 data/football.db）')
+    args = parser.parse_args()
+
     print("=" * 60)
     print("LGBM/融合概率数据库更新")
     print(f"融合权重: 0.3P + 0.7L")
     print("=" * 60)
-    
+    print(f"DB: {args.db}")
+
     try:
         predictor = FusionPredictor()
-        print("✅ 模型加载成功")
-        print(f"   泊松权重: {predictor.w_poisson}")
-        print(f"   LGBM权重: {predictor.w_lgb}")
+        print("模型加载成功")
+        # 权重按行 profile 动态计算 (full=0.5/0.5, partial=0.3/0.7, none=0/1.0)
+        # 详见 FusionPredictor._get_weight_profile
     except Exception as e:
-        print(f"❌ 模型加载失败: {e}")
+        print(f"模型加载失败: {e}")
         return
-    
+
     total_updated = 0
-    total_updated += update_db(DB, predictor)
-    
+    total_updated += update_db(args.db, predictor)
+
     print("\n" + "=" * 60)
-    print(f"🎉 全部完成! 共更新 {total_updated} 条记录")
+    print(f"全部完成! 共更新 {total_updated} 条记录")
     print("=" * 60)
 
 

@@ -55,20 +55,48 @@ def step_fetch_pinnacle(date_str: str, db_path: str = None):
         print(f"WARN Pinnacle/HKJC fail: {result.stderr[:200]}")
     return result.returncode == 0
 
-def step_recalc_ev(db_path: str = None):
+def step_update_db(db_path: str = None):
+    """Step 1.3: 3 链条全量更新 (fusion -> EV -> kelly)
+
+    顺序：fusion 必须在 EV 之前 (EV 依赖 fusion 概率)，
+          kelly 在最后 (用 fusion 或 final + odds)
+    """
     print("\n" + "=" * 50)
-    print("STEP 1.3: EV recalc")
+    print("STEP 1.3: DB 3链条全量更新 (fusion + EV + kelly)")
     print("=" * 50)
     if not db_path:
         db_path = os.environ.get('FOOTBALL_DB_PATH',
             os.path.join(REPO_DIR, 'data', 'football.db'))
-    cmd = [sys.executable, os.path.join(SCRIPT_DIR, 'value_bet.py'), '--db', db_path]
-    result = subprocess.run(cmd, cwd=REPO_DIR, capture_output=True, text=True, timeout=120)
-    if result.returncode == 0:
-        print("OK EV recalc")
-    else:
-        print(f"WARN EV fail: {result.stderr[:200]}")
-    return result.returncode == 0
+
+    scripts = [
+        ('LGBM 融合概率', os.path.join(SCRIPT_DIR, 'update_db_fusion.py'),
+         ['--db', db_path], 600),
+        ('价值投注 EV (V3 概率优势法)', os.path.join(SCRIPT_DIR, 'value_bet.py'),
+         ['--all', '--db', db_path], 600),
+        ('Kelly 指数 (半凯利)', os.path.join(SCRIPT_DIR, 'update_db_kelly.py'),
+         ['--db', db_path], 300),
+    ]
+
+    all_ok = True
+    for label, script, args, timeout in scripts:
+        print(f"\n[1.3.{scripts.index((label, script, args, timeout))+1}] {label}")
+        cmd = [sys.executable, script] + args
+        result = subprocess.run(cmd, cwd=REPO_DIR, capture_output=True, text=True, timeout=timeout)
+        if result.returncode == 0:
+            # 输出关键统计行
+            for line in result.stdout.split('\n'):
+                if any(k in line for k in ['更新', '完成', 'updated', 'updated:', '条记录', '条 (错误', '总记录']):
+                    print(' ', line.strip())
+            print(f"  OK {label}")
+        else:
+            print(f"  WARN {label} failed (rc={result.returncode})")
+            if result.stderr:
+                print(f"  stderr: {result.stderr[:300]}")
+            if result.stdout:
+                print(f"  stdout (tail): {result.stdout[-300:]}")
+            all_ok = False
+
+    return all_ok
 
 
 def step_predict(date_str: str, db_path: str = None):
@@ -277,8 +305,8 @@ def main():
     if args.fetch_and_push:
         step_fetch(date_str)
         step_fetch_pinnacle(date_str, db_path)
-        step_recalc_ev(db_path)
         step_predict(date_str, db_path)
+        step_update_db(db_path)
         
         if args.with_report:
             step_prepare_odds(date_str)
@@ -311,8 +339,8 @@ def main():
     # 完整模式：fetch → report → review → align → build
     step_fetch(date_str)
     step_fetch_pinnacle(date_str, db_path)
-    step_recalc_ev(db_path)
     step_predict(date_str, db_path)
+    step_update_db(db_path)
     
     if args.with_report:
         step_prepare_odds(date_str)
