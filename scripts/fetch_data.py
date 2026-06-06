@@ -186,6 +186,16 @@ def step_prepare_odds(date_str: str):
 def step_daily_report(date_str: str, incremental: bool = False):
     """Step 2: 运行日报生成"""
     print("\n" + "=" * 50)
+    print("STEP 1.9: 按 conf=0.5 重算 final (recalc_final.py)")
+    result = subprocess.run(
+        ['python3', 'scripts/recalc_final.py'],
+        cwd=dashboard_dir,
+        capture_output=True, text=True
+    )
+    print(result.stdout)
+    if result.returncode != 0:
+        print('⚠️ recalc_final 失败:', result.stderr)
+
     print(f"STEP 2: 生成日报 — {date_str}")
     print("=" * 50)
 

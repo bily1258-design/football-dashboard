@@ -37,8 +37,8 @@ DB_PATH = os.path.join(REPO_DIR, "data", "football.db")
 BASE_TOTAL_GOALS = 2.4    # 联赛平均总进球（主+客）
 HOME_ADV = 0.15            # 主场加成（λ_home 多 0.15）
 SKILL_FACTOR = 0.6         # 实力调整系数
-POISSON_WEIGHT = 0.7       # final = 0.7*poisson + 0.3*implied
-IMPLIED_WEIGHT = 0.3
+POISSON_WEIGHT = 0.5 # final = 0.5*poisson + 0.5*implied
+IMPLIED_WEIGHT = 0.5
 LAMBDA_MIN, LAMBDA_MAX = 0.3, 4.0
 
 
