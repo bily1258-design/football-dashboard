@@ -1897,9 +1897,9 @@ def analyze_match(home_data: dict, away_data: dict, real_odds: Optional[Tuple[fl
     market_away = (1/odds_away) / total_implied
     
     # 贝叶斯修正 (70%泊松 + 30%市场)
-    final_home = bayesian_adjustment(poisson_home, market_home)
-    final_draw = bayesian_adjustment(poisson_draw, market_draw)
-    final_away = bayesian_adjustment(poisson_away, market_away)
+    final_home = bayesian_adjustment(poisson_home, market_home, 0.5)
+    final_draw = bayesian_adjustment(poisson_draw, market_draw, 0.5)
+    final_away = bayesian_adjustment(poisson_away, market_away, 0.5)
     
     # 归一化
     total = final_home + final_draw + final_away
