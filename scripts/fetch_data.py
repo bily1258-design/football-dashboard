@@ -14,7 +14,7 @@ Termux 模式：fetch raw → git push
   python fetch_data.py --incremental            # 日报增量模式
 """
 
-import os, sys, subprocess, argparse
+import os, sys, subprocess, argparse, shutil
 from datetime import datetime, timedelta
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -85,6 +85,21 @@ def step_push(date_str: str):
     if 'nothing to commit' in result.stdout:
         print("  无新数据，跳过推送")
         return True
+    # 清理 rebase 残留（防中途崩了留尾巴）
+    repo_git = os.path.join(REPO_DIR, '.git')
+    if os.path.isdir(os.path.join(repo_git, 'rebase-merge')) or os.path.isdir(os.path.join(repo_git, 'rebase-apply')):
+        print("⚠️ 检测到 rebase 残留，自动清理")
+        subprocess.run(['git', 'rebase', '--abort'], cwd=REPO_DIR, capture_output=True)
+        for stale in ('rebase-merge', 'rebase-apply'):
+            stale_path = os.path.join(repo_git, stale)
+            if os.path.isdir(stale_path):
+                shutil.rmtree(stale_path, ignore_errors=True)
+        rebase_head = os.path.join(repo_git, 'REBASE_HEAD')
+        if os.path.isfile(rebase_head):
+            try:
+                os.remove(rebase_head)
+            except OSError:
+                pass
     # 先pull rebase再push
     pull = subprocess.run(
         ['git', 'pull', '--rebase', 'origin', 'main'],
