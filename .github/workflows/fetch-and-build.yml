@@ -90,6 +90,20 @@ jobs:
             python scripts/value_bet.py --db data/football.db || echo "⚠️ EV recalc failed"
           fi
 
+      - name: Generate Predictions (OM → DB)
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: |
+          DATE="${{ github.event.inputs.date || '' }}"
+          if [ -z "$DATE" ]; then
+            DATE=$(date +%Y-%m-%d)
+          fi
+          if [ -f data/football.db ]; then
+            echo "🎯 Generating predictions for $DATE"
+            python scripts/predict_from_odds.py --date "$DATE" --db data/football.db || echo "⚠️ Predict failed"
+          else
+            echo "⚠️ Skipping predict (no DB)"
+          fi
+
       - name: Align and Merge
         run: |
           if [ -f data/football.db ]; then

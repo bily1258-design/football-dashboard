@@ -71,6 +71,32 @@ def step_recalc_ev(db_path: str = None):
     return result.returncode == 0
 
 
+def step_predict(date_str: str, db_path: str = None):
+    """Step 1.4: 从 OM 赔率生成泊松预测，INSERT 到 DB
+
+    termux 抓 raw 后，把当日比赛写入 poisson_predictions 表，
+    这样 align_and_merge 才能从 DB 读到新比赛，新比赛才会进看板
+    """
+    print("\n" + "=" * 50)
+    print(f"STEP 1.4: 生成预测 (OM → DB) — {date_str}")
+    print("=" * 50)
+    if not db_path:
+        db_path = os.environ.get('FOOTBALL_DB_PATH',
+            os.path.join(REPO_DIR, 'data', 'football.db'))
+    cmd = [sys.executable, os.path.join(SCRIPT_DIR, 'predict_from_odds.py'),
+           '--date', date_str, '--db', db_path]
+    result = subprocess.run(cmd, cwd=REPO_DIR, capture_output=True, text=True, timeout=120)
+    if result.returncode == 0:
+        # 输出脚本关键行
+        for line in result.stdout.split('\n'):
+            if any(k in line for k in ['OM matches', 'Predictions', '新增', '跳过']):
+                print(' ', line)
+        print("OK 预测已生成")
+    else:
+        print(f"WARN 预测生成失败: {result.stderr[:200]}")
+    return result.returncode == 0
+
+
 def step_push(date_str: str):
     """Step 1.5: git push raw 数据（Termux模式）"""
     print("\n" + "=" * 50)
@@ -252,6 +278,7 @@ def main():
         step_fetch(date_str)
         step_fetch_pinnacle(date_str, db_path)
         step_recalc_ev(db_path)
+        step_predict(date_str, db_path)
         
         if args.with_report:
             step_prepare_odds(date_str)
@@ -285,6 +312,7 @@ def main():
     step_fetch(date_str)
     step_fetch_pinnacle(date_str, db_path)
     step_recalc_ev(db_path)
+    step_predict(date_str, db_path)
     
     if args.with_report:
         step_prepare_odds(date_str)
