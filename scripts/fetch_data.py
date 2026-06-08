@@ -189,7 +189,7 @@ def step_daily_report(date_str: str, incremental: bool = False):
     print("STEP 1.9: 按 conf=0.5 重算 final (recalc_final.py)")
     result = subprocess.run(
         ['python3', 'scripts/recalc_final.py'],
-        cwd=dashboard_dir,
+        cwd=REPO_DIR,
         capture_output=True, text=True
     )
     print(result.stdout)
