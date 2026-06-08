@@ -118,6 +118,7 @@ def load_from_db(db_path: str, max_days=999) -> dict:
             'away_ranking': d.get('away_ranking',0) or 0,
         })
     conn.close()
+
     return by_date
 
 

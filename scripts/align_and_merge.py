@@ -83,6 +83,24 @@ def load_db_predictions(db_path: str, date_str: str) -> List[Dict]:
     """, (date_str, date_start, date_end))
     rows = [dict(r) for r in cur.fetchall()]
     conn.close()
+
+    # A3: 去重 — 同 (home, away) 只保留一条，优先 jingcai > om_only，同 source 取 id 更大
+    if len(rows) > 1:
+        seen = {}
+        for r in rows:
+            key = (r['home_team'], r['away_team'])
+            if key not in seen:
+                seen[key] = r
+            else:
+                prev = seen[key]
+                if r['source'] == 'jingcai' and prev['source'] != 'jingcai':
+                    seen[key] = r
+                elif r['source'] == prev['source'] and r['id'] > prev['id']:
+                    seen[key] = r
+        if len(seen) != len(rows):
+            print(f"  [A3] {date_str}: 去重 {len(rows)} -> {len(seen)} 条")
+            rows = list(seen.values())
+
     return rows
 
 
