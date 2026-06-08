@@ -211,11 +211,21 @@ def build_predictions(om_matches, fetch_date):
 
 
 def insert_predictions(rows, db_path):
-    """INSERT 到 poisson_predictions（按 date+home+away 去重）"""
+    """INSERT 到 poisson_predictions（A1: 入库前清掉 om_only 旧记录 → 治本去重）"""
     if not rows:
         return 0, 0
     conn = sqlite3.connect(db_path)
     cur = conn.cursor()
+    
+    # A1: 入库前先清掉当天 om_only 旧记录（防止 OM 重跑入库造成 om_only 自身重复）
+    dates_to_clean = sorted({r["date"] for r in rows})
+    if dates_to_clean:
+        placeholders = ",".join("?" * len(dates_to_clean))
+        cur.execute(
+            f"DELETE FROM poisson_predictions WHERE date IN ({placeholders}) AND source = 'om_only'",
+            dates_to_clean
+        )
+        print(f"  [A1] 清掉 om_only 旧记录: {cur.rowcount} 条 (date: {', '.join(dates_to_clean)})")
     inserted = 0
     skipped = 0
     for r in rows:
