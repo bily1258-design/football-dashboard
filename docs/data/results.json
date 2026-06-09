@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2026-06-09 17:07:31",
+    "generated_at": "2026-06-09 17:17:53",
     "total_dates": 5,
     "total_matches": 60,
     "date_range": {
@@ -17,7 +17,7 @@
     "prob_rate": 54.5,
     "any_rate": 59.1,
     "days": 5,
-    "last_updated": "2026-06-09 17:07"
+    "last_updated": "2026-06-09 17:17"
   },
   "daily_stats": {
     "2026-06-10": {
@@ -149,33 +149,33 @@
         "away_ranking": 0
       },
       {
-        "id": 864,
+        "id": 882,
         "date": "2026-06-10",
-        "league": "国际友谊",
+        "league": "国际赛",
         "home": "匈牙利",
-        "away": "哈萨克斯坦",
+        "away": "哈萨克",
         "kickoff": "2026-06-10 01:00",
         "prediction": "主胜",
-        "prediction_prob": 0.649,
+        "prediction_prob": 0.65,
         "odds": {
-          "w": 1.24,
-          "d": 5.45,
-          "l": 10.25
+          "w": 1.17,
+          "d": 5.35,
+          "l": 11.5
         },
         "poisson": {
-          "w": 0.556,
-          "d": 0.252,
-          "l": 0.192
+          "w": 0.543,
+          "d": 0.158,
+          "l": 0.299
         },
         "final_prob": {
-          "w": 0.651,
-          "d": 0.207,
-          "l": 0.143
+          "w": 0.65,
+          "d": 0.162,
+          "l": 0.188
         },
         "fusion_prob": {
-          "w": 0.451,
-          "d": 0.265,
-          "l": 0.284
+          "w": 0.483,
+          "d": 0.227,
+          "l": 0.29
         },
         "result": "",
         "score": "",
@@ -191,28 +191,28 @@
         },
         "kelly": {
           "w": 0,
-          "d": 0.0502,
-          "l": 0.1031
+          "d": 0.0246,
+          "l": 0.111
         },
         "pinnacle": {
-          "w": 1.26,
-          "d": 5.8,
-          "l": 10.12
+          "w": 0,
+          "d": 0,
+          "l": 0
         },
         "hkjc": {
-          "w": 1.17,
-          "d": 5.4,
-          "l": 11.0
+          "w": 0,
+          "d": 0,
+          "l": 0
         },
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
         "reference_score": "",
         "cold_risk": "",
-        "source": "om_only",
-        "odds_source": "avg",
-        "home_lambda": 1.585,
-        "away_lambda": 0.815,
+        "source": "jingcai",
+        "odds_source": "had",
+        "home_lambda": 0,
+        "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0
       },
@@ -557,33 +557,33 @@
         "away_ranking": 0
       },
       {
-        "id": 882,
+        "id": 891,
         "date": "2026-06-10",
-        "league": "国际赛",
+        "league": "国际友谊",
         "home": "匈牙利",
-        "away": "哈萨克",
+        "away": "哈萨克斯坦",
         "kickoff": "2026-06-10 01:00",
         "prediction": "主胜",
-        "prediction_prob": 0.65,
+        "prediction_prob": 0.648,
         "odds": {
-          "w": 1.17,
-          "d": 5.35,
-          "l": 11.5
+          "w": 1.25,
+          "d": 5.42,
+          "l": 10.24
         },
         "poisson": {
-          "w": 0.543,
-          "d": 0.158,
-          "l": 0.299
+          "w": 0.556,
+          "d": 0.252,
+          "l": 0.192
         },
         "final_prob": {
-          "w": 0.65,
-          "d": 0.162,
-          "l": 0.188
+          "w": 0.648,
+          "d": 0.211,
+          "l": 0.141
         },
         "fusion_prob": {
-          "w": 0.483,
-          "d": 0.227,
-          "l": 0.29
+          "w": 0.462,
+          "d": 0.261,
+          "l": 0.277
         },
         "result": "",
         "score": "",
@@ -599,28 +599,28 @@
         },
         "kelly": {
           "w": 0,
-          "d": 0.0246,
-          "l": 0.111
+          "d": 0.0468,
+          "l": 0.0995
         },
         "pinnacle": {
-          "w": 0,
-          "d": 0,
-          "l": 0
+          "w": 1.26,
+          "d": 5.85,
+          "l": 10.16
         },
         "hkjc": {
-          "w": 0,
-          "d": 0,
-          "l": 0
+          "w": 1.17,
+          "d": 5.4,
+          "l": 11.0
         },
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
         "reference_score": "",
         "cold_risk": "",
-        "source": "jingcai",
-        "odds_source": "had",
-        "home_lambda": 0,
-        "away_lambda": 0,
+        "source": "om_only",
+        "odds_source": "avg",
+        "home_lambda": 1.585,
+        "away_lambda": 0.815,
         "home_ranking": 0,
         "away_ranking": 0
       },
@@ -941,8 +941,8 @@
         },
         "kelly": {
           "w": 0,
-          "d": 0,
-          "l": 0.0572
+          "d": 0.0385,
+          "l": 0.1135
         },
         "pinnacle": {
           "w": 1.19,
@@ -1009,8 +1009,8 @@
         },
         "kelly": {
           "w": 0,
-          "d": 0.0108,
-          "l": 0.06
+          "d": 0.0739,
+          "l": 0.1259
         },
         "pinnacle": {
           "w": 1.06,
@@ -1078,7 +1078,7 @@
         "kelly": {
           "w": 0,
           "d": 0,
-          "l": 0.0312
+          "l": 0.0288
         },
         "pinnacle": {
           "w": 0,
@@ -1146,7 +1146,7 @@
         "kelly": {
           "w": 0,
           "d": 0,
-          "l": 0.0158
+          "l": 0.0093
         },
         "pinnacle": {
           "w": 0,
@@ -1212,8 +1212,8 @@
           "l": -0.3
         },
         "kelly": {
-          "w": 0.0585,
-          "d": 0,
+          "w": 0.1136,
+          "d": 0.0498,
           "l": 0
         },
         "pinnacle": {
@@ -1282,12 +1282,12 @@
         "kelly": {
           "w": 0,
           "d": 0,
-          "l": 0.024
+          "l": 0.028
         },
         "pinnacle": {
-          "w": 2.0,
-          "d": 3.28,
-          "l": 4.06
+          "w": 1.91,
+          "d": 3.42,
+          "l": 4.23
         },
         "hkjc": {
           "w": 1.75,
