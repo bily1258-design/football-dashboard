@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2026-06-11 18:07:06",
+    "generated_at": "2026-06-11 22:47:41",
     "total_dates": 6,
     "total_matches": 72,
     "date_range": {
@@ -9,15 +9,15 @@
     }
   },
   "summary": {
-    "total_matches": 61,
-    "ev_hits": 28,
-    "prob_hits": 34,
-    "any_hits": 39,
-    "ev_rate": 45.9,
-    "prob_rate": 55.7,
-    "any_rate": 63.9,
+    "total_matches": 65,
+    "ev_hits": 29,
+    "prob_hits": 37,
+    "any_hits": 42,
+    "ev_rate": 44.6,
+    "prob_rate": 56.9,
+    "any_rate": 64.6,
     "days": 6,
-    "last_updated": "2026-06-11 18:07"
+    "last_updated": "2026-06-11 22:47"
   },
   "daily_stats": {
     "2026-06-11": {
@@ -32,23 +32,23 @@
     },
     "2026-06-10": {
       "total": 14,
-      "with_result": 9,
+      "with_result": 11,
       "ev_hits": 5,
-      "prob_hits": 5,
-      "any_hits": 7,
-      "ev_rate": 55.6,
-      "prob_rate": 55.6,
-      "any_rate": 77.8
+      "prob_hits": 7,
+      "any_hits": 9,
+      "ev_rate": 45.5,
+      "prob_rate": 63.6,
+      "any_rate": 81.8
     },
     "2026-06-09": {
       "total": 7,
-      "with_result": 5,
-      "ev_hits": 3,
-      "prob_hits": 4,
-      "any_hits": 4,
-      "ev_rate": 60.0,
-      "prob_rate": 80.0,
-      "any_rate": 80.0
+      "with_result": 7,
+      "ev_hits": 4,
+      "prob_hits": 5,
+      "any_hits": 5,
+      "ev_rate": 57.1,
+      "prob_rate": 71.4,
+      "any_rate": 71.4
     },
     "2026-06-08": {
       "total": 7,
@@ -747,7 +747,7 @@
           "l": -0.1647
         },
         "kelly": {
-          "w": 0.0336,
+          "w": 0.0513,
           "d": 0,
           "l": 0
         },
@@ -798,9 +798,9 @@
           "l": 0.188
         },
         "fusion_prob": {
-          "w": 0.475,
-          "d": 0.212,
-          "l": 0.314
+          "w": 0.457,
+          "d": 0.222,
+          "l": 0.321
         },
         "result": "主胜",
         "score": "3-1",
@@ -816,8 +816,8 @@
         },
         "kelly": {
           "w": 0,
-          "d": 0.0152,
-          "l": 0.1241
+          "d": 0.0216,
+          "l": 0.128
         },
         "pinnacle": {
           "w": 1.22,
@@ -885,7 +885,7 @@
         "kelly": {
           "w": 0,
           "d": 0,
-          "l": 0.0225
+          "l": 0
         },
         "pinnacle": {
           "w": 0,
@@ -953,7 +953,7 @@
         "kelly": {
           "w": 0,
           "d": 0,
-          "l": 0.0107
+          "l": 0.0001
         },
         "pinnacle": {
           "w": 0,
@@ -1089,7 +1089,7 @@
         "kelly": {
           "w": 0,
           "d": 0,
-          "l": 0.0075
+          "l": 0
         },
         "pinnacle": {
           "w": 0,
@@ -1224,8 +1224,8 @@
         },
         "kelly": {
           "w": 0,
-          "d": 0,
-          "l": 0.0548
+          "d": 0.028,
+          "l": 0.1069
         },
         "pinnacle": {
           "w": 1.22,
@@ -1293,7 +1293,7 @@
         "kelly": {
           "w": 0,
           "d": 0,
-          "l": 0.007
+          "l": 0
         },
         "pinnacle": {
           "w": 0,
@@ -1361,7 +1361,7 @@
         "kelly": {
           "w": 0,
           "d": 0,
-          "l": 0.0173
+          "l": 0.0096
         },
         "pinnacle": {
           "w": 0,
@@ -1428,8 +1428,8 @@
         },
         "kelly": {
           "w": 0,
-          "d": 0,
-          "l": 0.0581
+          "d": 0.0402,
+          "l": 0.1163
         },
         "pinnacle": {
           "w": 1.19,
@@ -1454,33 +1454,33 @@
         "away_ranking": 0
       },
       {
-        "id": 931,
+        "id": 972,
         "date": "2026-06-10",
         "league": "芬兰杯",
         "home": "古比斯",
         "away": "VPS瓦萨",
         "kickoff": "2026-06-10 22:00",
         "prediction": "主胜",
-        "prediction_prob": 0.478,
+        "prediction_prob": 0.491,
         "odds": {
-          "w": 1.8,
-          "d": 3.56,
-          "l": 3.77
+          "w": 1.74,
+          "d": 3.59,
+          "l": 4.11
         },
         "poisson": {
-          "w": 0.451,
-          "d": 0.195,
-          "l": 0.354
+          "w": 0.459,
+          "d": 0.192,
+          "l": 0.349
         },
         "final_prob": {
-          "w": 0.478,
-          "d": 0.225,
-          "l": 0.297
+          "w": 0.491,
+          "d": 0.223,
+          "l": 0.286
         },
         "fusion_prob": {
-          "w": 0.456,
-          "d": 0.255,
-          "l": 0.289
+          "w": 0.455,
+          "d": 0.252,
+          "l": 0.293
         },
         "result": "",
         "score": "",
@@ -1490,14 +1490,14 @@
         "prob_hit": false,
         "fusion_direction": "主胜",
         "ev": {
-          "w": -0.0949,
-          "d": -0.0013,
-          "l": 0.1997
+          "w": -0.1314,
+          "d": -0.0093,
+          "l": 0.3
         },
         "kelly": {
           "w": 0,
           "d": 0,
-          "l": 0.0216
+          "l": 0.0329
         },
         "pinnacle": {
           "w": 0,
@@ -1522,18 +1522,18 @@
         "away_ranking": 0
       },
       {
-        "id": 932,
+        "id": 973,
         "date": "2026-06-10",
         "league": "芬兰杯",
         "home": "塞那乔其",
         "away": "图尔库国际",
         "kickoff": "2026-06-10 23:00",
         "prediction": "主胜",
-        "prediction_prob": 0.447,
+        "prediction_prob": 0.434,
         "odds": {
-          "w": 3.78,
-          "d": 3.5,
-          "l": 1.82
+          "w": 3.42,
+          "d": 3.49,
+          "l": 1.93
         },
         "poisson": {
           "w": 0.416,
@@ -1541,29 +1541,29 @@
           "l": 0.395
         },
         "final_prob": {
-          "w": 0.328,
-          "d": 0.224,
-          "l": 0.447
+          "w": 0.341,
+          "d": 0.225,
+          "l": 0.434
         },
         "fusion_prob": {
-          "w": 0.329,
-          "d": 0.247,
-          "l": 0.424
+          "w": 0.37,
+          "d": 0.262,
+          "l": 0.368
         },
-        "result": "",
-        "score": "",
-        "ev_direction": "客胜",
+        "result": "客胜",
+        "score": "1-2",
+        "ev_direction": "主胜",
         "ev_hit": false,
         "prob_direction": "客胜",
-        "prob_hit": false,
-        "fusion_direction": "客胜",
+        "prob_hit": true,
+        "fusion_direction": "主胜",
         "ev": {
           "w": 0.3,
-          "d": -0.0508,
-          "l": -0.1506
+          "d": 0.0013,
+          "l": -0.2209
         },
         "kelly": {
-          "w": 0.0431,
+          "w": 0.0552,
           "d": 0,
           "l": 0
         },
@@ -1590,18 +1590,18 @@
         "away_ranking": 0
       },
       {
-        "id": 933,
+        "id": 974,
         "date": "2026-06-10",
         "league": "芬兰杯",
         "home": "埃尔维斯",
         "away": "拉赫蒂",
         "kickoff": "2026-06-10 23:00",
         "prediction": "主胜",
-        "prediction_prob": 0.414,
+        "prediction_prob": 0.399,
         "odds": {
-          "w": 2.2,
-          "d": 3.32,
-          "l": 2.89
+          "w": 2.38,
+          "d": 3.27,
+          "l": 2.68
         },
         "poisson": {
           "w": 0.416,
@@ -1609,31 +1609,31 @@
           "l": 0.395
         },
         "final_prob": {
-          "w": 0.414,
-          "d": 0.231,
-          "l": 0.354
+          "w": 0.399,
+          "d": 0.234,
+          "l": 0.367
         },
         "fusion_prob": {
-          "w": 0.41,
+          "w": 0.403,
           "d": 0.252,
-          "l": 0.338
+          "l": 0.345
         },
-        "result": "",
-        "score": "",
+        "result": "主胜",
+        "score": "5-2",
         "ev_direction": "平局",
         "ev_hit": false,
         "prob_direction": "主胜",
-        "prob_hit": false,
+        "prob_hit": true,
         "fusion_direction": "主胜",
         "ev": {
-          "w": -0.0074,
-          "d": -0.0767,
-          "l": 0.0761
+          "w": 0.0551,
+          "d": -0.0941,
+          "l": 0.015
         },
         "kelly": {
           "w": 0,
           "d": 0,
-          "l": 0.0061
+          "l": 0
         },
         "pinnacle": {
           "w": 0,
@@ -1770,8 +1770,8 @@
         },
         "kelly": {
           "w": 0,
-          "d": 0,
-          "l": 0.0572
+          "d": 0.0385,
+          "l": 0.1135
         },
         "pinnacle": {
           "w": 1.19,
@@ -1838,8 +1838,8 @@
         },
         "kelly": {
           "w": 0,
-          "d": 0.0108,
-          "l": 0.06
+          "d": 0.0739,
+          "l": 0.1259
         },
         "pinnacle": {
           "w": 1.06,
@@ -1907,7 +1907,7 @@
         "kelly": {
           "w": 0,
           "d": 0,
-          "l": 0.0312
+          "l": 0.0288
         },
         "pinnacle": {
           "w": 0,
@@ -1975,7 +1975,7 @@
         "kelly": {
           "w": 0,
           "d": 0,
-          "l": 0.0158
+          "l": 0.0093
         },
         "pinnacle": {
           "w": 0,
@@ -2028,12 +2028,12 @@
           "d": 0.232,
           "l": 0.49
         },
-        "result": "",
-        "score": "",
+        "result": "客胜",
+        "score": "1-3",
         "ev_direction": "客胜",
-        "ev_hit": false,
+        "ev_hit": true,
         "prob_direction": "客胜",
-        "prob_hit": false,
+        "prob_hit": true,
         "fusion_direction": "客胜",
         "ev": {
           "w": 0.3,
@@ -2041,8 +2041,8 @@
           "l": -0.3
         },
         "kelly": {
-          "w": 0.0585,
-          "d": 0,
+          "w": 0.1136,
+          "d": 0.0498,
           "l": 0
         },
         "pinnacle": {
@@ -2068,60 +2068,60 @@
         "away_ranking": 0
       },
       {
-        "id": 898,
+        "id": 920,
         "date": "2026-06-09",
-        "league": "国际赛",
+        "league": "国际友谊",
         "home": "中国",
         "away": "泰国",
         "kickoff": "2026-06-09 19:35",
         "prediction": "主胜",
-        "prediction_prob": 0.483,
+        "prediction_prob": 0.45,
         "odds": {
-          "w": 1.73,
-          "d": 3.28,
-          "l": 4.05
+          "w": 1.91,
+          "d": 3.21,
+          "l": 4.02
         },
         "poisson": {
-          "w": 0.454,
-          "d": 0.194,
-          "l": 0.352
+          "w": 0.416,
+          "d": 0.189,
+          "l": 0.395
         },
         "final_prob": {
-          "w": 0.483,
-          "d": 0.232,
-          "l": 0.285
+          "w": 0.45,
+          "d": 0.238,
+          "l": 0.312
         },
         "fusion_prob": {
-          "w": 0.454,
+          "w": 0.44,
           "d": 0.251,
-          "l": 0.295
+          "l": 0.31
         },
-        "result": "",
-        "score": "",
-        "ev_direction": "平局",
+        "result": "平局",
+        "score": "0-0",
+        "ev_direction": "主胜",
         "ev_hit": false,
         "prob_direction": "主胜",
         "prob_hit": false,
         "fusion_direction": "主胜",
         "ev": {
-          "w": -0.066,
-          "d": -0.1051,
-          "l": 0.2633
+          "w": -0.0898,
+          "d": -0.128,
+          "l": 0.3
         },
         "kelly": {
           "w": 0,
           "d": 0,
-          "l": 0.0253
+          "l": 0.0406
         },
         "pinnacle": {
-          "w": 1.94,
-          "d": 3.32,
-          "l": 4.24
+          "w": 1.93,
+          "d": 3.28,
+          "l": 4.38
         },
         "hkjc": {
-          "w": 1.73,
-          "d": 3.35,
-          "l": 3.9
+          "w": 1.8,
+          "d": 3.2,
+          "l": 3.75
         },
         "risk_level": "",
         "stars": 0,
