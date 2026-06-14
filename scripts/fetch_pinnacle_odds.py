@@ -673,6 +673,170 @@ def fetch_sb_odds(date_str=None, page_type=None):
     return fetch_company_odds(date_str, page_type, company='3')
 
 
+def parse_ah_value(text):
+    """解析亚盘水位/盘口值，去掉箭头标记
+    
+    与parse_odds_value不同：
+    - 水位范围0~3.0（如0.750, 1.67）
+    - 盘口值可为负数（如-0.250, -1.0, 0.5）
+    """
+    if not text:
+        return 0.0, 'stable'
+    text = str(text).strip()
+    movement = 'stable'
+    if '↑' in text:
+        movement = 'up'
+    elif '↓' in text:
+        movement = 'down'
+    elif '→' in text:
+        movement = 'stable'
+    text = text.replace('↑', '').replace('↓', '').replace('→', '').replace('＊', '*').strip()
+    try:
+        val = float(text)
+        return val, movement
+    except:
+        return 0.0, 'stable'
+
+
+def fetch_asian_handicap(date_str=None, page_type=None, company='0'):
+    """通过POST方式抓取亚盘让球盘数据 (companyType=y)
+    
+    亚盘数据格式与欧赔不同：
+    - 欧赔: w/d/l (胜/平/负赔率)
+    - 亚盘: home_water / handicap_line / away_water (主队水位/盘口/客队水位)
+    
+    HTML结构示例（百家平均亚盘，company=0）：
+    TDs: ['', '周五003', '世界杯', '06-13 03:00', '加拿大VS波黑',
+          '0.750', '-0.250', '0.990',   ← 初盘: 主水/盘口/客水
+          '1.67↑', '-0.250→', '1.41↓',  ← 收盘: 主水/盘口/客水
+          '欧 亚 析']
+    
+    Args:
+        date_str: 日期字符串
+        page_type: None=竞彩, 'bd'=北单
+        company: '0'=百家平均, '136'=HKJC
+    Returns:
+        dict: {match_id: {open: {home_w, handicap, away_w}, close: {home_w, handicap, away_w}}}
+    """
+    import requests as req
+    import random
+    
+    company_names = {'0': '百家平均', '136': 'HKJC'}
+    company_name = company_names.get(company, f'aid={company}')
+    
+    data = {
+        'type': page_type if page_type else 'jc',
+        'issue': '',
+        'company': company,
+        'companyType': 'y',  # y=亚盘
+        'date': date_str or datetime.now().strftime('%Y-%m-%d'),
+        'fg': '1'
+    }
+    
+    # WAF重试机制：最多重试2次
+    max_retries = 2
+    for attempt in range(max_retries):
+        try:
+            session = req.Session()
+            session.headers.update(HEADERS)
+            if attempt == 0:
+                try:
+                    session.get(BASE_URL_LIST, timeout=10)
+                    time.sleep(2)
+                except:
+                    pass
+            
+            resp = session.post(BASE_URL_LIST, data=data, timeout=15)
+            
+            if resp.status_code == 418:
+                wait = 5 + random.randint(3, 8)
+                print(f"[WARN] 亚盘{company_name} WAF拦截(418), 等待{wait}秒后重试({attempt+1}/{max_retries})")
+                time.sleep(wait)
+                continue
+            
+            if 'CloudWAF' in resp.text or '华为云' in resp.text:
+                wait = 5 + random.randint(3, 8)
+                print(f"[WARN] 亚盘{company_name} CloudWAF拦截, 等待{wait}秒后重试({attempt+1}/{max_retries})")
+                time.sleep(wait)
+                continue
+            
+            if resp.status_code != 200:
+                print(f"[WARN] 亚盘{company_name} POST请求失败: status={resp.status_code}")
+                return {}
+            
+            html = resp.text
+            if not html:
+                return {}
+            
+            break
+            
+        except Exception as e:
+            wait = 3 + random.randint(2, 5)
+            print(f"[WARN] 亚盘{company_name} POST请求异常: {e}, 等待{wait}秒后重试({attempt+1}/{max_retries})")
+            time.sleep(wait)
+    else:
+        print(f"[ERROR] 亚盘{company_name} {max_retries}次重试均失败")
+        return {}
+    
+    result = {}
+    rows = re.findall(r'<tr[^>]*>(.*?)</tr>', html, re.DOTALL)
+    
+    for row in rows:
+        teams = re.findall(r'<a[^>]*class="t[12]"[^>]*>([^<]+)</a>', row)
+        if len(teams) < 2:
+            continue
+        
+        match_ids = re.findall(r'fenxi\.zgzcw\.com/(\d+)/bjop', row)
+        if not match_ids:
+            continue
+        
+        # 提取TD内容
+        td_contents = re.findall(r'<td[^>]*>(.*?)</td>', row, re.DOTALL)
+        td_values = []
+        for td in td_contents:
+            td_clean = re.sub(r'<[^>]+>', '', td).strip()
+            td_values.append(td_clean)
+        
+        # 亚盘数据解析：TD中有6个赔率值（初盘3+收盘3）
+        # 格式: 初盘主水, 初盘盘口, 初盘客水, 收盘主水, 收盘盘口, 收盘客水
+        ah_values = []
+        for tv in td_values:
+            # 跳过空TD、编号、联赛名、时间、队名、操作链接等
+            val, movement = parse_ah_value(tv)
+            if val != 0.0 or tv.startswith('-') or tv.startswith('0.') or tv.startswith('1.') or tv.startswith('2.'):
+                # 检查是否像水位或盘口值
+                try:
+                    float(tv.replace('↑','').replace('↓','').replace('→','').strip())
+                    ah_values.append((val, movement, tv))
+                except:
+                    continue
+        
+        open_home_w = open_handicap = open_away_w = 0.0
+        close_home_w = close_handicap = close_away_w = 0.0
+        
+        if len(ah_values) >= 6:
+            open_home_w = ah_values[0][0]
+            open_handicap = ah_values[1][0]
+            open_away_w = ah_values[2][0]
+            close_home_w = ah_values[3][0]
+            close_handicap = ah_values[4][0]
+            close_away_w = ah_values[5][0]
+        
+        # 基本校验：盘口和水位不能全为0
+        if open_home_w == 0 and open_away_w == 0 and close_home_w == 0 and close_away_w == 0:
+            continue
+        
+        result[match_ids[0]] = {
+            'home': teams[0],
+            'away': teams[1],
+            'open': {'home_w': open_home_w, 'handicap': open_handicap, 'away_w': open_away_w},
+            'close': {'home_w': close_home_w, 'handicap': close_handicap, 'away_w': close_away_w},
+        }
+    
+    print(f"[INFO] 亚盘{company_name} POST: {len(result)} 场")
+    return result
+
+
 def parse_detail_page(html):
     """解析详情页，提取平博和平均欧赔
     
@@ -954,6 +1118,19 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=False):
     hkjc_all = {**hkjc_jc_prev, **hkjc_bd_prev, **hkjc_jc, **hkjc_bd}
     print(f"[INFO] 香港马会赔率: {len(hkjc_all)} 场 (前天jc{len(hkjc_jc_prev)}/bd{len(hkjc_bd_prev)}, 当天jc{len(hkjc_jc)}/bd{len(hkjc_bd)})")
     
+    # Step 5.8: 亚盘让球盘（POST companyType=y）
+    ah_avg_jc = fetch_asian_handicap(date_str, page_type='jc', company='0')
+    time.sleep(3)
+    ah_avg_jc_prev = fetch_asian_handicap(prev_day, page_type='jc', company='0')
+    time.sleep(3)
+    ah_hkjc_jc = fetch_asian_handicap(date_str, page_type='jc', company='136')
+    time.sleep(3)
+    ah_hkjc_jc_prev = fetch_asian_handicap(prev_day, page_type='jc', company='136')
+    time.sleep(3)
+    ah_avg_all = {**ah_avg_jc_prev, **ah_avg_jc}
+    ah_hkjc_all = {**ah_hkjc_jc_prev, **ah_hkjc_jc}
+    print(f"[INFO] 亚盘百家平均: {len(ah_avg_all)} 场, 亚盘HKJC: {len(ah_hkjc_all)} 场")
+    
     # Step 5.5: 加载oddsmagnet缓存补充POST失败的赔源
     om_fallback = {}
     missing_sources = []
@@ -1144,6 +1321,21 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=False):
         if hkjc_open.get('w', 0) > 0:
             print(f"  HKJC初盘: {hkjc_open['w']:.2f}/{hkjc_open['d']:.2f}/{hkjc_open['l']:.2f}")
             print(f"  HKJC最新: {hkjc_close['w']:.2f}/{hkjc_close['d']:.2f}/{hkjc_close['l']:.2f}")
+        
+        # 亚盘让球盘
+        ah_avg_data = ah_avg_all.get(match_id, {})
+        ah_hkjc_data = ah_hkjc_all.get(match_id, {})
+        m['ah_avg_open'] = ah_avg_data.get('open', {})
+        m['ah_avg_close'] = ah_avg_data.get('close', {})
+        m['ah_hkjc_open'] = ah_hkjc_data.get('open', {})
+        m['ah_hkjc_close'] = ah_hkjc_data.get('close', {})
+        
+        if ah_avg_data.get('close', {}).get('handicap', 0) != 0:
+            ah_c = ah_avg_data['close']
+            print(f"  亚盘(百家): 盘口{ah_c['handicap']} 主水{ah_c['home_w']:.2f} 客水{ah_c['away_w']:.2f}")
+        elif ah_hkjc_data.get('close', {}).get('handicap', 0) != 0:
+            ah_c = ah_hkjc_data['close']
+            print(f"  亚盘(HKJC): 盘口{ah_c['handicap']} 主水{ah_c['home_w']:.2f} 客水{ah_c['away_w']:.2f}")
         
         # 计算去抽水概率（基于主市场参照）
         pin_open = m.get('pinnacle_open', {})
@@ -1386,6 +1578,13 @@ def save_to_db(matches, db_path, date_str=None):
     cursor = conn.cursor()
     updated = 0
     
+    # 确保亚盘字段存在
+    for col, ctype in [('ah_handicap', 'REAL'), ('ah_home_water', 'REAL'), ('ah_away_water', 'REAL'), ('ah_source', 'TEXT')]:
+        try:
+            cursor.execute(f"ALTER TABLE poisson_predictions ADD COLUMN {col} {ctype}")
+        except:
+            pass  # 列已存在
+    
     # 获取目标日期，使用时间窗口匹配（12:00~次日11:59）
     target_date = date_str or (matches[0].get('date') if matches else None)
     if not target_date:
@@ -1536,6 +1735,10 @@ def save_to_db(matches, db_path, date_str=None):
         hkjc_open = m.get('hkjc_open', {})
         hkjc_close = m.get('hkjc_close', {})
         
+        # 亚盘让球盘（优先百家平均，HKJC兜底）
+        ah_close = m.get('ah_avg_close') or m.get('ah_hkjc_close') or {}
+        ah_source = 'avg' if m.get('ah_avg_close') else ('hkjc' if m.get('ah_hkjc_close') else '')
+        
         cursor.execute("""
             UPDATE poisson_predictions SET
                 pinnacle_open_w = ?, pinnacle_open_d = ?, pinnacle_open_l = ?,
@@ -1546,7 +1749,8 @@ def save_to_db(matches, db_path, date_str=None):
                 avg_odds_close_w = ?, avg_odds_close_d = ?, avg_odds_close_l = ?,
                 hkjc_open_w = ?, hkjc_open_d = ?, hkjc_open_l = ?,
                 hkjc_close_w = ?, hkjc_close_d = ?, hkjc_close_l = ?,
-                odds_source = ?
+                odds_source = ?,
+                ah_handicap = ?, ah_home_water = ?, ah_away_water = ?, ah_source = ?
             WHERE id = ?
         """, (
             pin_open.get('w', 0), pin_open.get('d', 0), pin_open.get('l', 0),
@@ -1559,6 +1763,10 @@ def save_to_db(matches, db_path, date_str=None):
             hkjc_open.get('w', 0), hkjc_open.get('d', 0), hkjc_open.get('l', 0),
             hkjc_close.get('w', 0), hkjc_close.get('d', 0), hkjc_close.get('l', 0),
             m.get('odds_source', ''),
+            ah_close.get('handicap', 0) or 0,
+            ah_close.get('home_w', 0) or 0,
+            ah_close.get('away_w', 0) or 0,
+            ah_source,
             record_id
         ))
         updated += 1
@@ -1618,6 +1826,10 @@ def save_to_db(matches, db_path, date_str=None):
                         hkjc_open = best_match.get('hkjc_open', {})
                         hkjc_close = best_match.get('hkjc_close', {})
                         
+                        # 亚盘让球盘（优先百家平均，HKJC兜底）
+                        ah_close = best_match.get('ah_avg_close') or best_match.get('ah_hkjc_close') or {}
+                        ah_source = 'avg' if best_match.get('ah_avg_close') else ('hkjc' if best_match.get('ah_hkjc_close') else '')
+                        
                         cursor.execute("""
                             UPDATE poisson_predictions SET
                                 pinnacle_open_w = ?, pinnacle_open_d = ?, pinnacle_open_l = ?,
@@ -1628,7 +1840,8 @@ def save_to_db(matches, db_path, date_str=None):
                                 avg_odds_close_w = ?, avg_odds_close_d = ?, avg_odds_close_l = ?,
                                 hkjc_open_w = ?, hkjc_open_d = ?, hkjc_open_l = ?,
                                 hkjc_close_w = ?, hkjc_close_d = ?, hkjc_close_l = ?,
-                                odds_source = ?
+                                odds_source = ?,
+                                ah_handicap = ?, ah_home_water = ?, ah_away_water = ?, ah_source = ?
                             WHERE id = ?
                         """, (
                             pin_open.get('w', 0), pin_open.get('d', 0), pin_open.get('l', 0),
@@ -1641,6 +1854,10 @@ def save_to_db(matches, db_path, date_str=None):
                             hkjc_open.get('w', 0), hkjc_open.get('d', 0), hkjc_open.get('l', 0),
                             hkjc_close.get('w', 0), hkjc_close.get('d', 0), hkjc_close.get('l', 0),
                             best_match.get('odds_source', ''),
+                            ah_close.get('handicap', 0) or 0,
+                            ah_close.get('home_w', 0) or 0,
+                            ah_close.get('away_w', 0) or 0,
+                            ah_source,
                             record_id
                         ))
                         om_matched += 1

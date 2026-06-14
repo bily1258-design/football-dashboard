@@ -58,7 +58,9 @@ def load_from_db(db_path: str, max_days=999) -> dict:
         ev_win, ev_draw, ev_loss, kelly_win, kelly_draw, kelly_loss, \
         pinnacle_close_w, pinnacle_close_d, pinnacle_close_l, \
         hkjc_close_w, hkjc_close_d, hkjc_close_l, cold_risk, odds_source, \
-        home_lambda, away_lambda, home_ranking, away_ranking \
+        home_lambda, away_lambda, home_ranking, away_ranking, \
+        hhad_handicap, hhad_win, hhad_draw, hhad_loss, \
+        ah_handicap, ah_home_water, ah_away_water, ah_source \
         FROM poisson_predictions WHERE date >= ? ORDER BY date DESC, kickoff_time, id", (cutoff,))
     by_date = {}
     for r in cur.fetchall():
@@ -116,6 +118,18 @@ def load_from_db(db_path: str, max_days=999) -> dict:
             'away_lambda': round(d.get('away_lambda',0) or 0,3),
             'home_ranking': d.get('home_ranking',0) or 0,
             'away_ranking': d.get('away_ranking',0) or 0,
+            'hhad': {
+                'handicap': d.get('hhad_handicap', None),
+                'w': d.get('hhad_win',0) or 0,
+                'd': d.get('hhad_draw',0) or 0,
+                'l': d.get('hhad_loss',0) or 0,
+            },
+            'ah': {
+                'handicap': d.get('ah_handicap', None),
+                'home_w': d.get('ah_home_water', 0) or 0,
+                'away_w': d.get('ah_away_water', 0) or 0,
+                'source': d.get('ah_source', '') or '',
+            },
         })
     conn.close()
 
@@ -194,6 +208,7 @@ def generate_index_html(by_date, daily_stats, summary, output_dir=None):
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>竞彩泊松预测看板</title>
 <link rel="stylesheet" href="style.css">
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 </head>
 <body>
 <div class="header">
@@ -220,6 +235,7 @@ def generate_index_html(by_date, daily_stats, summary, output_dir=None):
 <select id="dateSelect"></select>
 <label><input type="checkbox" id="showResulted" checked> 已开奖</label>
 <label><input type="checkbox" id="showPending" checked> 待开奖</label>
+<button id="btnExcel" onclick="downloadExcel()" style="margin-left:auto;padding:4px 12px;background:#238636;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:13px">📥 下载Excel</button>
 </div>
 <div style="overflow-x:auto">
 <table id="matchTable">
@@ -227,7 +243,7 @@ def generate_index_html(by_date, daily_stats, summary, output_dir=None):
 <th>#</th><th>联赛</th><th>时间</th><th>主队</th><th>客队</th>
 <th>推荐</th><th>概率推荐</th><th>赛果</th><th>比分</th>
 <th>胜/平/负</th><th>泊松W/D/L</th><th>综合W/D/L</th>
-<th>EV</th><th>凯利</th><th>Pinnacle</th><th>HKJC</th>
+<th>EV</th><th>凯利</th><th>Pinnacle</th><th>HKJC</th><th>亚盘</th>
 
 </tr></thead>
 <tbody id="matchBody"></tbody>

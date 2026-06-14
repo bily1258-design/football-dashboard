@@ -206,6 +206,11 @@ def build_predictions(om_matches, fetch_date):
             'avg_margin': avg.get('margin', 0) or 0,
             'source': 'om_only',
             'odds_source': 'avg',
+            # 亚盘让球盘（OM数据通常无亚盘，后续由fetch_pinnacle_odds补充）
+            'ah_handicap': 0,
+            'ah_home_water': 0,
+            'ah_away_water': 0,
+            'ah_source': '',
         })
     return rows
 
@@ -216,6 +221,13 @@ def insert_predictions(rows, db_path):
         return 0, 0
     conn = sqlite3.connect(db_path)
     cur = conn.cursor()
+    
+    # 确保亚盘字段存在
+    for col, ctype in [('ah_handicap', 'REAL'), ('ah_home_water', 'REAL'), ('ah_away_water', 'REAL'), ('ah_source', 'TEXT')]:
+        try:
+            cur.execute(f"ALTER TABLE poisson_predictions ADD COLUMN {col} {ctype}")
+        except:
+            pass  # 列已存在
     
     # A1: 入库前先清掉当天 om_only 旧记录（防止 OM 重跑入库造成 om_only 自身重复）
     dates_to_clean = sorted({r["date"] for r in rows})
@@ -250,8 +262,9 @@ def insert_predictions(rows, db_path):
                 hkjc_close_w, hkjc_close_d, hkjc_close_l,
                 avg_odds_close_w, avg_odds_close_d, avg_odds_close_l,
                 avg_margin,
-                source, odds_source
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                source, odds_source,
+                ah_handicap, ah_home_water, ah_away_water, ah_source
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             r['date'], r['kickoff_time'], r['league'], r['home_team'], r['away_team'],
             r['prediction'], r['prediction_prob'],
@@ -265,7 +278,8 @@ def insert_predictions(rows, db_path):
             r['hkjc_close_w'], r['hkjc_close_d'], r['hkjc_close_l'],
             r['avg_odds_close_w'], r['avg_odds_close_d'], r['avg_odds_close_l'],
             r['avg_margin'],
-            r['source'], r['odds_source']
+            r['source'], r['odds_source'],
+            r['ah_handicap'], r['ah_home_water'], r['ah_away_water'], r['ah_source']
         ))
         inserted += 1
     conn.commit()
