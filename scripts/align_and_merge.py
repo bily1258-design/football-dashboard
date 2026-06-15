@@ -76,7 +76,8 @@ def load_db_predictions(db_path: str, date_str: str) -> List[Dict]:
             hkjc_close_w, hkjc_close_d, hkjc_close_l,
             cold_risk, odds_source,
             home_lambda, away_lambda,
-            home_ranking, away_ranking
+            home_ranking, away_ranking,
+            ah_handicap, ah_home_water, ah_away_water, ah_source
         FROM poisson_predictions
         WHERE date = ? OR (kickoff_time >= ? AND kickoff_time <= ?)
         ORDER BY kickoff_time, id
@@ -261,6 +262,12 @@ def merge_prediction(rec: Dict, bsd_result: Optional[Dict], om_match: Optional[D
         'away_lambda': round(rec.get('away_lambda', 0) or 0, 3),
         'home_ranking': rec.get('home_ranking', 0) or 0,
         'away_ranking': rec.get('away_ranking', 0) or 0,
+        'ah': {
+            'handicap': rec.get('ah_handicap', None),
+            'home_w': rec.get('ah_home_water', 0) or 0,
+            'away_w': rec.get('ah_away_water', 0) or 0,
+            'source': rec.get('ah_source', '') or '',
+        },
     }
 
 
