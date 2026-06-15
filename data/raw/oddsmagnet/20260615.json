@@ -1,6 +1,6 @@
 {
   "date": "2026-06-15",
-  "fetch_time": "2026-06-15 20:57:37",
+  "fetch_time": "2026-06-15 21:25:16",
   "matches": {
     "澳大利亚_土耳其": {
       "info": {
@@ -40,6 +40,30 @@
             "w": 0.182,
             "d": 0.2637,
             "l": 0.5543
+          }
+        },
+        "hkjc": {
+          "source": "hkjc",
+          "odds_w": 5.2,
+          "odds_d": 3.6,
+          "odds_l": 1.54,
+          "margin": 0.1195,
+          "implied_prob": {
+            "w": 0.1718,
+            "d": 0.2481,
+            "l": 0.5801
+          }
+        },
+        "sb": {
+          "source": "sb",
+          "odds_w": 5.3,
+          "odds_d": 3.65,
+          "odds_l": 1.68,
+          "margin": 0.0579,
+          "implied_prob": {
+            "w": 0.1784,
+            "d": 0.259,
+            "l": 0.5627
           }
         }
       },
@@ -96,6 +120,18 @@
             "d": 0.0491,
             "l": 0.024
           }
+        },
+        "sb": {
+          "source": "sb",
+          "odds_w": 1.03,
+          "odds_d": 18.0,
+          "odds_l": 36.0,
+          "margin": 0.0543,
+          "implied_prob": {
+            "w": 0.921,
+            "d": 0.0527,
+            "l": 0.0263
+          }
         }
       },
       "ah": {
@@ -150,6 +186,30 @@
             "w": 0.484,
             "d": 0.2716,
             "l": 0.2444
+          }
+        },
+        "hkjc": {
+          "source": "hkjc",
+          "odds_w": 1.9,
+          "odds_d": 3.5,
+          "odds_l": 3.25,
+          "margin": 0.1197,
+          "implied_prob": {
+            "w": 0.47,
+            "d": 0.2552,
+            "l": 0.2748
+          }
+        },
+        "sb": {
+          "source": "sb",
+          "odds_w": 2.03,
+          "odds_d": 3.5,
+          "odds_l": 3.75,
+          "margin": 0.045,
+          "implied_prob": {
+            "w": 0.4714,
+            "d": 0.2734,
+            "l": 0.2552
           }
         }
       },
@@ -206,6 +266,30 @@
             "d": 0.318,
             "l": 0.3981
           }
+        },
+        "hkjc": {
+          "source": "hkjc",
+          "odds_w": 3.1,
+          "odds_d": 2.65,
+          "odds_l": 2.39,
+          "margin": 0.1184,
+          "implied_prob": {
+            "w": 0.2884,
+            "d": 0.3374,
+            "l": 0.3741
+          }
+        },
+        "sb": {
+          "source": "sb",
+          "odds_w": 3.3,
+          "odds_d": 2.86,
+          "odds_l": 2.51,
+          "margin": 0.0511,
+          "implied_prob": {
+            "w": 0.2883,
+            "d": 0.3327,
+            "l": 0.379
+          }
         }
       },
       "ah": {
@@ -261,6 +345,30 @@
             "d": 0.2848,
             "l": 0.2092
           }
+        },
+        "hkjc": {
+          "source": "hkjc",
+          "odds_w": 1.66,
+          "odds_d": 3.35,
+          "odds_l": 4.55,
+          "margin": 0.1207,
+          "implied_prob": {
+            "w": 0.5375,
+            "d": 0.2664,
+            "l": 0.1961
+          }
+        },
+        "sb": {
+          "source": "sb",
+          "odds_w": 1.9,
+          "odds_d": 3.4,
+          "odds_l": 4.35,
+          "margin": 0.0503,
+          "implied_prob": {
+            "w": 0.5011,
+            "d": 0.28,
+            "l": 0.2189
+          }
         }
       },
       "ah": {
@@ -290,31 +398,55 @@
         "avg": {
           "source": "avg",
           "odds_w": 1.07,
-          "odds_d": 12.51,
-          "odds_l": 28.97,
-          "margin": 0.049,
+          "odds_d": 12.58,
+          "odds_l": 29.04,
+          "margin": 0.0485,
           "implied_prob": {
-            "w": 0.8909,
-            "d": 0.0762,
-            "l": 0.0329
+            "w": 0.8913,
+            "d": 0.0758,
+            "l": 0.0328
           },
           "movement": {
             "w": -0.02,
-            "d": 3.2,
-            "l": 2.26,
+            "d": 3.27,
+            "l": 2.33,
             "direction": "客升"
           }
         },
         "pinnacle": {
           "source": "pinnacle",
           "odds_w": 1.08,
-          "odds_d": 15.0,
-          "odds_l": 35.5,
-          "margin": 0.0208,
+          "odds_d": 15.5,
+          "odds_l": 36.0,
+          "margin": 0.0182,
           "implied_prob": {
-            "w": 0.9071,
-            "d": 0.0653,
-            "l": 0.0276
+            "w": 0.9094,
+            "d": 0.0634,
+            "l": 0.0273
+          }
+        },
+        "hkjc": {
+          "source": "hkjc",
+          "odds_w": 1.03,
+          "odds_d": 10.0,
+          "odds_l": 23.0,
+          "margin": 0.1144,
+          "implied_prob": {
+            "w": 0.8712,
+            "d": 0.0897,
+            "l": 0.039
+          }
+        },
+        "sb": {
+          "source": "sb",
+          "odds_w": 1.07,
+          "odds_d": 13.0,
+          "odds_l": 31.0,
+          "margin": 0.0438,
+          "implied_prob": {
+            "w": 0.8954,
+            "d": 0.0737,
+            "l": 0.0309
           }
         }
       },
@@ -325,9 +457,9 @@
           "away_w": 0.96
         },
         "close": {
-          "home_w": 0.86,
+          "home_w": 0.88,
           "handicap": -2.75,
-          "away_w": 0.98
+          "away_w": 0.96
         },
         "source": "avg"
       }
@@ -345,31 +477,55 @@
         "avg": {
           "source": "avg",
           "odds_w": 1.59,
-          "odds_d": 3.99,
-          "odds_l": 5.74,
-          "margin": 0.0537,
+          "odds_d": 4.0,
+          "odds_l": 5.73,
+          "margin": 0.0534,
           "implied_prob": {
-            "w": 0.5968,
-            "d": 0.2378,
-            "l": 0.1653
+            "w": 0.597,
+            "d": 0.2373,
+            "l": 0.1657
           },
           "movement": {
             "w": -0.06,
-            "d": 0.15,
-            "l": 0.68,
+            "d": 0.16,
+            "l": 0.67,
             "direction": "客升"
           }
         },
         "pinnacle": {
           "source": "pinnacle",
-          "odds_w": 1.61,
-          "odds_d": 4.12,
-          "odds_l": 6.19,
-          "margin": 0.0254,
+          "odds_w": 1.6,
+          "odds_d": 4.17,
+          "odds_l": 6.18,
+          "margin": 0.0266,
           "implied_prob": {
-            "w": 0.6057,
-            "d": 0.2367,
+            "w": 0.6088,
+            "d": 0.2336,
             "l": 0.1576
+          }
+        },
+        "hkjc": {
+          "source": "hkjc",
+          "odds_w": 1.44,
+          "odds_d": 3.9,
+          "odds_l": 5.9,
+          "margin": 0.1203,
+          "implied_prob": {
+            "w": 0.6198,
+            "d": 0.2289,
+            "l": 0.1513
+          }
+        },
+        "sb": {
+          "source": "sb",
+          "odds_w": 1.59,
+          "odds_d": 4.1,
+          "odds_l": 5.9,
+          "margin": 0.0423,
+          "implied_prob": {
+            "w": 0.6034,
+            "d": 0.234,
+            "l": 0.1626
           }
         }
       },
@@ -380,9 +536,9 @@
           "away_w": 0.96
         },
         "close": {
-          "home_w": 0.98,
+          "home_w": 0.97,
           "handicap": -1.0,
-          "away_w": 0.87
+          "away_w": 0.89
         },
         "source": "avg"
       }
@@ -399,18 +555,18 @@
       "odds": {
         "avg": {
           "source": "avg",
-          "odds_w": 7.62,
-          "odds_d": 4.23,
+          "odds_w": 7.63,
+          "odds_d": 4.24,
           "odds_l": 1.46,
-          "margin": 0.0525,
+          "margin": 0.0518,
           "implied_prob": {
-            "w": 0.1247,
-            "d": 0.2246,
-            "l": 0.6507
+            "w": 0.1246,
+            "d": 0.2242,
+            "l": 0.6512
           },
           "movement": {
-            "w": 0.82,
-            "d": -0.12,
+            "w": 0.83,
+            "d": -0.11,
             "l": 0.01,
             "direction": "主升"
           }
@@ -425,6 +581,30 @@
             "w": 0.1136,
             "d": 0.2183,
             "l": 0.6682
+          }
+        },
+        "hkjc": {
+          "source": "hkjc",
+          "odds_w": 7.75,
+          "odds_d": 4.1,
+          "odds_l": 1.34,
+          "margin": 0.1192,
+          "implied_prob": {
+            "w": 0.1153,
+            "d": 0.2179,
+            "l": 0.6668
+          }
+        },
+        "sb": {
+          "source": "sb",
+          "odds_w": 7.8,
+          "odds_d": 4.25,
+          "odds_l": 1.45,
+          "margin": 0.0532,
+          "implied_prob": {
+            "w": 0.1217,
+            "d": 0.2234,
+            "l": 0.6548
           }
         }
       },
@@ -454,32 +634,56 @@
       "odds": {
         "avg": {
           "source": "avg",
-          "odds_w": 1.82,
-          "odds_d": 3.41,
-          "odds_l": 4.73,
-          "margin": 0.0542,
+          "odds_w": 1.81,
+          "odds_d": 3.42,
+          "odds_l": 4.76,
+          "margin": 0.055,
           "implied_prob": {
-            "w": 0.5212,
-            "d": 0.2782,
-            "l": 0.2006
+            "w": 0.5237,
+            "d": 0.2772,
+            "l": 0.1991
           },
           "movement": {
-            "w": 0.17,
-            "d": -0.39,
-            "l": -0.46,
+            "w": 0.16,
+            "d": -0.38,
+            "l": -0.43,
             "direction": "主升"
           }
         },
         "pinnacle": {
           "source": "pinnacle",
-          "odds_w": 1.85,
-          "odds_d": 3.53,
-          "odds_l": 5.02,
-          "margin": 0.023,
+          "odds_w": 1.83,
+          "odds_d": 3.55,
+          "odds_l": 5.08,
+          "margin": 0.025,
           "implied_prob": {
-            "w": 0.5284,
-            "d": 0.2769,
-            "l": 0.1947
+            "w": 0.5331,
+            "d": 0.2748,
+            "l": 0.1921
+          }
+        },
+        "hkjc": {
+          "source": "hkjc",
+          "odds_w": 1.67,
+          "odds_d": 3.15,
+          "odds_l": 4.85,
+          "margin": 0.1225,
+          "implied_prob": {
+            "w": 0.5335,
+            "d": 0.2828,
+            "l": 0.1837
+          }
+        },
+        "sb": {
+          "source": "sb",
+          "odds_w": 1.81,
+          "odds_d": 3.35,
+          "odds_l": 4.95,
+          "margin": 0.053,
+          "implied_prob": {
+            "w": 0.5247,
+            "d": 0.2835,
+            "l": 0.1918
           }
         }
       },
@@ -490,9 +694,9 @@
           "away_w": 0.94
         },
         "close": {
-          "home_w": 0.9,
+          "home_w": 0.93,
           "handicap": -0.5,
-          "away_w": 0.94
+          "away_w": 0.92
         },
         "source": "avg"
       }
@@ -1541,19 +1745,19 @@
       "odds": {
         "avg": {
           "source": "avg",
-          "odds_w": 4.78,
-          "odds_d": 3.89,
-          "odds_l": 1.59,
-          "margin": 0.0952,
+          "odds_w": 4.83,
+          "odds_d": 3.9,
+          "odds_l": 1.58,
+          "margin": 0.0963,
           "implied_prob": {
-            "w": 0.191,
-            "d": 0.2347,
-            "l": 0.5743
+            "w": 0.1888,
+            "d": 0.2339,
+            "l": 0.5773
           },
           "movement": {
-            "w": -0.57,
-            "d": -0.44,
-            "l": 0.09,
+            "w": -0.52,
+            "d": -0.43,
+            "l": 0.08,
             "direction": "平稳"
           }
         }
@@ -1565,9 +1769,9 @@
           "away_w": 0.85
         },
         "close": {
-          "home_w": 0.96,
+          "home_w": 0.99,
           "handicap": 0.75,
-          "away_w": 0.84
+          "away_w": 0.82
         },
         "source": "avg"
       }
@@ -1584,19 +1788,19 @@
       "odds": {
         "avg": {
           "source": "avg",
-          "odds_w": 3.17,
-          "odds_d": 3.45,
-          "odds_l": 2.06,
-          "margin": 0.0908,
+          "odds_w": 3.16,
+          "odds_d": 3.46,
+          "odds_l": 2.07,
+          "margin": 0.0886,
           "implied_prob": {
-            "w": 0.2892,
-            "d": 0.2657,
-            "l": 0.445
+            "w": 0.2907,
+            "d": 0.2655,
+            "l": 0.4438
           },
           "movement": {
-            "w": 0.37,
-            "d": 0.15,
-            "l": -0.13,
+            "w": 0.36,
+            "d": 0.16,
+            "l": -0.12,
             "direction": "主升"
           }
         }
@@ -1608,9 +1812,9 @@
           "away_w": 0.79
         },
         "close": {
-          "home_w": 0.95,
+          "home_w": 0.96,
           "handicap": 0.25,
-          "away_w": 0.86
+          "away_w": 0.85
         },
         "source": "avg"
       }
@@ -1627,19 +1831,19 @@
       "odds": {
         "avg": {
           "source": "avg",
-          "odds_w": 2.11,
-          "odds_d": 3.47,
-          "odds_l": 3.08,
-          "margin": 0.0868,
+          "odds_w": 2.12,
+          "odds_d": 3.46,
+          "odds_l": 3.07,
+          "margin": 0.0864,
           "implied_prob": {
-            "w": 0.4361,
-            "d": 0.2652,
-            "l": 0.2987
+            "w": 0.4342,
+            "d": 0.266,
+            "l": 0.2998
           },
           "movement": {
-            "w": 0.16,
-            "d": 0.02,
-            "l": -0.07,
+            "w": 0.17,
+            "d": 0.01,
+            "l": -0.08,
             "direction": "主升"
           }
         }
@@ -1651,9 +1855,9 @@
           "away_w": 0.96
         },
         "close": {
-          "home_w": 0.87,
+          "home_w": 0.89,
           "handicap": -0.25,
-          "away_w": 0.95
+          "away_w": 0.93
         },
         "source": "avg"
       }
@@ -1670,17 +1874,17 @@
       "odds": {
         "avg": {
           "source": "avg",
-          "odds_w": 2.85,
+          "odds_w": 2.86,
           "odds_d": 3.75,
           "odds_l": 2.08,
-          "margin": 0.0984,
+          "margin": 0.0972,
           "implied_prob": {
-            "w": 0.3195,
-            "d": 0.2428,
-            "l": 0.4377
+            "w": 0.3187,
+            "d": 0.2431,
+            "l": 0.4382
           },
           "movement": {
-            "w": -0.55,
+            "w": -0.54,
             "d": -0.16,
             "l": 0.2,
             "direction": "客升"
@@ -1694,7 +1898,7 @@
           "away_w": 0.88
         },
         "close": {
-          "home_w": 0.91,
+          "home_w": 0.92,
           "handicap": 0.25,
           "away_w": 0.87
         },
@@ -1757,18 +1961,18 @@
         "avg": {
           "source": "avg",
           "odds_w": 2.35,
-          "odds_d": 3.01,
-          "odds_l": 3.03,
-          "margin": 0.0877,
+          "odds_d": 3.0,
+          "odds_l": 3.02,
+          "margin": 0.0899,
           "implied_prob": {
-            "w": 0.3912,
-            "d": 0.3054,
-            "l": 0.3034
+            "w": 0.3904,
+            "d": 0.3058,
+            "l": 0.3038
           },
           "movement": {
             "w": -0.08,
-            "d": -0.24,
-            "l": 0.18,
+            "d": -0.25,
+            "l": 0.17,
             "direction": "客升"
           }
         }
@@ -1792,7 +1996,9 @@
     "total": 39,
     "sources": [
       "avg",
-      "pinnacle"
+      "hkjc",
+      "pinnacle",
+      "sb"
     ],
     "pinnacle_coverage": 0.23
   }
