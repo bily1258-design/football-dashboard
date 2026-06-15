@@ -5,18 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>竞彩泊松预测看板</title>
 <link rel="stylesheet" href="style.css">
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 </head>
 <body>
 <div class="header">
 <h1>⚽ 竞彩泊松预测看板</h1>
-<div class="sub">更新于 2026-06-14 18:06 | 共 88 场已开奖 | 9 天数据</div>
+<div class="sub">更新于 2026-06-15 10:00 | 共 80 场已开奖 | 10 天数据</div>
 </div>
 
 <div class="summary-cards">
-<div class="card"><div class="label">EV方向命中率</div><div class="value" style="color:#ff9800">48.9%</div><div class="label">43/88</div></div>
-<div class="card"><div class="label">概率最高命中率</div><div class="value" style="color:#ff9800">58.0%</div><div class="label">51/88</div></div>
-<div class="card"><div class="label">任一命中</div><div class="value blue">65.9%</div><div class="label">58/88</div></div>
-<div class="card"><div class="label">总天数</div><div class="value blue">9</div></div>
+<div class="card"><div class="label">EV方向命中率</div><div class="value" style="color:#ff9800">48.8%</div><div class="label">39/80</div></div>
+<div class="card"><div class="label">概率最高命中率</div><div class="value" style="color:#ff9800">58.8%</div><div class="label">47/80</div></div>
+<div class="card"><div class="label">任一命中</div><div class="value blue">66.2%</div><div class="label">53/80</div></div>
+<div class="card"><div class="label">总天数</div><div class="value blue">10</div></div>
 </div>
 
 <div class="tabs">
@@ -31,6 +32,7 @@
 <select id="dateSelect"></select>
 <label><input type="checkbox" id="showResulted" checked> 已开奖</label>
 <label><input type="checkbox" id="showPending" checked> 待开奖</label>
+<button id="btnExcel" onclick="downloadExcel()" style="margin-left:auto;padding:4px 12px;background:#238636;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:13px">📥 下载Excel</button>
 </div>
 <div style="overflow-x:auto">
 <table id="matchTable">
@@ -38,7 +40,7 @@
 <th>#</th><th>联赛</th><th>时间</th><th>主队</th><th>客队</th>
 <th>推荐</th><th>概率推荐</th><th>赛果</th><th>比分</th>
 <th>胜/平/负</th><th>泊松W/D/L</th><th>综合W/D/L</th>
-<th>EV</th><th>凯利</th><th>Pinnacle</th><th>HKJC</th>
+<th>EV</th><th>凯利</th><th>Pinnacle</th><th>HKJC</th><th>亚盘</th>
 
 </tr></thead>
 <tbody id="matchBody"></tbody>
