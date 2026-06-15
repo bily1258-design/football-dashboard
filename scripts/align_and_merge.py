@@ -76,7 +76,8 @@ def load_db_predictions(db_path: str, date_str: str) -> List[Dict]:
             hkjc_close_w, hkjc_close_d, hkjc_close_l,
             cold_risk, odds_source,
             home_lambda, away_lambda,
-            home_ranking, away_ranking
+            home_ranking, away_ranking,
+            ah_handicap, ah_home_water, ah_away_water, ah_source
         FROM poisson_predictions
         WHERE date = ? OR (kickoff_time >= ? AND kickoff_time <= ?)
         ORDER BY kickoff_time, id
