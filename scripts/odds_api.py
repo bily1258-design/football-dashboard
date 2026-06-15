@@ -507,13 +507,22 @@ def fetch_all(date_str: str = None, companies: List[str] = None,
 
     print(f"  百家平均汇总: {len(avg_matches)} 场")
 
-    # 1.5 亚盘让球盘 (POST companyType=y) — 仅百家平均
+    # 1.5 亚盘让球盘 (POST companyType=y) — 百家平均(竞彩+北单)
     ah_data = {}  # key -> {open: {}, close: {}, source: str}
     for d, label in [(prev_day, "前一天"), (curr_day, "当天")]:
+        # 竞彩亚盘
         ah_avg = fetch_asian_handicap(d, company='0')
         time.sleep(SLEEP_SEC)
         for key, v in ah_avg.items():
             ah_data[key] = {**v, 'source': 'avg'}
+        # 北单亚盘
+        ah_bd = fetch_asian_handicap(d, page_type='bd', company='0')
+        time.sleep(SLEEP_SEC)
+        for key, v in ah_bd.items():
+            if key not in ah_data:  # 竞彩优先，北单补缺
+                ah_data[key] = {**v, 'source': 'avg'}
+        if ah_bd:
+            print(f"    北单亚盘 {label}: {len(ah_bd)} 场")
     print(f"  亚盘汇总: {len(ah_data)} 场")
 
     # 2. 各公司
@@ -942,23 +951,21 @@ def fetch_asian_handicap(date_str: str, page_type: str = None, company: str = '0
             td_clean = re.sub(r'<[^>]+>', '', td).strip()
             td_values.append(td_clean)
 
-        # 亚盘数据：TD中有6个赔率值（初盘3+收盘3）
-        ah_values = []
-        for tv in td_values:
-            val, _ = _parse_ah_value(tv)
-            if val != 0.0 or tv.startswith('-') or tv.startswith('0.') or tv.startswith('1.') or tv.startswith('2.'):
-                try:
-                    float(tv.replace('↑', '').replace('↓', '').replace('→', '').strip())
-                    ah_values.append(val)
-                except:
-                    continue
+        # 亚盘数据：按列位置提取（竞彩/北单列结构相同）
+        # TD0=checkbox, TD1=编号, TD2=联赛, TD3=时间, TD4=对阵
+        # TD5=open_home_w, TD6=open_handicap, TD7=open_away_w
+        # TD8=close_home_w, TD9=close_handicap, TD10=close_away_w
+        # TD11+=链接
+        open_home_w, open_handicap, open_away_w = 0.0, 0.0, 0.0
+        close_home_w, close_handicap, close_away_w = 0.0, 0.0, 0.0
 
-        open_home_w = open_handicap = open_away_w = 0.0
-        close_home_w = close_handicap = close_away_w = 0.0
-
-        if len(ah_values) >= 6:
-            open_home_w, open_handicap, open_away_w = ah_values[0], ah_values[1], ah_values[2]
-            close_home_w, close_handicap, close_away_w = ah_values[3], ah_values[4], ah_values[5]
+        if len(td_values) >= 11:
+            open_home_w, _ = _parse_ah_value(td_values[5])
+            open_handicap, _ = _parse_ah_value(td_values[6])
+            open_away_w, _ = _parse_ah_value(td_values[7])
+            close_home_w, _ = _parse_ah_value(td_values[8])
+            close_handicap, _ = _parse_ah_value(td_values[9])
+            close_away_w, _ = _parse_ah_value(td_values[10])
 
         # 基本校验
         if open_home_w == 0 and open_away_w == 0 and close_home_w == 0 and close_away_w == 0:
