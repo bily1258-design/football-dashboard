@@ -66,7 +66,7 @@ function loadDate() {
       ? `${r.hkjc.w}/${r.hkjc.d}/${r.hkjc.l}`
       : '-';
     const ah = r.ah || {};
-    const ahStr = (ah.handicap !== null && ah.handicap !== undefined && ah.handicap !== 0)
+    const ahStr = (ah.handicap !== null && ah.handicap !== undefined && (ah.handicap !== 0 || ah.home_w !== 0 || ah.away_w !== 0))
       ? `${ah.handicap > 0 ? '+' : ''}${ah.handicap} (${ah.home_w}/${ah.away_w})`
       : '-';
     const oddsStr = `${r.odds.w}/${r.odds.d}/${r.odds.l}`;

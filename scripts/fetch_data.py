@@ -49,10 +49,16 @@ def step_fetch_pinnacle(date_str: str, db_path: str = None):
             os.path.join(REPO_DIR, 'data', 'football.db'))
     cmd = [sys.executable, os.path.join(SCRIPT_DIR, 'fetch_pinnacle_odds.py'), '--date', date_str]
     result = subprocess.run(cmd, cwd=REPO_DIR, capture_output=True, text=True, timeout=300)
+    # 打印关键输出（亚盘/赔率等），让用户看到进度
+    for line in result.stdout.split('\n'):
+        if any(k in line for k in ['亚盘', 'AH', 'ah_', 'Pinnacle', 'HKJC', '百家', '更新', 'ERROR', 'WARN', 'INFO', 'matched', 'updated', '记录']):
+            print(f"  {line.strip()}")
     if result.returncode == 0:
         print("OK Pinnacle/HKJC -> DB")
     else:
-        print(f"WARN Pinnacle/HKJC fail: {result.stderr[:200]}")
+        print(f"WARN Pinnacle/HKJC fail: {result.stderr[:300]}")
+        if result.stdout:
+            print(f"  stdout(tail): {result.stdout[-300:]}")
     return result.returncode == 0
 
 def step_update_db(db_path: str = None):
