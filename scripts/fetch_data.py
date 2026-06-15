@@ -131,20 +131,43 @@ def step_update_ah(date_str: str, db_path: str = None):
                         best_id = rid
                 
                 if best_id and best_sim >= 0.4:
-                    cursor.execute("""
-                        UPDATE poisson_predictions SET
-                            ah_handicap = ?, ah_home_water = ?, ah_away_water = ?, ah_source = ?
-                        WHERE id = ? AND (ah_handicap IS NULL OR ah_handicap = 0)
-                    """, (
-                        ah_close.get('handicap', 0) or 0,
-                        ah_close.get('home_w', 0) or 0,
-                        ah_close.get('away_w', 0) or 0,
-                        ah.get('source', 'avg'),
-                        best_id
-                    ))
+                    # 找到匹配的队名，更新该队所有重复记录（A3去重保留最大id，AH须写在所有记录上）
+                    matched_home = None
+                    matched_away = None
+                    for rid, db_home, db_away in db_records:
+                        if rid == best_id:
+                            matched_home = db_home
+                            matched_away = db_away
+                            break
+                    if matched_home and matched_away:
+                        cursor.execute("""
+                            UPDATE poisson_predictions SET
+                                ah_handicap = ?, ah_home_water = ?, ah_away_water = ?, ah_source = ?
+                            WHERE home_team = ? AND away_team = ? AND kickoff_time >= ? AND kickoff_time <= ?
+                                AND (ah_handicap IS NULL OR ah_handicap = 0)
+                        """, (
+                            ah_close.get('handicap', 0) or 0,
+                            ah_close.get('home_w', 0) or 0,
+                            ah_close.get('away_w', 0) or 0,
+                            ah.get('source', 'avg'),
+                            matched_home, matched_away,
+                            window_start, window_end
+                        ))
+                    else:
+                        cursor.execute("""
+                            UPDATE poisson_predictions SET
+                                ah_handicap = ?, ah_home_water = ?, ah_away_water = ?, ah_source = ?
+                            WHERE id = ? AND (ah_handicap IS NULL OR ah_handicap = 0)
+                        """, (
+                            ah_close.get('handicap', 0) or 0,
+                            ah_close.get('home_w', 0) or 0,
+                            ah_close.get('away_w', 0) or 0,
+                            ah.get('source', 'avg'),
+                            best_id
+                        ))
                     if cursor.rowcount > 0:
-                        ah_updated += 1
-                        print(f"  [AH] {ah_home} vs {ah_away} -> 盘口{ah_close['handicap']} 主水{ah_close.get('home_w',0):.2f} 客水{ah_close.get('away_w',0):.2f}")
+                        ah_updated += cursor.rowcount
+                        print(f"  [AH] {ah_home} vs {ah_away} -> 盘口{ah_close['handicap']} 主水{ah_close.get('home_w',0):.2f} 客水{ah_close.get('away_w',0):.2f} ({cursor.rowcount}条)")
         except Exception as e:
             print(f"  WARN 亚盘读取失败: {e}")
     
