@@ -314,8 +314,8 @@ def main():
     # Termux 模式：fetch → report → review → push
     if args.fetch_and_push:
         step_fetch(date_str)
-        step_fetch_pinnacle(date_str, db_path)
-        step_predict(date_str, db_path)
+        step_predict(date_str, db_path)          # 先INSERT预测记录
+        step_fetch_pinnacle(date_str, db_path)   # 再UPDATE赔率+亚盘数据
         step_update_db(db_path)
         
         if args.with_report:
@@ -348,8 +348,8 @@ def main():
 
     # 完整模式：fetch → report → review → align → build
     step_fetch(date_str)
-    step_fetch_pinnacle(date_str, db_path)
-    step_predict(date_str, db_path)
+    step_predict(date_str, db_path)          # 先INSERT预测记录
+    step_fetch_pinnacle(date_str, db_path)   # 再UPDATE赔率+亚盘数据
     step_update_db(db_path)
     
     if args.with_report:

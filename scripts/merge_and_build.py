@@ -240,10 +240,10 @@ def generate_index_html(by_date, daily_stats, summary, output_dir=None):
 <div style="overflow-x:auto">
 <table id="matchTable">
 <thead><tr>
-<th>#</th><th>联赛</th><th>时间</th><th>主队</th><th>客队</th>
+<th>#</th><th>联赛</th><th>时间</th><th>主队</th><th>亚盘</th><th>客队</th>
 <th>推荐</th><th>概率推荐</th><th>赛果</th><th>比分</th>
 <th>胜/平/负</th><th>泊松W/D/L</th><th>综合W/D/L</th>
-<th>EV</th><th>凯利</th><th>Pinnacle</th><th>HKJC</th><th>亚盘</th>
+<th>EV</th><th>凯利</th><th>Pinnacle</th><th>HKJC</th>
 
 </tr></thead>
 <tbody id="matchBody"></tbody>

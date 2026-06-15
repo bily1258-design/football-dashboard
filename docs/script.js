@@ -83,7 +83,7 @@ function loadDate() {
 <td>${i + 1} ${srcBadge}</td>
 <td>${r.league}</td>
 <td>${kickoff}</td>
-<td>${r.home}</td><td>${r.away}</td>
+<td>${r.home}</td><td>${ahStr}</td><td>${r.away}</td>
 <td class="${dirClass}">${r.ev_direction || '-'}</td>
 <td class="${probDirClass}">${probLabel}</td>
 <td>${resultDisplay}</td>
@@ -92,7 +92,6 @@ function loadDate() {
 <td>${poissonStr}</td><td>${finalStr}</td>
 <td>${evStr}</td><td>${kellyStr}</td>
 <td>${pinStr}</td><td>${hkjcStr}</td>
-<td>${ahStr}</td>
 </tr>`;
   });
 
@@ -175,11 +174,11 @@ function downloadExcel() {
   const records = allData.matches[sel] || [];
 
   // 表头
-  const headers = ['编号','联赛','开赛时间','主队','客队','来源','推荐方向','概率推荐','赛果','比分',
+  const headers = ['编号','联赛','开赛时间','主队','亚盘盘口','亚盘主水','亚盘客水','亚盘来源','客队','来源','推荐方向','概率推荐','赛果','比分',
     '胜赔','平赔','负赔','泊松W','泊松D','泊松L','综合W','综合D','综合L',
     'EV_W','EV_D','EV_L','凯利W','凯利D','凯利L',
     'Pinnacle_W','Pinnacle_D','Pinnacle_L','HKJC_W','HKJC_D','HKJC_L',
-    '亚盘盘口','亚盘主水','亚盘客水','亚盘来源'];
+    'HHAD盘口','HHAD胜','HHAD平','HHAD负'];
 
   const rows = [headers];
   records.forEach((r, i) => {
@@ -187,7 +186,9 @@ function downloadExcel() {
     if (hasResult && !showResulted) return;
     if (!hasResult && !showPending) return;
     rows.push([
-      i + 1, r.league, r.kickoff || '', r.home, r.away, r.source || '',
+      i + 1, r.league, r.kickoff || '', r.home,
+      r.ah ? r.ah.handicap : '', r.ah ? r.ah.home_w : 0, r.ah ? r.ah.away_w : 0, r.ah ? r.ah.source : '',
+      r.away, r.source || '',
       r.ev_direction || '', r.prob_direction ? `${r.prob_direction} ${(r.prediction_prob*100).toFixed(1)}%` : '',
       r.result || '', r.score || '',
       r.odds.w, r.odds.d, r.odds.l,
@@ -197,8 +198,7 @@ function downloadExcel() {
       r.kelly.w, r.kelly.d, r.kelly.l,
       r.pinnacle.w, r.pinnacle.d, r.pinnacle.l,
       r.hkjc.w, r.hkjc.d, r.hkjc.l,
-      r.hhad ? r.hhad.handicap : '', r.hhad ? r.hhad.w : 0, r.hhad ? r.hhad.d : 0, r.hhad ? r.hhad.l : 0,
-      r.ah ? r.ah.handicap : '', r.ah ? r.ah.home_w : 0, r.ah ? r.ah.away_w : 0, r.ah ? r.ah.source : ''
+      r.hhad ? r.hhad.handicap : '', r.hhad ? r.hhad.w : 0, r.hhad ? r.hhad.d : 0, r.hhad ? r.hhad.l : 0
     ]);
   });
 
