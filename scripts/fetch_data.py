@@ -61,6 +61,98 @@ def step_fetch_pinnacle(date_str: str, db_path: str = None):
             print(f"  stdout(tail): {result.stdout[-300:]}")
     return result.returncode == 0
 
+def step_update_ah(date_str: str, db_path: str = None):
+    """Step 1.25: 从odds_api产出的AH文件读取百家平均亚盘，写入DB"""
+    print("\n" + "=" * 50)
+    print(f"STEP 1.25: 亚盘让球盘 -> DB - {date_str}")
+    print("=" * 50)
+    if not db_path:
+        db_path = os.environ.get('FOOTBALL_DB_PATH',
+            os.path.join(REPO_DIR, 'data', 'football.db'))
+    
+    import sqlite3, json
+    from datetime import datetime, timedelta
+    
+    ah_updated = 0
+    prev_day = (datetime.strptime(date_str, '%Y-%m-%d') - timedelta(days=1)).strftime('%Y-%m-%d')
+    window_start = f"{prev_day} 12:00"
+    next_day = (datetime.strptime(date_str, '%Y-%m-%d') + timedelta(days=1)).strftime('%Y-%m-%d')
+    window_end = f"{next_day} 11:59"
+    
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    
+    # 确保ah字段存在
+    for col, ctype in [('ah_handicap', 'REAL'), ('ah_home_water', 'REAL'), ('ah_away_water', 'REAL'), ('ah_source', 'TEXT')]:
+        try:
+            cursor.execute(f"ALTER TABLE poisson_predictions ADD COLUMN {col} {ctype}")
+        except:
+            pass
+    
+    for date_tag in [date_str, prev_day]:
+        ah_path = os.path.join(REPO_DIR, "data", "raw", "oddsmagnet", f"ah_{date_tag.replace('-', '')}.json")
+        if not os.path.exists(ah_path):
+            continue
+        try:
+            with open(ah_path, 'r', encoding='utf-8') as f:
+                ah_data = json.load(f)
+            if not ah_data:
+                continue
+            print(f"  读取亚盘: {ah_path} ({len(ah_data)} 场)")
+            
+            cursor.execute("""
+                SELECT id, home_team, away_team FROM poisson_predictions
+                WHERE kickoff_time >= ? AND kickoff_time <= ?
+            """, (window_start, window_end))
+            db_records = cursor.fetchall()
+            
+            for key, ah in ah_data.items():
+                ah_home = ah.get('home', '')
+                ah_away = ah.get('away', '')
+                ah_close = ah.get('close', {})
+                if not ah_close or (ah_close.get('handicap', 0) == 0 and ah_close.get('home_w', 0) == 0):
+                    continue
+                
+                best_id = None
+                best_sim = 0
+                for rid, db_home, db_away in db_records:
+                    # 简单队名匹配
+                    h_match = max(
+                        len(set(ah_home) & set(db_home)) / max(len(ah_home), len(db_home), 1),
+                        len(set(ah_away) & set(db_away)) / max(len(ah_away), len(db_away), 1)
+                    )
+                    h_rev = max(
+                        len(set(ah_home) & set(db_away)) / max(len(ah_home), len(db_away), 1),
+                        len(set(ah_away) & set(db_home)) / max(len(ah_away), len(db_home), 1)
+                    )
+                    sim = max(h_match, h_rev)
+                    if sim > best_sim:
+                        best_sim = sim
+                        best_id = rid
+                
+                if best_id and best_sim >= 0.4:
+                    cursor.execute("""
+                        UPDATE poisson_predictions SET
+                            ah_handicap = ?, ah_home_water = ?, ah_away_water = ?, ah_source = ?
+                        WHERE id = ? AND (ah_handicap IS NULL OR ah_handicap = 0)
+                    """, (
+                        ah_close.get('handicap', 0) or 0,
+                        ah_close.get('home_w', 0) or 0,
+                        ah_close.get('away_w', 0) or 0,
+                        ah.get('source', 'avg'),
+                        best_id
+                    ))
+                    if cursor.rowcount > 0:
+                        ah_updated += 1
+                        print(f"  [AH] {ah_home} vs {ah_away} -> 盘口{ah_close['handicap']} 主水{ah_close.get('home_w',0):.2f} 客水{ah_close.get('away_w',0):.2f}")
+        except Exception as e:
+            print(f"  WARN 亚盘读取失败: {e}")
+    
+    conn.commit()
+    conn.close()
+    print(f"  OK 亚盘写入: {ah_updated} 条")
+    return ah_updated
+
 def step_update_db(db_path: str = None):
     """Step 1.3: 3 链条全量更新 (fusion -> EV -> kelly)
 
@@ -321,7 +413,8 @@ def main():
     if args.fetch_and_push:
         step_fetch(date_str)
         step_predict(date_str, db_path)          # 先INSERT预测记录
-        step_fetch_pinnacle(date_str, db_path)   # 再UPDATE赔率+亚盘数据
+        step_fetch_pinnacle(date_str, db_path)   # 再UPDATE赔率
+        step_update_ah(date_str, db_path)        # 百家平均亚盘写入DB
         step_update_db(db_path)
         
         if args.with_report:
@@ -355,7 +448,8 @@ def main():
     # 完整模式：fetch → report → review → align → build
     step_fetch(date_str)
     step_predict(date_str, db_path)          # 先INSERT预测记录
-    step_fetch_pinnacle(date_str, db_path)   # 再UPDATE赔率+亚盘数据
+    step_fetch_pinnacle(date_str, db_path)   # 再UPDATE赔率
+    step_update_ah(date_str, db_path)        # 百家平均亚盘写入DB
     step_update_db(db_path)
     
     if args.with_report:

@@ -1871,65 +1871,8 @@ def save_to_db(matches, db_path, date_str=None):
             print(f"[WARN] oddsmagnet补充失败: {e}")
     
     conn.commit()
-    
-    # 从 odds_api.py 产出的 AH 文件补充亚盘数据
-    ah_updated = 0
-    for date_tag in [date_str, prev_day]:
-        if not date_tag:
-            continue
-        ah_path = os.path.join(DATA_BASE_DIR, "data", "raw", "oddsmagnet", f"ah_{date_tag.replace('-', '')}.json")
-        if not os.path.exists(ah_path):
-            continue
-        try:
-            with open(ah_path, 'r', encoding='utf-8') as f:
-                ah_data = json.load(f)
-            if not ah_data:
-                continue
-            print(f"[INFO] 读取亚盘数据: {ah_path} ({len(ah_data)} 场)")
-            for key, ah in ah_data.items():
-                ah_home = ah.get('home', '')
-                ah_away = ah.get('away', '')
-                ah_close = ah.get('close', {})
-                ah_source = ah.get('source', '')
-                if not ah_close or ah_close.get('handicap', 0) == 0:
-                    continue
-                # 匹配DB记录
-                cursor.execute("""
-                    SELECT id, home_team, away_team FROM poisson_predictions
-                    WHERE kickoff_time >= ? AND kickoff_time <= ?
-                """, (window_start, window_end))
-                for row in cursor.fetchall():
-                    rid, db_home, db_away = row
-                    sim_h = team_name_similarity(ah_home, db_home)
-                    sim_a = team_name_similarity(ah_away, db_away)
-                    sim_rev_h = team_name_similarity(ah_home, db_away)
-                    sim_rev_a = team_name_similarity(ah_away, db_home)
-                    avg_sim = max((sim_h + sim_a) / 2, (sim_rev_h + sim_rev_a) / 2)
-                    if avg_sim >= 0.4:
-                        cursor.execute("""
-                            UPDATE poisson_predictions SET
-                                ah_handicap = ?, ah_home_water = ?, ah_away_water = ?, ah_source = ?
-                            WHERE id = ? AND (ah_handicap IS NULL OR ah_handicap = 0)
-                        """, (
-                            ah_close.get('handicap', 0) or 0,
-                            ah_close.get('home_w', 0) or 0,
-                            ah_close.get('away_w', 0) or 0,
-                            ah_source,
-                            rid
-                        ))
-                        if cursor.rowcount > 0:
-                            ah_updated += 1
-                            print(f"  [AH] {db_home} vs {db_away} <- 盘口{ah_close['handicap']} 主水{ah_close.get('home_w',0):.2f} 客水{ah_close.get('away_w',0):.2f} ({ah_source})")
-                        break  # 一个AH数据只匹配一条DB记录
-        except Exception as e:
-            print(f"[WARN] 亚盘数据补充失败: {e}")
-    
-    if ah_updated:
-        conn.commit()
-        print(f"[INFO] 亚盘补充写入: {ah_updated} 条")
-    
     conn.close()
-    print(f"[INFO] 写入完成，更新 {updated} 条记录（亚盘补充 {ah_updated} 条）")
+    print(f"[INFO] 写入完成，更新 {updated} 条记录")
     return updated
 
 

@@ -507,18 +507,13 @@ def fetch_all(date_str: str = None, companies: List[str] = None,
 
     print(f"  百家平均汇总: {len(avg_matches)} 场")
 
-    # 1.5 亚盘让球盘 (POST companyType=y) — 百家平均 + HKJC
+    # 1.5 亚盘让球盘 (POST companyType=y) — 仅百家平均
     ah_data = {}  # key -> {open: {}, close: {}, source: str}
     for d, label in [(prev_day, "前一天"), (curr_day, "当天")]:
         ah_avg = fetch_asian_handicap(d, company='0')
         time.sleep(SLEEP_SEC)
         for key, v in ah_avg.items():
             ah_data[key] = {**v, 'source': 'avg'}
-        ah_hkjc = fetch_asian_handicap(d, company='136')
-        time.sleep(SLEEP_SEC)
-        for key, v in ah_hkjc.items():
-            if key not in ah_data:  # 百家平均优先
-                ah_data[key] = {**v, 'source': 'hkjc'}
     print(f"  亚盘汇总: {len(ah_data)} 场")
 
     # 2. 各公司
