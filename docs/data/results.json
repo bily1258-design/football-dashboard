@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2026-06-16 12:19:57",
+    "generated_at": "2026-06-16 13:18:43",
     "total_dates": 6,
     "total_matches": 73,
     "date_range": {
@@ -17,7 +17,7 @@
     "prob_rate": 48.5,
     "any_rate": 57.6,
     "days": 6,
-    "last_updated": "2026-06-16 12:19"
+    "last_updated": "2026-06-16 13:18"
   },
   "daily_stats": {
     "2026-06-16": {
@@ -116,9 +116,9 @@
           "l": 0.343
         },
         "fusion_prob": {
-          "w": 0.482,
-          "d": 0.221,
-          "l": 0.297
+          "w": 0.472,
+          "d": 0.194,
+          "l": 0.333
         },
         "result": "平局",
         "score": "0-0",
@@ -159,14 +159,14 @@
         "home_ranking": 0,
         "away_ranking": 0,
         "ah": {
-          "handicap": -0.75,
-          "home_w": 1.95,
-          "away_w": 1.25,
-          "source": "avg"
+          "handicap": 0.0,
+          "home_w": 0,
+          "away_w": 0,
+          "source": ""
         }
       },
       {
-        "id": 1247,
+        "id": 1265,
         "date": "2026-06-16",
         "league": "瑞典超甲",
         "home": "松兹瓦尔",
@@ -190,24 +190,24 @@
           "l": 0.388
         },
         "fusion_prob": {
-          "w": 0.357,
-          "d": 0.25,
-          "l": 0.393
+          "w": 0.392,
+          "d": 0.257,
+          "l": 0.35
         },
         "result": "",
         "score": "",
-        "ev_direction": "平局",
+        "ev_direction": "客胜",
         "ev_hit": false,
         "prob_direction": "客胜",
         "prob_hit": false,
-        "fusion_direction": "客胜",
+        "fusion_direction": "主胜",
         "ev": {
-          "w": 0.0165,
-          "d": -0.0622,
-          "l": 0.0281
+          "w": 0.1158,
+          "d": -0.0333,
+          "l": -0.0834
         },
         "kelly": {
-          "w": 0.0077,
+          "w": 0.0019,
           "d": 0,
           "l": 0
         },
@@ -227,20 +227,20 @@
         "reference_score": "",
         "cold_risk": "",
         "source": "jingcai",
-        "odds_source": "百家平均",
+        "odds_source": "had",
         "home_lambda": 0,
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
         "ah": {
-          "handicap": -0.25,
-          "home_w": 2.74,
-          "away_w": 0.69,
-          "source": "avg"
+          "handicap": null,
+          "home_w": 0,
+          "away_w": 0,
+          "source": ""
         }
       },
       {
-        "id": 1248,
+        "id": 1266,
         "date": "2026-06-16",
         "league": "瑞典超甲",
         "home": "北雪平",
@@ -264,9 +264,9 @@
           "l": 0.339
         },
         "fusion_prob": {
-          "w": 0.405,
+          "w": 0.422,
           "d": 0.267,
-          "l": 0.328
+          "l": 0.311
         },
         "result": "主胜",
         "score": "2-0",
@@ -276,14 +276,14 @@
         "prob_hit": true,
         "fusion_direction": "主胜",
         "ev": {
-          "w": -0.1001,
-          "d": 0.0043,
-          "l": 0.1551
+          "w": -0.0642,
+          "d": 0.0046,
+          "l": 0.0976
         },
         "kelly": {
           "w": 0,
           "d": 0,
-          "l": 0.0337
+          "l": 0.022
         },
         "pinnacle": {
           "w": 0,
@@ -301,20 +301,20 @@
         "reference_score": "",
         "cold_risk": "",
         "source": "jingcai",
-        "odds_source": "百家平均",
+        "odds_source": "had",
         "home_lambda": 0,
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
         "ah": {
-          "handicap": -0.25,
-          "home_w": 2.74,
-          "away_w": 0.69,
-          "source": "avg"
+          "handicap": null,
+          "home_w": 0,
+          "away_w": 0,
+          "source": ""
         }
       },
       {
-        "id": 1249,
+        "id": 1267,
         "date": "2026-06-16",
         "league": "冰岛超",
         "home": "KA阿克雷里",
@@ -338,9 +338,9 @@
           "l": 0.422
         },
         "fusion_prob": {
-          "w": 0.341,
-          "d": 0.247,
-          "l": 0.412
+          "w": 0.38,
+          "d": 0.258,
+          "l": 0.363
         },
         "result": "客胜",
         "score": "3-4",
@@ -348,14 +348,14 @@
         "ev_hit": true,
         "prob_direction": "客胜",
         "prob_hit": true,
-        "fusion_direction": "客胜",
+        "fusion_direction": "主胜",
         "ev": {
-          "w": 0.0968,
-          "d": 0.0286,
-          "l": -0.0824
+          "w": 0.2208,
+          "d": 0.0726,
+          "l": -0.1919
         },
         "kelly": {
-          "w": 0.0294,
+          "w": 0.0172,
           "d": 0,
           "l": 0
         },
@@ -375,16 +375,16 @@
         "reference_score": "",
         "cold_risk": "",
         "source": "jingcai",
-        "odds_source": "百家平均",
+        "odds_source": "had",
         "home_lambda": 0,
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
         "ah": {
-          "handicap": -0.25,
-          "home_w": 0.83,
-          "away_w": 0.94,
-          "source": "avg"
+          "handicap": null,
+          "home_w": 0,
+          "away_w": 0,
+          "source": ""
         }
       },
       {
@@ -412,9 +412,9 @@
           "l": 0.241
         },
         "fusion_prob": {
-          "w": 0.444,
-          "d": 0.247,
-          "l": 0.309
+          "w": 0.457,
+          "d": 0.229,
+          "l": 0.314
         },
         "result": "平局",
         "score": "1-1",
@@ -424,14 +424,14 @@
         "prob_hit": false,
         "fusion_direction": "主胜",
         "ev": {
-          "w": -0.3,
-          "d": 0.0984,
+          "w": -0.2892,
+          "d": 0.0194,
           "l": 0.3
         },
         "kelly": {
           "w": 0,
           "d": 0,
-          "l": 0.0865
+          "l": 0.0833
         },
         "pinnacle": {
           "w": 1.52,
@@ -455,10 +455,10 @@
         "home_ranking": 0,
         "away_ranking": 0,
         "ah": {
-          "handicap": -0.25,
-          "home_w": 1.89,
-          "away_w": 1.12,
-          "source": "avg"
+          "handicap": 0.0,
+          "home_w": 0,
+          "away_w": 0,
+          "source": ""
         }
       },
       {
@@ -486,9 +486,9 @@
           "l": 0.606
         },
         "fusion_prob": {
-          "w": 0.298,
-          "d": 0.264,
-          "l": 0.438
+          "w": 0.325,
+          "d": 0.243,
+          "l": 0.432
         },
         "result": "平局",
         "score": "1-1",
@@ -499,12 +499,12 @@
         "fusion_direction": "客胜",
         "ev": {
           "w": 0.3,
-          "d": 0.0614,
+          "d": -0.0216,
           "l": -0.3
         },
         "kelly": {
-          "w": 0.117,
-          "d": 0.0085,
+          "w": 0.102,
+          "d": 0.0219,
           "l": 0
         },
         "pinnacle": {
@@ -529,14 +529,14 @@
         "home_ranking": 0,
         "away_ranking": 0,
         "ah": {
-          "handicap": 0.5,
-          "home_w": 1.03,
-          "away_w": 2.15,
-          "source": "avg"
+          "handicap": 0.0,
+          "home_w": 0,
+          "away_w": 0,
+          "source": ""
         }
       },
       {
-        "id": 1238,
+        "id": 1262,
         "date": "2026-06-16",
         "league": "世界杯",
         "home": "沙特阿拉伯",
@@ -610,7 +610,7 @@
         }
       },
       {
-        "id": 1250,
+        "id": 1268,
         "date": "2026-06-16",
         "league": "巴西乙",
         "home": "克里丘马",
@@ -634,9 +634,9 @@
           "l": 0.273
         },
         "fusion_prob": {
-          "w": 0.438,
-          "d": 0.251,
-          "l": 0.311
+          "w": 0.455,
+          "d": 0.249,
+          "l": 0.296
         },
         "result": "平局",
         "score": "1-1",
@@ -646,14 +646,14 @@
         "prob_hit": false,
         "fusion_direction": "主胜",
         "ev": {
-          "w": -0.16,
-          "d": -0.1156,
+          "w": -0.1266,
+          "d": -0.1221,
           "l": 0.3
         },
         "kelly": {
           "w": 0,
           "d": 0,
-          "l": 0.0791
+          "l": 0.0383
         },
         "pinnacle": {
           "w": 0,
@@ -671,20 +671,20 @@
         "reference_score": "",
         "cold_risk": "",
         "source": "jingcai",
-        "odds_source": "百家平均",
+        "odds_source": "had",
         "home_lambda": 0,
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
         "ah": {
-          "handicap": 0.5,
-          "home_w": 1.03,
-          "away_w": 2.15,
-          "source": "avg"
+          "handicap": null,
+          "home_w": 0,
+          "away_w": 0,
+          "source": ""
         }
       },
       {
-        "id": 1251,
+        "id": 1269,
         "date": "2026-06-16",
         "league": "巴西乙",
         "home": "隆德里纳",
@@ -708,9 +708,9 @@
           "l": 0.349
         },
         "fusion_prob": {
-          "w": 0.386,
+          "w": 0.397,
           "d": 0.255,
-          "l": 0.359
+          "l": 0.348
         },
         "result": "主胜",
         "score": "3-2",
@@ -720,14 +720,14 @@
         "prob_hit": true,
         "fusion_direction": "主胜",
         "ev": {
-          "w": -0.0076,
+          "w": 0.0195,
           "d": -0.1719,
-          "l": 0.1843
+          "l": 0.1494
         },
         "kelly": {
           "w": 0,
           "d": 0,
-          "l": 0.0258
+          "l": 0.0142
         },
         "pinnacle": {
           "w": 0,
@@ -745,16 +745,16 @@
         "reference_score": "",
         "cold_risk": "",
         "source": "jingcai",
-        "odds_source": "百家平均",
+        "odds_source": "had",
         "home_lambda": 0,
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
         "ah": {
-          "handicap": -0.25,
-          "home_w": 1.01,
-          "away_w": 0.8,
-          "source": "avg"
+          "handicap": null,
+          "home_w": 0,
+          "away_w": 0,
+          "source": ""
         }
       },
       {
@@ -782,9 +782,9 @@
           "l": 0.252
         },
         "fusion_prob": {
-          "w": 0.452,
-          "d": 0.262,
-          "l": 0.287
+          "w": 0.447,
+          "d": 0.235,
+          "l": 0.319
         },
         "result": "平局",
         "score": "2-2",
@@ -794,14 +794,14 @@
         "prob_hit": false,
         "fusion_direction": "主胜",
         "ev": {
-          "w": -0.1161,
-          "d": -0.0514,
+          "w": -0.1256,
+          "d": -0.1491,
           "l": 0.3
         },
         "kelly": {
           "w": 0,
           "d": 0,
-          "l": 0.0819
+          "l": 0.0623
         },
         "pinnacle": {
           "w": 1.9,
@@ -825,10 +825,10 @@
         "home_ranking": 0,
         "away_ranking": 0,
         "ah": {
-          "handicap": -0.25,
-          "home_w": 2.42,
-          "away_w": 1.08,
-          "source": "avg"
+          "handicap": 0.0,
+          "home_w": 0,
+          "away_w": 0,
+          "source": ""
         }
       }
     ],
