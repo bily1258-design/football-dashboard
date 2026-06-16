@@ -3232,6 +3232,7 @@ def save_to_database(results: List[dict], date_str: str, dry_run: bool = False):
                     existing_row = cursor.fetchone()
                     if existing_row:
                         record['match_id'] = existing_row[0]  # 保留旧match_id，执行UPDATE
+                        exists = existing_row  # Bug 2 修法：fallback 找到后必须同步把 exists 设上，否则下面 if exists 走 False 走 INSERT 分支
                 
                 if exists:
                     # 已存在：只UPDATE日报负责的字段，不动其他脚本写入的字段

@@ -108,6 +108,14 @@ jobs:
             echo "⚠️ Skipping predict (no DB)"
           fi
 
+      - name: Cleanup DB duplicates
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: |
+          if [ -f data/football.db ]; then
+            echo "🧹 Cleaning up DB duplicate rows (post-predict)"
+            python scripts/align_and_merge.py --cleanup-db --db data/football.db || echo "⚠️ DB cleanup failed"
+          fi
+
       - name: Align and Merge
         run: |
           if [ -f data/football.db ]; then
