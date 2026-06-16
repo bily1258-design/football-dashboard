@@ -31,7 +31,36 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 REPO_DIR = os.path.dirname(SCRIPT_DIR)
 RAW_OM = os.path.join(REPO_DIR, "data", "raw", "oddsmagnet")
 RAW_BSD = os.path.join(REPO_DIR, "data", "raw", "bsd")
+RAW_ODDSMAGNET = os.path.join(REPO_DIR, "data", "raw", "oddsmagnet")
 DB_PATH = os.path.join(REPO_DIR, "data", "football.db")
+
+
+def name_sim(a: str, b: str) -> float:
+    """字符集相似度（与fetch_pinnacle_odds.team_name_similarity公式对齐：交集/较长串长度）"""
+    if not a or not b:
+        return 0.0
+    return len(set(a) & set(b)) / max(len(a), len(b), 1)
+
+
+def load_ah_for_date(date_str: str) -> list:
+    """读 ah_YYYYMMDD.json + ah_YYYYMMDD.json（前一天），返回亚盘列表"""
+    results = []
+    dt = datetime.strptime(date_str, '%Y-%m-%d')
+    prev = (dt - timedelta(days=1)).strftime('%Y%m%d')
+    for tag in (date_str.replace('-', ''), prev):
+        path = os.path.join(RAW_ODDSMAGNET, f"ah_{tag}.json")
+        if not os.path.exists(path):
+            continue
+        try:
+            with open(path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            for key, ah in data.items():
+                if not ah:
+                    continue
+                results.append(ah)
+        except Exception as e:
+            print(f'  WARN 读 {path} 失败: {e}')
+    return results
 
 # === 算法常量（基于历史 DB 5/15~6/5 数据反推）===
 BASE_TOTAL_GOALS = 2.4    # 联赛平均总进球（主+客）
@@ -311,6 +340,41 @@ def main():
     # 2) 生成预测
     rows = build_predictions(matches, args.date)
     print(f'🧮 生成预测: {len(rows)} 场')
+
+    # 2.5) 读AH文件，按队名相似度匹配填到新行（学HKJC/平博，INSERT时就带AH）
+    ah_index = load_ah_for_date(args.date)
+    if ah_index:
+        filled = 0
+        for r in rows:
+            home = r.get('home_team', '')
+            away = r.get('away_team', '')
+            best = None
+            best_sim = 0
+            for ah in ah_index:
+                ah_home = ah.get('home', '')
+                ah_away = ah.get('away', '')
+                close = ah.get('close', {})
+                if not close:
+                    continue
+                h = close.get('handicap', 0)
+                hw = close.get('home_w', 0)
+                aw = close.get('away_w', 0)
+                if h == 0 and hw == 0 and aw == 0:
+                    continue
+                # 正向+反向相似度
+                sim_fwd = (name_sim(ah_home, home) + name_sim(ah_away, away)) / 2
+                sim_rev = (name_sim(ah_home, away) + name_sim(ah_away, home)) / 2
+                sim = max(sim_fwd, sim_rev)
+                if sim > best_sim:
+                    best_sim = sim
+                    best = close
+            if best and best_sim >= 0.4:
+                r['ah_handicap'] = best.get('handicap', 0) or 0
+                r['ah_home_water'] = best.get('home_w', 0) or 0
+                r['ah_away_water'] = best.get('away_w', 0) or 0
+                r['ah_source'] = 'avg'
+                filled += 1
+        print(f'🎯 AH匹配: {filled}/{len(rows)} 场带AH数据入库')
 
     # 3) INSERT
     inserted, skipped = insert_predictions(rows, db_path)
