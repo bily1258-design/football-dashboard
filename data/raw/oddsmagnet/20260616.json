@@ -1,65 +1,35 @@
 {
   "date": "2026-06-16",
-  "fetch_time": "2026-06-16 10:05:38",
+  "fetch_time": "2026-06-16 11:47:57",
   "matches": {
-    "伊朗_新西兰": {
-      "info": {
-        "match_id": "",
-        "number": "",
-        "league": "",
-        "kickoff": "",
-        "home": "伊朗",
-        "away": "新西兰"
-      },
-      "odds": {
-        "pinnacle": {
-          "source": "pinnacle",
-          "odds_w": 1.9,
-          "odds_d": 3.52,
-          "odds_l": 4.55,
-          "margin": 0.0302,
-          "implied_prob": {
-            "w": 0.5109,
-            "d": 0.2758,
-            "l": 0.2133
-          }
-        },
-        "hkjc": {
-          "source": "hkjc",
-          "odds_w": 1.7,
-          "odds_d": 3.05,
-          "odds_l": 4.8,
-          "margin": 0.1244,
-          "implied_prob": {
-            "w": 0.5231,
-            "d": 0.2916,
-            "l": 0.1853
-          }
-        },
-        "sb": {
-          "source": "sb",
-          "odds_w": 1.86,
-          "odds_d": 3.3,
-          "odds_l": 4.75,
-          "margin": 0.0511,
-          "implied_prob": {
-            "w": 0.5115,
-            "d": 0.2883,
-            "l": 0.2003
-          }
-        }
-      }
-    },
     "西班牙_佛得角": {
       "info": {
         "match_id": "",
-        "number": "",
-        "league": "",
-        "kickoff": "",
+        "number": "周一013",
+        "league": "世界杯",
+        "kickoff": "06-16 00:00",
         "home": "西班牙",
         "away": "佛得角"
       },
       "odds": {
+        "avg": {
+          "source": "avg",
+          "odds_w": 1.08,
+          "odds_d": 11.44,
+          "odds_l": 25.45,
+          "margin": 0.0526,
+          "implied_prob": {
+            "w": 0.8796,
+            "d": 0.083,
+            "l": 0.0373
+          },
+          "movement": {
+            "w": -0.01,
+            "d": 2.13,
+            "l": -1.26,
+            "direction": "平稳"
+          }
+        },
         "pinnacle": {
           "source": "pinnacle",
           "odds_w": 1.11,
@@ -71,43 +41,50 @@
             "d": 0.084,
             "l": 0.046
           }
-        },
-        "hkjc": {
-          "source": "hkjc",
-          "odds_w": 1.05,
-          "odds_d": 8.75,
-          "odds_l": 19.0,
-          "margin": 0.1193,
-          "implied_prob": {
-            "w": 0.8509,
-            "d": 0.1021,
-            "l": 0.047
-          }
-        },
-        "sb": {
-          "source": "sb",
-          "odds_w": 1.09,
-          "odds_d": 11.0,
-          "odds_l": 31.0,
-          "margin": 0.0406,
-          "implied_prob": {
-            "w": 0.8816,
-            "d": 0.0874,
-            "l": 0.031
-          }
         }
+      },
+      "ah": {
+        "open": {
+          "home_w": 0.84,
+          "handicap": -2.55,
+          "away_w": 0.96
+        },
+        "close": {
+          "home_w": 1.95,
+          "handicap": -0.75,
+          "away_w": 1.25
+        },
+        "source": "avg"
       }
     },
     "比利时_埃及": {
       "info": {
         "match_id": "",
-        "number": "",
-        "league": "",
-        "kickoff": "",
+        "number": "周一014",
+        "league": "世界杯",
+        "kickoff": "06-16 03:00",
         "home": "比利时",
         "away": "埃及"
       },
       "odds": {
+        "avg": {
+          "source": "avg",
+          "odds_w": 1.52,
+          "odds_d": 4.16,
+          "odds_l": 6.25,
+          "margin": 0.0583,
+          "implied_prob": {
+            "w": 0.6217,
+            "d": 0.2271,
+            "l": 0.1512
+          },
+          "movement": {
+            "w": -0.13,
+            "d": 0.32,
+            "l": 1.19,
+            "direction": "客升"
+          }
+        },
         "pinnacle": {
           "source": "pinnacle",
           "odds_w": 1.52,
@@ -119,43 +96,50 @@
             "d": 0.2245,
             "l": 0.1329
           }
-        },
-        "hkjc": {
-          "source": "hkjc",
-          "odds_w": 1.4,
-          "odds_d": 4.0,
-          "odds_l": 6.3,
-          "margin": 0.123,
-          "implied_prob": {
-            "w": 0.636,
-            "d": 0.2226,
-            "l": 0.1413
-          }
-        },
-        "sb": {
-          "source": "sb",
-          "odds_w": 1.54,
-          "odds_d": 4.25,
-          "odds_l": 6.0,
-          "margin": 0.0514,
-          "implied_prob": {
-            "w": 0.6177,
-            "d": 0.2238,
-            "l": 0.1585
-          }
         }
+      },
+      "ah": {
+        "open": {
+          "home_w": 0.83,
+          "handicap": -0.75,
+          "away_w": 0.96
+        },
+        "close": {
+          "home_w": 1.89,
+          "handicap": -0.25,
+          "away_w": 1.12
+        },
+        "source": "avg"
       }
     },
     "沙特阿拉伯_乌拉圭": {
       "info": {
         "match_id": "",
-        "number": "",
-        "league": "",
-        "kickoff": "",
+        "number": "周一015",
+        "league": "世界杯",
+        "kickoff": "06-16 06:00",
         "home": "沙特阿拉伯",
         "away": "乌拉圭"
       },
       "odds": {
+        "avg": {
+          "source": "avg",
+          "odds_w": 7.28,
+          "odds_d": 4.09,
+          "odds_l": 1.48,
+          "margin": 0.0576,
+          "implied_prob": {
+            "w": 0.1299,
+            "d": 0.2312,
+            "l": 0.6389
+          },
+          "movement": {
+            "w": 0.48,
+            "d": -0.26,
+            "l": 0.03,
+            "direction": "主升"
+          }
+        },
         "pinnacle": {
           "source": "pinnacle",
           "odds_w": 8.58,
@@ -167,185 +151,765 @@
             "d": 0.2483,
             "l": 0.6418
           }
+        }
+      },
+      "ah": {
+        "open": {
+          "home_w": 0.85,
+          "handicap": 1.21,
+          "away_w": 0.97
         },
-        "hkjc": {
-          "source": "hkjc",
-          "odds_w": 7.25,
-          "odds_d": 3.95,
-          "odds_l": 1.37,
-          "margin": 0.121,
+        "close": {
+          "home_w": 1.03,
+          "handicap": 0.5,
+          "away_w": 2.15
+        },
+        "source": "avg"
+      }
+    },
+    "伊朗_新西兰": {
+      "info": {
+        "match_id": "",
+        "number": "周一016",
+        "league": "世界杯",
+        "kickoff": "06-16 09:00",
+        "home": "伊朗",
+        "away": "新西兰"
+      },
+      "odds": {
+        "avg": {
+          "source": "avg",
+          "odds_w": 1.81,
+          "odds_d": 3.41,
+          "odds_l": 4.75,
+          "margin": 0.0563,
           "implied_prob": {
-            "w": 0.123,
-            "d": 0.2258,
-            "l": 0.6511
+            "w": 0.5231,
+            "d": 0.2776,
+            "l": 0.1993
+          },
+          "movement": {
+            "w": 0.16,
+            "d": -0.39,
+            "l": -0.44,
+            "direction": "主升"
           }
         },
-        "sb": {
-          "source": "sb",
-          "odds_w": 7.5,
-          "odds_d": 4.2,
-          "odds_l": 1.47,
-          "margin": 0.0517,
+        "pinnacle": {
+          "source": "pinnacle",
+          "odds_w": 1.9,
+          "odds_d": 3.52,
+          "odds_l": 4.55,
+          "margin": 0.0302,
           "implied_prob": {
-            "w": 0.1268,
-            "d": 0.2264,
-            "l": 0.6468
+            "w": 0.5109,
+            "d": 0.2758,
+            "l": 0.2133
           }
         }
+      },
+      "ah": {
+        "open": {
+          "home_w": 0.84,
+          "handicap": -0.8,
+          "away_w": 0.94
+        },
+        "close": {
+          "home_w": 2.42,
+          "handicap": -0.25,
+          "away_w": 1.08
+        },
+        "source": "avg"
       }
     },
     "法国_塞内加尔": {
       "info": {
         "match_id": "",
-        "number": "",
-        "league": "",
-        "kickoff": "",
+        "number": "周二017",
+        "league": "世界杯",
+        "kickoff": "06-17 03:00",
         "home": "法国",
         "away": "塞内加尔"
       },
       "odds": {
+        "avg": {
+          "source": "avg",
+          "odds_w": 1.46,
+          "odds_d": 4.36,
+          "odds_l": 6.94,
+          "margin": 0.0584,
+          "implied_prob": {
+            "w": 0.6471,
+            "d": 0.2167,
+            "l": 0.1361
+          },
+          "movement": {
+            "w": 0.04,
+            "d": -0.02,
+            "l": -0.03,
+            "direction": "平稳"
+          }
+        },
         "pinnacle": {
           "source": "pinnacle",
-          "odds_w": 1.51,
-          "odds_d": 4.44,
-          "odds_l": 6.76,
-          "margin": 0.0354,
+          "odds_w": 1.5,
+          "odds_d": 4.46,
+          "odds_l": 6.8,
+          "margin": 0.038,
           "implied_prob": {
-            "w": 0.6396,
-            "d": 0.2175,
-            "l": 0.1429
-          }
-        },
-        "hkjc": {
-          "source": "hkjc",
-          "odds_w": 1.39,
-          "odds_d": 4.05,
-          "odds_l": 6.5,
-          "margin": 0.1201,
-          "implied_prob": {
-            "w": 0.6422,
-            "d": 0.2204,
-            "l": 0.1373
-          }
-        },
-        "sb": {
-          "source": "sb",
-          "odds_w": 1.46,
-          "odds_d": 4.45,
-          "odds_l": 7.0,
-          "margin": 0.0525,
-          "implied_prob": {
-            "w": 0.6508,
-            "d": 0.2135,
-            "l": 0.1357
+            "w": 0.6423,
+            "d": 0.216,
+            "l": 0.1417
           }
         }
+      },
+      "ah": {
+        "open": {
+          "home_w": 0.96,
+          "handicap": -1.25,
+          "away_w": 0.84
+        },
+        "close": {
+          "home_w": 0.87,
+          "handicap": -1.0,
+          "away_w": 0.98
+        },
+        "source": "avg"
       }
     },
     "伊拉克_挪威": {
       "info": {
         "match_id": "",
-        "number": "",
-        "league": "",
-        "kickoff": "",
+        "number": "周二018",
+        "league": "世界杯",
+        "kickoff": "06-17 06:00",
         "home": "伊拉克",
         "away": "挪威"
       },
       "odds": {
+        "avg": {
+          "source": "avg",
+          "odds_w": 14.13,
+          "odds_d": 6.96,
+          "odds_l": 1.2,
+          "margin": 0.0478,
+          "implied_prob": {
+            "w": 0.0675,
+            "d": 0.1371,
+            "l": 0.7953
+          },
+          "movement": {
+            "w": 7.7,
+            "d": 2.46,
+            "l": -0.23,
+            "direction": "主升"
+          }
+        },
         "pinnacle": {
           "source": "pinnacle",
-          "odds_w": 15.58,
-          "odds_d": 7.53,
+          "odds_w": 15.54,
+          "odds_d": 7.52,
           "odds_l": 1.19,
-          "margin": 0.0373,
+          "margin": 0.0377,
           "implied_prob": {
-            "w": 0.0619,
-            "d": 0.128,
-            "l": 0.8101
-          }
-        },
-        "hkjc": {
-          "source": "hkjc",
-          "odds_w": 14.0,
-          "odds_d": 6.4,
-          "odds_l": 1.12,
-          "margin": 0.1205,
-          "implied_prob": {
-            "w": 0.0637,
-            "d": 0.1394,
-            "l": 0.7968
-          }
-        },
-        "sb": {
-          "source": "sb",
-          "odds_w": 14.5,
-          "odds_d": 6.9,
-          "odds_l": 1.19,
-          "margin": 0.0542,
-          "implied_prob": {
-            "w": 0.0654,
-            "d": 0.1375,
-            "l": 0.7971
+            "w": 0.062,
+            "d": 0.1282,
+            "l": 0.8098
           }
         }
+      },
+      "ah": {
+        "open": {
+          "home_w": 0.93,
+          "handicap": 1.25,
+          "away_w": 0.8
+        },
+        "close": {
+          "home_w": 0.87,
+          "handicap": 2.0,
+          "away_w": 0.97
+        },
+        "source": "avg"
       }
     },
     "阿根廷_阿尔及利亚": {
       "info": {
         "match_id": "",
-        "number": "",
-        "league": "",
-        "kickoff": "",
+        "number": "周二019",
+        "league": "世界杯",
+        "kickoff": "06-17 09:00",
         "home": "阿根廷",
         "away": "阿尔及利亚"
       },
       "odds": {
+        "avg": {
+          "source": "avg",
+          "odds_w": 1.39,
+          "odds_d": 4.54,
+          "odds_l": 8.52,
+          "margin": 0.0571,
+          "implied_prob": {
+            "w": 0.6806,
+            "d": 0.2084,
+            "l": 0.111
+          },
+          "movement": {
+            "w": 0.07,
+            "d": -0.44,
+            "l": -0.98,
+            "direction": "平稳"
+          }
+        },
         "pinnacle": {
           "source": "pinnacle",
           "odds_w": 1.42,
-          "odds_d": 4.51,
-          "odds_l": 9.08,
-          "margin": 0.036,
+          "odds_d": 4.49,
+          "odds_l": 9.01,
+          "margin": 0.0379,
           "implied_prob": {
-            "w": 0.6797,
-            "d": 0.214,
-            "l": 0.1063
-          }
-        },
-        "hkjc": {
-          "source": "hkjc",
-          "odds_w": 1.27,
-          "odds_d": 4.5,
-          "odds_l": 8.75,
-          "margin": 0.1239,
-          "implied_prob": {
-            "w": 0.7006,
-            "d": 0.1977,
-            "l": 0.1017
-          }
-        },
-        "sb": {
-          "source": "sb",
-          "odds_w": 1.39,
-          "odds_d": 4.7,
-          "odds_l": 8.2,
-          "margin": 0.0542,
-          "implied_prob": {
-            "w": 0.6825,
-            "d": 0.2018,
-            "l": 0.1157
+            "w": 0.6785,
+            "d": 0.2146,
+            "l": 0.1069
           }
         }
+      },
+      "ah": {
+        "open": {
+          "home_w": 1.0,
+          "handicap": -1.5,
+          "away_w": 0.81
+        },
+        "close": {
+          "home_w": 0.94,
+          "handicap": -1.25,
+          "away_w": 0.9
+        },
+        "source": "avg"
+      }
+    },
+    "SJK学院_哈卡": {
+      "info": {
+        "match_id": "",
+        "number": "61",
+        "league": "芬甲",
+        "kickoff": "06-15 23:30",
+        "home": "SJK学院",
+        "away": "哈卡"
+      },
+      "odds": {
+        "avg": {
+          "source": "avg",
+          "odds_w": 4.05,
+          "odds_d": 3.7,
+          "odds_l": 1.73,
+          "margin": 0.0952,
+          "implied_prob": {
+            "w": 0.2254,
+            "d": 0.2468,
+            "l": 0.5278
+          },
+          "movement": {
+            "w": -1.3,
+            "d": -0.63,
+            "l": 0.23,
+            "direction": "客升"
+          }
+        }
+      },
+      "ah": {
+        "open": {
+          "home_w": 0.93,
+          "handicap": 1.0,
+          "away_w": 0.85
+        },
+        "close": {
+          "home_w": 0.72,
+          "handicap": 0.25,
+          "away_w": 2.31
+        },
+        "source": "avg"
+      }
+    },
+    "松兹瓦尔_奥斯达": {
+      "info": {
+        "match_id": "",
+        "number": "63",
+        "league": "瑞典超甲",
+        "kickoff": "06-16 01:00",
+        "home": "松兹瓦尔",
+        "away": "奥斯达"
+      },
+      "odds": {
+        "avg": {
+          "source": "avg",
+          "odds_w": 2.62,
+          "odds_d": 3.46,
+          "odds_l": 2.41,
+          "margin": 0.0856,
+          "implied_prob": {
+            "w": 0.3516,
+            "d": 0.2662,
+            "l": 0.3822
+          },
+          "movement": {
+            "w": -0.18,
+            "d": 0.16,
+            "l": 0.22,
+            "direction": "客升"
+          }
+        }
+      },
+      "ah": {
+        "open": {
+          "home_w": 1.0,
+          "handicap": 0.25,
+          "away_w": 0.79
+        },
+        "close": {
+          "home_w": 2.45,
+          "handicap": 0.0,
+          "away_w": 1.11
+        },
+        "source": "avg"
+      }
+    },
+    "北雪平_瓦尔贝里": {
+      "info": {
+        "match_id": "",
+        "number": "64",
+        "league": "瑞典超甲",
+        "kickoff": "06-16 01:05",
+        "home": "北雪平",
+        "away": "瓦尔贝里"
+      },
+      "odds": {
+        "avg": {
+          "source": "avg",
+          "odds_w": 2.04,
+          "odds_d": 3.46,
+          "odds_l": 3.24,
+          "margin": 0.0878,
+          "implied_prob": {
+            "w": 0.4506,
+            "d": 0.2657,
+            "l": 0.2837
+          },
+          "movement": {
+            "w": 0.09,
+            "d": 0.01,
+            "l": 0.09,
+            "direction": "平稳"
+          }
+        }
+      },
+      "ah": {
+        "open": {
+          "home_w": 0.82,
+          "handicap": -0.25,
+          "away_w": 0.96
+        },
+        "close": {
+          "home_w": 2.74,
+          "handicap": -0.25,
+          "away_w": 0.69
+        },
+        "source": "avg"
+      }
+    },
+    "KA阿克雷里_弗拉姆": {
+      "info": {
+        "match_id": "",
+        "number": "65",
+        "league": "冰岛超",
+        "kickoff": "06-16 02:00",
+        "home": "KA阿克雷里",
+        "away": "弗拉姆"
+      },
+      "odds": {
+        "avg": {
+          "source": "avg",
+          "odds_w": 2.93,
+          "odds_d": 3.79,
+          "odds_l": 2.03,
+          "margin": 0.0978,
+          "implied_prob": {
+            "w": 0.3109,
+            "d": 0.2404,
+            "l": 0.4487
+          },
+          "movement": {
+            "w": -0.47,
+            "d": -0.12,
+            "l": 0.15,
+            "direction": "客升"
+          }
+        }
+      },
+      "ah": {
+        "open": {
+          "home_w": 0.87,
+          "handicap": 0.5,
+          "away_w": 0.88
+        },
+        "close": {
+          "home_w": 2.16,
+          "handicap": 0.0,
+          "away_w": 1.82
+        },
+        "source": "avg"
+      }
+    },
+    "克里丘马_塞阿拉": {
+      "info": {
+        "match_id": "",
+        "number": "68",
+        "league": "巴西乙",
+        "kickoff": "06-16 08:00",
+        "home": "克里丘马",
+        "away": "塞阿拉"
+      },
+      "odds": {
+        "avg": {
+          "source": "avg",
+          "odds_w": 1.76,
+          "odds_d": 3.23,
+          "odds_l": 4.7,
+          "margin": 0.0906,
+          "implied_prob": {
+            "w": 0.521,
+            "d": 0.2839,
+            "l": 0.1951
+          },
+          "movement": {
+            "w": -0.32,
+            "d": 0.08,
+            "l": 1.05,
+            "direction": "客升"
+          }
+        }
+      },
+      "ah": {
+        "open": {
+          "home_w": 0.34,
+          "handicap": 0.0,
+          "away_w": 1.82
+        },
+        "close": {
+          "home_w": 1.28,
+          "handicap": -0.25,
+          "away_w": 1.1
+        },
+        "source": "avg"
+      }
+    },
+    "隆德里纳_阿瓦伊": {
+      "info": {
+        "match_id": "",
+        "number": "69",
+        "league": "巴西乙",
+        "kickoff": "06-16 08:00",
+        "home": "隆德里纳",
+        "away": "阿瓦伊"
+      },
+      "odds": {
+        "avg": {
+          "source": "avg",
+          "odds_w": 2.36,
+          "odds_d": 2.98,
+          "odds_l": 3.03,
+          "margin": 0.0893,
+          "implied_prob": {
+            "w": 0.389,
+            "d": 0.3081,
+            "l": 0.303
+          },
+          "movement": {
+            "w": -0.07,
+            "d": -0.27,
+            "l": 0.18,
+            "direction": "客升"
+          }
+        }
+      },
+      "ah": {
+        "open": {
+          "home_w": 0.48,
+          "handicap": 0.0,
+          "away_w": 1.35
+        },
+        "close": {
+          "home_w": 1.88,
+          "handicap": 0.0,
+          "away_w": 1.28
+        },
+        "source": "avg"
+      }
+    },
+    "兰斯科罗纳_北欧联FC": {
+      "info": {
+        "match_id": "",
+        "number": "1",
+        "league": "瑞典超甲",
+        "kickoff": "06-17 01:00",
+        "home": "兰斯科罗纳",
+        "away": "北欧联FC"
+      },
+      "odds": {
+        "avg": {
+          "source": "avg",
+          "odds_w": 2.24,
+          "odds_d": 3.51,
+          "odds_l": 2.79,
+          "margin": 0.0897,
+          "implied_prob": {
+            "w": 0.4097,
+            "d": 0.2614,
+            "l": 0.3289
+          },
+          "movement": {
+            "w": 0.02,
+            "d": 0.21,
+            "l": 0.09,
+            "direction": "平稳"
+          }
+        }
+      },
+      "ah": {
+        "open": {
+          "home_w": 0.86,
+          "handicap": -0.25,
+          "away_w": 0.92
+        },
+        "close": {
+          "home_w": 0.97,
+          "handicap": -0.25,
+          "away_w": 0.84
+        },
+        "source": "avg"
+      }
+    },
+    "IFK瓦纳默_赫尔辛堡": {
+      "info": {
+        "match_id": "",
+        "number": "2",
+        "league": "瑞典超甲",
+        "kickoff": "06-17 01:00",
+        "home": "IFK瓦纳默",
+        "away": "赫尔辛堡"
+      },
+      "odds": {
+        "avg": {
+          "source": "avg",
+          "odds_w": 2.1,
+          "odds_d": 3.48,
+          "odds_l": 3.02,
+          "margin": 0.0947,
+          "implied_prob": {
+            "w": 0.435,
+            "d": 0.2625,
+            "l": 0.3025
+          },
+          "movement": {
+            "w": 0.14,
+            "d": 0.13,
+            "l": -0.18,
+            "direction": "主升"
+          }
+        }
+      },
+      "ah": {
+        "open": {
+          "home_w": 1.02,
+          "handicap": -0.5,
+          "away_w": 0.76
+        },
+        "close": {
+          "home_w": 0.89,
+          "handicap": -0.25,
+          "away_w": 0.92
+        },
+        "source": "avg"
+      }
+    },
+    "IA阿克拉内斯_瓦鲁尔": {
+      "info": {
+        "match_id": "",
+        "number": "4",
+        "league": "冰岛超",
+        "kickoff": "06-17 03:15",
+        "home": "IA阿克拉内斯",
+        "away": "瓦鲁尔"
+      },
+      "odds": {
+        "avg": {
+          "source": "avg",
+          "odds_w": 2.1,
+          "odds_d": 3.76,
+          "odds_l": 2.79,
+          "margin": 0.1006,
+          "implied_prob": {
+            "w": 0.4327,
+            "d": 0.2417,
+            "l": 0.3257
+          },
+          "movement": {
+            "w": 0.16,
+            "d": -0.09,
+            "l": -0.41,
+            "direction": "主升"
+          }
+        }
+      },
+      "ah": {
+        "open": {
+          "home_w": 0.92,
+          "handicap": -0.5,
+          "away_w": 0.81
+        },
+        "close": {
+          "home_w": 0.83,
+          "handicap": -0.25,
+          "away_w": 0.94
+        },
+        "source": "avg"
+      }
+    },
+    "斯塔尔南_贝雷达比历克": {
+      "info": {
+        "match_id": "",
+        "number": "5",
+        "league": "冰岛超",
+        "kickoff": "06-17 03:15",
+        "home": "斯塔尔南",
+        "away": "贝雷达比历克"
+      },
+      "odds": {
+        "avg": {
+          "source": "avg",
+          "odds_w": 2.82,
+          "odds_d": 4.01,
+          "odds_l": 2.01,
+          "margin": 0.1015,
+          "implied_prob": {
+            "w": 0.3219,
+            "d": 0.2264,
+            "l": 0.4517
+          },
+          "movement": {
+            "w": 0.4,
+            "d": -0.25,
+            "l": -0.31,
+            "direction": "主升"
+          }
+        }
+      },
+      "ah": {
+        "open": {
+          "home_w": 0.99,
+          "handicap": 0.25,
+          "away_w": 0.79
+        },
+        "close": {
+          "home_w": 0.94,
+          "handicap": 0.25,
+          "away_w": 0.83
+        },
+        "source": "avg"
+      }
+    },
+    "维京古_雷克雅未克": {
+      "info": {
+        "match_id": "",
+        "number": "6",
+        "league": "冰岛超",
+        "kickoff": "06-17 03:15",
+        "home": "维京古",
+        "away": "雷克雅未克"
+      },
+      "odds": {
+        "avg": {
+          "source": "avg",
+          "odds_w": 1.44,
+          "odds_d": 4.73,
+          "odds_l": 5.01,
+          "margin": 0.1054,
+          "implied_prob": {
+            "w": 0.6282,
+            "d": 0.1912,
+            "l": 0.1806
+          },
+          "movement": {
+            "w": -0.1,
+            "d": 0.33,
+            "l": 0.31,
+            "direction": "客升"
+          }
+        }
+      },
+      "ah": {
+        "open": {
+          "home_w": 0.77,
+          "handicap": -1.0,
+          "away_w": 0.96
+        },
+        "close": {
+          "home_w": 0.9,
+          "handicap": -1.25,
+          "away_w": 0.88
+        },
+        "source": "avg"
+      }
+    },
+    "福塔雷萨_米内罗美洲": {
+      "info": {
+        "match_id": "",
+        "number": "8",
+        "league": "巴西乙",
+        "kickoff": "06-17 07:00",
+        "home": "福塔雷萨",
+        "away": "米内罗美洲"
+      },
+      "odds": {
+        "avg": {
+          "source": "avg",
+          "odds_w": 1.56,
+          "odds_d": 3.68,
+          "odds_l": 5.63,
+          "margin": 0.0903,
+          "implied_prob": {
+            "w": 0.5879,
+            "d": 0.2492,
+            "l": 0.1629
+          },
+          "movement": {
+            "w": 0.08,
+            "d": -0.22,
+            "l": -0.87,
+            "direction": "平稳"
+          }
+        }
+      },
+      "ah": {
+        "open": {
+          "home_w": 0.83,
+          "handicap": -1.0,
+          "away_w": 0.89
+        },
+        "close": {
+          "home_w": 0.92,
+          "handicap": -1.0,
+          "away_w": 0.87
+        },
+        "source": "avg"
       }
     }
   },
   "summary": {
-    "total": 7,
+    "total": 19,
     "sources": [
-      "hkjc",
-      "pinnacle",
-      "sb"
+      "avg",
+      "pinnacle"
     ],
-    "pinnacle_coverage": 1.0
+    "pinnacle_coverage": 0.37
   }
 }
