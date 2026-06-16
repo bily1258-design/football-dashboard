@@ -86,10 +86,14 @@ def load_db_predictions(db_path: str, date_str: str) -> List[Dict]:
     conn.close()
 
     # A3: 去重 — 同 (home, away) 只保留一条，优先 jingcai > om_only，同 source 取 id 更大
+    # 去重后如果保留记录的AH为空，从同key的其他记录中补AH数据
     if len(rows) > 1:
         seen = {}
+        # 先收集每个key的所有记录，用于去重后补AH
+        groups = {}
         for r in rows:
             key = (r['home_team'], r['away_team'])
+            groups.setdefault(key, []).append(r)
             if key not in seen:
                 seen[key] = r
             else:
@@ -98,9 +102,22 @@ def load_db_predictions(db_path: str, date_str: str) -> List[Dict]:
                     seen[key] = r
                 elif r['source'] == prev['source'] and r['id'] > prev['id']:
                     seen[key] = r
+        # 去重后补AH：保留记录AH为空时，从同key其他记录取最新非空AH
+        ah_fixed = 0
+        for key, kept in seen.items():
+            if kept.get('ah_handicap') is None or kept.get('ah_handicap') == 0:
+                for r in reversed(groups[key]):  # 从新到旧找有AH的
+                    if r.get('ah_handicap') is not None and r.get('ah_handicap') != 0:
+                        kept['ah_handicap'] = r['ah_handicap']
+                        kept['ah_home_water'] = r.get('ah_home_water', 0)
+                        kept['ah_away_water'] = r.get('ah_away_water', 0)
+                        kept['ah_source'] = r.get('ah_source', '')
+                        ah_fixed += 1
+                        break
         if len(seen) != len(rows):
-            print(f"  [A3] {date_str}: 去重 {len(rows)} -> {len(seen)} 条")
-            rows = list(seen.values())
+            print(f"  [A3] {date_str}: 去重 {len(rows)} -> {len(seen)} 条" +
+                  (f", 补AH {ah_fixed} 条" if ah_fixed else ""))
+        rows = list(seen.values())
 
     return rows
 
