@@ -114,9 +114,38 @@ def load_db_predictions(db_path: str, date_str: str) -> List[Dict]:
                         kept['ah_source'] = r.get('ah_source', '')
                         ah_fixed += 1
                         break
+
+        # A3.5: 跨key去重 — 不同译名变体（如"沙特"vs"沙特阿拉伯"）也合并
+        keys = list(seen.keys())
+        merged_into = {}  # 主key -> 被合并的key
+        for i in range(len(keys)):
+            if i in merged_into:
+                continue
+            ka = keys[i]
+            ha, aa = ka
+            for j in range(i+1, len(keys)):
+                if j in merged_into:
+                    continue
+                kb = keys[j]
+                hb, ab = kb
+                # 双向相似度都要>=0.5（避免误合并）
+                sim1 = (len(set(ha) & set(hb)) / max(len(ha), len(hb), 1) +
+                        len(set(aa) & set(ab)) / max(len(aa), len(ab), 1)) / 2
+                sim2 = (len(set(ha) & set(ab)) / max(len(ha), len(ab), 1) +
+                        len(set(aa) & set(hb)) / max(len(aa), len(hb), 1)) / 2
+                if max(sim1, sim2) >= 0.5:
+                    # 合并到主key：保留信息更全的（AH非空优先）
+                    if seen[ka].get('ah_handicap') in (None, 0) and seen[kb].get('ah_handicap') not in (None, 0):
+                        seen[ka] = seen[kb]
+                    merged_into[j] = ka
+        for j, ka in merged_into.items():
+            del seen[keys[j]]
+        cross_dedup = len(merged_into)
+
         if len(seen) != len(rows):
             print(f"  [A3] {date_str}: 去重 {len(rows)} -> {len(seen)} 条" +
-                  (f", 补AH {ah_fixed} 条" if ah_fixed else ""))
+                  (f", 补AH {ah_fixed} 条" if ah_fixed else "") +
+                  (f", 跨key合并 {cross_dedup} 条" if cross_dedup else ""))
         rows = list(seen.values())
 
     return rows
