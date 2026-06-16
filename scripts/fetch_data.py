@@ -447,10 +447,12 @@ def main():
         if args.with_review:
             step_review(date_str)
         
-        step_push(date_str)
-        
+        # 先上传DB到Release，再git push触发GA
+        # 确保GA下载Release时拿到的是含AH数据的最新DB
         if not args.skip_db_push:
             step_push_db(db_path)
+        
+        step_push(date_str)
         
         print("\n✅ Termux模式完成：数据已推送，GA将自动构建看板")
         return
