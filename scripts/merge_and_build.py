@@ -133,6 +133,47 @@ def load_from_db(db_path: str, max_days=999) -> dict:
         })
     conn.close()
 
+    # A3去重+补AH：同 (home, away) 只保留一条，同 source 取 id 更大
+    # 保留记录 AH 为空时从同 key 其他记录补
+    total_dedup = 0
+    total_ah_fixed = 0
+    for date in list(by_date.keys()):
+        records = by_date[date]
+        if len(records) <= 1:
+            continue
+        groups = {}
+        for r in records:
+            key = (r['home'], r['away'])
+            groups.setdefault(key, []).append(r)
+        seen = {}
+        for r in records:
+            key = (r['home'], r['away'])
+            if key not in seen:
+                seen[key] = r
+            else:
+                prev = seen[key]
+                if r['source'] == 'jingcai' and prev['source'] != 'jingcai':
+                    seen[key] = r
+                elif r['source'] == prev['source'] and r['id'] > prev['id']:
+                    seen[key] = r
+        # 补AH
+        ah_fixed = 0
+        for key, kept in seen.items():
+            ah = kept.get('ah', {})
+            if not ah or ah.get('handicap') is None or ah.get('handicap') == 0:
+                for r in reversed(groups[key]):
+                    rah = r.get('ah', {})
+                    if rah and rah.get('handicap') is not None and rah.get('handicap') != 0:
+                        kept['ah'] = rah
+                        ah_fixed += 1
+                        break
+        if len(seen) < len(records):
+            by_date[date] = list(seen.values())
+            total_dedup += len(records) - len(seen)
+            total_ah_fixed += ah_fixed
+    if total_dedup or total_ah_fixed:
+        print(f"  [merge] 去重 {total_dedup} 条, 补AH {total_ah_fixed} 条")
+
     return by_date
 
 
