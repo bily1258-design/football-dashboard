@@ -1,34 +1,34 @@
 {
   "meta": {
-    "generated_at": "2026-06-16 14:16:25",
+    "generated_at": "2026-06-16 15:17:43",
     "total_dates": 6,
-    "total_matches": 73,
+    "total_matches": 72,
     "date_range": {
       "from": "2026-06-06",
       "to": "2026-06-16"
     }
   },
   "summary": {
-    "total_matches": 66,
+    "total_matches": 65,
     "ev_hits": 28,
     "prob_hits": 32,
     "any_hits": 38,
-    "ev_rate": 42.4,
-    "prob_rate": 48.5,
-    "any_rate": 57.6,
+    "ev_rate": 43.1,
+    "prob_rate": 49.2,
+    "any_rate": 58.5,
     "days": 6,
-    "last_updated": "2026-06-16 14:16"
+    "last_updated": "2026-06-16 15:17"
   },
   "daily_stats": {
     "2026-06-16": {
-      "total": 10,
-      "with_result": 9,
+      "total": 9,
+      "with_result": 8,
       "ev_hits": 2,
       "prob_hits": 3,
       "any_hits": 3,
-      "ev_rate": 22.2,
-      "prob_rate": 33.3,
-      "any_rate": 33.3
+      "ev_rate": 25.0,
+      "prob_rate": 37.5,
+      "any_rate": 37.5
     },
     "2026-06-15": {
       "total": 14,
@@ -166,7 +166,7 @@
         }
       },
       {
-        "id": 1283,
+        "id": 1299,
         "date": "2026-06-16",
         "league": "瑞典超甲",
         "home": "松兹瓦尔",
@@ -240,7 +240,7 @@
         }
       },
       {
-        "id": 1284,
+        "id": 1300,
         "date": "2026-06-16",
         "league": "瑞典超甲",
         "home": "北雪平",
@@ -314,7 +314,7 @@
         }
       },
       {
-        "id": 1285,
+        "id": 1301,
         "date": "2026-06-16",
         "league": "冰岛超",
         "home": "KA阿克雷里",
@@ -431,7 +431,7 @@
         "kelly": {
           "w": 0,
           "d": 0,
-          "l": 0.0833
+          "l": 0.0865
         },
         "pinnacle": {
           "w": 1.52,
@@ -503,8 +503,8 @@
           "l": -0.3
         },
         "kelly": {
-          "w": 0.102,
-          "d": 0.0219,
+          "w": 0.117,
+          "d": 0.0085,
           "l": 0
         },
         "pinnacle": {
@@ -536,81 +536,7 @@
         }
       },
       {
-        "id": 1280,
-        "date": "2026-06-16",
-        "league": "世界杯",
-        "home": "沙特阿拉伯",
-        "away": "乌拉圭",
-        "kickoff": "2026-06-16 06:00",
-        "prediction": "客胜",
-        "prediction_prob": 0.512,
-        "odds": {
-          "w": 7.28,
-          "d": 4.09,
-          "l": 1.48
-        },
-        "poisson": {
-          "w": 0.338,
-          "d": 0.276,
-          "l": 0.386
-        },
-        "final_prob": {
-          "w": 0.224,
-          "d": 0.262,
-          "l": 0.514
-        },
-        "fusion_prob": {
-          "w": 0.285,
-          "d": 0.315,
-          "l": 0.4
-        },
-        "result": "平局",
-        "score": "1-1",
-        "ev_direction": "客胜",
-        "ev_hit": false,
-        "prob_direction": "客胜",
-        "prob_hit": false,
-        "fusion_direction": "客胜",
-        "ev": {
-          "w": 0.3,
-          "d": 0.2679,
-          "l": -0.3
-        },
-        "kelly": {
-          "w": 0.0979,
-          "d": 0.0185,
-          "l": 0
-        },
-        "pinnacle": {
-          "w": 8.58,
-          "d": 3.8,
-          "l": 1.47
-        },
-        "hkjc": {
-          "w": 7.75,
-          "d": 4.1,
-          "l": 1.34
-        },
-        "risk_level": "",
-        "stars": 0,
-        "confidence_index": 0,
-        "reference_score": "",
-        "cold_risk": "",
-        "source": "om_only",
-        "odds_source": "Pinnacle",
-        "home_lambda": 1.151,
-        "away_lambda": 1.249,
-        "home_ranking": 0,
-        "away_ranking": 0,
-        "ah": {
-          "handicap": 0.0,
-          "home_w": 0,
-          "away_w": 0,
-          "source": ""
-        }
-      },
-      {
-        "id": 1286,
+        "id": 1302,
         "date": "2026-06-16",
         "league": "巴西乙",
         "home": "克里丘马",
@@ -684,7 +610,7 @@
         }
       },
       {
-        "id": 1287,
+        "id": 1303,
         "date": "2026-06-16",
         "league": "巴西乙",
         "home": "隆德里纳",
@@ -801,7 +727,7 @@
         "kelly": {
           "w": 0,
           "d": 0,
-          "l": 0.0623
+          "l": 0.0819
         },
         "pinnacle": {
           "w": 1.9,
