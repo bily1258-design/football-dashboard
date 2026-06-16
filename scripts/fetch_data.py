@@ -48,7 +48,7 @@ def step_fetch_pinnacle(date_str: str, db_path: str = None):
         db_path = os.environ.get('FOOTBALL_DB_PATH',
             os.path.join(REPO_DIR, 'data', 'football.db'))
     cmd = [sys.executable, os.path.join(SCRIPT_DIR, 'fetch_pinnacle_odds.py'), '--date', date_str]
-    result = subprocess.run(cmd, cwd=REPO_DIR, capture_output=True, text=True, timeout=300)
+    result = subprocess.run(cmd, cwd=REPO_DIR, capture_output=True, text=True, timeout=600)
     # 打印关键输出（亚盘/赔率等），让用户看到进度
     for line in result.stdout.split('\n'):
         if any(k in line for k in ['亚盘', 'AH', 'ah_', 'Pinnacle', 'HKJC', '百家', '更新', 'ERROR', 'WARN', 'INFO', 'matched', 'updated', '记录']):
