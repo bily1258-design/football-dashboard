@@ -113,10 +113,9 @@ def step_update_ah(date_str: str, db_path: str = None):
                 if not ah_close or (ah_close.get('handicap', 0) == 0 and ah_close.get('home_w', 0) == 0):
                     continue
                 
-                best_id = None
-                best_sim = 0
+                # 逐条相似度匹配，避免精确队名匹配漏掉同名变体（如"沙特"vs"沙特阿拉伯"）
+                matched_ids = []
                 for rid, db_home, db_away in db_records:
-                    # 简单队名匹配
                     h_match = max(
                         len(set(ah_home) & set(db_home)) / max(len(ah_home), len(db_home), 1),
                         len(set(ah_away) & set(db_away)) / max(len(ah_away), len(db_away), 1)
@@ -126,48 +125,26 @@ def step_update_ah(date_str: str, db_path: str = None):
                         len(set(ah_away) & set(db_home)) / max(len(ah_away), len(db_home), 1)
                     )
                     sim = max(h_match, h_rev)
-                    if sim > best_sim:
-                        best_sim = sim
-                        best_id = rid
+                    if sim >= 0.4:
+                        matched_ids.append(rid)
                 
-                if best_id and best_sim >= 0.4:
-                    # 找到匹配的队名，更新该队所有重复记录（A3去重保留最大id，AH须写在所有记录上）
-                    matched_home = None
-                    matched_away = None
-                    for rid, db_home, db_away in db_records:
-                        if rid == best_id:
-                            matched_home = db_home
-                            matched_away = db_away
-                            break
-                    if matched_home and matched_away:
-                        cursor.execute("""
-                            UPDATE poisson_predictions SET
-                                ah_handicap = ?, ah_home_water = ?, ah_away_water = ?, ah_source = ?
-                            WHERE home_team = ? AND away_team = ? AND kickoff_time >= ? AND kickoff_time <= ?
-                                AND (ah_handicap IS NULL OR ah_handicap = 0)
-                        """, (
-                            ah_close.get('handicap', 0) or 0,
-                            ah_close.get('home_w', 0) or 0,
-                            ah_close.get('away_w', 0) or 0,
-                            ah.get('source', 'avg'),
-                            matched_home, matched_away,
-                            window_start, window_end
-                        ))
-                    else:
+                if matched_ids:
+                    # 逐条更新所有相似匹配的记录（按id，不依赖精确队名）
+                    ah_val = ah_close.get('handicap', 0) or 0
+                    hw_val = ah_close.get('home_w', 0) or 0
+                    aw_val = ah_close.get('away_w', 0) or 0
+                    src_val = ah.get('source', 'avg')
+                    cnt = 0
+                    for rid in matched_ids:
                         cursor.execute("""
                             UPDATE poisson_predictions SET
                                 ah_handicap = ?, ah_home_water = ?, ah_away_water = ?, ah_source = ?
                             WHERE id = ? AND (ah_handicap IS NULL OR ah_handicap = 0)
-                        """, (
-                            ah_close.get('handicap', 0) or 0,
-                            ah_close.get('home_w', 0) or 0,
-                            ah_close.get('away_w', 0) or 0,
-                            ah.get('source', 'avg'),
-                            best_id
-                        ))
-                    if cursor.rowcount > 0:
-                        ah_updated += cursor.rowcount
-                        print(f"  [AH] {ah_home} vs {ah_away} -> 盘口{ah_close['handicap']} 主水{ah_close.get('home_w',0):.2f} 客水{ah_close.get('away_w',0):.2f} ({cursor.rowcount}条)")
+                        """, (ah_val, hw_val, aw_val, src_val, rid))
+                        cnt += cursor.rowcount
+                    ah_updated += cnt
+                    if cnt > 0:
+                        print(f"  [AH] {ah_home} vs {ah_away} -> 盘口{ah_close['handicap']} 主水{ah_close.get('home_w',0):.2f} 客水{ah_close.get('away_w',0):.2f} ({cnt}条)")
         except Exception as e:
             print(f"  WARN 亚盘读取失败: {e}")
     
