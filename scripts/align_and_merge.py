@@ -397,15 +397,117 @@ def align_all(db_path: str = None, max_days: int = 999) -> Dict:
     return all_by_date
 
 
+def cleanup_db_duplicates(db_path: str, dry_run: bool = False) -> Dict:
+    """清理 DB 里 (date, home_team, away_team, kickoff_time) 重复的行
+
+    设计目的：daily_report.py 写入时未做 DB 层去重（match_id 可能 NULL，
+    INSERT OR REPLACE 又因没 UNIQUE 约束 = 普通 INSERT），会产生重复行。
+    本函数作为"事后清理层"，复用 A3 的去重键 (home, away, kickoff)，
+    合并到保留行，删除多余。
+
+    保留优先级：jingcai > beidan > om_only；同 source 取 id 最大（最新 exec_time）
+    字段补全：保留行缺失字段从被删行取第一个非空非0值
+    不动的字段：id, date, exec_time, home_team, away_team, kickoff_time, source
+
+    参数：
+        db_path: DB 路径
+        dry_run: True 时只报告，不真删
+    返回：{'groups': 重复组数, 'deleted': 删除行数, 'fields_merged': 补全字段数, 'match_id_filled': match_id 补全数}
+    """
+    SOURCE_PRIORITY = {'jingcai': 0, 'beidan': 1, 'om_only': 2}
+    SKIP_FIELDS = {'id', 'date', 'exec_time', 'home_team', 'away_team', 'kickoff_time', 'source'}
+
+    if not os.path.exists(db_path):
+        print(f"[ERROR] DB not found: {db_path}")
+        return {}
+
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    cur = conn.cursor()
+
+    # 1. 找重复组
+    cur.execute("""
+        SELECT date, home_team, away_team, kickoff_time, COUNT(*) cnt
+        FROM poisson_predictions
+        GROUP BY date, home_team, away_team, kickoff_time
+        HAVING cnt > 1
+        ORDER BY date, home_team
+    """)
+    groups = cur.fetchall()
+    print(f"[cleanup-db] 找到 {len(groups)} 组重复")
+
+    if not groups:
+        conn.close()
+        return {'groups': 0, 'deleted': 0, 'fields_merged': 0, 'match_id_filled': 0}
+
+    stats = {'groups': len(groups), 'deleted': 0, 'fields_merged': 0, 'match_id_filled': 0}
+
+    for g in groups:
+        # 2. 取这组所有行
+        cur.execute("""
+            SELECT * FROM poisson_predictions
+            WHERE date=? AND home_team=? AND away_team=? AND kickoff_time=?
+            ORDER BY id ASC
+        """, (g['date'], g['home_team'], g['away_team'], g['kickoff_time']))
+        rows = [dict(r) for r in cur.fetchall()]
+
+        # 3. 排序选保留行
+        rows.sort(key=lambda r: (SOURCE_PRIORITY.get(r['source'], 99), -r['id']))
+        kept = dict(rows[0])
+        others = rows[1:]
+
+        # 4. 字段补全（保留行空字段从被删行取）
+        for field in kept:
+            if field in SKIP_FIELDS:
+                continue
+            v = kept[field]
+            if v in (None, '', 0):
+                for o in others:
+                    ov = o.get(field)
+                    if ov not in (None, '', 0):
+                        kept[field] = ov
+                        stats['fields_merged'] += 1
+                        if field == 'match_id':
+                            stats['match_id_filled'] += 1
+                        break
+
+        if dry_run:
+            label = f"{g['date']} {g['home_team']} vs {g['away_team']}"
+            print(f"  [DRY-RUN] {label}: {len(rows)}行 → 保留id={kept['id']}({kept['source']}), 删{len(others)}行")
+        else:
+            # 5. 构造 UPDATE（不动 id 和 SKIP_FIELDS，id 作为 WHERE 条件）
+            updatable = {f: v for f, v in kept.items() if f not in SKIP_FIELDS and f != 'id'}
+            set_clause = ', '.join(f'{f}=:{f}' for f in updatable)
+            cur.execute(f"UPDATE poisson_predictions SET {set_clause} WHERE id = :_keep_id", {**updatable, '_keep_id': kept['id']})
+            # 6. 删多余
+            ids_to_del = [o['id'] for o in others]
+            placeholders = ','.join('?' * len(ids_to_del))
+            cur.execute(f"DELETE FROM poisson_predictions WHERE id IN ({placeholders})", ids_to_del)
+            stats['deleted'] += len(ids_to_del)
+
+    if not dry_run:
+        conn.commit()
+    conn.close()
+
+    print(f"[cleanup-db] 重复组: {stats['groups']}, 删除行: {stats['deleted']}, "
+          f"补全字段: {stats['fields_merged']} (含 match_id 补全 {stats['match_id_filled']})")
+    return stats
+
+
 if __name__ == '__main__':
     import argparse
     p = argparse.ArgumentParser()
     p.add_argument('--date', type=str, default=None, help='单日 YYYY-MM-DD')
     p.add_argument('--all', action='store_true', help='合并所有日期')
     p.add_argument('--db', type=str, default=None, help='数据库路径')
+    p.add_argument('--cleanup-db', action='store_true', help='清理 DB 重复行（事后去重）')
+    p.add_argument('--dry-run', action='store_true', help='cleanup-db 的预览模式，不真删')
     args = p.parse_args()
 
-    if args.all:
+    if args.cleanup_db:
+        db = args.db or DB_PATH
+        cleanup_db_duplicates(db, dry_run=args.dry_run)
+    elif args.all:
         align_all(args.db)
     elif args.date:
         align_and_merge(args.date, args.db)
