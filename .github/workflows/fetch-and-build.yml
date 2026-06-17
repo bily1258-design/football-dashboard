@@ -1,24 +1,20 @@
 name: Build Dashboard
 
 on:
-  # Termux push raw data 后自动触发
   push:
     branches: [main]
     paths:
       - 'data/raw/**'
       - 'data/reports/**'
       - 'data/processed/**'
-  # DB Release 更新后自动触发
   release:
     types: [published, edited]
-  # 手动触发
   workflow_dispatch:
     inputs:
       date:
         description: 'Date (YYYY-MM-DD, empty=today)'
         required: false
         default: ''
-  # 定时：每天北京时间 13:00 和 19:00
   schedule:
     - cron: '0 5 * * *'
     - cron: '0 11 * * *'
@@ -66,9 +62,9 @@ jobs:
             DATE=$(date +%Y-%m-%d)
           fi
           echo "📅 Fetching odds for $DATE"
-          python scripts/odds_api.py --date "$DATE" || echo "⚠️ Odds fetch failed"
+          python scripts/fetch.py --date "$DATE" || echo "⚠️ Fetch failed"
 
-      - name: Fetch Pinnacle & HKJC odds into DB
+      - name: Run pipeline (predict→fusion→EV→kelly→cleanup→align→push)
         if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         run: |
           DATE="${{ github.event.inputs.date || '' }}"
@@ -76,60 +72,17 @@ jobs:
             DATE=$(date +%Y-%m-%d)
           fi
           if [ -f data/football.db ]; then
-            echo "📅 Fetching Pinnacle/HKJC for $DATE"
-            python scripts/fetch_pinnacle_odds.py --date "$DATE" || echo "⚠️ Pinnacle/HKJC fetch failed"
+            python scripts/pipeline.py --date "$DATE" --db data/football.db --skip-push
           else
-            echo "⚠️ Skipping Pinnacle/HKJC (no DB)"
-          fi
-
-      - name: Generate Predictions (OM → DB)
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-        run: |
-          DATE="${{ github.event.inputs.date || '' }}"
-          if [ -z "$DATE" ]; then
-            DATE=$(date +%Y-%m-%d)
-          fi
-          if [ -f data/football.db ]; then
-            echo "🎯 Generating predictions for $DATE"
-            python scripts/predict_from_odds.py --date "$DATE" --db data/football.db || echo "⚠️ Predict failed"
-          else
-            echo "⚠️ Skipping predict (no DB)"
-          fi
-
-      - name: Update DB (fusion+EV+kelly)
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-        run: |
-          if [ -f data/football.db ]; then
-            echo "📊 Filling LGBM fusion probabilities"
-            python scripts/update_db_fusion.py --db data/football.db || echo "⚠️ fusion fill failed"
-            echo "📊 Recalculating EV with updated odds"
-            python scripts/value_bet.py --all --db data/football.db || echo "⚠️ EV recalc failed"
-            echo "📊 Recalculating Kelly with fusion/final"
-            python scripts/update_db_kelly.py --db data/football.db || echo "⚠️ Kelly recalc failed"
-          fi
-
-      - name: Cleanup DB duplicates
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-        run: |
-          if [ -f data/football.db ]; then
-            echo "🧹 Cleaning up DB duplicate rows (post-predict)"
-            python scripts/align_and_merge.py --cleanup-db --db data/football.db || echo "⚠️ DB cleanup failed"
-          fi
-
-      - name: Align and Merge
-        run: |
-          if [ -f data/football.db ]; then
-            python scripts/align_and_merge.py --all --db data/football.db
-          else
-            echo "⚠️ Skipping align (no DB)"
+            echo "⚠️ Skipping pipeline (no DB)"
           fi
 
       - name: Build Dashboard
         run: |
           if [ -f data/football.db ]; then
-            python scripts/merge_and_build.py --db data/football.db --output .
+            python scripts/build.py --db data/football.db --output .
           else
-            python scripts/merge_and_build.py --output .
+            python scripts/build.py --output .
           fi
 
       - name: Setup Pages
