@@ -143,9 +143,9 @@
       "away_w": 0.95
     },
     "close": {
-      "home_w": 0.88,
-      "handicap": -1.5,
-      "away_w": 0.97
+      "home_w": 0.84,
+      "handicap": -1.0,
+      "away_w": 1.0
     },
     "source": "avg"
   },
@@ -158,9 +158,9 @@
       "away_w": 0.83
     },
     "close": {
-      "home_w": 0.9,
+      "home_w": 0.87,
       "handicap": -0.75,
-      "away_w": 0.95
+      "away_w": 0.98
     },
     "source": "avg"
   },
@@ -173,9 +173,9 @@
       "away_w": 0.88
     },
     "close": {
-      "home_w": 0.98,
+      "home_w": 0.99,
       "handicap": -0.25,
-      "away_w": 0.87
+      "away_w": 0.86
     },
     "source": "avg"
   },
@@ -194,51 +194,6 @@
     },
     "source": "avg"
   },
-  "赫尔辛基_图尔库国际": {
-    "home": "赫尔辛基",
-    "away": "图尔库国际",
-    "open": {
-      "home_w": 0.95,
-      "handicap": -0.25,
-      "away_w": 0.78
-    },
-    "close": {
-      "home_w": 1.02,
-      "handicap": -0.25,
-      "away_w": 0.8
-    },
-    "source": "avg"
-  },
-  "埃尔维斯_雅罗": {
-    "home": "埃尔维斯",
-    "away": "雅罗",
-    "open": {
-      "home_w": 0.78,
-      "handicap": -0.75,
-      "away_w": 0.96
-    },
-    "close": {
-      "home_w": 0.8,
-      "handicap": -0.75,
-      "away_w": 1.03
-    },
-    "source": "avg"
-  },
-  "TPS图尔库_古比斯": {
-    "home": "TPS图尔库",
-    "away": "古比斯",
-    "open": {
-      "home_w": 0.99,
-      "handicap": 0.75,
-      "away_w": 0.76
-    },
-    "close": {
-      "home_w": 0.93,
-      "handicap": 0.5,
-      "away_w": 0.88
-    },
-    "source": "avg"
-  },
   "格尼斯坦_拉赫蒂": {
     "home": "格尼斯坦",
     "away": "拉赫蒂",
@@ -248,9 +203,9 @@
       "away_w": 0.85
     },
     "close": {
-      "home_w": 0.83,
-      "handicap": 0.0,
-      "away_w": 0.99
+      "home_w": 0.96,
+      "handicap": -0.25,
+      "away_w": 0.84
     },
     "source": "avg"
   },
@@ -263,9 +218,9 @@
       "away_w": 0.65
     },
     "close": {
-      "home_w": 0.98,
-      "handicap": -0.25,
-      "away_w": 0.85
+      "home_w": 0.92,
+      "handicap": 0.0,
+      "away_w": 0.91
     },
     "source": "avg"
   },
@@ -281,6 +236,51 @@
       "home_w": 3.23,
       "handicap": -0.5,
       "away_w": 1.06
+    },
+    "source": "avg"
+  },
+  "赫尔辛基_图尔库国际": {
+    "home": "赫尔辛基",
+    "away": "图尔库国际",
+    "open": {
+      "home_w": 0.95,
+      "handicap": -0.25,
+      "away_w": 0.78
+    },
+    "close": {
+      "home_w": 1.99,
+      "handicap": 0.0,
+      "away_w": 0.84
+    },
+    "source": "avg"
+  },
+  "埃尔维斯_雅罗": {
+    "home": "埃尔维斯",
+    "away": "雅罗",
+    "open": {
+      "home_w": 0.78,
+      "handicap": -0.75,
+      "away_w": 0.96
+    },
+    "close": {
+      "home_w": 2.3,
+      "handicap": -0.5,
+      "away_w": 1.07
+    },
+    "source": "avg"
+  },
+  "TPS图尔库_古比斯": {
+    "home": "TPS图尔库",
+    "away": "古比斯",
+    "open": {
+      "home_w": 0.99,
+      "handicap": 0.75,
+      "away_w": 0.76
+    },
+    "close": {
+      "home_w": 0.86,
+      "handicap": 0.25,
+      "away_w": 2.71
     },
     "source": "avg"
   }
