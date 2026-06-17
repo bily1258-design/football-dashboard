@@ -448,6 +448,124 @@ def _parse_json_odds(raw: str) -> List[List[Dict]]:
 # ================================================================
 #  多源聚合
 # ================================================================
+#  足彩网 — 亚盘让球盘 (POST companyType=y)
+# ================================================================
+
+def _parse_ah_value(text):
+    """解析亚盘水位/盘口值，去掉箭头标记"""
+    if not text:
+        return 0.0, 'stable'
+    text = str(text).strip()
+    movement = 'stable'
+    if '↑' in text:
+        movement = 'up'
+    elif '↓' in text:
+        movement = 'down'
+    elif '→' in text:
+        movement = 'stable'
+    text = text.replace('↑', '').replace('↓', '').replace('→', '').replace('＊', '*').strip()
+    try:
+        val = float(text)
+        return val, movement
+    except:
+        return 0.0, 'stable'
+
+
+def fetch_asian_handicap(date_str: str, page_type: str = None, company: str = '0'):
+    """POST抓取亚盘让球盘数据 (companyType=y)
+
+    亚盘格式: home_water / handicap / away_water (主队水位/盘口/客队水位)
+    company: '0'=百家平均, '136'=HKJC
+    date_str: YYYYMMDD格式
+    Returns: {match_key: {open: {home_w, handicap, away_w}, close: {home_w, handicap, away_w}}}
+    """
+    company_names = {'0': '百家平均', '136': 'HKJC'}
+    company_name = company_names.get(company, f'company={company}')
+
+    data = {
+        'type': page_type if page_type else 'jc',
+        'issue': '',
+        'company': company,
+        'companyType': 'y',
+        'date': date_str,
+        'fg': '1',
+    }
+
+    for attempt in range(MAX_RETRY + 1):
+        try:
+            r = requests.post(BASE_URL, data=data, headers={
+                **HEADERS, "Content-Type": "application/x-www-form-urlencoded"
+            }, timeout=20)
+
+            if r.status_code == 418 or _is_waf(r.text):
+                if attempt < MAX_RETRY:
+                    wait = SLEEP_SEC * (attempt + 2)
+                    print(f"  ⚠️ 亚盘{company_name} WAF拦截，{wait:.0f}s后重试({attempt+1}/{MAX_RETRY})...")
+                    time.sleep(wait)
+                    continue
+                else:
+                    print(f"  ❌ 亚盘{company_name} 重试耗尽")
+                    return {}
+
+            if r.status_code != 200:
+                print(f"  ❌ 亚盘{company_name} 请求失败: status={r.status_code}")
+                return {}
+
+            break
+        except Exception as e:
+            if attempt < MAX_RETRY:
+                time.sleep(SLEEP_SEC * 2)
+            else:
+                print(f"  ❌ 亚盘{company_name}: {e}")
+                return {}
+
+    html = r.text
+    result = {}
+    rows = re.findall(r'<tr[^>]*>(.*?)</tr>', html, re.DOTALL)
+
+    for row in rows:
+        teams = re.findall(r'<a[^>]*class="t[12]"[^>]*>([^<]+)</a>', row)
+        if len(teams) < 2:
+            continue
+
+        # 提取TD内容
+        td_contents = re.findall(r'<td[^>]*>(.*?)</td>', row, re.DOTALL)
+        td_values = []
+        for td in td_contents:
+            td_clean = re.sub(r'<[^>]+>', '', td).strip()
+            td_values.append(td_clean)
+
+        # 亚盘数据：按列位置提取（竞彩/北单列结构相同）
+        # TD0=checkbox, TD1=编号, TD2=联赛, TD3=时间, TD4=对阵
+        # TD5=open_home_w, TD6=open_handicap, TD7=open_away_w
+        # TD8=close_home_w, TD9=close_handicap, TD10=close_away_w
+        # TD11+=链接
+        open_home_w, open_handicap, open_away_w = 0.0, 0.0, 0.0
+        close_home_w, close_handicap, close_away_w = 0.0, 0.0, 0.0
+
+        if len(td_values) >= 11:
+            open_home_w, _ = _parse_ah_value(td_values[5])
+            open_handicap, _ = _parse_ah_value(td_values[6])
+            open_away_w, _ = _parse_ah_value(td_values[7])
+            close_home_w, _ = _parse_ah_value(td_values[8])
+            close_handicap, _ = _parse_ah_value(td_values[9])
+            close_away_w, _ = _parse_ah_value(td_values[10])
+
+        # 基本校验
+        if open_home_w == 0 and open_away_w == 0 and close_home_w == 0 and close_away_w == 0:
+            continue
+
+        key = f"{teams[0]}_{teams[1]}"
+        result[key] = {
+            'home': teams[0],
+            'away': teams[1],
+            'open': {'home_w': open_home_w, 'handicap': open_handicap, 'away_w': open_away_w},
+            'close': {'home_w': close_home_w, 'handicap': close_handicap, 'away_w': close_away_w},
+        }
+
+    print(f"  亚盘{company_name}: {len(result)} 场")
+    return result
+# ================================================================
 
 def _fuzzy_match(home: str, away: str, merged: dict) -> Optional[str]:
     """模糊匹配队名找到已存在的match_key"""
@@ -863,121 +981,3 @@ if __name__ == "__main__":
 
         fetch_all(args.date, companies=companies, do_compare=args.compare)
 
-# ================================================================
-#  足彩网 — 亚盘让球盘 (POST companyType=y)
-# ================================================================
-
-def _parse_ah_value(text):
-    """解析亚盘水位/盘口值，去掉箭头标记"""
-    if not text:
-        return 0.0, 'stable'
-    text = str(text).strip()
-    movement = 'stable'
-    if '↑' in text:
-        movement = 'up'
-    elif '↓' in text:
-        movement = 'down'
-    elif '→' in text:
-        movement = 'stable'
-    text = text.replace('↑', '').replace('↓', '').replace('→', '').replace('＊', '*').strip()
-    try:
-        val = float(text)
-        return val, movement
-    except:
-        return 0.0, 'stable'
-
-
-def fetch_asian_handicap(date_str: str, page_type: str = None, company: str = '0'):
-    """POST抓取亚盘让球盘数据 (companyType=y)
-
-    亚盘格式: home_water / handicap / away_water (主队水位/盘口/客队水位)
-    company: '0'=百家平均, '136'=HKJC
-    date_str: YYYYMMDD格式
-    Returns: {match_key: {open: {home_w, handicap, away_w}, close: {home_w, handicap, away_w}}}
-    """
-    company_names = {'0': '百家平均', '136': 'HKJC'}
-    company_name = company_names.get(company, f'company={company}')
-
-    data = {
-        'type': page_type if page_type else 'jc',
-        'issue': '',
-        'company': company,
-        'companyType': 'y',
-        'date': date_str,
-        'fg': '1',
-    }
-
-    for attempt in range(MAX_RETRY + 1):
-        try:
-            r = requests.post(BASE_URL, data=data, headers={
-                **HEADERS, "Content-Type": "application/x-www-form-urlencoded"
-            }, timeout=20)
-
-            if r.status_code == 418 or _is_waf(r.text):
-                if attempt < MAX_RETRY:
-                    wait = SLEEP_SEC * (attempt + 2)
-                    print(f"  ⚠️ 亚盘{company_name} WAF拦截，{wait:.0f}s后重试({attempt+1}/{MAX_RETRY})...")
-                    time.sleep(wait)
-                    continue
-                else:
-                    print(f"  ❌ 亚盘{company_name} 重试耗尽")
-                    return {}
-
-            if r.status_code != 200:
-                print(f"  ❌ 亚盘{company_name} 请求失败: status={r.status_code}")
-                return {}
-
-            break
-        except Exception as e:
-            if attempt < MAX_RETRY:
-                time.sleep(SLEEP_SEC * 2)
-            else:
-                print(f"  ❌ 亚盘{company_name}: {e}")
-                return {}
-
-    html = r.text
-    result = {}
-    rows = re.findall(r'<tr[^>]*>(.*?)</tr>', html, re.DOTALL)
-
-    for row in rows:
-        teams = re.findall(r'<a[^>]*class="t[12]"[^>]*>([^<]+)</a>', row)
-        if len(teams) < 2:
-            continue
-
-        # 提取TD内容
-        td_contents = re.findall(r'<td[^>]*>(.*?)</td>', row, re.DOTALL)
-        td_values = []
-        for td in td_contents:
-            td_clean = re.sub(r'<[^>]+>', '', td).strip()
-            td_values.append(td_clean)
-
-        # 亚盘数据：按列位置提取（竞彩/北单列结构相同）
-        # TD0=checkbox, TD1=编号, TD2=联赛, TD3=时间, TD4=对阵
-        # TD5=open_home_w, TD6=open_handicap, TD7=open_away_w
-        # TD8=close_home_w, TD9=close_handicap, TD10=close_away_w
-        # TD11+=链接
-        open_home_w, open_handicap, open_away_w = 0.0, 0.0, 0.0
-        close_home_w, close_handicap, close_away_w = 0.0, 0.0, 0.0
-
-        if len(td_values) >= 11:
-            open_home_w, _ = _parse_ah_value(td_values[5])
-            open_handicap, _ = _parse_ah_value(td_values[6])
-            open_away_w, _ = _parse_ah_value(td_values[7])
-            close_home_w, _ = _parse_ah_value(td_values[8])
-            close_handicap, _ = _parse_ah_value(td_values[9])
-            close_away_w, _ = _parse_ah_value(td_values[10])
-
-        # 基本校验
-        if open_home_w == 0 and open_away_w == 0 and close_home_w == 0 and close_away_w == 0:
-            continue
-
-        key = f"{teams[0]}_{teams[1]}"
-        result[key] = {
-            'home': teams[0],
-            'away': teams[1],
-            'open': {'home_w': open_home_w, 'handicap': open_handicap, 'away_w': open_away_w},
-            'close': {'home_w': close_home_w, 'handicap': close_handicap, 'away_w': close_away_w},
-        }
-
-    print(f"  亚盘{company_name}: {len(result)} 场")
-    return result
