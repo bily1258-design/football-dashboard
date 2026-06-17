@@ -82,18 +82,6 @@ jobs:
             echo "⚠️ Skipping Pinnacle/HKJC (no DB)"
           fi
 
-      - name: Update DB (fusion+EV+kelly)
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-        run: |
-          if [ -f data/football.db ]; then
-            echo "📊 Filling LGBM fusion probabilities"
-            python scripts/update_db_fusion.py --db data/football.db || echo "⚠️ fusion fill failed"
-            echo "📊 Recalculating EV with updated odds"
-            python scripts/value_bet.py --all --db data/football.db || echo "⚠️ EV recalc failed"
-            echo "📊 Recalculating Kelly with fusion/final"
-            python scripts/update_db_kelly.py --db data/football.db || echo "⚠️ Kelly recalc failed"
-          fi
-
       - name: Generate Predictions (OM → DB)
         if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         run: |
@@ -106,6 +94,18 @@ jobs:
             python scripts/predict_from_odds.py --date "$DATE" --db data/football.db || echo "⚠️ Predict failed"
           else
             echo "⚠️ Skipping predict (no DB)"
+          fi
+
+      - name: Update DB (fusion+EV+kelly)
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: |
+          if [ -f data/football.db ]; then
+            echo "📊 Filling LGBM fusion probabilities"
+            python scripts/update_db_fusion.py --db data/football.db || echo "⚠️ fusion fill failed"
+            echo "📊 Recalculating EV with updated odds"
+            python scripts/value_bet.py --all --db data/football.db || echo "⚠️ EV recalc failed"
+            echo "📊 Recalculating Kelly with fusion/final"
+            python scripts/update_db_kelly.py --db data/football.db || echo "⚠️ Kelly recalc failed"
           fi
 
       - name: Cleanup DB duplicates
@@ -139,14 +139,14 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          ARTIFACT_IDS=$(gh api 
-            -H "Accept: application/vnd.github+json" 
-            "/repos/${{ github.repository }}/actions/artifacts?name=github-pages" 
+          ARTIFACT_IDS=$(gh api \
+            -H "Accept: application/vnd.github+json" \
+            "/repos/${{ github.repository }}/actions/artifacts?name=github-pages" \
             --jq '.artifacts[] | .id' 2>/dev/null || true)
           for id in $ARTIFACT_IDS; do
             echo "Deleting old artifact $id"
-            gh api --method DELETE 
-              -H "Accept: application/vnd.github+json" 
+            gh api --method DELETE \
+              -H "Accept: application/vnd.github+json" \
               "/repos/${{ github.repository }}/actions/artifacts/$id" 2>/dev/null || true
           done
 
