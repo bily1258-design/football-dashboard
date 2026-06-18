@@ -486,7 +486,7 @@ def main():
 
     db_path = args.db or DB_PATH
 
-    # 优先读processed，再用DB补充缺失日期
+    # 优先读processed，再用DB补充缺失日期和新增字段
     by_date = load_from_processed()
     if os.path.exists(db_path):
         db_data = load_from_db(db_path)
@@ -496,9 +496,25 @@ def main():
                 by_date.update(missing)
                 print(f'📌 DB补充{len(missing)}天缺失数据: {sorted(missing.keys())}')
             # DB中同日期记录数更多时也更新（processed可能缺新插入的场次）
-            for d, records in db_data.items():
-                if d in by_date and len(records) > len(by_date[d]):
-                    by_date[d] = records
+            # 同时用DB的新字段（pin_ah/ou等）补充processed旧记录
+            _NEW_KEYS = {'pin_ah', 'pin_ou', 'ou', 'liji_ou', 'ms_ou'}
+            n_merged = 0
+            for d_key, db_records in db_data.items():
+                if d_key in by_date:
+                    if len(db_records) > len(by_date[d_key]):
+                        by_date[d_key] = db_records
+                    else:
+                        # 用DB的新字段补充processed旧记录
+                        db_by_id = {r['id']: r for r in db_records}
+                        for proc_rec in by_date[d_key]:
+                            db_rec = db_by_id.get(proc_rec.get('id'))
+                            if db_rec:
+                                for k in _NEW_KEYS:
+                                    if k not in proc_rec and k in db_rec:
+                                        proc_rec[k] = db_rec[k]
+                                        n_merged += 1
+            if n_merged:
+                print(f'📌 DB补充{n_merged}条记录的新字段')
     if not by_date:
         print('[ERROR] 无数据'); sys.exit(1)
 
