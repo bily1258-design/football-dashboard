@@ -1260,41 +1260,113 @@ def fetch_pinnacle_ah_ou_from_api(match_list, date_str):
     _time.sleep(7)  # 10次/分钟限制，间隔7秒
     
     # Step 2: 逐场匹配并获取Pinnacle AH/OU
+    # 匹配策略：开赛时间精确匹配（同一分钟开赛的跨联赛比赛极少）
+    # fallback: 队名相似度匹配
     api_call_count = 1  # 已用1次获取fixtures
+    
+    # 构建fixtures时间索引
+    fx_by_time = {}
+    for fx in fixtures:
+        kickoff = fx.get("kickoff", "")
+        if kickoff:
+            hm = kickoff[11:16] if len(kickoff) >= 16 else ""
+            if hm:
+                fx_by_time.setdefault(hm, []).append(fx)
+    
     for m in match_list:
         home_cn = m.get("home", "")
         away_cn = m.get("away", "")
         match_id = m.get("match_id", "")
         match_key = f"{home_cn}_{away_cn}"
+        kickoff_raw = m.get("kickoff", "")  # 格式: "2026-06-18 17:59" 或 "06-19 00:00"
         
-        # 模糊匹配fixture
+        # 从kickoff提取HH:MM
+        match_hm = ""
+        if kickoff_raw:
+            # 尝试不同格式
+            for fmt in ["%Y-%m-%d %H:%M", "%m-%d %H:%M"]:
+                try:
+                    from datetime import datetime as _dt
+                    kt = _dt.strptime(kickoff_raw.strip(), fmt)
+                    match_hm = kt.strftime("%H:%M")
+                    break
+                except ValueError:
+                    continue
+            # 简单提取
+            if not match_hm and len(kickoff_raw) >= 5:
+                match_hm = kickoff_raw[-5:]
+        
         matched_fx = None
-        best_score = 0
-        for fx in fixtures:
-            # 使用已有的队名相似度函数做中英文匹配
-            sim_home = team_name_similarity(home_cn, fx.get("home_team", ""))
-            sim_away = team_name_similarity(away_cn, fx.get("away_team", ""))
-            avg_sim = (sim_home + sim_away) / 2
-            if avg_sim > best_score:
-                best_score = avg_sim
-                matched_fx = fx
+        match_method = ""
         
-        if not matched_fx or best_score < 0.3:
-            # 尝试反向匹配
+        # 策略1: 按开赛时间精确匹配
+        if match_hm and match_hm in fx_by_time:
+            candidates = fx_by_time[match_hm]
+            if len(candidates) == 1:
+                matched_fx = candidates[0]
+                match_method = f"time={match_hm}"
+            else:
+                # 多场同时间，用队名辅助区分
+                best_sim = 0
+                for fx in candidates:
+                    sim_h = team_name_similarity(home_cn, fx.get("home_team", ""))
+                    sim_a = team_name_similarity(away_cn, fx.get("away_team", ""))
+                    avg = (sim_h + sim_a) / 2
+                    if avg > best_sim:
+                        best_sim = avg
+                        matched_fx = fx
+                if matched_fx:
+                    match_method = f"time={match_hm}+name(sim={best_sim:.2f})"
+        
+        # 策略2: 时间匹配失败，±30分钟内搜索
+        if not matched_fx and match_hm:
+            try:
+                from datetime import datetime as _dt, timedelta as _td
+                base = _dt.strptime(match_hm, "%H:%M")
+                for delta_min in [1, -1, 2, -2, 5, -5, 15, -15, 30, -30]:
+                    check_time = (base + _td(minutes=delta_min)).strftime("%H:%M")
+                    if check_time in fx_by_time:
+                        candidates = fx_by_time[check_time]
+                        if len(candidates) == 1:
+                            matched_fx = candidates[0]
+                            match_method = f"time≈{check_time}(±{abs(delta_min)}min)"
+                            break
+                        else:
+                            best_sim = 0
+                            for fx in candidates:
+                                sim_h = team_name_similarity(home_cn, fx.get("home_team", ""))
+                                sim_a = team_name_similarity(away_cn, fx.get("away_team", ""))
+                                avg = (sim_h + sim_a) / 2
+                                if avg > best_sim:
+                                    best_sim = avg
+                                    matched_fx = fx
+                            if matched_fx and best_sim > 0.15:
+                                match_method = f"time≈{check_time}+name(sim={best_sim:.2f})"
+                                break
+            except Exception:
+                pass
+        
+        # 策略3: fallback纯队名匹配
+        if not matched_fx:
+            best_score = 0
             for fx in fixtures:
-                sim_home = team_name_similarity(home_cn, fx.get("away_team", ""))
-                sim_away = team_name_similarity(away_cn, fx.get("home_team", ""))
+                sim_home = team_name_similarity(home_cn, fx.get("home_team", ""))
+                sim_away = team_name_similarity(away_cn, fx.get("away_team", ""))
                 avg_sim = (sim_home + sim_away) / 2
                 if avg_sim > best_score:
                     best_score = avg_sim
                     matched_fx = fx
+            if matched_fx and best_score >= 0.3:
+                match_method = f"name(sim={best_score:.2f})"
+            else:
+                matched_fx = None
         
-        if not matched_fx or best_score < 0.3:
-            print(f"  [API] {home_cn} vs {away_cn} 无api-football匹配 (best_sim={best_score:.2f})")
+        if not matched_fx:
+            print(f"  [API] {home_cn} vs {away_cn} 无匹配 (kickoff={match_hm})")
             continue
         
         fixture_id = matched_fx.get("fixture_id")
-        print(f"  [API] {home_cn} vs {away_cn} -> fixture={fixture_id} ({matched_fx['home_team']} vs {matched_fx['away_team']}) sim={best_score:.2f}")
+        print(f"  [API] {home_cn} vs {away_cn} -> fixture={fixture_id} ({matched_fx['home_team']} vs {matched_fx['away_team']}) [{match_method}]")
         
         # Step 3: 获取Pinnacle AH
         ah_raw = fetch_api_football_pinnacle(fixture_id, bet_type=4)
@@ -1559,25 +1631,9 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=False):
     except Exception as e:
         print(f"[WARN] api-football Pinnacle AH/OU 获取失败: {e}")
 
-    # Step 5.95: 加载大小球数据（从odds_api.py产生的ah_YYYYMMDD.json）
-    ou_data_all = {}  # {match_key: {ou, ou_liji, ou_ms}}
-    ah_file_path = os.path.join(DATA_BASE_DIR, "data", "raw", "oddsmagnet", f"ah_{date_str.replace('-', '')}.json")
-    if os.path.exists(ah_file_path):
-        try:
-            with open(ah_file_path, 'r', encoding='utf-8') as f:
-                ah_file_data = json.load(f)
-            if isinstance(ah_file_data, dict):
-                for key, item in ah_file_data.items():
-                    ou_data_all[key] = {
-                        'ou': item.get('ou', {}),
-                        'ou_liji': item.get('ou_liji', {}),
-                        'ou_ms': item.get('ou_ms', {}),
-                    }
-                print(f"[INFO] 大小球数据加载: {len(ou_data_all)} 场 (from {ah_file_path})")
-        except Exception as e:
-            print(f"[WARN] 大小球数据加载失败: {e}")
-    else:
-        print(f"[INFO] 大小球数据文件不存在: {ah_file_path}")
+    # Step 5.95: 大小球数据 — 足彩网companyType=d返回亚盘数据，已禁用
+    # 大小球数据仅从api-football Pinnacle OU获取（Step 5.9的pin_ah_ou_data）
+    ou_data_all = {}  # {match_key: {ou, ou_liji, ou_ms}} — 暂为空
 
     # Step 6: 合并数据，赔率优先级：平博 > 百家平均 (SB已取消)
     results = []

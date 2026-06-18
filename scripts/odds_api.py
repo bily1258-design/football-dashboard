@@ -756,24 +756,12 @@ def fetch_all(date_str: str = None, companies: List[str] = None,
             ms_ah[key] = v
     print(f"  利记亚盘: {len(liji_ah)} 场 | 明升亚盘: {len(ms_ah)} 场")
 
-    # 1.7 大小球 (POST companyType=d) — 百家平均 + 利记 + 明升
+    # 1.7 大小球 — 暂时禁用：足彩网companyType='d'返回的实为亚盘数据，非大小球
+    # 大小球数据改为从api-football获取Pinnacle OU（见fetch_pinnacle_odds.py Step 5.9）
     ou_data = {}
     ou_liji = {}
     ou_ms = {}
-    for d, label in [(prev_day, "前一天"), (curr_day, "当天")]:
-        ou_avg = fetch_over_under(d, company='0')
-        time.sleep(SLEEP_SEC)
-        for key, v in ou_avg.items():
-            ou_data[key] = v
-        ou_lj = fetch_over_under(d, company='15')
-        time.sleep(SLEEP_SEC)
-        for key, v in ou_lj.items():
-            ou_liji[key] = v
-        ou_m = fetch_over_under(d, company='6')
-        time.sleep(SLEEP_SEC)
-        for key, v in ou_m.items():
-            ou_ms[key] = v
-    print(f"  大小球汇总: 百家平均{len(ou_data)}场 | 利记{len(ou_liji)}场 | 明升{len(ou_ms)}场")
+    print(f"  大小球: 跳过足彩网抓取（companyType=d返回亚盘数据），改用api-football")
 
     # 2. 各公司
     company_data = {}
