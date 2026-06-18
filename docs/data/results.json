@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2026-06-18 03:21:35",
+    "generated_at": "2026-06-18 10:28:50",
     "total_dates": 8,
     "total_matches": 92,
     "date_range": {
@@ -9,26 +9,26 @@
     }
   },
   "summary": {
-    "total_matches": 73,
-    "ev_hits": 31,
-    "prob_hits": 37,
-    "any_hits": 43,
-    "ev_rate": 42.5,
-    "prob_rate": 50.7,
-    "any_rate": 58.9,
+    "total_matches": 78,
+    "ev_hits": 33,
+    "prob_hits": 40,
+    "any_hits": 46,
+    "ev_rate": 42.3,
+    "prob_rate": 51.3,
+    "any_rate": 59.0,
     "days": 8,
-    "last_updated": "2026-06-18 03:21"
+    "last_updated": "2026-06-18 10:28"
   },
   "daily_stats": {
     "2026-06-18": {
       "total": 7,
-      "with_result": 0,
-      "ev_hits": 0,
-      "prob_hits": 0,
-      "any_hits": 0,
-      "ev_rate": 0,
-      "prob_rate": 0,
-      "any_rate": 0
+      "with_result": 5,
+      "ev_hits": 2,
+      "prob_hits": 3,
+      "any_hits": 3,
+      "ev_rate": 40.0,
+      "prob_rate": 60.0,
+      "any_rate": 60.0
     },
     "2026-06-17": {
       "total": 13,
@@ -138,12 +138,12 @@
           "l": 0.193
         },
         "fusion_prob": {
-          "w": 0.466,
-          "d": 0.226,
-          "l": 0.308
+          "w": 0.461,
+          "d": 0.228,
+          "l": 0.311
         },
-        "result": "",
-        "score": "",
+        "result": "平局",
+        "score": "1-1",
         "ev_direction": "主胜",
         "ev_hit": false,
         "prob_direction": "主胜",
@@ -176,8 +176,8 @@
         "cold_risk": "",
         "source": "jingcai",
         "odds_source": "had",
-        "home_lambda": 0,
-        "away_lambda": 0,
+        "home_lambda": 1.593,
+        "away_lambda": 0.807,
         "home_ranking": 0,
         "away_ranking": 0,
         "ah": {
@@ -188,7 +188,7 @@
         }
       },
       {
-        "id": 1346,
+        "id": 1350,
         "date": "2026-06-18",
         "league": "芬超",
         "home": "格尼斯坦",
@@ -216,12 +216,12 @@
           "d": 0.316,
           "l": 0.315
         },
-        "result": "",
-        "score": "",
+        "result": "主胜",
+        "score": "1-0",
         "ev_direction": "平局",
         "ev_hit": false,
         "prob_direction": "主胜",
-        "prob_hit": false,
+        "prob_hit": true,
         "fusion_direction": "主胜",
         "ev": {
           "w": -0.0263,
@@ -262,7 +262,7 @@
         }
       },
       {
-        "id": 1347,
+        "id": 1351,
         "date": "2026-06-18",
         "league": "芬超",
         "home": "塞那乔其",
@@ -290,8 +290,8 @@
           "d": 0.283,
           "l": 0.306
         },
-        "result": "",
-        "score": "",
+        "result": "客胜",
+        "score": "1-2",
         "ev_direction": "平局",
         "ev_hit": false,
         "prob_direction": "主胜",
@@ -336,23 +336,23 @@
         }
       },
       {
-        "id": 1343,
+        "id": 1345,
         "date": "2026-06-18",
         "league": "世界杯",
         "home": "英格兰",
         "away": "克罗地亚",
         "kickoff": "2026-06-18 04:00",
         "prediction": "主胜",
-        "prediction_prob": 0.54,
+        "prediction_prob": 0.538,
         "odds": {
-          "w": 1.68,
-          "d": 3.77,
-          "l": 5.19
+          "w": 1.72,
+          "d": 3.72,
+          "l": 5.35
         },
         "poisson": {
-          "w": 0.514,
+          "w": 0.515,
           "d": 0.261,
-          "l": 0.225
+          "l": 0.224
         },
         "final_prob": {
           "w": 0.548,
@@ -364,27 +364,27 @@
           "d": 0.279,
           "l": 0.289
         },
-        "result": "",
-        "score": "",
+        "result": "主胜",
+        "score": "4-2",
         "ev_direction": "主胜",
-        "ev_hit": false,
+        "ev_hit": true,
         "prob_direction": "主胜",
-        "prob_hit": false,
+        "prob_hit": true,
         "fusion_direction": "主胜",
         "ev": {
-          "w": -0.2557,
+          "w": -0.2553,
           "d": 0.1177,
           "l": 0.3
         },
         "kelly": {
           "w": 0,
-          "d": 0.0076,
-          "l": 0.0713
+          "d": 0.0069,
+          "l": 0.0626
         },
         "pinnacle": {
-          "w": 1.68,
-          "d": 3.91,
-          "l": 5.72
+          "w": 1.67,
+          "d": 3.93,
+          "l": 5.81
         },
         "hkjc": {
           "w": 1.53,
@@ -398,8 +398,8 @@
         "cold_risk": "",
         "source": "om_only",
         "odds_source": "Pinnacle",
-        "home_lambda": 1.503,
-        "away_lambda": 0.897,
+        "home_lambda": 1.504,
+        "away_lambda": 0.896,
         "home_ranking": 0,
         "away_ranking": 0,
         "ah": {
@@ -410,23 +410,23 @@
         }
       },
       {
-        "id": 1344,
+        "id": 1346,
         "date": "2026-06-18",
         "league": "世界杯",
         "home": "加纳",
         "away": "巴拿马",
         "kickoff": "2026-06-18 07:00",
         "prediction": "主胜",
-        "prediction_prob": 0.437,
+        "prediction_prob": 0.438,
         "odds": {
-          "w": 2.3,
-          "d": 3.19,
-          "l": 3.26
+          "w": 2.29,
+          "d": 3.17,
+          "l": 3.27
         },
         "poisson": {
-          "w": 0.462,
+          "w": 0.463,
           "d": 0.27,
-          "l": 0.268
+          "l": 0.267
         },
         "final_prob": {
           "w": 0.431,
@@ -438,17 +438,17 @@
           "d": 0.296,
           "l": 0.28
         },
-        "result": "",
-        "score": "",
+        "result": "主胜",
+        "score": "1-0",
         "ev_direction": "主胜",
-        "ev_hit": false,
+        "ev_hit": true,
         "prob_direction": "主胜",
-        "prob_hit": false,
+        "prob_hit": true,
         "fusion_direction": "主胜",
         "ev": {
-          "w": 0.0611,
+          "w": 0.0616,
           "d": -0.031,
-          "l": -0.0506
+          "l": -0.0513
         },
         "kelly": {
           "w": 0,
@@ -456,9 +456,9 @@
           "l": 0
         },
         "pinnacle": {
-          "w": 2.45,
-          "d": 3.2,
-          "l": 3.32
+          "w": 2.43,
+          "d": 3.18,
+          "l": 3.39
         },
         "hkjc": {
           "w": 2.14,
@@ -472,8 +472,8 @@
         "cold_risk": "",
         "source": "om_only",
         "odds_source": "Pinnacle",
-        "home_lambda": 1.402,
-        "away_lambda": 0.998,
+        "home_lambda": 1.403,
+        "away_lambda": 0.997,
         "home_ranking": 0,
         "away_ranking": 0,
         "ah": {
@@ -484,33 +484,33 @@
         }
       },
       {
-        "id": 1345,
+        "id": 1343,
         "date": "2026-06-18",
         "league": "世界杯",
         "home": "乌兹别克斯坦",
         "away": "哥伦比亚",
         "kickoff": "2026-06-18 10:00",
         "prediction": "客胜",
-        "prediction_prob": 0.547,
+        "prediction_prob": 0.561,
         "odds": {
-          "w": 9.12,
-          "d": 4.73,
-          "l": 1.36
+          "w": 10.1,
+          "d": 5.12,
+          "l": 1.32
         },
         "poisson": {
-          "w": 0.327,
-          "d": 0.276,
-          "l": 0.397
+          "w": 0.323,
+          "d": 0.275,
+          "l": 0.402
         },
         "final_prob": {
-          "w": 0.23,
+          "w": 0.228,
           "d": 0.251,
-          "l": 0.519
+          "l": 0.521
         },
         "fusion_prob": {
-          "w": 0.279,
+          "w": 0.278,
           "d": 0.278,
-          "l": 0.442
+          "l": 0.443
         },
         "result": "",
         "score": "",
@@ -521,12 +521,12 @@
         "fusion_direction": "客胜",
         "ev": {
           "w": 0.3,
-          "d": 0.23,
+          "d": 0.2291,
           "l": -0.3
         },
         "kelly": {
           "w": 0.0972,
-          "d": 0.0416,
+          "d": 0.0525,
           "l": 0
         },
         "pinnacle": {
@@ -546,8 +546,8 @@
         "cold_risk": "",
         "source": "om_only",
         "odds_source": "Pinnacle",
-        "home_lambda": 1.128,
-        "away_lambda": 1.272,
+        "home_lambda": 1.119,
+        "away_lambda": 1.281,
         "home_ranking": 0,
         "away_ranking": 0,
         "ah": {
@@ -565,16 +565,16 @@
         "away": "玛丽港",
         "kickoff": "2026-06-18 17:59",
         "prediction": "主胜",
-        "prediction_prob": 0.604,
+        "prediction_prob": 0.605,
         "odds": {
           "w": 1.38,
-          "d": 4.52,
-          "l": 7.16
+          "d": 4.54,
+          "l": 7.31
         },
         "poisson": {
-          "w": 0.54,
-          "d": 0.256,
-          "l": 0.205
+          "w": 0.541,
+          "d": 0.255,
+          "l": 0.204
         },
         "final_prob": {
           "w": 0.61,
@@ -582,8 +582,8 @@
           "l": 0.165
         },
         "fusion_prob": {
-          "w": 0.431,
-          "d": 0.27,
+          "w": 0.432,
+          "d": 0.268,
           "l": 0.299
         },
         "result": "",
@@ -600,13 +600,13 @@
         },
         "kelly": {
           "w": 0,
-          "d": 0.0311,
-          "l": 0.0925
+          "d": 0.0308,
+          "l": 0.0941
         },
         "pinnacle": {
-          "w": 1.41,
-          "d": 4.92,
-          "l": 7.61
+          "w": 1.4,
+          "d": 5.05,
+          "l": 7.83
         },
         "hkjc": {
           "w": 1.26,
@@ -620,8 +620,8 @@
         "cold_risk": "",
         "source": "om_only",
         "odds_source": "Pinnacle",
-        "home_lambda": 1.553,
-        "away_lambda": 0.847,
+        "home_lambda": 1.555,
+        "away_lambda": 0.845,
         "home_ranking": 0,
         "away_ranking": 0,
         "ah": {
