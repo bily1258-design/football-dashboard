@@ -518,14 +518,17 @@ def main():
                                 db_rec = db_by_match.get(match_key)
                             if db_rec:
                                 for k in _NEW_KEYS:
-                                    if k not in proc_rec and k in db_rec:
+                                    if (k not in proc_rec or not isinstance(proc_rec.get(k), dict)) and k in db_rec and isinstance(db_rec.get(k), dict):
                                         proc_rec[k] = db_rec[k]
                                         n_merged += 1
-                                # 补充ah/liji/ms：processed为空或handicap=0时用DB覆盖
+                                # 补充ah/liji/ms：processed为空/非dict或handicap=0时用DB覆盖
                                 for k in _AH_KEYS:
-                                    p_val = proc_rec.get(k, {})
-                                    d_val = db_rec.get(k, {})
-                                    if not isinstance(p_val, dict) or not isinstance(d_val, dict):
+                                    p_val = proc_rec.get(k)
+                                    d_val = db_rec.get(k)
+                                    # 处理processed里字段为空字符串或非dict的情况
+                                    if not isinstance(p_val, dict):
+                                        p_val = {}
+                                    if not isinstance(d_val, dict):
                                         continue
                                     p_hc = p_val.get('handicap') if k == 'ah' else (p_val.get('close', {}) or {}).get('handicap')
                                     d_hc = d_val.get('handicap') if k == 'ah' else (d_val.get('close', {}) or {}).get('handicap')

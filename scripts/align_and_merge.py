@@ -72,12 +72,26 @@ def load_db_predictions(db_path: str, date_str: str) -> List[Dict]:
             best_direction_cn, source,
             ev_win, ev_draw, ev_loss,
             kelly_win, kelly_draw, kelly_loss,
+            pinnacle_open_w, pinnacle_open_d, pinnacle_open_l,
             pinnacle_close_w, pinnacle_close_d, pinnacle_close_l,
             hkjc_close_w, hkjc_close_d, hkjc_close_l,
             cold_risk, odds_source,
             home_lambda, away_lambda,
             home_ranking, away_ranking,
-            ah_handicap, ah_home_water, ah_away_water, ah_source
+            ah_handicap, ah_home_water, ah_away_water, ah_source,
+            ah_open_handicap, ah_open_home_water, ah_open_away_water,
+            liji_handicap, liji_home_water, liji_away_water,
+            liji_open_handicap, liji_open_home_water, liji_open_away_water,
+            ms_handicap, ms_home_water, ms_away_water,
+            ms_open_handicap, ms_open_home_water, ms_open_away_water,
+            pin_ah_handicap, pin_ah_home_water, pin_ah_away_water,
+            pin_ou_line, pin_ou_over, pin_ou_under,
+            ou_over, ou_line, ou_under,
+            ou_open_over, ou_open_line, ou_open_under,
+            liji_ou_over, liji_ou_line, liji_ou_under,
+            liji_ou_open_over, liji_ou_open_line, liji_ou_open_under,
+            ms_ou_over, ms_ou_line, ms_ou_under,
+            ms_ou_open_over, ms_ou_open_line, ms_ou_open_under
         FROM poisson_predictions
         WHERE date = ? OR (kickoff_time >= ? AND kickoff_time <= ?)
         ORDER BY kickoff_time, id
@@ -295,7 +309,10 @@ def merge_prediction(rec: Dict, bsd_result: Optional[Dict], om_match: Optional[D
             'd': round(rec.get('kelly_draw', 0) or 0, 4),
             'l': round(rec.get('kelly_loss', 0) or 0, 4),
         },
-        'pinnacle': {'w': pin_w, 'd': pin_d, 'l': pin_l},
+        'pinnacle': {
+            'w': pin_w, 'd': pin_d, 'l': pin_l,
+            'open': {'w': rec.get('pinnacle_open_w', 0) or 0, 'd': rec.get('pinnacle_open_d', 0) or 0, 'l': rec.get('pinnacle_open_l', 0) or 0},
+        },
         'hkjc': {'w': hkjc_w, 'd': hkjc_d, 'l': hkjc_l},
         'risk_level': rec.get('risk_level', '') or '',
         'stars': stars,
@@ -313,6 +330,75 @@ def merge_prediction(rec: Dict, bsd_result: Optional[Dict], om_match: Optional[D
             'home_w': rec.get('ah_home_water', 0) or 0,
             'away_w': rec.get('ah_away_water', 0) or 0,
             'source': rec.get('ah_source', '') or '',
+            'open': {
+                'handicap': rec.get('ah_open_handicap', None),
+                'home_w': rec.get('ah_open_home_water', 0) or 0,
+                'away_w': rec.get('ah_open_away_water', 0) or 0,
+            },
+        },
+        'liji': {
+            'close': {
+                'handicap': rec.get('liji_handicap', None),
+                'home_w': rec.get('liji_home_water', 0) or 0,
+                'away_w': rec.get('liji_away_water', 0) or 0,
+            },
+            'open': {
+                'handicap': rec.get('liji_open_handicap', None),
+                'home_w': rec.get('liji_open_home_water', 0) or 0,
+                'away_w': rec.get('liji_open_away_water', 0) or 0,
+            },
+        },
+        'ms': {
+            'close': {
+                'handicap': rec.get('ms_handicap', None),
+                'home_w': rec.get('ms_home_water', 0) or 0,
+                'away_w': rec.get('ms_away_water', 0) or 0,
+            },
+            'open': {
+                'handicap': rec.get('ms_open_handicap', None),
+                'home_w': rec.get('ms_open_home_water', 0) or 0,
+                'away_w': rec.get('ms_open_away_water', 0) or 0,
+            },
+        },
+        'pin_ah': {
+            'handicap': rec.get('pin_ah_handicap', None),
+            'home_w': rec.get('pin_ah_home_water', 0) or 0,
+            'away_w': rec.get('pin_ah_away_water', 0) or 0,
+        },
+        'pin_ou': {
+            'line': rec.get('pin_ou_line', None),
+            'over': rec.get('pin_ou_over', 0) or 0,
+            'under': rec.get('pin_ou_under', 0) or 0,
+        },
+        'ou': {
+            'over': rec.get('ou_over', 0) or 0,
+            'line': rec.get('ou_line', None),
+            'under': rec.get('ou_under', 0) or 0,
+            'open': {
+                'over': rec.get('ou_open_over', 0) or 0,
+                'line': rec.get('ou_open_line', None),
+                'under': rec.get('ou_open_under', 0) or 0,
+            },
+        },
+        'liji_ou': {
+            'over': rec.get('liji_ou_over', 0) or 0,
+            'line': rec.get('liji_ou_line', None),
+            'under': rec.get('liji_ou_under', 0) or 0,
+            'open': {
+                'over': rec.get('liji_ou_open_over', 0) or 0,
+                'line': rec.get('liji_ou_open_line', None),
+                'under': rec.get('liji_ou_open_under', 0) or 0,
+            },
+        },
+        'ms_ou': {
+            'over': rec.get('ms_ou_over', 0) or 0,
+            'line': rec.get('ms_ou_line', None),
+            'under': rec.get('ms_ou_under', 0) or 0,
+            'open': {
+                'over': rec.get('ms_ou_open_over', 0) or 0,
+                'line': rec.get('ms_ou_open_line', None),
+                'under': rec.get('ms_ou_open_under', 0) or 0,
+            },
         },
     }
 

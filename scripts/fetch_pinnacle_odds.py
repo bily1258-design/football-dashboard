@@ -2265,6 +2265,17 @@ def save_to_db(matches, db_path, date_str=None):
         ms_ou_close = ou_ms_m.get('close', {})
         ms_ou_open = ou_ms_m.get('open', {})
 
+        # 保护已有非零ah数据：只在DB原值为0/NULL时才写入新值（防止WAF拦截0值覆盖Termux完整数据）
+        ah_hc_val = ah_close.get('handicap', 0) or 0
+        ah_hw_val = ah_close.get('home_w', 0) or 0
+        ah_aw_val = ah_close.get('away_w', 0) or 0
+        pin_ah_hc_val = pin_ah.get('handicap', 0) or 0
+        pin_ah_hw_val = pin_ah.get('home_odd', 0) or 0
+        pin_ah_aw_val = pin_ah.get('away_odd', 0) or 0
+        pin_ou_line_val = pin_ou.get('line', 0) or 0
+        pin_ou_over_val = pin_ou.get('over', 0) or 0
+        pin_ou_under_val = pin_ou.get('under', 0) or 0
+
         cursor.execute("""
             UPDATE poisson_predictions SET
                 pinnacle_open_w = ?, pinnacle_open_d = ?, pinnacle_open_l = ?,
@@ -2276,9 +2287,16 @@ def save_to_db(matches, db_path, date_str=None):
                 hkjc_open_w = ?, hkjc_open_d = ?, hkjc_open_l = ?,
                 hkjc_close_w = ?, hkjc_close_d = ?, hkjc_close_l = ?,
                 odds_source = ?,
-                ah_handicap = ?, ah_home_water = ?, ah_away_water = ?, ah_source = ?,
-                pin_ah_handicap = ?, pin_ah_home_water = ?, pin_ah_away_water = ?,
-                pin_ou_line = ?, pin_ou_over = ?, pin_ou_under = ?,
+                ah_handicap = CASE WHEN ah_handicap IS NOT NULL AND ah_handicap != 0 THEN ah_handicap ELSE ? END,
+                ah_home_water = CASE WHEN ah_handicap IS NOT NULL AND ah_handicap != 0 THEN ah_home_water ELSE ? END,
+                ah_away_water = CASE WHEN ah_handicap IS NOT NULL AND ah_handicap != 0 THEN ah_away_water ELSE ? END,
+                ah_source = CASE WHEN ah_handicap IS NOT NULL AND ah_handicap != 0 THEN ah_source ELSE ? END,
+                pin_ah_handicap = CASE WHEN pin_ah_handicap IS NOT NULL AND pin_ah_handicap != 0 THEN pin_ah_handicap ELSE ? END,
+                pin_ah_home_water = CASE WHEN pin_ah_handicap IS NOT NULL AND pin_ah_handicap != 0 THEN pin_ah_home_water ELSE ? END,
+                pin_ah_away_water = CASE WHEN pin_ah_handicap IS NOT NULL AND pin_ah_handicap != 0 THEN pin_ah_away_water ELSE ? END,
+                pin_ou_line = CASE WHEN pin_ou_line IS NOT NULL AND pin_ou_line != 0 THEN pin_ou_line ELSE ? END,
+                pin_ou_over = CASE WHEN pin_ou_line IS NOT NULL AND pin_ou_line != 0 THEN pin_ou_over ELSE ? END,
+                pin_ou_under = CASE WHEN pin_ou_line IS NOT NULL AND pin_ou_line != 0 THEN pin_ou_under ELSE ? END,
                 ou_over = ?, ou_line = ?, ou_under = ?,
                 ou_open_over = ?, ou_open_line = ?, ou_open_under = ?,
                 liji_ou_over = ?, liji_ou_line = ?, liji_ou_under = ?,
@@ -2297,16 +2315,9 @@ def save_to_db(matches, db_path, date_str=None):
             hkjc_open.get('w', 0), hkjc_open.get('d', 0), hkjc_open.get('l', 0),
             hkjc_close.get('w', 0), hkjc_close.get('d', 0), hkjc_close.get('l', 0),
             m.get('odds_source', ''),
-            ah_close.get('handicap', 0) or 0,
-            ah_close.get('home_w', 0) or 0,
-            ah_close.get('away_w', 0) or 0,
-            ah_source,
-            pin_ah.get('handicap', 0) or 0,
-            pin_ah.get('home_odd', 0) or 0,
-            pin_ah.get('away_odd', 0) or 0,
-            pin_ou.get('line', 0) or 0,
-            pin_ou.get('over', 0) or 0,
-            pin_ou.get('under', 0) or 0,
+            ah_hc_val, ah_hw_val, ah_aw_val, ah_source,
+            pin_ah_hc_val, pin_ah_hw_val, pin_ah_aw_val,
+            pin_ou_line_val, pin_ou_over_val, pin_ou_under_val,
             ou_close.get('over', 0) or 0, ou_close.get('line', 0) or 0, ou_close.get('under', 0) or 0,
             ou_open.get('over', 0) or 0, ou_open.get('line', 0) or 0, ou_open.get('under', 0) or 0,
             liji_ou_close.get('over', 0) or 0, liji_ou_close.get('line', 0) or 0, liji_ou_close.get('under', 0) or 0,
@@ -2386,6 +2397,11 @@ def save_to_db(matches, db_path, date_str=None):
                         ms_ou_close = {}
                         ms_ou_open = {}
 
+                        # 保护已有非零ah数据：只在DB原值为0/NULL时才写入新值
+                        om_ah_hc = ah_close.get('handicap', 0) or 0
+                        om_ah_hw = ah_close.get('home_w', 0) or 0
+                        om_ah_aw = ah_close.get('away_w', 0) or 0
+
                         cursor.execute("""
                             UPDATE poisson_predictions SET
                                 pinnacle_open_w = ?, pinnacle_open_d = ?, pinnacle_open_l = ?,
@@ -2397,9 +2413,16 @@ def save_to_db(matches, db_path, date_str=None):
                                 hkjc_open_w = ?, hkjc_open_d = ?, hkjc_open_l = ?,
                                 hkjc_close_w = ?, hkjc_close_d = ?, hkjc_close_l = ?,
                                 odds_source = ?,
-                                ah_handicap = ?, ah_home_water = ?, ah_away_water = ?, ah_source = ?,
-                                pin_ah_handicap = ?, pin_ah_home_water = ?, pin_ah_away_water = ?,
-                                pin_ou_line = ?, pin_ou_over = ?, pin_ou_under = ?,
+                                ah_handicap = CASE WHEN ah_handicap IS NOT NULL AND ah_handicap != 0 THEN ah_handicap ELSE ? END,
+                                ah_home_water = CASE WHEN ah_handicap IS NOT NULL AND ah_handicap != 0 THEN ah_home_water ELSE ? END,
+                                ah_away_water = CASE WHEN ah_handicap IS NOT NULL AND ah_handicap != 0 THEN ah_away_water ELSE ? END,
+                                ah_source = CASE WHEN ah_handicap IS NOT NULL AND ah_handicap != 0 THEN ah_source ELSE ? END,
+                                pin_ah_handicap = CASE WHEN pin_ah_handicap IS NOT NULL AND pin_ah_handicap != 0 THEN pin_ah_handicap ELSE ? END,
+                                pin_ah_home_water = CASE WHEN pin_ah_handicap IS NOT NULL AND pin_ah_handicap != 0 THEN pin_ah_home_water ELSE ? END,
+                                pin_ah_away_water = CASE WHEN pin_ah_handicap IS NOT NULL AND pin_ah_handicap != 0 THEN pin_ah_away_water ELSE ? END,
+                                pin_ou_line = CASE WHEN pin_ou_line IS NOT NULL AND pin_ou_line != 0 THEN pin_ou_line ELSE ? END,
+                                pin_ou_over = CASE WHEN pin_ou_line IS NOT NULL AND pin_ou_line != 0 THEN pin_ou_over ELSE ? END,
+                                pin_ou_under = CASE WHEN pin_ou_line IS NOT NULL AND pin_ou_line != 0 THEN pin_ou_under ELSE ? END,
                                 ou_over = ?, ou_line = ?, ou_under = ?,
                                 ou_open_over = ?, ou_open_line = ?, ou_open_under = ?,
                                 liji_ou_over = ?, liji_ou_line = ?, liji_ou_under = ?,
@@ -2418,12 +2441,9 @@ def save_to_db(matches, db_path, date_str=None):
                             0, 0, 0,  # hkjc_open — 已取消，值全为0
                             0, 0, 0,  # hkjc_close — 已取消，值全为0
                             best_match.get('odds_source', ''),
-                            ah_close.get('handicap', 0) or 0,
-                            ah_close.get('home_w', 0) or 0,
-                            ah_close.get('away_w', 0) or 0,
-                            ah_source,
-                            0, 0, 0,  # pin_ah
-                            0, 0, 0,  # pin_ou
+                            om_ah_hc, om_ah_hw, om_ah_aw, ah_source,
+                            0, 0, 0,  # pin_ah — OM fallback无此数据，仅补空值
+                            0, 0, 0,  # pin_ou — OM fallback无此数据
                             0, 0, 0,  # ou close
                             0, 0, 0,  # ou open
                             0, 0, 0,  # liji_ou close
