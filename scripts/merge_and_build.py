@@ -60,7 +60,12 @@ def load_from_db(db_path: str, max_days=999) -> dict:
         hkjc_close_w, hkjc_close_d, hkjc_close_l, cold_risk, odds_source, \
         home_lambda, away_lambda, home_ranking, away_ranking, \
         hhad_handicap, hhad_win, hhad_draw, hhad_loss, \
-        ah_handicap, ah_home_water, ah_away_water, ah_source \
+        ah_handicap, ah_home_water, ah_away_water, ah_source, \
+        ah_open_handicap, ah_open_home_water, ah_open_away_water, \
+        liji_handicap, liji_home_water, liji_away_water, \
+        liji_open_handicap, liji_open_home_water, liji_open_away_water, \
+        ms_handicap, ms_home_water, ms_away_water, \
+        ms_open_handicap, ms_open_home_water, ms_open_away_water \
         FROM poisson_predictions WHERE date >= ? ORDER BY date DESC, kickoff_time, id", (cutoff,))
     by_date = {}
     for r in cur.fetchall():
@@ -129,6 +134,35 @@ def load_from_db(db_path: str, max_days=999) -> dict:
                 'home_w': d.get('ah_home_water', 0) or 0,
                 'away_w': d.get('ah_away_water', 0) or 0,
                 'source': d.get('ah_source', '') or '',
+                'open': {
+                    'handicap': d.get('ah_open_handicap', None),
+                    'home_w': d.get('ah_open_home_water', 0) or 0,
+                    'away_w': d.get('ah_open_away_water', 0) or 0,
+                },
+            },
+            'liji': {
+                'close': {
+                    'handicap': d.get('liji_handicap', None),
+                    'home_w': d.get('liji_home_water', 0) or 0,
+                    'away_w': d.get('liji_away_water', 0) or 0,
+                },
+                'open': {
+                    'handicap': d.get('liji_open_handicap', None),
+                    'home_w': d.get('liji_open_home_water', 0) or 0,
+                    'away_w': d.get('liji_open_away_water', 0) or 0,
+                },
+            },
+            'ms': {
+                'close': {
+                    'handicap': d.get('ms_handicap', None),
+                    'home_w': d.get('ms_home_water', 0) or 0,
+                    'away_w': d.get('ms_away_water', 0) or 0,
+                },
+                'open': {
+                    'handicap': d.get('ms_open_handicap', None),
+                    'home_w': d.get('ms_open_home_water', 0) or 0,
+                    'away_w': d.get('ms_open_away_water', 0) or 0,
+                },
             },
         })
     conn.close()

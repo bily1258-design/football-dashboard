@@ -83,7 +83,12 @@ def step_update_ah(date_str: str, db_path: str = None):
     cursor = conn.cursor()
     
     # 确保ah字段存在
-    for col, ctype in [('ah_handicap', 'REAL'), ('ah_home_water', 'REAL'), ('ah_away_water', 'REAL'), ('ah_source', 'TEXT')]:
+    for col, ctype in [('ah_handicap', 'REAL'), ('ah_home_water', 'REAL'), ('ah_away_water', 'REAL'), ('ah_source', 'TEXT'),
+                       ('ah_open_handicap', 'REAL'), ('ah_open_home_water', 'REAL'), ('ah_open_away_water', 'REAL'),
+                       ('liji_handicap', 'REAL'), ('liji_home_water', 'REAL'), ('liji_away_water', 'REAL'),
+                       ('liji_open_handicap', 'REAL'), ('liji_open_home_water', 'REAL'), ('liji_open_away_water', 'REAL'),
+                       ('ms_handicap', 'REAL'), ('ms_home_water', 'REAL'), ('ms_away_water', 'REAL'),
+                       ('ms_open_handicap', 'REAL'), ('ms_open_home_water', 'REAL'), ('ms_open_away_water', 'REAL')]:
         try:
             cursor.execute(f"ALTER TABLE poisson_predictions ADD COLUMN {col} {ctype}")
         except:
@@ -134,13 +139,39 @@ def step_update_ah(date_str: str, db_path: str = None):
                     hw_val = ah_close.get('home_w', 0) or 0
                     aw_val = ah_close.get('away_w', 0) or 0
                     src_val = ah.get('source', 'avg')
+
+                    # 百家平均初盘
+                    ah_open = ah.get('open', {})
+                    ah_open_h = ah_open.get('handicap', 0) or 0
+                    ah_open_hw = ah_open.get('home_w', 0) or 0
+                    ah_open_aw = ah_open.get('away_w', 0) or 0
+
+                    # 利记/明升数据
+                    liji = ah.get('liji', {})
+                    liji_close = liji.get('close', {})
+                    liji_open = liji.get('open', {})
+                    ms = ah.get('ms', {})
+                    ms_close = ms.get('close', {})
+                    ms_open = ms.get('open', {})
+
                     cnt = 0
                     for rid in matched_ids:
                         cursor.execute("""
                             UPDATE poisson_predictions SET
-                                ah_handicap = ?, ah_home_water = ?, ah_away_water = ?, ah_source = ?
+                                ah_handicap = ?, ah_home_water = ?, ah_away_water = ?, ah_source = ?,
+                                ah_open_handicap = ?, ah_open_home_water = ?, ah_open_away_water = ?,
+                                liji_handicap = ?, liji_home_water = ?, liji_away_water = ?,
+                                liji_open_handicap = ?, liji_open_home_water = ?, liji_open_away_water = ?,
+                                ms_handicap = ?, ms_home_water = ?, ms_away_water = ?,
+                                ms_open_handicap = ?, ms_open_home_water = ?, ms_open_away_water = ?
                             WHERE id = ? AND (ah_handicap IS NULL OR ah_handicap = 0)
-                        """, (ah_val, hw_val, aw_val, src_val, rid))
+                        """, (ah_val, hw_val, aw_val, src_val,
+                              ah_open_h, ah_open_hw, ah_open_aw,
+                              liji_close.get('handicap', 0) or 0, liji_close.get('home_w', 0) or 0, liji_close.get('away_w', 0) or 0,
+                              liji_open.get('handicap', 0) or 0, liji_open.get('home_w', 0) or 0, liji_open.get('away_w', 0) or 0,
+                              ms_close.get('handicap', 0) or 0, ms_close.get('home_w', 0) or 0, ms_close.get('away_w', 0) or 0,
+                              ms_open.get('handicap', 0) or 0, ms_open.get('home_w', 0) or 0, ms_open.get('away_w', 0) or 0,
+                              rid))
                         cnt += cursor.rowcount
                     ah_updated += cnt
                     if cnt > 0:

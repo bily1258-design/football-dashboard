@@ -643,6 +643,20 @@ def fetch_all(date_str: str = None, companies: List[str] = None,
             print(f"    北单亚盘 {label}: {len(ah_bd)} 场")
     print(f"  亚盘汇总: {len(ah_data)} 场")
 
+    # 1.6 利记(company=15) + 明升(company=6) 亚盘
+    liji_ah = {}
+    ms_ah = {}
+    for d, label in [(prev_day, "前一天"), (curr_day, "当天")]:
+        lj = fetch_asian_handicap(d, company='15')
+        time.sleep(SLEEP_SEC)
+        for key, v in lj.items():
+            liji_ah[key] = v
+        ms = fetch_asian_handicap(d, company='6')
+        time.sleep(SLEEP_SEC)
+        for key, v in ms.items():
+            ms_ah[key] = v
+    print(f"  利记亚盘: {len(liji_ah)} 场 | 明升亚盘: {len(ms_ah)} 场")
+
     # 2. 各公司
     company_data = {}
     for cid in companies:
@@ -713,11 +727,44 @@ def fetch_all(date_str: str = None, companies: List[str] = None,
                 "open": ah.get("open", {}),
                 "close": ah.get("close", {}),
                 "source": ah.get("source", ""),
+                # 利记/明升亚盘(含初盘+即时盘)
+                "liji": liji_ah.get(key, {}),
+                "ms": ms_ah.get(key, {}),
             }
         ah_path = os.path.join(RAW_DIR, f"ah_{curr_day}.json")
         with open(ah_path, 'w', encoding='utf-8') as f:
             json.dump(ah_output, f, ensure_ascii=False, indent=2)
         print(f"  亚盘数据保存: {ah_path}")
+
+    # 1.7 合并利记/明升亚盘到 merged（含open+close）
+    liji_merged = 0
+    ms_merged = 0
+    for key, ah in liji_ah.items():
+        target = merged.get(key)
+        if not target:
+            fk = _fuzzy_match(ah.get("home", ""), ah.get("away", ""), merged)
+            target = merged.get(fk) if fk else None
+        if target:
+            target["liji_ah"] = {
+                "open": ah.get("open", {}),
+                "close": ah.get("close", {}),
+            }
+            liji_merged += 1
+
+    for key, ah in ms_ah.items():
+        target = merged.get(key)
+        if not target:
+            fk = _fuzzy_match(ah.get("home", ""), ah.get("away", ""), merged)
+            target = merged.get(fk) if fk else None
+        if target:
+            target["ms_ah"] = {
+                "open": ah.get("open", {}),
+                "close": ah.get("close", {}),
+            }
+            ms_merged += 1
+
+    if liji_merged or ms_merged:
+        print(f"  利记亚盘匹配: {liji_merged} 场 | 明升亚盘匹配: {ms_merged} 场")
 
     for cid, odds_dict in company_data.items():
         cname = COMPANY_MAP.get(cid, cid).lower().replace(" ", "")

@@ -54,10 +54,50 @@ function openAhModal(record) {
 
   // 亚盘详情
   if (hasAh) {
-    html += '<div class="ah-section-title">亚盘详情</div>';
+    html += '<div class="ah-section-title">百家平均亚盘</div>';
     html += '<table class="ah-odds-table">';
-    html += '<tr><th>盘口</th><th>主水</th><th>客水</th><th>来源</th></tr>';
-    html += `<tr><td>${handicapToChinese(ah.handicap)}</td><td>${ah.home_w}</td><td>${ah.away_w}</td><td>${ah.source || '-'}</td></tr>`;
+    html += '<tr><th></th><th>盘口</th><th>主水</th><th>客水</th></tr>';
+    const ahOpen = ah.open || {};
+    const ahClose = ah.close || {};
+    if (ahOpen.handicap) {
+      html += `<tr><td class="ah-col-label">初盘</td><td>${handicapToChinese(ahOpen.handicap)}</td><td>${ahOpen.home_w || '-'}</td><td>${ahOpen.away_w || '-'}</td></tr>`;
+    }
+    html += `<tr><td class="ah-col-label">即时</td><td>${handicapToChinese(ah.handicap)}</td><td>${ah.home_w}</td><td>${ah.away_w}</td></tr>`;
+    if (ah.source) html += `<tr><td colspan="4" class="ah-note">来源: ${ah.source}</td></tr>`;
+    html += '</table>';
+  }
+
+  // 利记亚盘
+  const liji = record.liji || {};
+  const lijiClose = liji.close || {};
+  const lijiOpen = liji.open || {};
+  if (lijiClose.handicap || lijiOpen.handicap) {
+    html += '<div class="ah-section-title"><span class="ah-badge ah-badge-liji">利记</span></div>';
+    html += '<table class="ah-odds-table">';
+    html += '<tr><th></th><th>盘口</th><th>主水</th><th>客水</th></tr>';
+    if (lijiOpen.handicap) {
+      html += `<tr><td class="ah-col-label">初盘</td><td>${handicapToChinese(lijiOpen.handicap)}</td><td>${lijiOpen.home_w || '-'}</td><td>${lijiOpen.away_w || '-'}</td></tr>`;
+    }
+    if (lijiClose.handicap) {
+      html += `<tr><td class="ah-col-label">即时</td><td>${handicapToChinese(lijiClose.handicap)}</td><td>${lijiClose.home_w || '-'}</td><td>${lijiClose.away_w || '-'}</td></tr>`;
+    }
+    html += '</table>';
+  }
+
+  // 明升亚盘
+  const ms = record.ms || {};
+  const msClose = ms.close || {};
+  const msOpen = ms.open || {};
+  if (msClose.handicap || msOpen.handicap) {
+    html += '<div class="ah-section-title"><span class="ah-badge ah-badge-ms">明升</span></div>';
+    html += '<table class="ah-odds-table">';
+    html += '<tr><th></th><th>盘口</th><th>主水</th><th>客水</th></tr>';
+    if (msOpen.handicap) {
+      html += `<tr><td class="ah-col-label">初盘</td><td>${handicapToChinese(msOpen.handicap)}</td><td>${msOpen.home_w || '-'}</td><td>${msOpen.away_w || '-'}</td></tr>`;
+    }
+    if (msClose.handicap) {
+      html += `<tr><td class="ah-col-label">即时</td><td>${handicapToChinese(msClose.handicap)}</td><td>${msClose.home_w || '-'}</td><td>${msClose.away_w || '-'}</td></tr>`;
+    }
     html += '</table>';
   }
 
