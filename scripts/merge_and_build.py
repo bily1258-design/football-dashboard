@@ -312,6 +312,12 @@ def generate_index_html(by_date, daily_stats, summary, output_dir=None):
 </div>
 </div>
 
+
+<!-- 泊松比分分布模态框 -->
+<div id="scoreModalOverlay" class="score-modal-overlay">
+  <div id="scoreModalContent" class="score-modal-content"></div>
+</div>
+
 <script src="script.js"></script>
 </body>
 </html>'''
