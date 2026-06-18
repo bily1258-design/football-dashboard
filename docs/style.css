@@ -96,6 +96,17 @@ tr:hover { background: #161b22; }
 .ev-pos { color: #4caf50; }
 .ev-neg { color: #f44336; }
 
+/* ─── 泊松列可点击 ─── */
+.poisson-clickable {
+  cursor: pointer;
+  color: #58a6ff;
+  text-decoration: underline dotted;
+}
+.poisson-clickable:hover {
+  color: #79c0ff;
+  background: #1c2333;
+}
+
 /* ─── 徽章 ─── */
 .badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 11px; }
 .badge-jc { background: #1a3a5c; color: #58a6ff; }
@@ -113,6 +124,143 @@ tr:hover { background: #161b22; }
   border-bottom: 1px solid #30363d;
 }
 
+/* ─── 泊松比分模态框 ─── */
+.score-modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+}
+.score-modal-overlay.active { display: flex; }
+
+.score-modal-content {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 20px;
+  max-width: 420px;
+  width: 90%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+
+.score-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 15px;
+  font-weight: bold;
+  color: #c9d1d9;
+}
+.score-modal-lambda {
+  font-size: 12px;
+  color: #8b949e;
+  font-weight: normal;
+}
+.score-modal-close {
+  background: none;
+  border: none;
+  color: #8b949e;
+  font-size: 22px;
+  cursor: pointer;
+  padding: 0 4px;
+}
+.score-modal-close:hover { color: #f44336; }
+
+.score-modal-stats {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.score-stat {
+  flex: 1;
+  background: #0d1117;
+  border: 1px solid #21262d;
+  border-radius: 6px;
+  padding: 8px;
+  text-align: center;
+}
+.score-stat-label { display: block; font-size: 11px; color: #8b949e; }
+.score-stat-value { display: block; font-size: 16px; font-weight: bold; color: #58a6ff; }
+
+.score-bars { margin-bottom: 16px; }
+.score-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.score-label {
+  width: 32px;
+  text-align: right;
+  font-size: 13px;
+  font-weight: bold;
+  font-family: monospace;
+}
+.score-home .score-label { color: #4caf50; }
+.score-draw .score-label { color: #ff9800; }
+.score-away .score-label { color: #f44336; }
+
+.score-bar-track {
+  flex: 1;
+  height: 16px;
+  background: #0d1117;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.score-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+.score-home .score-bar-fill { background: #2ea04366; }
+.score-draw .score-bar-fill { background: #d2992266; }
+.score-away .score-bar-fill { background: #f4433666; }
+
+.score-pct {
+  width: 42px;
+  text-align: right;
+  font-size: 12px;
+  color: #8b949e;
+}
+
+.score-heatmap-title {
+  font-size: 13px;
+  color: #58a6ff;
+  margin-bottom: 8px;
+}
+.score-heatmap {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+  text-align: center;
+}
+.score-heatmap th {
+  background: none;
+  color: #8b949e;
+  padding: 4px;
+  font-size: 11px;
+  position: static;
+  border: none;
+}
+.score-heatmap td {
+  padding: 5px 2px;
+  border: 1px solid #21262d;
+  color: #c9d1d9;
+  font-family: monospace;
+}
+.score-heatmap-axis {
+  text-align: center;
+  font-size: 11px;
+  color: #8b949e;
+  margin-top: 4px;
+}
+
 /* ─── 响应式 ─── */
 @media (max-width: 768px) {
   body { padding: 8px; }
@@ -120,4 +268,5 @@ tr:hover { background: #161b22; }
   .card .value { font-size: 22px; }
   table { font-size: 11px; }
   th, td { padding: 6px 4px; }
+  .score-modal-content { padding: 14px; max-width: 95%; }
 }
