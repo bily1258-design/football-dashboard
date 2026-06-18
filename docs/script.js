@@ -4,6 +4,91 @@ const DATA_URL = 'data/results.json';
 const WEEKDAY_CN = ['周日','周一','周二','周三','周四','周五','周六'];
 let allData = null;
 
+// ─── 盘口中文转换 ───
+function handicapToChinese(h) {
+  if (h === null || h === undefined || h === '') return '-';
+  h = parseFloat(h);
+  if (isNaN(h)) return '-';
+  if (h === 0) return '平手';
+  const sign = h < 0 ? '-' : '';
+  const abs = Math.abs(h);
+  const map = {
+    0.25: '平/半', 0.5: '半球', 0.75: '半/一',
+    1: '一球', 1.25: '一/球半', 1.5: '球半', 1.75: '球半/两',
+    2: '两球', 2.25: '两/两半', 2.5: '两球半', 2.75: '两半/三',
+    3: '三球', 3.25: '三/三半', 3.5: '三球半', 3.75: '三半/四',
+    4: '四球'
+  };
+  return sign + (map[abs] || abs.toFixed(2));
+}
+
+// ─── 亚盘赔率弹窗 ───
+function openAhModal(record) {
+  const modal = document.getElementById('ahModal');
+  const title = document.getElementById('ahModalTitle');
+  title.textContent = `${record.home} vs ${record.away} — 赔率详情`;
+  modal.style.display = 'flex';
+
+  const ah = record.ah || {};
+  const hasAh = ah.handicap !== null && ah.handicap !== undefined && (ah.handicap !== 0 || ah.home_w !== 0 || ah.away_w !== 0);
+
+  // 构建赔率对比表
+  let html = '<table class="ah-odds-table">';
+  html += '<tr><th class="ah-col-label">盘口</th><th>胜(主)</th><th>平</th><th>负(客)</th></tr>';
+
+  // 1. 胜平负（竞彩1X2）
+  html += '<tr><td class="ah-col-label"><span class="ah-badge ah-badge-jc">竞彩</span></td>';
+  html += `<td>${record.odds.w || '-'}</td><td>${record.odds.d || '-'}</td><td>${record.odds.l || '-'}</td></tr>`;
+
+  // 2. Pinnacle
+  const pin = record.pinnacle || {};
+  html += '<tr><td class="ah-col-label"><span class="ah-badge ah-badge-pin">Pinnacle</span></td>';
+  html += `<td>${pin.w || '-'}</td><td>${pin.d || '-'}</td><td>${pin.l || '-'}</td></tr>`;
+
+  // 3. HKJC
+  const hkjc = record.hkjc || {};
+  html += '<tr><td class="ah-col-label"><span class="ah-badge ah-badge-hkjc">HKJC</span></td>';
+  html += `<td>${hkjc.w || '-'}</td><td>${hkjc.d || '-'}</td><td>${hkjc.l || '-'}</td></tr>`;
+
+  html += '</table>';
+
+  // 亚盘详情
+  if (hasAh) {
+    html += '<div class="ah-section-title">亚盘详情</div>';
+    html += '<table class="ah-odds-table">';
+    html += '<tr><th>盘口</th><th>主水</th><th>客水</th><th>来源</th></tr>';
+    html += `<tr><td>${handicapToChinese(ah.handicap)}</td><td>${ah.home_w}</td><td>${ah.away_w}</td><td>${ah.source || '-'}</td></tr>`;
+    html += '</table>';
+  }
+
+  // HHAD详情
+  const hhad = record.hhad || {};
+  if (hhad.handicap !== null && hhad.handicap !== undefined) {
+    html += '<div class="ah-section-title">竞彩让球(HHAD)</div>';
+    html += '<table class="ah-odds-table">';
+    html += '<tr><th>让球</th><th>胜</th><th>平</th><th>负</th></tr>';
+    html += `<tr><td>${handicapToChinese(hhad.handicap)}</td><td>${hhad.w || '-'}</td><td>${hhad.d || '-'}</td><td>${hhad.l || '-'}</td></tr>`;
+    html += '</table>';
+  }
+
+  // 赔率对比提示（Pinnacle vs 竞彩分歧）
+  if (record.odds.w > 0 && pin.w > 0) {
+    const diffW = ((pin.w - record.odds.w) / record.odds.w * 100).toFixed(1);
+    const diffD = ((pin.d - record.odds.d) / record.odds.d * 100).toFixed(1);
+    const diffL = ((pin.l - record.odds.l) / record.odds.l * 100).toFixed(1);
+    const warn = Math.abs(parseFloat(diffW)) > 8 || Math.abs(parseFloat(diffD)) > 8 || Math.abs(parseFloat(diffL)) > 8;
+    html += '<div class="ah-section-title">Pinnacle vs 竞彩 分歧</div>';
+    html += `<div class="ah-diff ${warn ? 'ah-diff-warn' : ''}">`;
+    html += `胜 <span class="${parseFloat(diffW) > 0 ? 'ev-pos' : 'ev-neg'}">${diffW}%</span> | `;
+    html += `平 <span class="${parseFloat(diffD) > 0 ? 'ev-pos' : 'ev-neg'}">${diffD}%</span> | `;
+    html += `负 <span class="${parseFloat(diffL) > 0 ? 'ev-pos' : 'ev-neg'}">${diffL}%</span>`;
+    if (warn) html += ' <span class="ah-warn-tag">⚠ 分歧大</span>';
+    html += '</div>';
+  }
+
+  document.getElementById('ahModalContent').innerHTML = html;
+}
+
 // ─── 泊松概率计算 ───
 function poissonPMF(k, lambda) {
   if (lambda <= 0) return k === 0 ? 1 : 0;
@@ -205,17 +290,12 @@ function loadDate() {
       : '<span class="badge badge-jc">竞彩</span>';
     const evW = r.ev.w, evD = r.ev.d, evL = r.ev.l;
     const evCls = v => v > 0 ? 'ev-pos' : 'ev-neg';
-    const pinStr = r.pinnacle.w > 0
-      ? `${r.pinnacle.w}/${r.pinnacle.d}/${r.pinnacle.l}`
-      : '-';
-    const hkjcStr = r.hkjc.w > 0
-      ? `${r.hkjc.w}/${r.hkjc.d}/${r.hkjc.l}`
-      : '-';
     const ah = r.ah || {};
-    const ahStr = (ah.handicap !== null && ah.handicap !== undefined && (ah.handicap !== 0 || ah.home_w !== 0 || ah.away_w !== 0))
-      ? `${ah.handicap > 0 ? '+' : ''}${ah.handicap} (${ah.home_w}/${ah.away_w})`
-      : '-';
-    const oddsStr = `${r.odds.w}/${r.odds.d}/${r.odds.l}`;
+    const hasAh = ah.handicap !== null && ah.handicap !== undefined && (ah.handicap !== 0 || ah.home_w !== 0 || ah.away_w !== 0);
+    const ahDisplay = hasAh ? handicapToChinese(ah.handicap) : '-';
+    const ahCell = hasAh
+      ? `<td class="ah-clickable" data-date="${sel}" data-idx="${i}">${ahDisplay}</td>`
+      : `<td>${ahDisplay}</td>`;
     const poissonStr = `${r.poisson.w}/${r.poisson.d}/${r.poisson.l}`;
     const finalStr = `${r.final_prob.w}/${r.final_prob.d}/${r.final_prob.l}`;
     const evStr = `<span class="${evCls(evW)}">${evW.toFixed(2)}</span>/<span class="${evCls(evD)}">${evD.toFixed(2)}</span>/<span class="${evCls(evL)}">${evL.toFixed(2)}</span>`;
@@ -233,19 +313,17 @@ function loadDate() {
 <td>${i + 1} ${srcBadge}</td>
 <td>${r.league}</td>
 <td>${kickoff}</td>
-<td>${r.home}</td><td>${ahStr}</td><td>${r.away}</td>
+<td>${r.home}</td>${ahCell}<td>${r.away}</td>
 <td class="${dirClass}">${r.ev_direction || '-'}</td>
 <td class="${probDirClass}">${probLabel}</td>
 <td>${resultDisplay}</td>
 <td>${r.score || '-'}</td>
-<td>${oddsStr}</td>
 ${poissonCell}<td>${finalStr}</td>
 <td>${evStr}</td><td>${kellyStr}</td>
-<td>${pinStr}</td><td>${hkjcStr}</td>
 </tr>`;
   });
 
-  tbody.innerHTML = html || '<tr><td colspan="17" style="text-align:center;color:#8b949e">无数据</td></tr>';
+  tbody.innerHTML = html || '<tr><td colspan="13" style="text-align:center;color:#8b949e">无数据</td></tr>';
 }
 
 // ─── 每日统计 ───
@@ -322,6 +400,24 @@ function bindEvents() {
     const idx = parseInt(cell.dataset.idx, 10);
     const records = allData.matches[date];
     if (records && records[idx]) openPoissonModal(records[idx]);
+  });
+
+  // 亚盘列点击：事件委托
+  document.getElementById('matchBody').addEventListener('click', (e) => {
+    const cell = e.target.closest('.ah-clickable');
+    if (!cell || !allData) return;
+    const date = cell.dataset.date;
+    const idx = parseInt(cell.dataset.idx, 10);
+    const records = allData.matches[date];
+    if (records && records[idx]) openAhModal(records[idx]);
+  });
+
+  // 亚盘模态框关闭
+  document.getElementById('ahModalClose').addEventListener('click', () => {
+    document.getElementById('ahModal').style.display = 'none';
+  });
+  document.getElementById('ahModal').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) e.target.style.display = 'none';
   });
 
   // 模态框关闭

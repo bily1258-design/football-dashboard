@@ -303,8 +303,8 @@ def generate_index_html(by_date, daily_stats, summary, league_score_freq=None, o
 <thead><tr>
 <th>#</th><th>联赛</th><th>时间</th><th>主队</th><th>亚盘</th><th>客队</th>
 <th>推荐</th><th>概率推荐</th><th>赛果</th><th>比分</th>
-<th>胜/平/负</th><th>泊松W/D/L</th><th>综合W/D/L</th>
-<th>EV</th><th>凯利</th><th>Pinnacle</th><th>HKJC</th>
+<th>泊松W/D/L</th><th>综合W/D/L</th>
+<th>EV</th><th>凯利</th>
 
 </tr></thead>
 <tbody id="matchBody"></tbody>
@@ -347,6 +347,17 @@ def generate_index_html(by_date, daily_stats, summary, league_score_freq=None, o
 </div>
 <div id="modalBarChart" class="modal-bars"></div>
 <div id="modalHeatmap" class="modal-heatmap-wrap"></div>
+</div>
+</div>
+
+<!-- 亚盘赔率详情模态框 -->
+<div id="ahModal" class="modal-overlay" style="display:none">
+<div class="modal-box ah-modal-box">
+<div class="modal-header">
+  <span id="ahModalTitle">赔率详情</span>
+  <span class="modal-close" id="ahModalClose">&times;</span>
+</div>
+<div id="ahModalContent"></div>
 </div>
 </div>
 <script>const LEAGUE_SCORE_FREQ = {league_freq_json};</script>
