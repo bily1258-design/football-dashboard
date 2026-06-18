@@ -17,7 +17,7 @@ PROCESSED_DIR = os.path.join(REPO_DIR, "data", "processed")
 DATA_DIR = os.path.join(REPO_DIR, "data")
 DOCS_DIR = os.path.join(REPO_DIR, "docs")
 DB_PATH = os.environ.get('FOOTBALL_DB_PATH',
-    os.path.join(REPO_DIR, '..', 'data', 'football.db'))
+    os.path.join(REPO_DIR, 'data', 'football.db'))
 
 WEEKDAY_CN = ['周一','周二','周三','周四','周五','周六','周日']
 
@@ -416,11 +416,19 @@ def main():
 
     db_path = args.db or DB_PATH
 
-    # 优先读processed，fallback读DB
+    # 优先读processed，再用DB补充缺失日期
     by_date = load_from_processed()
-    if not by_date:
-        print(f'⚠️ processed为空，fallback读DB: {db_path}')
-        by_date = load_from_db(db_path)
+    if os.path.exists(db_path):
+        db_data = load_from_db(db_path)
+        if db_data:
+            missing = {k: v for k, v in db_data.items() if k not in by_date}
+            if missing:
+                by_date.update(missing)
+                print(f'📌 DB补充{len(missing)}天缺失数据: {sorted(missing.keys())}')
+            # DB中同日期记录数更多时也更新（processed可能缺新插入的场次）
+            for d, records in db_data.items():
+                if d in by_date and len(records) > len(by_date[d]):
+                    by_date[d] = records
     if not by_date:
         print('[ERROR] 无数据'); sys.exit(1)
 
