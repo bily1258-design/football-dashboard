@@ -1,6 +1,6 @@
 {
   "date": "2026-06-18",
-  "fetch_time": "2026-06-18 10:51:13",
+  "fetch_time": "2026-06-18 19:54:05",
   "jingcai": [],
   "wanchang": [
     {
@@ -1604,6 +1604,19 @@
     },
     {
       "source": "wanchang",
+      "league": "球会友谊",
+      "round": "六月",
+      "kickoff": "06-18 06:00",
+      "home": "基多体育大学",
+      "away": "梅尔加",
+      "score": "1-1",
+      "home_score": 1,
+      "away_score": 1,
+      "outcome": "平局",
+      "half_score": "1-1"
+    },
+    {
+      "source": "wanchang",
       "league": "世界杯",
       "round": "第1轮",
       "kickoff": "06-18 07:00",
@@ -1627,39 +1640,36 @@
       "away_score": 0,
       "outcome": "主胜",
       "half_score": "1-0"
+    },
+    {
+      "source": "wanchang",
+      "league": "美甲",
+      "round": "第6轮",
+      "kickoff": "06-18 09:30",
+      "home": "佛瓦德麦迪逊",
+      "away": "韦恩堡FC",
+      "score": "1-1",
+      "home_score": 1,
+      "away_score": 1,
+      "outcome": "平局",
+      "half_score": "1-0"
     }
   ],
   "beidan": [
-    {
-      "source": "beidan",
-      "match_num": 19,
-      "league": "世界杯",
-      "round": "第1轮",
-      "kickoff": "06-18 10:00",
-      "status": "&nbsp;",
-      "home": "乌兹别克斯坦",
-      "away": "哥伦比亚",
-      "handicap": 1,
-      "sp_values": [
-        4.85,
-        4.73,
-        1.71
-      ]
-    },
     {
       "source": "beidan",
       "match_num": 20,
       "league": "芬超",
       "round": "第11轮",
       "kickoff": "06-18 17:59",
-      "status": "未",
+      "status": "&nbsp;",
       "home": "AC奥卢",
       "away": "玛丽港",
       "handicap": -1,
       "sp_values": [
-        1.87,
-        4.17,
-        4.39
+        1.99,
+        4.16,
+        3.88
       ]
     },
     {
@@ -1673,9 +1683,9 @@
       "away": "南非",
       "handicap": -1,
       "sp_values": [
-        2.69,
-        3.82,
-        2.71
+        2.58,
+        3.49,
+        3.06
       ]
     },
     {
@@ -1689,9 +1699,9 @@
       "away": "波黑",
       "handicap": -1,
       "sp_values": [
-        2.4,
-        3.55,
-        3.3
+        2.32,
+        3.36,
+        3.65
       ]
     },
     {
@@ -1705,9 +1715,9 @@
       "away": "卡塔尔",
       "handicap": -2,
       "sp_values": [
-        4.0,
-        3.31,
-        2.22
+        3.92,
+        3.39,
+        2.21
       ]
     },
     {
@@ -1721,9 +1731,9 @@
       "away": "奥伊金斯",
       "handicap": 0,
       "sp_values": [
-        1.59,
-        4.26,
-        7.31
+        1.7,
+        3.73,
+        6.93
       ]
     },
     {
@@ -1737,9 +1747,9 @@
       "away": "戈亚尼亚竞技",
       "handicap": 0,
       "sp_values": [
-        1.89,
-        4.2,
-        4.25
+        2.01,
+        3.23,
+        5.16
       ]
     },
     {
@@ -1753,9 +1763,9 @@
       "away": "韩国",
       "handicap": 0,
       "sp_values": [
-        1.81,
-        3.37,
-        6.53
+        1.95,
+        3.01,
+        6.38
       ]
     },
     {
@@ -2099,12 +2109,31 @@
       "away_score": 0,
       "outcome_hcap": "胜",
       "outcome": "主胜"
+    },
+    {
+      "source": "beidan",
+      "match_num": 19,
+      "league": "世界杯",
+      "round": "第1轮",
+      "kickoff": "06-18 10:00",
+      "status": "完",
+      "home": "乌兹别克斯坦",
+      "away": "哥伦比亚",
+      "handicap": 1,
+      "sp_values": [
+        1.71
+      ],
+      "score": "1-3",
+      "home_score": 1,
+      "away_score": 3,
+      "outcome_hcap": "负",
+      "outcome": "客胜"
     }
   ],
   "summary": {
     "jingcai": 0,
-    "wanchang": 125,
+    "wanchang": 127,
     "beidan": 26,
-    "beidan_with_result": 18
+    "beidan_with_result": 19
   }
 }
