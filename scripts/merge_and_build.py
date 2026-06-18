@@ -507,10 +507,15 @@ def main():
                     if len(db_records) > len(by_date[d_key]):
                         by_date[d_key] = db_records
                     else:
-                        # 用DB的新字段补充processed旧记录
+                        # 用 (home, away) 匹配（id可能不一致）
+                        db_by_match = {(r.get('home',''), r.get('away','')): r for r in db_records}
                         db_by_id = {r['id']: r for r in db_records}
                         for proc_rec in by_date[d_key]:
+                            # 优先id匹配，回退到(home,away)匹配
                             db_rec = db_by_id.get(proc_rec.get('id'))
+                            if not db_rec:
+                                match_key = (proc_rec.get('home',''), proc_rec.get('away',''))
+                                db_rec = db_by_match.get(match_key)
                             if db_rec:
                                 for k in _NEW_KEYS:
                                     if k not in proc_rec and k in db_rec:
