@@ -10,11 +10,6 @@ on:
   release:
     types: [published, edited]
   workflow_dispatch:
-    inputs:
-      date:
-        description: 'Date (YYYY-MM-DD, empty=today)'
-        required: false
-        default: ''
   schedule:
     - cron: '0 5 * * *'
     - cron: '0 11 * * *'
@@ -54,27 +49,20 @@ jobs:
             echo "⚠️ No DB available, build may be limited"
           fi
 
-      - name: Fetch odds data
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-        run: |
-          DATE="${{ github.event.inputs.date || '' }}"
-          if [ -z "$DATE" ]; then
-            DATE=$(date +%Y-%m-%d)
-          fi
-          echo "📅 Fetching odds for $DATE"
-          python scripts/fetch.py --date "$DATE" || echo "⚠️ Fetch failed"
+      # 数据抓取已移至Termux本地执行：
+      # - GA的WAF拦截导致足彩网利记/明升/Pinnacle全部失败
+      # - api-football日限100次在GA经常用完
+      # - fetch失败的0值会覆盖DB中Termux填入的完整数据
+      # GA只负责：下载Release DB → build看板 → 部署
 
-      - name: Run pipeline (predict→fusion→EV→kelly→cleanup→align→push)
+      - name: Run pipeline (align only)
         if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         run: |
-          DATE="${{ github.event.inputs.date || '' }}"
-          if [ -z "$DATE" ]; then
-            DATE=$(date +%Y-%m-%d)
-          fi
           if [ -f data/football.db ]; then
-            python scripts/pipeline.py --date "$DATE" --db data/football.db --skip-push
+            DATE=$(date +%Y-%m-%d)
+            python scripts/align_and_merge.py --all --db data/football.db
           else
-            echo "⚠️ Skipping pipeline (no DB)"
+            echo "⚠️ Skipping align (no DB)"
           fi
 
       - name: Build Dashboard
@@ -118,17 +106,8 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/processed/ data/reports/ data/raw/ 2>/dev/null || true
           git diff --cached --quiet && echo "No changes to commit" && exit 0
-          git commit -m "auto: align+build $(date +%Y-%m-%d)"
+          git commit -m "auto: build $(date +%Y-%m-%d)"
           git push origin main
 
-      # DB push已移除：GA的WAF拦截导致亚盘数据不完整，
-      # push到Release会覆盖Termux的完整数据。只由Termux本地push DB。
-      # - name: Upload DB to Release
-      #   if: github.event_name != 'pull_request'
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   run: |
-      #     if [ -f data/football.db ]; then
-      #       echo "📦 Updating DB in Release..."
-      #       python scripts/push_db.py --db data/football.db || echo "⚠️ DB upload failed"
-      #     fi
+      # DB push已移除：GA不抓数据，只读Release DB来build。
+      # 只由Termux本地push DB到Release。
