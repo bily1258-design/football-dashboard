@@ -1390,88 +1390,140 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=False):
             with open(cache_path, 'w', encoding='utf-8') as f:
                 json.dump(cache_data, f, ensure_ascii=False, indent=2, default=str)
             print(f"[INFO] 缓存已保存: {cache_path}")
-        return results
+        if not results:
+            # oddsmagnet fallback也失败 → 从odds_api.py输出加载match_list
+            print("[INFO] oddsmagnet fallback失败，从odds_api.py缓存加载match_list")
+            match_list = []
+            for om_date in [prev_day, date_str]:
+                om_file = os.path.join(DATA_BASE_DIR, "data", "raw", "oddsmagnet", f"{om_date.replace('-', '')}.json")
+                if os.path.exists(om_file):
+                    try:
+                        with open(om_file, 'r', encoding='utf-8') as f:
+                            om_data = json.load(f)
+                        om_matches = om_data.get('matches', {})
+                        if isinstance(om_matches, dict):
+                            for key, m in om_matches.items():
+                                info = m.get('info', {})
+                                odds_data = m.get('odds', {})
+                                avg_o = odds_data.get('avg', {})
+                                pin_o = odds_data.get('pinnacle', {})
+                                match_list.append({
+                                    'match_id': f"{info.get('home', '')}_{info.get('away', '')}",
+                                    'number': info.get('number', ''),
+                                    'league': info.get('league', ''),
+                                    'kickoff': info.get('kickoff', ''),
+                                    'home': info.get('home', ''),
+                                    'away': info.get('away', ''),
+                                    'date': om_data.get('date', om_date),
+                                    'odds_source': '百家平均',
+                                    'avg_open': {'w': avg_o.get('odds_w', 0), 'd': avg_o.get('odds_d', 0), 'l': avg_o.get('odds_l', 0)},
+                                    'avg_close': {'w': avg_o.get('odds_w', 0), 'd': avg_o.get('odds_d', 0), 'l': avg_o.get('odds_l', 0)},
+                                    'avg_movement': {'w': 'stable', 'd': 'stable', 'l': 'stable'},
+                                    'pinnacle_open': {'w': pin_o.get('odds_w', 0), 'd': pin_o.get('odds_d', 0), 'l': pin_o.get('odds_l', 0)},
+                                    'pinnacle_close': {'w': pin_o.get('odds_w', 0), 'd': pin_o.get('odds_d', 0), 'l': pin_o.get('odds_l', 0)},
+                                    'pinnacle_movement': {'w': 'stable', 'd': 'stable', 'l': 'stable'},
+                                    'pinnacle_margin': pin_o.get('margin', 0),
+                                })
+                            print(f"[INFO] 从{os.path.basename(om_file)}加载{len(om_matches)}场")
+                    except Exception as e:
+                        print(f"[WARN] 加载{os.path.basename(om_file)}失败: {e}")
+            
+            if not match_list:
+                print("[WARN] 无法获取任何赔率数据")
+                return []
+            
+            print(f"[INFO] 从odds_api.py缓存加载match_list: {len(match_list)}场")
+            # WAF拦截，跳过zgzcw.com POST请求，直接设置空结果
+            pin_all = {}
+            bf_all = {}
+            sb_all = {}
+            hkjc_all = {}
+            ah_avg_all = {}
+            ah_hkjc_all = {}
+            om_fallback = {}
+        else:
+            return results
+    else:
+            # Step 1: 百家平均赔率（GET方式）- 当天+前一天
+        match_list = fetch_match_list(date_str)
+        match_list_prev = fetch_match_list(prev_day)
+        print(f"[INFO] 竞彩百家平均: 当天{len(match_list)}场, 前天{len(match_list_prev)}场")
+        match_list = match_list_prev + match_list  # 前一天放前面
     
-    # Step 1: 百家平均赔率（GET方式）- 当天+前一天
-    match_list = fetch_match_list(date_str)
-    match_list_prev = fetch_match_list(prev_day)
-    print(f"[INFO] 竞彩百家平均: 当天{len(match_list)}场, 前天{len(match_list_prev)}场")
-    match_list = match_list_prev + match_list  # 前一天放前面
+        if include_beidan:
+            match_list_bd = fetch_match_list(date_str, page_type='bd')
+            match_list_bd_prev = fetch_match_list(prev_day, page_type='bd')
+            print(f"[INFO] 北单百家平均: 当天{len(match_list_bd)}场, 前天{len(match_list_bd_prev)}场")
+            match_list_bd = match_list_bd_prev + match_list_bd
+            # 去重合并：按match_id去重
+            existing_ids = {m.get('match_id','') for m in match_list}
+            for m in match_list_bd:
+                mid = m.get('match_id','')
+                if mid and mid not in existing_ids:
+                    match_list.append(m)
+                    existing_ids.add(mid)
+            print(f"[INFO] 去重合并后总计 {len(match_list)} 场比赛")
     
-    if include_beidan:
-        match_list_bd = fetch_match_list(date_str, page_type='bd')
-        match_list_bd_prev = fetch_match_list(prev_day, page_type='bd')
-        print(f"[INFO] 北单百家平均: 当天{len(match_list_bd)}场, 前天{len(match_list_bd_prev)}场")
-        match_list_bd = match_list_bd_prev + match_list_bd
-        # 去重合并：按match_id去重
-        existing_ids = {m.get('match_id','') for m in match_list}
-        for m in match_list_bd:
-            mid = m.get('match_id','')
-            if mid and mid not in existing_ids:
-                match_list.append(m)
-                existing_ids.add(mid)
-        print(f"[INFO] 去重合并后总计 {len(match_list)} 场比赛")
+        # Step 2: 平博赔率（POST方式，aid=106=真Pinnacle）- 当天+前一天（最高优先级）
+        pin_jc = fetch_company_odds(date_str, page_type='jc', company='106')
+        time.sleep(3)
+        pin_jc_prev = fetch_company_odds(prev_day, page_type='jc', company='106')
+        time.sleep(3)
+        pin_bd = fetch_company_odds(date_str, page_type='bd', company='106') if include_beidan else {}
+        time.sleep(3)
+        pin_bd_prev = fetch_company_odds(prev_day, page_type='bd', company='106') if include_beidan else {}
+        pin_all = {**pin_jc_prev, **pin_bd_prev, **pin_jc, **pin_bd}  # match_id -> pin_odds
+        print(f"[INFO] Pinnacle赔率: {len(pin_all)} 场 (前天jc{len(pin_jc_prev)}/bd{len(pin_bd_prev)}, 当天jc{len(pin_jc)}/bd{len(pin_bd)})")
     
-    # Step 2: 平博赔率（POST方式，aid=106=真Pinnacle）- 当天+前一天（最高优先级）
-    pin_jc = fetch_company_odds(date_str, page_type='jc', company='106')
-    time.sleep(3)
-    pin_jc_prev = fetch_company_odds(prev_day, page_type='jc', company='106')
-    time.sleep(3)
-    pin_bd = fetch_company_odds(date_str, page_type='bd', company='106') if include_beidan else {}
-    time.sleep(3)
-    pin_bd_prev = fetch_company_odds(prev_day, page_type='bd', company='106') if include_beidan else {}
-    pin_all = {**pin_jc_prev, **pin_bd_prev, **pin_jc, **pin_bd}  # match_id -> pin_odds
-    print(f"[INFO] Pinnacle赔率: {len(pin_all)} 场 (前天jc{len(pin_jc_prev)}/bd{len(pin_bd_prev)}, 当天jc{len(pin_jc)}/bd{len(pin_bd)})")
+        # Step 3: 必发赔率（POST方式，aid=56=Betfair）- 当天+前一天（辅助参考）
+        bf_jc = fetch_company_odds(date_str, page_type='jc', company='56')
+        time.sleep(3)
+        bf_jc_prev = fetch_company_odds(prev_day, page_type='jc', company='56')
+        time.sleep(3)
+        bf_bd = fetch_company_odds(date_str, page_type='bd', company='56') if include_beidan else {}
+        time.sleep(3)
+        bf_bd_prev = fetch_company_odds(prev_day, page_type='bd', company='56') if include_beidan else {}
+        bf_all = {**bf_jc_prev, **bf_bd_prev, **bf_jc, **bf_bd}
+        print(f"[INFO] Betfair赔率: {len(bf_all)} 场")
     
-    # Step 3: 必发赔率（POST方式，aid=56=Betfair）- 当天+前一天（辅助参考）
-    bf_jc = fetch_company_odds(date_str, page_type='jc', company='56')
-    time.sleep(3)
-    bf_jc_prev = fetch_company_odds(prev_day, page_type='jc', company='56')
-    time.sleep(3)
-    bf_bd = fetch_company_odds(date_str, page_type='bd', company='56') if include_beidan else {}
-    time.sleep(3)
-    bf_bd_prev = fetch_company_odds(prev_day, page_type='bd', company='56') if include_beidan else {}
-    bf_all = {**bf_jc_prev, **bf_bd_prev, **bf_jc, **bf_bd}
-    print(f"[INFO] Betfair赔率: {len(bf_all)} 场")
-    
-    # Step 4: SB公司赔率（POST方式，aid=3）- 已取消抓取
-    # sb_jc = fetch_sb_odds(date_str, page_type='jc')
-    # time.sleep(3)
-    # sb_jc_prev = fetch_sb_odds(prev_day, page_type='jc')
-    # time.sleep(3)
-    # sb_bd = fetch_sb_odds(date_str, page_type='bd') if include_beidan else {}
-    # time.sleep(3)
-    # sb_bd_prev = fetch_sb_odds(prev_day, page_type='bd') if include_beidan else {}
-    # sb_all = {**sb_jc_prev, **sb_bd_prev, **sb_jc, **sb_bd}
-    # print(f"[INFO] SB公司赔率: {len(sb_all)} 场")
-    sb_all = {}
-    print(f"[INFO] SB公司赔率: 已取消抓取")
+        # Step 4: SB公司赔率（POST方式，aid=3）- 已取消抓取
+        # sb_jc = fetch_sb_odds(date_str, page_type='jc')
+        # time.sleep(3)
+        # sb_jc_prev = fetch_sb_odds(prev_day, page_type='jc')
+        # time.sleep(3)
+        # sb_bd = fetch_sb_odds(date_str, page_type='bd') if include_beidan else {}
+        # time.sleep(3)
+        # sb_bd_prev = fetch_sb_odds(prev_day, page_type='bd') if include_beidan else {}
+        # sb_all = {**sb_jc_prev, **sb_bd_prev, **sb_jc, **sb_bd}
+        # print(f"[INFO] SB公司赔率: {len(sb_all)} 场")
+        sb_all = {}
+        print(f"[INFO] SB公司赔率: 已取消抓取")
 
-    # Step 5: 香港马会赔率（POST方式，aid=136）- 已取消抓取
-    # hkjc_jc = fetch_company_odds(date_str, page_type='jc', company='136')
-    # time.sleep(3)
-    # hkjc_jc_prev = fetch_company_odds(prev_day, page_type='jc', company='136')
-    # time.sleep(3)
-    # hkjc_bd = fetch_company_odds(date_str, page_type='bd', company='136') if include_beidan else {}
-    # time.sleep(3)
-    # hkjc_bd_prev = fetch_company_odds(prev_day, page_type='bd', company='136') if include_beidan else {}
-    # hkjc_all = {**hkjc_jc_prev, **hkjc_bd_prev, **hkjc_jc, **hkjc_bd}
-    # print(f"[INFO] 香港马会赔率: {len(hkjc_all)} 场")
-    hkjc_all = {}
-    print(f"[INFO] 香港马会赔率: 已取消抓取")
+        # Step 5: 香港马会赔率（POST方式，aid=136）- 已取消抓取
+        # hkjc_jc = fetch_company_odds(date_str, page_type='jc', company='136')
+        # time.sleep(3)
+        # hkjc_jc_prev = fetch_company_odds(prev_day, page_type='jc', company='136')
+        # time.sleep(3)
+        # hkjc_bd = fetch_company_odds(date_str, page_type='bd', company='136') if include_beidan else {}
+        # time.sleep(3)
+        # hkjc_bd_prev = fetch_company_odds(prev_day, page_type='bd', company='136') if include_beidan else {}
+        # hkjc_all = {**hkjc_jc_prev, **hkjc_bd_prev, **hkjc_jc, **hkjc_bd}
+        # print(f"[INFO] 香港马会赔率: {len(hkjc_all)} 场")
+        hkjc_all = {}
+        print(f"[INFO] 香港马会赔率: 已取消抓取")
     
-    # Step 5.8: 亚盘让球盘（POST companyType=y）— 仅百家平均，HKJC已取消
-    ah_avg_jc = fetch_asian_handicap(date_str, page_type='jc', company='0')
-    time.sleep(3)
-    ah_avg_jc_prev = fetch_asian_handicap(prev_day, page_type='jc', company='0')
-    time.sleep(3)
-    # ah_hkjc_jc = fetch_asian_handicap(date_str, page_type='jc', company='136')  # 已取消
-    # time.sleep(3)
-    # ah_hkjc_jc_prev = fetch_asian_handicap(prev_day, page_type='jc', company='136')  # 已取消
-    # time.sleep(3)
-    ah_avg_all = {**ah_avg_jc_prev, **ah_avg_jc}
-    ah_hkjc_all = {}  # HKJC亚盘已取消
-    print(f"[INFO] 亚盘百家平均: {len(ah_avg_all)} 场, 亚盘HKJC: 已取消")
+        # Step 5.8: 亚盘让球盘（POST companyType=y）— 仅百家平均，HKJC已取消
+        ah_avg_jc = fetch_asian_handicap(date_str, page_type='jc', company='0')
+        time.sleep(3)
+        ah_avg_jc_prev = fetch_asian_handicap(prev_day, page_type='jc', company='0')
+        time.sleep(3)
+        # ah_hkjc_jc = fetch_asian_handicap(date_str, page_type='jc', company='136')  # 已取消
+        # time.sleep(3)
+        # ah_hkjc_jc_prev = fetch_asian_handicap(prev_day, page_type='jc', company='136')  # 已取消
+        # time.sleep(3)
+        ah_avg_all = {**ah_avg_jc_prev, **ah_avg_jc}
+        ah_hkjc_all = {}  # HKJC亚盘已取消
+        print(f"[INFO] 亚盘百家平均: {len(ah_avg_all)} 场, 亚盘HKJC: 已取消")
     
     # Step 5.5: 加载oddsmagnet缓存补充POST失败的赔源
     om_fallback = {}
