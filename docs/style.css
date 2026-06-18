@@ -270,3 +270,63 @@ tr:hover { background: #161b22; }
   th, td { padding: 6px 4px; }
   .score-modal-content { padding: 14px; max-width: 95%; }
 }
+
+/* ─── 泊松模态框 ─── */
+.modal-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.7); z-index: 1000;
+  display: flex; justify-content: center; align-items: flex-start;
+  padding-top: 40px; overflow-y: auto;
+}
+.modal-box {
+  background: #161b22; border: 1px solid #30363d; border-radius: 12px;
+  width: 95%; max-width: 640px; max-height: 90vh; overflow-y: auto;
+  padding: 20px; color: #c9d1d9;
+}
+.modal-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 12px; font-size: 16px; color: #58a6ff;
+}
+.modal-close {
+  font-size: 24px; cursor: pointer; color: #8b949e; line-height: 1;
+}
+.modal-close:hover { color: #f44336; }
+.modal-controls {
+  display: flex; gap: 16px; align-items: center; margin-bottom: 16px;
+  font-size: 13px; color: #8b949e; flex-wrap: wrap;
+}
+.modal-controls input[type="range"] { accent-color: #58a6ff; }
+.modal-controls input[type="checkbox"] { accent-color: #58a6ff; }
+
+/* ─── 条形图 ─── */
+.bar-list { display: flex; flex-direction: column; gap: 4px; }
+.bar-row {
+  display: flex; align-items: center; gap: 8px; font-size: 12px;
+  padding: 3px 6px; border-radius: 4px;
+}
+.bar-row.bar-hit { background: rgba(76,175,80,0.15); border: 1px solid #4caf50; }
+.bar-rank { width: 20px; text-align: right; color: #8b949e; }
+.bar-label { width: 36px; font-weight: bold; color: #e6edf3; font-family: monospace; }
+.bar-track { flex: 1; height: 14px; background: #21262d; border-radius: 3px; overflow: hidden; }
+.bar-fill { height: 100%; background: linear-gradient(90deg, #1f6feb, #58a6ff); border-radius: 3px; }
+.bar-poisson { width: 70px; color: #8b949e; text-align: right; }
+.bar-freq { width: 50px; color: #ff9800; text-align: right; }
+.bar-mixed { width: 55px; color: #58a6ff; font-weight: bold; text-align: right; }
+.bar-actual { color: #4caf50; font-weight: bold; margin-left: 4px; }
+
+/* ─── 热力图 ─── */
+.modal-heatmap-wrap { margin-top: 16px; }
+.heatmap-title { color: #58a6ff; font-size: 13px; margin-bottom: 8px; }
+.heatmap-table { border-collapse: collapse; margin: 0 auto; }
+.heatmap-table th { padding: 4px 8px; color: #8b949e; font-size: 11px; background: transparent; border: none; }
+.heatmap-table td {
+  padding: 6px 8px; text-align: center; font-size: 11px;
+  border: 1px solid #21262d; min-width: 48px; color: #e6edf3;
+}
+.heatmap-axis { color: #8b949e; font-size: 11px; text-align: center; margin-top: 4px; }
+
+/* ─── 泊松单元格可点击 ─── */
+td.poisson-cell:hover {
+  background: #1f3a5c !important;
+  cursor: pointer;
+}
