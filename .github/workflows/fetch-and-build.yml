@@ -121,12 +121,14 @@ jobs:
           git commit -m "auto: align+build $(date +%Y-%m-%d)"
           git push origin main
 
-      - name: Upload DB to Release
-        if: github.event_name != 'pull_request'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          if [ -f data/football.db ]; then
-            echo "📦 Updating DB in Release..."
-            python scripts/push_db.py --db data/football.db || echo "⚠️ DB upload failed"
-          fi
+      # DB push已移除：GA的WAF拦截导致亚盘数据不完整，
+      # push到Release会覆盖Termux的完整数据。只由Termux本地push DB。
+      # - name: Upload DB to Release
+      #   if: github.event_name != 'pull_request'
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: |
+      #     if [ -f data/football.db ]; then
+      #       echo "📦 Updating DB in Release..."
+      #       python scripts/push_db.py --db data/football.db || echo "⚠️ DB upload failed"
+      #     fi
