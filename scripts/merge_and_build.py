@@ -208,6 +208,25 @@ def build_summary(daily_stats):
     }
 
 
+def build_league_score_freq(db_path: str) -> dict:
+    """从DB统计每个联赛的历史比分频率（用于泊松排序加权）"""
+    if not os.path.exists(db_path):
+        return {}
+    conn = sqlite3.connect(db_path)
+    cur = conn.cursor()
+    cur.execute("""SELECT league, actual_outcome FROM poisson_predictions
+        WHERE home_lambda > 0 AND away_lambda > 0
+        AND actual_outcome IS NOT NULL AND actual_outcome != ''""")
+    league_scores = defaultdict(lambda: defaultdict(int))
+    for league, outcome in cur.fetchall():
+        m = re.search(r'(\d+-\d+)', outcome or '')
+        if not m:
+            continue
+        league_scores[league][m.group(1)] += 1
+    conn.close()
+    return {lg: dict(scores) for lg, scores in league_scores.items()}
+
+
 def generate_results_json(by_date, daily_stats, summary, output_dir=None):
     if not output_dir:
         output_dir = DATA_DIR
@@ -232,7 +251,7 @@ def generate_results_json(by_date, daily_stats, summary, output_dir=None):
     return path
 
 
-def generate_index_html(by_date, daily_stats, summary, output_dir=None):
+def generate_index_html(by_date, daily_stats, summary, league_score_freq=None, output_dir=None):
     """生成 index.html（引用外部 style.css + script.js）"""
     if not output_dir:
         output_dir = DOCS_DIR
@@ -241,6 +260,7 @@ def generate_index_html(by_date, daily_stats, summary, output_dir=None):
     dates = sorted(by_date.keys(), reverse=True)
     today = datetime.now().strftime('%Y-%m-%d')
     default_date = today if today in by_date else (dates[0] if dates else '')
+    league_freq_json = json.dumps(league_score_freq or {}, ensure_ascii=False)
 
     html = f'''<!DOCTYPE html>
 <html lang="zh-CN">
@@ -314,10 +334,22 @@ def generate_index_html(by_date, daily_stats, summary, output_dir=None):
 
 
 <!-- 泊松比分分布模态框 -->
-<div id="scoreModalOverlay" class="score-modal-overlay">
-  <div id="scoreModalContent" class="score-modal-content"></div>
+<div id="poissonModal" class="modal-overlay" style="display:none">
+<div class="modal-box">
+<div class="modal-header">
+  <span id="modalTitle">比分概率分布</span>
+  <span class="modal-close" id="modalClose">&times;</span>
 </div>
-
+<div class="modal-controls">
+  <label>加权 α: <input type="range" id="alphaSlider" min="0" max="100" value="50" style="width:120px;vertical-align:middle">
+  <span id="alphaValue">0.50</span></label>
+  <label><input type="checkbox" id="showHeatmap" checked> 热力图</label>
+</div>
+<div id="modalBarChart" class="modal-bars"></div>
+<div id="modalHeatmap" class="modal-heatmap-wrap"></div>
+</div>
+</div>
+<script>const LEAGUE_SCORE_FREQ = {league_freq_json};</script>
 <script src="script.js"></script>
 </body>
 </html>'''
@@ -349,14 +381,20 @@ def main():
 
     daily_stats = build_daily_stats(by_date)
     summary = build_summary(daily_stats)
+
+    # 联赛比分频率（用于前端加权排序）
+    league_score_freq = build_league_score_freq(db_path)
+    n_leagues = len(league_score_freq)
+    n_scores = sum(len(v) for v in league_score_freq.values())
     print(f'📊 {len(by_date)}天, {summary["total_matches"]}场已开奖, EV={summary["ev_rate"]}%, 概率={summary["prob_rate"]}%')
+    print(f'   联赛比分频率: {n_leagues}个联赛, {n_scores}个比分记录')
 
     out_base = args.output or REPO_DIR
     # results.json 必须输出到 docs/data/ 下，GitHub Pages 才能访问
     if not args.html_only:
         generate_results_json(by_date, daily_stats, summary, os.path.join(out_base, 'docs', 'data'))
     if not args.json_only:
-        generate_index_html(by_date, daily_stats, summary, os.path.join(out_base, 'docs'))
+        generate_index_html(by_date, daily_stats, summary, league_score_freq, os.path.join(out_base, 'docs'))
 
     print('✅ 构建完成')
 

@@ -4,101 +4,151 @@ const DATA_URL = 'data/results.json';
 const WEEKDAY_CN = ['周日','周一','周二','周三','周四','周五','周六'];
 let allData = null;
 
-// ─── 泊松比分分布 ───
-function poissonPMF(lambda, k) {
+// ─── 泊松概率计算 ───
+function poissonPMF(k, lambda) {
   if (lambda <= 0) return k === 0 ? 1 : 0;
-  return Math.pow(lambda, k) * Math.exp(-lambda) / factorial(k);
+  let logP = k * Math.log(lambda) - lambda;
+  for (let i = 2; i <= k; i++) logP -= Math.log(i);
+  return Math.exp(logP);
 }
 
-function factorial(n) {
-  if (n <= 1) return 1;
-  let r = 1;
-  for (let i = 2; i <= n; i++) r *= i;
-  return r;
-}
-
-function computeScoreMatrix(homeLambda, awayLambda, maxGoals = 5) {
+// 计算比分概率分布（home_lambda x away_lambda）
+function calcScoreDistribution(homeLambda, awayLambda) {
   const scores = [];
-  for (let h = 0; h <= maxGoals; h++) {
-    for (let a = 0; a <= maxGoals; a++) {
-      const prob = poissonPMF(homeLambda, h) * poissonPMF(awayLambda, a);
-      scores.push({ score: `${h}-${a}`, home: h, away: a, prob });
+  const MAX_GOALS = 6;
+  for (let h = 0; h <= MAX_GOALS; h++) {
+    for (let a = 0; a <= MAX_GOALS; a++) {
+      const p = poissonPMF(h, homeLambda) * poissonPMF(a, awayLambda);
+      if (p > 0.0001) scores.push({ home: h, away: a, prob: p, label: h + '-' + a });
     }
   }
-  scores.sort((a, b) => b.prob - a.prob);
   return scores;
 }
 
-function showScoreModal(record) {
-  const overlay = document.getElementById('scoreModalOverlay');
-  const content = document.getElementById('scoreModalContent');
-  if (!overlay || !content) return;
+// 加权排序: score = α * normalized_poisson + (1-α) * normalized_league_freq
+function weightedSort(scores, league, alpha) {
+  const freq = (typeof LEAGUE_SCORE_FREQ !== 'undefined' && LEAGUE_SCORE_FREQ[league]) || {};
+  const totalFreq = Object.values(freq).reduce((s, v) => s + v, 0) || 1;
+  const maxProb = Math.max(...scores.map(s => s.prob)) || 1;
+  const maxFreq = Math.max(...Object.values(freq), 1);
 
-  const hL = record.home_lambda;
-  const aL = record.away_lambda;
-  if (!hL || !aL || (hL <= 0 && aL <= 0)) return;
-
-  const scores = computeScoreMatrix(hL, aL);
-  const top10 = scores.slice(0, 10);
-  const maxProb = top10[0].prob;
-
-  const totalGoals = hL + aL;
+  // 计算大2.5球概率
   let over25 = 0;
-  for (const s of scores) {
-    if (s.home + s.away > 2.5) over25 += s.prob;
+  scores.forEach(s => { if (s.home + s.away > 2) over25 += s.prob; });
+
+  return scores.map(s => {
+    const normPoisson = s.prob / maxProb;
+    const leagueCount = freq[s.label] || 0;
+    const normFreq = leagueCount / maxFreq;
+    const mixed = alpha * normPoisson + (1 - alpha) * normFreq;
+    return { ...s, leagueCount, mixed, normPoisson, normFreq };
+  }).sort((a, b) => b.mixed - a.mixed);
+}
+
+// ─── 模态框 ───
+function openPoissonModal(record) {
+  const hl = record.home_lambda, al = record.away_lambda;
+  if (!hl || !al || (hl <= 0 && al <= 0)) return;
+
+  const modal = document.getElementById('poissonModal');
+  const title = document.getElementById('modalTitle');
+  title.textContent = `${record.home} vs ${record.away} — 比分概率分布 (λ=${hl}/${al})`;
+  modal.style.display = 'flex';
+
+  const alphaSlider = document.getElementById('alphaSlider');
+  const alphaValue = document.getElementById('alphaValue');
+
+  function render() {
+    const alpha = parseInt(alphaSlider.value) / 100;
+    alphaValue.textContent = alpha.toFixed(2);
+    const scores = calcScoreDistribution(hl, al);
+    const sorted = weightedSort(scores, record.league, alpha);
+    const top20 = sorted.slice(0, 20);
+
+    // 统计摘要
+    let over25 = 0, under25 = 0;
+    scores.forEach(s => {
+      if (s.home + s.away > 2) over25 += s.prob; else under25 += s.prob;
+    });
+    const totalGoals = hl + al;
+
+    renderBarChart(top20, record.score, over25, totalGoals);
+    if (document.getElementById('showHeatmap').checked) {
+      renderHeatmap(sorted, record.score);
+    } else {
+      document.getElementById('modalHeatmap').innerHTML = '';
+    }
   }
 
-  let html = `<div class="score-modal-header">
-    <span>${record.home} vs ${record.away}</span>
-    <span class="score-modal-lambda">λ主=${hL.toFixed(3)} λ客=${aL.toFixed(3)}</span>
-    <button class="score-modal-close" onclick="closeScoreModal()">&times;</button>
+  alphaSlider.oninput = render;
+  document.getElementById('showHeatmap').onchange = render;
+  render();
+}
+
+function renderBarChart(top20, actualScore, over25, totalGoals) {
+  const container = document.getElementById('modalBarChart');
+  const maxMixed = top20[0]?.mixed || 1;
+
+  // 摘要行
+  let html = `<div class="modal-summary">
+    <span>期望总进球: <b>${totalGoals.toFixed(2)}</b></span>
+    <span>大2.5球: <b style="color:#4caf50">${(over25*100).toFixed(1)}%</b></span>
+    <span>小2.5球: <b style="color:#ff9800">${((1-over25)*100).toFixed(1)}%</b></span>
   </div>`;
 
-  html += `<div class="score-modal-stats">
-    <div class="score-stat"><span class="score-stat-label">期望总进球</span><span class="score-stat-value">${totalGoals.toFixed(2)}</span></div>
-    <div class="score-stat"><span class="score-stat-label">大2.5球</span><span class="score-stat-value">${(over25 * 100).toFixed(1)}%</span></div>
-    <div class="score-stat"><span class="score-stat-label">小2.5球</span><span class="score-stat-value">${((1 - over25) * 100).toFixed(1)}%</span></div>
-  </div>`;
-
-  html += '<div class="score-bars">';
-  for (const s of top10) {
-    const pct = (s.prob * 100).toFixed(1);
-    const barWidth = (s.prob / maxProb * 100).toFixed(1);
+  html += '<div class="bar-list">';
+  top20.forEach((s, i) => {
+    const pct = (s.mixed / maxMixed * 100).toFixed(1);
+    const isHit = s.label === actualScore;
+    const cls = isHit ? 'bar-hit' : '';
+    const poissonPct = (s.prob * 100).toFixed(2);
+    const freqPct = s.leagueCount > 0 ? `${s.leagueCount}次` : '-';
     const isHome = s.home > s.away;
     const isDraw = s.home === s.away;
-    const resultClass = isDraw ? 'score-draw' : (isHome ? 'score-home' : 'score-away');
-    html += `<div class="score-bar-row ${resultClass}">
-      <span class="score-label">${s.score}</span>
-      <div class="score-bar-track"><div class="score-bar-fill" style="width:${barWidth}%"></div></div>
-      <span class="score-pct">${pct}%</span>
+    const resultCls = isDraw ? 'score-draw' : (isHome ? 'score-home' : 'score-away');
+    html += `<div class="bar-row ${cls} ${resultCls}">
+      <span class="bar-rank">${i + 1}</span>
+      <span class="bar-label">${s.label}</span>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+      <span class="bar-poisson">P:${poissonPct}%</span>
+      <span class="bar-freq">L:${freqPct}</span>
+      <span class="bar-mixed">${(s.mixed * 100).toFixed(1)}%</span>
+      ${isHit ? '<span class="bar-actual">✔ 实际</span>' : ''}
     </div>`;
-  }
+  });
   html += '</div>';
+  container.innerHTML = html;
+}
 
-  html += '<div class="score-heatmap-title">比分矩阵</div>';
-  html += '<table class="score-heatmap"><tr><th></th>';
-  for (let a = 0; a <= 4; a++) html += `<th>${a}</th>`;
+function renderHeatmap(sorted, actualScore) {
+  const container = document.getElementById('modalHeatmap');
+  const SIZE = 4;
+  const grid = {};
+  sorted.forEach(s => {
+    if (s.home <= SIZE && s.away <= SIZE) grid[s.home + ',' + s.away] = s;
+  });
+  const maxProb = Math.max(...Object.values(grid).map(s => s.prob)) || 1;
+
+  let html = '<div class="heatmap-title">比分热力图 (0-4球)</div>';
+  html += '<table class="heatmap-table"><tr><th></th>';
+  for (let a = 0; a <= SIZE; a++) html += `<th>${a}</th>`;
   html += '</tr>';
-  for (let h = 0; h <= 4; h++) {
+  for (let h = 0; h <= SIZE; h++) {
     html += `<tr><th>${h}</th>`;
-    for (let a = 0; a <= 4; a++) {
-      const p = poissonPMF(hL, h) * poissonPMF(aL, a);
-      const intensity = Math.min(p / maxProb, 1);
-      const bg = `rgba(88,166,255,${(intensity * 0.8).toFixed(2)})`;
-      html += `<td style="background:${bg}" title="${h}-${a}: ${(p * 100).toFixed(1)}%">${(p * 100).toFixed(1)}</td>`;
+    for (let a = 0; a <= SIZE; a++) {
+      const s = grid[h + ',' + a];
+      const prob = s ? (s.prob * 100).toFixed(1) : '0.0';
+      const intensity = s ? Math.min(1, s.prob / maxProb) : 0;
+      const bg = intensity > 0 ? `rgba(88,166,255,${intensity * 0.8})` : 'transparent';
+      const isHit = s && s.label === actualScore;
+      const border = isHit ? 'border:2px solid #4caf50;' : '';
+      html += `<td style="background:${bg};${border}" title="P=${prob}%">${prob}%</td>`;
     }
     html += '</tr>';
   }
   html += '</table>';
-  html += '<div class="score-heatmap-axis">← 客队进球 &nbsp;&nbsp; 主队进球 →</div>';
-
-  content.innerHTML = html;
-  overlay.classList.add('active');
-}
-
-function closeScoreModal() {
-  const overlay = document.getElementById('scoreModalOverlay');
-  if (overlay) overlay.classList.remove('active');
+  html += '<div class="heatmap-axis">← 客队进球 | 主队进球 ↓</div>';
+  container.innerHTML = html;
 }
 
 // ─── 初始化 ───
@@ -147,7 +197,6 @@ function loadDate() {
     if (!hasResult && !showPending) return;
 
     const dirClass = r.ev_hit ? 'hit' : (hasResult ? 'miss' : 'pending');
-    const probHitClass = r.prob_hit ? 'hit' : (hasResult ? 'miss' : 'pending');
     const resultDisplay = hasResult
       ? `${r.result} <span class="${r.ev_hit ? 'hit' : 'miss'}">E${r.ev_hit ? '✔' : '✘'}</span><span class="${r.prob_hit ? 'hit' : 'miss'}">P${r.prob_hit ? '✔' : '✘'}</span>`
       : '待定';
@@ -175,8 +224,6 @@ function loadDate() {
     const probPct = (r.prediction_prob * 100).toFixed(1) + '%';
     const probLabel = r.prob_direction ? `${r.prob_direction} ${probPct}` : probPct;
     const probDirClass = r.prob_direction === '主胜' ? 'hit' : (r.prob_direction === '客胜' ? 'miss' : 'draw');
-
-    // 泊松列：有 lambda 则可点击，用 data 属性存储位置，事件委托处理
     const hasLambda = r.home_lambda > 0 || r.away_lambda > 0;
     const poissonCell = hasLambda
       ? `<td class="poisson-clickable" data-date="${sel}" data-idx="${i}">${poissonStr}</td>`
@@ -274,20 +321,18 @@ function bindEvents() {
     const date = cell.dataset.date;
     const idx = parseInt(cell.dataset.idx, 10);
     const records = allData.matches[date];
-    if (records && records[idx]) {
-      showScoreModal(records[idx]);
-    }
+    if (records && records[idx]) openPoissonModal(records[idx]);
   });
 
   // 模态框关闭
-  const overlay = document.getElementById('scoreModalOverlay');
-  if (overlay) {
-    overlay.addEventListener('click', (e) => {
-      if (e.target === e.currentTarget) closeScoreModal();
-    });
-  }
+  document.getElementById('modalClose').addEventListener('click', () => {
+    document.getElementById('poissonModal').style.display = 'none';
+  });
+  document.getElementById('poissonModal').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) e.target.style.display = 'none';
+  });
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeScoreModal();
+    if (e.key === 'Escape') document.getElementById('poissonModal').style.display = 'none';
   });
 }
 
