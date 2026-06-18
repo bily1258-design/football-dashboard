@@ -49,6 +49,24 @@ def load_from_db(db_path: str, max_days=999) -> dict:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     cur = conn.cursor()
+    # 确保DB有所有新列（兼容旧DB）
+    _NEW_COLUMNS = [
+        ('pin_ah_handicap', 'REAL'), ('pin_ah_home_water', 'REAL'), ('pin_ah_away_water', 'REAL'),
+        ('pin_ou_line', 'REAL'), ('pin_ou_over', 'REAL'), ('pin_ou_under', 'REAL'),
+        ('ou_over', 'REAL'), ('ou_line', 'REAL'), ('ou_under', 'REAL'),
+        ('ou_open_over', 'REAL'), ('ou_open_line', 'REAL'), ('ou_open_under', 'REAL'),
+        ('liji_ou_over', 'REAL'), ('liji_ou_line', 'REAL'), ('liji_ou_under', 'REAL'),
+        ('liji_ou_open_over', 'REAL'), ('liji_ou_open_line', 'REAL'), ('liji_ou_open_under', 'REAL'),
+        ('ms_ou_over', 'REAL'), ('ms_ou_line', 'REAL'), ('ms_ou_under', 'REAL'),
+        ('ms_ou_open_over', 'REAL'), ('ms_ou_open_line', 'REAL'), ('ms_ou_open_under', 'REAL'),
+        ('pinnacle_open_w', 'REAL'), ('pinnacle_open_d', 'REAL'), ('pinnacle_open_l', 'REAL'),
+    ]
+    cur.execute("PRAGMA table_info(poisson_predictions)")
+    existing = {row[1] for row in cur.fetchall()}
+    for col, ctype in _NEW_COLUMNS:
+        if col not in existing:
+            cur.execute(f"ALTER TABLE poisson_predictions ADD COLUMN {col} {ctype} DEFAULT 0")
+    conn.commit()
     cutoff = (datetime.now() - timedelta(days=max_days)).strftime('%Y-%m-%d') if max_days < 999 else '2000-01-01'
     cur.execute("SELECT id, date, league, home_team, away_team, kickoff_time, \
         prediction, prediction_prob, odds_win, odds_draw, odds_loss, \
