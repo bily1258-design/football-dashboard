@@ -498,7 +498,10 @@ def main():
             # DB中同日期记录数更多时也更新（processed可能缺新插入的场次）
             # 同时用DB的新字段（pin_ah/ou等）补充processed旧记录
             _NEW_KEYS = {'pin_ah', 'pin_ou', 'ou', 'liji_ou', 'ms_ou'}
+            # ah/liji/ms字段：processed为空或handicap=0时，用DB非零值覆盖
+            _AH_KEYS = {'ah', 'liji', 'ms'}
             n_merged = 0
+            n_ah_merged = 0
             for d_key, db_records in db_data.items():
                 if d_key in by_date:
                     if len(db_records) > len(by_date[d_key]):
@@ -513,8 +516,21 @@ def main():
                                     if k not in proc_rec and k in db_rec:
                                         proc_rec[k] = db_rec[k]
                                         n_merged += 1
+                                # 补充ah/liji/ms：processed为空或handicap=0时用DB覆盖
+                                for k in _AH_KEYS:
+                                    p_val = proc_rec.get(k, {})
+                                    d_val = db_rec.get(k, {})
+                                    if not isinstance(p_val, dict) or not isinstance(d_val, dict):
+                                        continue
+                                    p_hc = p_val.get('handicap') if k == 'ah' else (p_val.get('close', {}) or {}).get('handicap')
+                                    d_hc = d_val.get('handicap') if k == 'ah' else (d_val.get('close', {}) or {}).get('handicap')
+                                    if (p_hc is None or p_hc == 0) and d_hc is not None and d_hc != 0:
+                                        proc_rec[k] = d_val
+                                        n_ah_merged += 1
             if n_merged:
                 print(f'📌 DB补充{n_merged}条记录的新字段')
+            if n_ah_merged:
+                print(f'📌 DB补充{n_ah_merged}条记录的ah/liji/ms字段')
     if not by_date:
         print('[ERROR] 无数据'); sys.exit(1)
 
