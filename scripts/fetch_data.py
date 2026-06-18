@@ -362,7 +362,7 @@ def step_daily_report(date_str: str, incremental: bool = False):
     if incremental:
         cmd.append('--incremental')
     
-    result = subprocess.run(cmd, cwd=REPO_DIR, capture_output=True, text=True, timeout=300)
+    result = subprocess.run(cmd, cwd=REPO_DIR, capture_output=True, text=True, timeout=600)
     if result.returncode == 0:
         print(f"✅ 日报生成完成")
     else:
