@@ -30,6 +30,10 @@ function computeScoreMatrix(homeLambda, awayLambda, maxGoals = 5) {
 }
 
 function showScoreModal(record) {
+  const overlay = document.getElementById('scoreModalOverlay');
+  const content = document.getElementById('scoreModalContent');
+  if (!overlay || !content) return;
+
   const hL = record.home_lambda;
   const aL = record.away_lambda;
   if (!hL || !aL || (hL <= 0 && aL <= 0)) return;
@@ -38,9 +42,7 @@ function showScoreModal(record) {
   const top10 = scores.slice(0, 10);
   const maxProb = top10[0].prob;
 
-  // 计算总进球期望
   const totalGoals = hL + aL;
-  // 计算大2.5球概率
   let over25 = 0;
   for (const s of scores) {
     if (s.home + s.away > 2.5) over25 += s.prob;
@@ -73,7 +75,6 @@ function showScoreModal(record) {
   }
   html += '</div>';
 
-  // 比分矩阵热力图 (4x4)
   html += '<div class="score-heatmap-title">比分矩阵</div>';
   html += '<table class="score-heatmap"><tr><th></th>';
   for (let a = 0; a <= 4; a++) html += `<th>${a}</th>`;
@@ -91,14 +92,13 @@ function showScoreModal(record) {
   html += '</table>';
   html += '<div class="score-heatmap-axis">← 客队进球 &nbsp;&nbsp; 主队进球 →</div>';
 
-  const overlay = document.getElementById('scoreModalOverlay');
-  const content = document.getElementById('scoreModalContent');
   content.innerHTML = html;
   overlay.classList.add('active');
 }
 
 function closeScoreModal() {
-  document.getElementById('scoreModalOverlay').classList.remove('active');
+  const overlay = document.getElementById('scoreModalOverlay');
+  if (overlay) overlay.classList.remove('active');
 }
 
 // ─── 初始化 ───
@@ -176,10 +176,10 @@ function loadDate() {
     const probLabel = r.prob_direction ? `${r.prob_direction} ${probPct}` : probPct;
     const probDirClass = r.prob_direction === '主胜' ? 'hit' : (r.prob_direction === '客胜' ? 'miss' : 'draw');
 
-    // 泊松列：有 lambda 就可点击查看比分分布
+    // 泊松列：有 lambda 则可点击，用 data 属性存储位置，事件委托处理
     const hasLambda = r.home_lambda > 0 || r.away_lambda > 0;
     const poissonCell = hasLambda
-      ? `<td class="poisson-clickable" onclick='showScoreModal(${JSON.stringify(r).replace(/'/g, "&#39;")})'>${poissonStr}</td>`
+      ? `<td class="poisson-clickable" data-date="${sel}" data-idx="${i}">${poissonStr}</td>`
       : `<td>${poissonStr}</td>`;
 
     html += `<tr>
@@ -267,10 +267,25 @@ function bindEvents() {
   document.getElementById('showResulted').addEventListener('change', loadDate);
   document.getElementById('showPending').addEventListener('change', loadDate);
 
-  // 模态框关闭
-  document.getElementById('scoreModalOverlay').addEventListener('click', (e) => {
-    if (e.target === e.currentTarget) closeScoreModal();
+  // 泊松列点击：事件委托
+  document.getElementById('matchBody').addEventListener('click', (e) => {
+    const cell = e.target.closest('.poisson-clickable');
+    if (!cell || !allData) return;
+    const date = cell.dataset.date;
+    const idx = parseInt(cell.dataset.idx, 10);
+    const records = allData.matches[date];
+    if (records && records[idx]) {
+      showScoreModal(records[idx]);
+    }
   });
+
+  // 模态框关闭
+  const overlay = document.getElementById('scoreModalOverlay');
+  if (overlay) {
+    overlay.addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) closeScoreModal();
+    });
+  }
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeScoreModal();
   });
@@ -284,7 +299,6 @@ function downloadExcel() {
   const showPending = document.getElementById('showPending').checked;
   const records = allData.matches[sel] || [];
 
-  // 表头
   const headers = ['编号','联赛','开赛时间','主队','亚盘盘口','亚盘主水','亚盘客水','亚盘来源','客队','来源','推荐方向','概率推荐','赛果','比分',
     '胜赔','平赔','负赔','泊松W','泊松D','泊松L','综合W','综合D','综合L',
     'EV_W','EV_D','EV_L','凯利W','凯利D','凯利L',
@@ -316,7 +330,6 @@ function downloadExcel() {
   const wb = XLSX.utils.book_new();
   const ws = XLSX.utils.aoa_to_sheet(rows);
 
-  // 列宽
   ws['!cols'] = headers.map((h, i) => {
     if (i <= 1 || i === 4) return {wch: 14};
     if (h.includes('推荐') || h === '赛果') return {wch: 10};
@@ -325,7 +338,6 @@ function downloadExcel() {
 
   XLSX.utils.book_append_sheet(wb, ws, '比赛数据');
 
-  // 每日统计 sheet
   const dailyHeaders = ['日期','总场次','已开奖','EV命中率%','EV命中数','概率命中率%','概率命中数','任一命中率%'];
   const dailyRows = [dailyHeaders];
   for (const d of allData.dates || []) {
