@@ -88,7 +88,14 @@ def step_update_ah(date_str: str, db_path: str = None):
                        ('liji_handicap', 'REAL'), ('liji_home_water', 'REAL'), ('liji_away_water', 'REAL'),
                        ('liji_open_handicap', 'REAL'), ('liji_open_home_water', 'REAL'), ('liji_open_away_water', 'REAL'),
                        ('ms_handicap', 'REAL'), ('ms_home_water', 'REAL'), ('ms_away_water', 'REAL'),
-                       ('ms_open_handicap', 'REAL'), ('ms_open_home_water', 'REAL'), ('ms_open_away_water', 'REAL')]:
+                       ('ms_open_handicap', 'REAL'), ('ms_open_home_water', 'REAL'), ('ms_open_away_water', 'REAL'),
+                       # 大小球字段
+                       ('ou_over', 'REAL'), ('ou_line', 'REAL'), ('ou_under', 'REAL'),
+                       ('ou_open_over', 'REAL'), ('ou_open_line', 'REAL'), ('ou_open_under', 'REAL'),
+                       ('liji_ou_over', 'REAL'), ('liji_ou_line', 'REAL'), ('liji_ou_under', 'REAL'),
+                       ('liji_ou_open_over', 'REAL'), ('liji_ou_open_line', 'REAL'), ('liji_ou_open_under', 'REAL'),
+                       ('ms_ou_over', 'REAL'), ('ms_ou_line', 'REAL'), ('ms_ou_under', 'REAL'),
+                       ('ms_ou_open_over', 'REAL'), ('ms_ou_open_line', 'REAL'), ('ms_ou_open_under', 'REAL')]:
         try:
             cursor.execute(f"ALTER TABLE poisson_predictions ADD COLUMN {col} {ctype}")
         except:
@@ -154,6 +161,17 @@ def step_update_ah(date_str: str, db_path: str = None):
                     ms_close = ms.get('close', {})
                     ms_open = ms.get('open', {})
 
+                    # 大小球数据
+                    ou = ah.get('ou', {})
+                    ou_close = ou.get('close', {})
+                    ou_open = ou.get('open', {})
+                    ou_liji = ah.get('ou_liji', {})
+                    ou_liji_close = ou_liji.get('close', {})
+                    ou_liji_open = ou_liji.get('open', {})
+                    ou_ms = ah.get('ou_ms', {})
+                    ou_ms_close = ou_ms.get('close', {})
+                    ou_ms_open = ou_ms.get('open', {})
+
                     cnt = 0
                     for rid in matched_ids:
                         cursor.execute("""
@@ -163,7 +181,13 @@ def step_update_ah(date_str: str, db_path: str = None):
                                 liji_handicap = ?, liji_home_water = ?, liji_away_water = ?,
                                 liji_open_handicap = ?, liji_open_home_water = ?, liji_open_away_water = ?,
                                 ms_handicap = ?, ms_home_water = ?, ms_away_water = ?,
-                                ms_open_handicap = ?, ms_open_home_water = ?, ms_open_away_water = ?
+                                ms_open_handicap = ?, ms_open_home_water = ?, ms_open_away_water = ?,
+                                ou_over = ?, ou_line = ?, ou_under = ?,
+                                ou_open_over = ?, ou_open_line = ?, ou_open_under = ?,
+                                liji_ou_over = ?, liji_ou_line = ?, liji_ou_under = ?,
+                                liji_ou_open_over = ?, liji_ou_open_line = ?, liji_ou_open_under = ?,
+                                ms_ou_over = ?, ms_ou_line = ?, ms_ou_under = ?,
+                                ms_ou_open_over = ?, ms_ou_open_line = ?, ms_ou_open_under = ?
                             WHERE id = ? AND (ah_handicap IS NULL OR ah_handicap = 0)
                         """, (ah_val, hw_val, aw_val, src_val,
                               ah_open_h, ah_open_hw, ah_open_aw,
@@ -171,6 +195,12 @@ def step_update_ah(date_str: str, db_path: str = None):
                               liji_open.get('handicap', 0) or 0, liji_open.get('home_w', 0) or 0, liji_open.get('away_w', 0) or 0,
                               ms_close.get('handicap', 0) or 0, ms_close.get('home_w', 0) or 0, ms_close.get('away_w', 0) or 0,
                               ms_open.get('handicap', 0) or 0, ms_open.get('home_w', 0) or 0, ms_open.get('away_w', 0) or 0,
+                              ou_close.get('over', 0) or 0, ou_close.get('line', 0) or 0, ou_close.get('under', 0) or 0,
+                              ou_open.get('over', 0) or 0, ou_open.get('line', 0) or 0, ou_open.get('under', 0) or 0,
+                              ou_liji_close.get('over', 0) or 0, ou_liji_close.get('line', 0) or 0, ou_liji_close.get('under', 0) or 0,
+                              ou_liji_open.get('over', 0) or 0, ou_liji_open.get('line', 0) or 0, ou_liji_open.get('under', 0) or 0,
+                              ou_ms_close.get('over', 0) or 0, ou_ms_close.get('line', 0) or 0, ou_ms_close.get('under', 0) or 0,
+                              ou_ms_open.get('over', 0) or 0, ou_ms_open.get('line', 0) or 0, ou_ms_open.get('under', 0) or 0,
                               rid))
                         cnt += cursor.rowcount
                     ah_updated += cnt

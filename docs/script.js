@@ -32,7 +32,7 @@ function openAhModal(record) {
   const ah = record.ah || {};
   const hasAh = ah.handicap !== null && ah.handicap !== undefined && (ah.handicap !== 0 || ah.home_w !== 0 || ah.away_w !== 0);
 
-  // 构建赔率对比表
+  // 构建赔率对比表（1X2欧赔）
   let html = '<table class="ah-odds-table">';
   html += '<tr><th class="ah-col-label">盘口</th><th>胜(主)</th><th>平</th><th>负(客)</th></tr>';
 
@@ -52,13 +52,92 @@ function openAhModal(record) {
 
   html += '</table>';
 
-  // 亚盘详情
+  // ===== Pinnacle 区（标题高亮）=====
+  const pinAh = record.pin_ah || {};
+  const pinOu = record.pin_ou || {};
+  const pinOpen = (record.pinnacle || {}).open || {};
+  const pinClose = record.pinnacle || {};
+  const hasPinAh = pinAh.handicap !== null && pinAh.handicap !== undefined && pinAh.handicap !== 0;
+  const hasPinOu = pinOu.line !== null && pinOu.line !== undefined && pinOu.line !== 0;
+  const hasPin1x2 = (pinClose.w || 0) > 0 || (pinOpen.w || 0) > 0;
+
+  if (hasPinAh || hasPinOu || hasPin1x2) {
+    html += '<div class="ah-section-title ah-section-pin"><span class="ah-badge ah-badge-pin">Pinnacle</span></div>';
+
+    // Pinnacle 亚盘
+    if (hasPinAh) {
+      html += '<table class="ah-odds-table">';
+      html += '<tr><th></th><th>盘口</th><th>主水</th><th>客水</th></tr>';
+      html += `<tr><td class="ah-col-label">即时</td><td>${handicapToChinese(pinAh.handicap)}</td><td>${pinAh.home_w || '-'}</td><td>${pinAh.away_w || '-'}</td></tr>`;
+      html += '</table>';
+    }
+
+    // Pinnacle 1X2欧赔（初盘/即时盘）
+    if (hasPin1x2) {
+      html += '<table class="ah-odds-table">';
+      html += '<tr><th></th><th>主胜</th><th>平</th><th>客胜</th></tr>';
+      if (pinOpen.w > 0) {
+        html += `<tr><td class="ah-col-label">初盘</td><td>${pinOpen.w || '-'}</td><td>${pinOpen.d || '-'}</td><td>${pinOpen.l || '-'}</td></tr>`;
+      }
+      html += `<tr><td class="ah-col-label">即时</td><td>${pinClose.w || '-'}</td><td>${pinClose.d || '-'}</td><td>${pinClose.l || '-'}</td></tr>`;
+      html += '</table>';
+    }
+
+    // Pinnacle 大小球
+    if (hasPinOu) {
+      html += '<table class="ah-odds-table">';
+      html += '<tr><th></th><th>盘口线</th><th>大球</th><th>小球</th></tr>';
+      html += `<tr><td class="ah-col-label">即时</td><td>${pinOu.line || '-'}</td><td>${pinOu.over || '-'}</td><td>${pinOu.under || '-'}</td></tr>`;
+      html += '</table>';
+    }
+  }
+
+  // ===== 利记区 =====
+  const liji = record.liji || {};
+  const lijiClose = liji.close || {};
+  const lijiOpen = liji.open || {};
+  const lijiOu = record.liji_ou || {};
+  const lijiOuClose = lijiOu;
+  const lijiOuOpen = lijiOu.open || {};
+  const hasLijiAh = lijiClose.handicap || lijiOpen.handicap;
+  const hasLijiOu = (lijiOuClose.over || 0) > 0 || (lijiOuClose.under || 0) > 0 || (lijiOuOpen.over || 0) > 0;
+
+  if (hasLijiAh || hasLijiOu) {
+    html += '<div class="ah-section-title"><span class="ah-badge ah-badge-liji">利记</span></div>';
+
+    // 利记亚盘
+    if (hasLijiAh) {
+      html += '<table class="ah-odds-table">';
+      html += '<tr><th></th><th>盘口</th><th>主水</th><th>客水</th></tr>';
+      if (lijiOpen.handicap) {
+        html += `<tr><td class="ah-col-label">初盘</td><td>${handicapToChinese(lijiOpen.handicap)}</td><td>${lijiOpen.home_w || '-'}</td><td>${lijiOpen.away_w || '-'}</td></tr>`;
+      }
+      if (lijiClose.handicap) {
+        html += `<tr><td class="ah-col-label">即时</td><td>${handicapToChinese(lijiClose.handicap)}</td><td>${lijiClose.home_w || '-'}</td><td>${lijiClose.away_w || '-'}</td></tr>`;
+      }
+      html += '</table>';
+    }
+
+    // 利记大小球
+    if (hasLijiOu) {
+      html += '<table class="ah-odds-table">';
+      html += '<tr><th></th><th>盘口线</th><th>大球</th><th>小球</th></tr>';
+      if (lijiOuOpen.over > 0 || lijiOuOpen.under > 0) {
+        html += `<tr><td class="ah-col-label">初盘</td><td>${lijiOuOpen.line || '-'}</td><td>${lijiOuOpen.over || '-'}</td><td>${lijiOuOpen.under || '-'}</td></tr>`;
+      }
+      if (lijiOuClose.over > 0 || lijiOuClose.under > 0) {
+        html += `<tr><td class="ah-col-label">即时</td><td>${lijiOuClose.line || '-'}</td><td>${lijiOuClose.over || '-'}</td><td>${lijiOuClose.under || '-'}</td></tr>`;
+      }
+      html += '</table>';
+    }
+  }
+
+  // ===== 百家平均区 =====
   if (hasAh) {
     html += '<div class="ah-section-title">百家平均亚盘</div>';
     html += '<table class="ah-odds-table">';
     html += '<tr><th></th><th>盘口</th><th>主水</th><th>客水</th></tr>';
     const ahOpen = ah.open || {};
-    const ahClose = ah.close || {};
     if (ahOpen.handicap) {
       html += `<tr><td class="ah-col-label">初盘</td><td>${handicapToChinese(ahOpen.handicap)}</td><td>${ahOpen.home_w || '-'}</td><td>${ahOpen.away_w || '-'}</td></tr>`;
     }
@@ -67,41 +146,62 @@ function openAhModal(record) {
     html += '</table>';
   }
 
-  // 利记亚盘
-  const liji = record.liji || {};
-  const lijiClose = liji.close || {};
-  const lijiOpen = liji.open || {};
-  if (lijiClose.handicap || lijiOpen.handicap) {
-    html += '<div class="ah-section-title"><span class="ah-badge ah-badge-liji">利记</span></div>';
+  // 百家平均大小球
+  const ou = record.ou || {};
+  const ouClose = ou;
+  const ouOpen = ou.open || {};
+  const hasOu = (ouClose.over || 0) > 0 || (ouClose.under || 0) > 0 || (ouOpen.over || 0) > 0;
+  if (hasOu) {
+    html += '<div class="ah-section-title">百家平均大小球</div>';
     html += '<table class="ah-odds-table">';
-    html += '<tr><th></th><th>盘口</th><th>主水</th><th>客水</th></tr>';
-    if (lijiOpen.handicap) {
-      html += `<tr><td class="ah-col-label">初盘</td><td>${handicapToChinese(lijiOpen.handicap)}</td><td>${lijiOpen.home_w || '-'}</td><td>${lijiOpen.away_w || '-'}</td></tr>`;
+    html += '<tr><th></th><th>盘口线</th><th>大球</th><th>小球</th></tr>';
+    if (ouOpen.over > 0 || ouOpen.under > 0) {
+      html += `<tr><td class="ah-col-label">初盘</td><td>${ouOpen.line || '-'}</td><td>${ouOpen.over || '-'}</td><td>${ouOpen.under || '-'}</td></tr>`;
     }
-    if (lijiClose.handicap) {
-      html += `<tr><td class="ah-col-label">即时</td><td>${handicapToChinese(lijiClose.handicap)}</td><td>${lijiClose.home_w || '-'}</td><td>${lijiClose.away_w || '-'}</td></tr>`;
+    if (ouClose.over > 0 || ouClose.under > 0) {
+      html += `<tr><td class="ah-col-label">即时</td><td>${ouClose.line || '-'}</td><td>${ouClose.over || '-'}</td><td>${ouClose.under || '-'}</td></tr>`;
     }
     html += '</table>';
   }
 
-  // 明升亚盘
+  // ===== 明升区（亚盘+大小球）=====
   const ms = record.ms || {};
   const msClose = ms.close || {};
   const msOpen = ms.open || {};
-  if (msClose.handicap || msOpen.handicap) {
+  const msOu = record.ms_ou || {};
+  const msOuOpen = msOu.open || {};
+  const hasMsAh = msClose.handicap || msOpen.handicap;
+  const hasMsOu = (msOu.over || 0) > 0 || (msOu.under || 0) > 0 || (msOuOpen.over || 0) > 0;
+
+  if (hasMsAh || hasMsOu) {
     html += '<div class="ah-section-title"><span class="ah-badge ah-badge-ms">明升</span></div>';
-    html += '<table class="ah-odds-table">';
-    html += '<tr><th></th><th>盘口</th><th>主水</th><th>客水</th></tr>';
-    if (msOpen.handicap) {
-      html += `<tr><td class="ah-col-label">初盘</td><td>${handicapToChinese(msOpen.handicap)}</td><td>${msOpen.home_w || '-'}</td><td>${msOpen.away_w || '-'}</td></tr>`;
+
+    if (hasMsAh) {
+      html += '<table class="ah-odds-table">';
+      html += '<tr><th></th><th>盘口</th><th>主水</th><th>客水</th></tr>';
+      if (msOpen.handicap) {
+        html += `<tr><td class="ah-col-label">初盘</td><td>${handicapToChinese(msOpen.handicap)}</td><td>${msOpen.home_w || '-'}</td><td>${msOpen.away_w || '-'}</td></tr>`;
+      }
+      if (msClose.handicap) {
+        html += `<tr><td class="ah-col-label">即时</td><td>${handicapToChinese(msClose.handicap)}</td><td>${msClose.home_w || '-'}</td><td>${msClose.away_w || '-'}</td></tr>`;
+      }
+      html += '</table>';
     }
-    if (msClose.handicap) {
-      html += `<tr><td class="ah-col-label">即时</td><td>${handicapToChinese(msClose.handicap)}</td><td>${msClose.home_w || '-'}</td><td>${msClose.away_w || '-'}</td></tr>`;
+
+    if (hasMsOu) {
+      html += '<table class="ah-odds-table">';
+      html += '<tr><th></th><th>盘口线</th><th>大球</th><th>小球</th></tr>';
+      if (msOuOpen.over > 0 || msOuOpen.under > 0) {
+        html += `<tr><td class="ah-col-label">初盘</td><td>${msOuOpen.line || '-'}</td><td>${msOuOpen.over || '-'}</td><td>${msOuOpen.under || '-'}</td></tr>`;
+      }
+      if (msOu.over > 0 || msOu.under > 0) {
+        html += `<tr><td class="ah-col-label">即时</td><td>${msOu.line || '-'}</td><td>${msOu.over || '-'}</td><td>${msOu.under || '-'}</td></tr>`;
+      }
+      html += '</table>';
     }
-    html += '</table>';
   }
 
-  // HHAD详情
+  // ===== HHAD让球 =====
   const hhad = record.hhad || {};
   if (hhad.handicap !== null && hhad.handicap !== undefined) {
     html += '<div class="ah-section-title">竞彩让球(HHAD)</div>';
@@ -111,7 +211,7 @@ function openAhModal(record) {
     html += '</table>';
   }
 
-  // 赔率对比提示（Pinnacle vs 竞彩分歧）
+  // ===== Pinnacle vs 竞彩 分歧 =====
   if (record.odds.w > 0 && pin.w > 0) {
     const diffW = ((pin.w - record.odds.w) / record.odds.w * 100).toFixed(1);
     const diffD = ((pin.d - record.odds.d) / record.odds.d * 100).toFixed(1);
@@ -332,10 +432,24 @@ function loadDate() {
     const evCls = v => v > 0 ? 'ev-pos' : 'ev-neg';
     const ah = r.ah || {};
     const hasAh = ah.handicap !== null && ah.handicap !== undefined && (ah.handicap !== 0 || ah.home_w !== 0 || ah.away_w !== 0);
-    const ahDisplay = hasAh ? handicapToChinese(ah.handicap) : '-';
-    const ahCell = hasAh
-      ? `<td class="ah-clickable" data-date="${sel}" data-idx="${i}">${ahDisplay}</td>`
-      : `<td>${ahDisplay}</td>`;
+    // 亚盘列优先显示Pinnacle让球，其次利记，再次百家平均
+    const pinAh = r.pin_ah || {};
+    const lijiAh = (r.liji || {}).close || {};
+    let ahDisplayVal = '-';
+    let ahClickable = false;
+    if (pinAh.handicap !== null && pinAh.handicap !== undefined && pinAh.handicap !== 0) {
+      ahDisplayVal = handicapToChinese(pinAh.handicap);
+      ahClickable = true;
+    } else if (lijiAh.handicap) {
+      ahDisplayVal = handicapToChinese(lijiAh.handicap);
+      ahClickable = true;
+    } else if (hasAh) {
+      ahDisplayVal = handicapToChinese(ah.handicap);
+      ahClickable = true;
+    }
+    const ahCell = ahClickable
+      ? `<td class="ah-clickable" data-date="${sel}" data-idx="${i}">${ahDisplayVal}</td>`
+      : `<td>${ahDisplayVal}</td>`;
     const poissonStr = `${r.poisson.w}/${r.poisson.d}/${r.poisson.l}`;
     const finalStr = `${r.final_prob.w}/${r.final_prob.d}/${r.final_prob.l}`;
     const evStr = `<span class="${evCls(evW)}">${evW.toFixed(2)}</span>/<span class="${evCls(evD)}">${evD.toFixed(2)}</span>/<span class="${evCls(evL)}">${evL.toFixed(2)}</span>`;
@@ -484,7 +598,12 @@ function downloadExcel() {
     '胜赔','平赔','负赔','泊松W','泊松D','泊松L','综合W','综合D','综合L',
     'EV_W','EV_D','EV_L','凯利W','凯利D','凯利L',
     'Pinnacle_W','Pinnacle_D','Pinnacle_L','HKJC_W','HKJC_D','HKJC_L',
-    'HHAD盘口','HHAD胜','HHAD平','HHAD负'];
+    'HHAD盘口','HHAD胜','HHAD平','HHAD负',
+    'Pinnacle_AH_让球','Pinnacle_AH_主水','Pinnacle_AH_客水',
+    'Pinnacle_OU_盘口','Pinnacle_OU_大球','Pinnacle_OU_小球',
+    '百家OU_大球','百家OU_盘口','百家OU_小球',
+    '利记OU_大球','利记OU_盘口','利记OU_小球',
+    '明升OU_大球','明升OU_盘口','明升OU_小球'];
 
   const rows = [headers];
   records.forEach((r, i) => {
@@ -504,7 +623,12 @@ function downloadExcel() {
       r.kelly.w, r.kelly.d, r.kelly.l,
       r.pinnacle.w, r.pinnacle.d, r.pinnacle.l,
       r.hkjc.w, r.hkjc.d, r.hkjc.l,
-      r.hhad ? r.hhad.handicap : '', r.hhad ? r.hhad.w : 0, r.hhad ? r.hhad.d : 0, r.hhad ? r.hhad.l : 0
+      r.hhad ? r.hhad.handicap : '', r.hhad ? r.hhad.w : 0, r.hhad ? r.hhad.d : 0, r.hhad ? r.hhad.l : 0,
+      r.pin_ah ? r.pin_ah.handicap : '', r.pin_ah ? r.pin_ah.home_w : 0, r.pin_ah ? r.pin_ah.away_w : 0,
+      r.pin_ou ? r.pin_ou.line : '', r.pin_ou ? r.pin_ou.over : 0, r.pin_ou ? r.pin_ou.under : 0,
+      r.ou ? r.ou.over : 0, r.ou ? r.ou.line : '', r.ou ? r.ou.under : 0,
+      r.liji_ou ? r.liji_ou.over : 0, r.liji_ou ? r.liji_ou.line : '', r.liji_ou ? r.liji_ou.under : 0,
+      r.ms_ou ? r.ms_ou.over : 0, r.ms_ou ? r.ms_ou.line : '', r.ms_ou ? r.ms_ou.under : 0
     ]);
   });
 

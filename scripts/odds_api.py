@@ -45,8 +45,8 @@ HEADERS = {
 COMPANY_MAP = {
     "0": "百家平均",
     "106": "Pinnacle",
-    "136": "HKJC",
-    "3": "SB",
+    # "136": "HKJC",   # 已取消抓取
+    # "3": "SB",        # 已取消抓取
     "56": "Betfair",
 }
 
@@ -565,6 +565,105 @@ def fetch_asian_handicap(date_str: str, page_type: str = None, company: str = '0
 
     print(f"  亚盘{company_name}: {len(result)} 场")
     return result
+
+
+# ================================================================
+#  足彩网 — 大小球盘 (POST companyType=d)
+# ================================================================
+
+def fetch_over_under(date_str: str, page_type: str = None, company: str = '0'):
+    """POST抓取大小球数据 (companyType=d)
+
+    大小球格式: over / line / under (大球赔率/盘口线/小球赔率)
+    company: '0'=百家平均, '15'=利记, '6'=明升
+    date_str: YYYYMMDD格式
+    Returns: {match_key: {home, away, open: {over, line, under}, close: {over, line, under}}}
+    """
+    company_names = {'0': '百家平均', '15': '利记', '6': '明升'}
+    company_name = company_names.get(company, f'company={company}')
+
+    data = {
+        'type': page_type if page_type else 'jc',
+        'issue': '',
+        'company': company,
+        'companyType': 'd',
+        'date': date_str,
+        'fg': '1',
+    }
+
+    for attempt in range(MAX_RETRY + 1):
+        try:
+            r = requests.post(BASE_URL, data=data, headers={
+                **HEADERS, "Content-Type": "application/x-www-form-urlencoded"
+            }, timeout=20)
+
+            if r.status_code == 418 or _is_waf(r.text):
+                if attempt < MAX_RETRY:
+                    wait = SLEEP_SEC * (attempt + 2)
+                    print(f"  ⚠️ 大小球{company_name} WAF拦截，{wait:.0f}s后重试({attempt+1}/{MAX_RETRY})...")
+                    time.sleep(wait)
+                    continue
+                else:
+                    print(f"  ❌ 大小球{company_name} 重试耗尽")
+                    return {}
+
+            if r.status_code != 200:
+                print(f"  ❌ 大小球{company_name} 请求失败: status={r.status_code}")
+                return {}
+
+            break
+        except Exception as e:
+            if attempt < MAX_RETRY:
+                time.sleep(SLEEP_SEC * 2)
+            else:
+                print(f"  ❌ 大小球{company_name}: {e}")
+                return {}
+
+    html = r.text
+    result = {}
+    rows = re.findall(r'<tr[^>]*>(.*?)</tr>', html, re.DOTALL)
+
+    for row in rows:
+        teams = re.findall(r'<a[^>]*class="t[12]"[^>]*>([^<]+)</a>', row)
+        if len(teams) < 2:
+            continue
+
+        # 提取TD内容
+        td_contents = re.findall(r'<td[^>]*>(.*?)</td>', row, re.DOTALL)
+        td_values = []
+        for td in td_contents:
+            td_clean = re.sub(r'<[^>]+>', '', td).strip()
+            td_values.append(td_clean)
+
+        # 大小球数据：按列位置提取（与亚盘相同的列结构）
+        # TD0=checkbox, TD1=编号, TD2=联赛, TD3=时间, TD4=对阵
+        # TD5=open_over, TD6=open_line, TD7=open_under
+        # TD8=close_over, TD9=close_line, TD10=close_under
+        open_over, open_line, open_under = 0.0, 0.0, 0.0
+        close_over, close_line, close_under = 0.0, 0.0, 0.0
+
+        if len(td_values) >= 11:
+            open_over, _ = _parse_ah_value(td_values[5])
+            open_line, _ = _parse_ah_value(td_values[6])
+            open_under, _ = _parse_ah_value(td_values[7])
+            close_over, _ = _parse_ah_value(td_values[8])
+            close_line, _ = _parse_ah_value(td_values[9])
+            close_under, _ = _parse_ah_value(td_values[10])
+
+        # 基本校验
+        if open_over == 0 and open_under == 0 and close_over == 0 and close_under == 0:
+            continue
+
+        key = f"{teams[0]}_{teams[1]}"
+        result[key] = {
+            'home': teams[0],
+            'away': teams[1],
+            'open': {'over': open_over, 'line': open_line, 'under': open_under},
+            'close': {'over': close_over, 'line': close_line, 'under': close_under},
+        }
+
+    print(f"  大小球{company_name}: {len(result)} 场")
+    return result
 # ================================================================
 
 def _fuzzy_match(home: str, away: str, merged: dict) -> Optional[str]:
@@ -592,7 +691,7 @@ def fetch_all(date_str: str = None, companies: List[str] = None,
         date_str = datetime.now().strftime('%Y-%m-%d')
 
     if companies is None:
-        companies = ["106", "136", "3"]
+        companies = ["106"]
 
     prev_day = (datetime.strptime(date_str, '%Y-%m-%d') - timedelta(days=1)).strftime('%Y%m%d')
     curr_day = date_str.replace('-', '')
@@ -656,6 +755,25 @@ def fetch_all(date_str: str = None, companies: List[str] = None,
         for key, v in ms.items():
             ms_ah[key] = v
     print(f"  利记亚盘: {len(liji_ah)} 场 | 明升亚盘: {len(ms_ah)} 场")
+
+    # 1.7 大小球 (POST companyType=d) — 百家平均 + 利记 + 明升
+    ou_data = {}
+    ou_liji = {}
+    ou_ms = {}
+    for d, label in [(prev_day, "前一天"), (curr_day, "当天")]:
+        ou_avg = fetch_over_under(d, company='0')
+        time.sleep(SLEEP_SEC)
+        for key, v in ou_avg.items():
+            ou_data[key] = v
+        ou_lj = fetch_over_under(d, company='15')
+        time.sleep(SLEEP_SEC)
+        for key, v in ou_lj.items():
+            ou_liji[key] = v
+        ou_m = fetch_over_under(d, company='6')
+        time.sleep(SLEEP_SEC)
+        for key, v in ou_m.items():
+            ou_ms[key] = v
+    print(f"  大小球汇总: 百家平均{len(ou_data)}场 | 利记{len(ou_liji)}场 | 明升{len(ou_ms)}场")
 
     # 2. 各公司
     company_data = {}
@@ -730,6 +848,10 @@ def fetch_all(date_str: str = None, companies: List[str] = None,
                 # 利记/明升亚盘(含初盘+即时盘)
                 "liji": liji_ah.get(key, {}),
                 "ms": ms_ah.get(key, {}),
+                # 大小球(含初盘+即时盘) — 百家平均/利记/明升
+                "ou": ou_data.get(key, {}),
+                "ou_liji": ou_liji.get(key, {}),
+                "ou_ms": ou_ms.get(key, {}),
             }
         ah_path = os.path.join(RAW_DIR, f"ah_{curr_day}.json")
         with open(ah_path, 'w', encoding='utf-8') as f:
@@ -992,8 +1114,9 @@ if __name__ == "__main__":
     p = argparse.ArgumentParser(description="足彩网赔率抓取 + BSD分析")
     p.add_argument("--date", help="目标日期 YYYY-MM-DD，默认今天")
     p.add_argument("--source", default="all",
-                   choices=["all", "avg", "pinnacle", "hkjc", "sb"])
-    p.add_argument("--companies", help="公司ID列表，逗号分隔，默认106,136,3")
+                   choices=["all", "avg", "pinnacle", "hkjc", "sb"],
+                   help="[已废弃] 赔率源筛选，默认仅抓取Pinnacle(106)+百家平均")
+    p.add_argument("--companies", help="公司ID列表，逗号分隔，默认106")
     p.add_argument("--compare", action="store_true", help="抓完后自动BSD对比")
     p.add_argument("--load", help="读取缓存 YYYYMMDD")
     p.add_argument("--sleep", type=float, default=3.0, help="请求间隔秒数")

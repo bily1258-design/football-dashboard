@@ -56,6 +56,7 @@ def load_from_db(db_path: str, max_days=999) -> dict:
         fusion_win, fusion_draw, fusion_loss, actual_outcome, risk_level, \
         confidence_index, reference_score, best_direction_cn, source, \
         ev_win, ev_draw, ev_loss, kelly_win, kelly_draw, kelly_loss, \
+        pinnacle_open_w, pinnacle_open_d, pinnacle_open_l, \
         pinnacle_close_w, pinnacle_close_d, pinnacle_close_l, \
         hkjc_close_w, hkjc_close_d, hkjc_close_l, cold_risk, odds_source, \
         home_lambda, away_lambda, home_ranking, away_ranking, \
@@ -65,7 +66,15 @@ def load_from_db(db_path: str, max_days=999) -> dict:
         liji_handicap, liji_home_water, liji_away_water, \
         liji_open_handicap, liji_open_home_water, liji_open_away_water, \
         ms_handicap, ms_home_water, ms_away_water, \
-        ms_open_handicap, ms_open_home_water, ms_open_away_water \
+        ms_open_handicap, ms_open_home_water, ms_open_away_water, \
+        pin_ah_handicap, pin_ah_home_water, pin_ah_away_water, \
+        pin_ou_line, pin_ou_over, pin_ou_under, \
+        ou_over, ou_line, ou_under, \
+        ou_open_over, ou_open_line, ou_open_under, \
+        liji_ou_over, liji_ou_line, liji_ou_under, \
+        liji_ou_open_over, liji_ou_open_line, liji_ou_open_under, \
+        ms_ou_over, ms_ou_line, ms_ou_under, \
+        ms_ou_open_over, ms_ou_open_line, ms_ou_open_under \
         FROM poisson_predictions WHERE date >= ? ORDER BY date DESC, kickoff_time, id", (cutoff,))
     by_date = {}
     for r in cur.fetchall():
@@ -113,7 +122,10 @@ def load_from_db(db_path: str, max_days=999) -> dict:
             'fusion_direction': '主胜' if (d.get('fusion_win',0) or 0) >= (d.get('fusion_draw',0) or 0) and (d.get('fusion_win',0) or 0) >= (d.get('fusion_loss',0) or 0) else '客胜' if (d.get('fusion_loss',0) or 0) >= (d.get('fusion_win',0) or 0) else '平局',
             'ev': {'w': round(d.get('ev_win',0) or 0,4), 'd': round(d.get('ev_draw',0) or 0,4), 'l': round(d.get('ev_loss',0) or 0,4)},
             'kelly': {'w': round(d.get('kelly_win',0) or 0,4), 'd': round(d.get('kelly_draw',0) or 0,4), 'l': round(d.get('kelly_loss',0) or 0,4)},
-            'pinnacle': {'w': d.get('pinnacle_close_w',0) or 0, 'd': d.get('pinnacle_close_d',0) or 0, 'l': d.get('pinnacle_close_l',0) or 0},
+            'pinnacle': {
+                'w': d.get('pinnacle_close_w',0) or 0, 'd': d.get('pinnacle_close_d',0) or 0, 'l': d.get('pinnacle_close_l',0) or 0,
+                'open': {'w': d.get('pinnacle_open_w',0) or 0, 'd': d.get('pinnacle_open_d',0) or 0, 'l': d.get('pinnacle_open_l',0) or 0},
+            },
             'hkjc': {'w': d.get('hkjc_close_w',0) or 0, 'd': d.get('hkjc_close_d',0) or 0, 'l': d.get('hkjc_close_l',0) or 0},
             'risk_level': d.get('risk_level','') or '', 'stars': stars,
             'confidence_index': round(ci,2), 'reference_score': d.get('reference_score','') or '',
@@ -162,6 +174,46 @@ def load_from_db(db_path: str, max_days=999) -> dict:
                     'handicap': d.get('ms_open_handicap', None),
                     'home_w': d.get('ms_open_home_water', 0) or 0,
                     'away_w': d.get('ms_open_away_water', 0) or 0,
+                },
+            },
+            'pin_ah': {
+                'handicap': d.get('pin_ah_handicap', None),
+                'home_w': d.get('pin_ah_home_water', 0) or 0,
+                'away_w': d.get('pin_ah_away_water', 0) or 0,
+            },
+            'pin_ou': {
+                'line': d.get('pin_ou_line', None),
+                'over': d.get('pin_ou_over', 0) or 0,
+                'under': d.get('pin_ou_under', 0) or 0,
+            },
+            'ou': {
+                'over': d.get('ou_over', 0) or 0,
+                'line': d.get('ou_line', None),
+                'under': d.get('ou_under', 0) or 0,
+                'open': {
+                    'over': d.get('ou_open_over', 0) or 0,
+                    'line': d.get('ou_open_line', None),
+                    'under': d.get('ou_open_under', 0) or 0,
+                },
+            },
+            'liji_ou': {
+                'over': d.get('liji_ou_over', 0) or 0,
+                'line': d.get('liji_ou_line', None),
+                'under': d.get('liji_ou_under', 0) or 0,
+                'open': {
+                    'over': d.get('liji_ou_open_over', 0) or 0,
+                    'line': d.get('liji_ou_open_line', None),
+                    'under': d.get('liji_ou_open_under', 0) or 0,
+                },
+            },
+            'ms_ou': {
+                'over': d.get('ms_ou_over', 0) or 0,
+                'line': d.get('ms_ou_line', None),
+                'under': d.get('ms_ou_under', 0) or 0,
+                'open': {
+                    'over': d.get('ms_ou_open_over', 0) or 0,
+                    'line': d.get('ms_ou_open_line', None),
+                    'under': d.get('ms_ou_open_under', 0) or 0,
                 },
             },
         })
