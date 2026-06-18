@@ -1,19 +1,4 @@
 {
-  "乌兹别克斯坦_哥伦比亚": {
-    "home": "乌兹别克斯坦",
-    "away": "哥伦比亚",
-    "open": {
-      "home_w": 0.93,
-      "handicap": 0.79,
-      "away_w": 0.87
-    },
-    "close": {
-      "home_w": 0.97,
-      "handicap": 1.0,
-      "away_w": 0.87
-    },
-    "source": "avg"
-  },
   "奥地利_约旦": {
     "home": "奥地利",
     "away": "约旦",
@@ -71,6 +56,21 @@
       "home_w": 2.1,
       "handicap": 0.0,
       "away_w": 1.69
+    },
+    "source": "avg"
+  },
+  "乌兹别克斯坦_哥伦比亚": {
+    "home": "乌兹别克斯坦",
+    "away": "哥伦比亚",
+    "open": {
+      "home_w": 0.93,
+      "handicap": 0.79,
+      "away_w": 0.87
+    },
+    "close": {
+      "home_w": 1.31,
+      "handicap": 0.5,
+      "away_w": 2.7
     },
     "source": "avg"
   },
@@ -158,9 +158,9 @@
       "away_w": 1.01
     },
     "close": {
-      "home_w": 0.87,
+      "home_w": 0.91,
       "handicap": -0.5,
-      "away_w": 0.98
+      "away_w": 0.95
     },
     "source": "avg"
   },
@@ -173,9 +173,9 @@
       "away_w": 0.9
     },
     "close": {
-      "home_w": 0.96,
+      "home_w": 0.95,
       "handicap": -1.0,
-      "away_w": 0.89
+      "away_w": 0.9
     },
     "source": "avg"
   },
@@ -188,9 +188,9 @@
       "away_w": 0.83
     },
     "close": {
-      "home_w": 0.87,
+      "home_w": 0.89,
       "handicap": -1.5,
-      "away_w": 0.97
+      "away_w": 0.96
     },
     "source": "avg"
   },
@@ -203,7 +203,7 @@
       "away_w": 0.97
     },
     "close": {
-      "home_w": 0.97,
+      "home_w": 0.98,
       "handicap": -0.5,
       "away_w": 0.88
     },
@@ -218,9 +218,9 @@
       "away_w": 0.87
     },
     "close": {
-      "home_w": 0.93,
+      "home_w": 0.9,
       "handicap": -1.25,
-      "away_w": 0.88
+      "away_w": 0.92
     },
     "source": "avg"
   },
@@ -233,9 +233,9 @@
       "away_w": 0.92
     },
     "close": {
-      "home_w": 0.85,
+      "home_w": 0.9,
       "handicap": -0.5,
-      "away_w": 0.94
+      "away_w": 0.91
     },
     "source": "avg"
   },
@@ -250,7 +250,7 @@
     "close": {
       "home_w": 0.87,
       "handicap": -0.25,
-      "away_w": 0.92
+      "away_w": 0.93
     },
     "source": "avg"
   }
