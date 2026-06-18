@@ -105,6 +105,7 @@ def calculate_value_bet(match_data):
     default_result = {
         'ev_win': 0.0, 'ev_draw': 0.0, 'ev_loss': 0.0,
         'ev_value': 0.0,
+        'ev_win_raw': 0.0, 'ev_draw_raw': 0.0, 'ev_loss_raw': 0.0,
         'best_direction': 'win',
         'best_direction_cn': '主胜',
         'implied_prob_w': 0, 'implied_prob_d': 0, 'implied_prob_l': 0,
@@ -298,17 +299,29 @@ def calculate_value_bet(match_data):
     ev_draw = _calc_direction_ev(fusion_d, implied['d'])
     ev_loss = _calc_direction_ev(fusion_l, implied['l'])
     
-    # EV异常值钳制：|EV| > 50% 标记为模型偏差
-    # 正常EV范围 -10% ~ +20%，超过50%说明模型概率严重偏离市场
-    EV_ABS_CAP = 0.30  # 30%，超过说明模型概率严重偏离市场
-    for ev_name, ev_val in [('ev_win', ev_win), ('ev_draw', ev_draw), ('ev_loss', ev_loss)]:
-        if abs(ev_val) > EV_ABS_CAP:
-            quality_signals.append(f'|{ev_name}|={ev_val:.0%}>30%模型偏差')
-            data_quality = 'abnormal'
-    # 钳制EV值到[-50%, 50%]范围，避免极端值污染推荐
-    ev_win = max(-EV_ABS_CAP, min(EV_ABS_CAP, ev_win))
-    ev_draw = max(-EV_ABS_CAP, min(EV_ABS_CAP, ev_draw))
-    ev_loss = max(-EV_ABS_CAP, min(EV_ABS_CAP, ev_loss))
+    # EV异常值检测：|raw EV| > 30% 标记为模型偏差（用原始值判断，不受软压缩影响）
+    # 正常EV范围 -10% ~ +20%，超过30%说明模型概率严重偏离市场
+    EV_BIAS_THRESHOLD = 0.30  # 模型偏差阈值
+    is_model_biased = any(abs(v) > EV_BIAS_THRESHOLD for v in [ev_win, ev_draw, ev_loss])
+    if is_model_biased:
+        for ev_name, ev_val in [('ev_win', ev_win), ('ev_draw', ev_draw), ('ev_loss', ev_loss)]:
+            if abs(ev_val) > EV_BIAS_THRESHOLD:
+                quality_signals.append(f'|{ev_name}|={ev_val:.0%}>{EV_BIAS_THRESHOLD:.0%}模型偏差')
+        data_quality = 'abnormal'
+    
+    # tanh软压缩：替代硬截断，保留区分度
+    # 小范围(~±20%)几乎不变，大范围保留区分度但不爆炸
+    # scale=0.50: raw=50%→38%, raw=100%→48%, raw=300%→50%
+    EV_TANH_SCALE = 0.50
+    
+    def _tanh_compress(ev, scale=EV_TANH_SCALE):
+        """tanh软压缩EV值"""
+        import math
+        return scale * math.tanh(ev / scale)
+    
+    ev_win_compressed = _tanh_compress(ev_win)
+    ev_draw_compressed = _tanh_compress(ev_draw)
+    ev_loss_compressed = _tanh_compress(ev_loss)
     
     # ===== 8. 推荐方向 =====
     # 推荐方向逻辑：
@@ -316,12 +329,12 @@ def calculate_value_bet(match_data):
     # 2. 降级场次（无平博赔率，竞彩27%抽水）→ EV最低即冷门方向
     # 3. 正常场次 → EV最高方向（平博抽水低，EV可信）
     
-    evs = {'win': ev_win, 'draw': ev_draw, 'loss': ev_loss}
+    evs = {'win': ev_win_compressed, 'draw': ev_draw_compressed, 'loss': ev_loss_compressed}
+    evs_raw = {'win': ev_win, 'draw': ev_draw, 'loss': ev_loss}
     dir_cn = {'win': '主胜', 'draw': '平局', 'loss': '客胜'}
     probs = {'win': fusion_w, 'draw': fusion_d, 'loss': fusion_l}
     
     is_degraded_odds = not has_pin_close and not has_pin_open
-    is_model_biased = data_quality == 'abnormal'
     
     if is_model_biased:
         # 模型偏差：EV不可信，直接用概率最高方向
@@ -329,8 +342,10 @@ def calculate_value_bet(match_data):
         cold_signals_parts = list(quality_signals)  # 预初始化
         cold_signals_parts.append('EV不可信(模型偏差)→概率推荐')
     elif is_degraded_odds:
+        # 降级：用压缩后EV选冷门方向
         best_dir = min(evs, key=evs.get)
     else:
+        # 正常：用压缩后EV选最高方向（保留区分度）
         best_dir = max(evs, key=evs.get)
     
     # ===== 9. 生成信号说明 =====
@@ -361,10 +376,13 @@ def calculate_value_bet(match_data):
         cold_signals_parts.append(f"模型微估{best_ev:.0%}")
     
     return {
-        'ev_win': round(ev_win, 4),
-        'ev_draw': round(ev_draw, 4),
-        'ev_loss': round(ev_loss, 4),
+        'ev_win': round(ev_win_compressed, 4),
+        'ev_draw': round(ev_draw_compressed, 4),
+        'ev_loss': round(ev_loss_compressed, 4),
         'ev_value': round(evs[best_dir], 4),
+        'ev_win_raw': round(ev_win, 4),
+        'ev_draw_raw': round(ev_draw, 4),
+        'ev_loss_raw': round(ev_loss, 4),
         'best_direction': best_dir,
         'best_direction_cn': dir_cn[best_dir],
         'implied_prob_w': implied['w'],
@@ -407,12 +425,15 @@ def batch_calculate(db_path, date_str=None):
                 ev_win = ?, ev_draw = ?, ev_loss = ?,
                 ev_value = ?, best_direction = ?, best_direction_cn = ?,
                 implied_prob_w = ?, implied_prob_d = ?, implied_prob_l = ?,
-                avg_margin = ?, cold_signals = ?
+                avg_margin = ?, cold_signals = ?,
+                ev_win_raw = ?, ev_draw_raw = ?, ev_loss_raw = ?
             WHERE id = ?
         """, (result['ev_win'], result['ev_draw'], result['ev_loss'],
               result['ev_value'], result['best_direction'], result['best_direction_cn'],
               result['implied_prob_w'], result['implied_prob_d'], result['implied_prob_l'],
-              result['avg_margin'], result['cold_signals'], row['id']))
+              result['avg_margin'], result['cold_signals'],
+              result['ev_win_raw'], result['ev_draw_raw'], result['ev_loss_raw'],
+              row['id']))
         updated += 1
     
     conn.commit()
@@ -443,12 +464,15 @@ def recalculate_all(db_path):
                 ev_win = ?, ev_draw = ?, ev_loss = ?,
                 ev_value = ?, best_direction = ?, best_direction_cn = ?,
                 implied_prob_w = ?, implied_prob_d = ?, implied_prob_l = ?,
-                avg_margin = ?, cold_signals = ?
+                avg_margin = ?, cold_signals = ?,
+                ev_win_raw = ?, ev_draw_raw = ?, ev_loss_raw = ?
             WHERE id = ?
         """, (result['ev_win'], result['ev_draw'], result['ev_loss'],
               result['ev_value'], result['best_direction'], result['best_direction_cn'],
               result['implied_prob_w'], result['implied_prob_d'], result['implied_prob_l'],
-              result['avg_margin'], result['cold_signals'], row['id']))
+              result['avg_margin'], result['cold_signals'],
+              result['ev_win_raw'], result['ev_draw_raw'], result['ev_loss_raw'],
+              row['id']))
         updated += 1
     
     conn.commit()
