@@ -4,6 +4,103 @@ const DATA_URL = 'data/results.json';
 const WEEKDAY_CN = ['周日','周一','周二','周三','周四','周五','周六'];
 let allData = null;
 
+// ─── 泊松比分分布 ───
+function poissonPMF(lambda, k) {
+  if (lambda <= 0) return k === 0 ? 1 : 0;
+  return Math.pow(lambda, k) * Math.exp(-lambda) / factorial(k);
+}
+
+function factorial(n) {
+  if (n <= 1) return 1;
+  let r = 1;
+  for (let i = 2; i <= n; i++) r *= i;
+  return r;
+}
+
+function computeScoreMatrix(homeLambda, awayLambda, maxGoals = 5) {
+  const scores = [];
+  for (let h = 0; h <= maxGoals; h++) {
+    for (let a = 0; a <= maxGoals; a++) {
+      const prob = poissonPMF(homeLambda, h) * poissonPMF(awayLambda, a);
+      scores.push({ score: `${h}-${a}`, home: h, away: a, prob });
+    }
+  }
+  scores.sort((a, b) => b.prob - a.prob);
+  return scores;
+}
+
+function showScoreModal(record) {
+  const hL = record.home_lambda;
+  const aL = record.away_lambda;
+  if (!hL || !aL || (hL <= 0 && aL <= 0)) return;
+
+  const scores = computeScoreMatrix(hL, aL);
+  const top10 = scores.slice(0, 10);
+  const maxProb = top10[0].prob;
+
+  // 计算总进球期望
+  const totalGoals = hL + aL;
+  // 计算大2.5球概率
+  let over25 = 0;
+  for (const s of scores) {
+    if (s.home + s.away > 2.5) over25 += s.prob;
+  }
+
+  let html = `<div class="score-modal-header">
+    <span>${record.home} vs ${record.away}</span>
+    <span class="score-modal-lambda">λ主=${hL.toFixed(3)} λ客=${aL.toFixed(3)}</span>
+    <button class="score-modal-close" onclick="closeScoreModal()">&times;</button>
+  </div>`;
+
+  html += `<div class="score-modal-stats">
+    <div class="score-stat"><span class="score-stat-label">期望总进球</span><span class="score-stat-value">${totalGoals.toFixed(2)}</span></div>
+    <div class="score-stat"><span class="score-stat-label">大2.5球</span><span class="score-stat-value">${(over25 * 100).toFixed(1)}%</span></div>
+    <div class="score-stat"><span class="score-stat-label">小2.5球</span><span class="score-stat-value">${((1 - over25) * 100).toFixed(1)}%</span></div>
+  </div>`;
+
+  html += '<div class="score-bars">';
+  for (const s of top10) {
+    const pct = (s.prob * 100).toFixed(1);
+    const barWidth = (s.prob / maxProb * 100).toFixed(1);
+    const isHome = s.home > s.away;
+    const isDraw = s.home === s.away;
+    const resultClass = isDraw ? 'score-draw' : (isHome ? 'score-home' : 'score-away');
+    html += `<div class="score-bar-row ${resultClass}">
+      <span class="score-label">${s.score}</span>
+      <div class="score-bar-track"><div class="score-bar-fill" style="width:${barWidth}%"></div></div>
+      <span class="score-pct">${pct}%</span>
+    </div>`;
+  }
+  html += '</div>';
+
+  // 比分矩阵热力图 (4x4)
+  html += '<div class="score-heatmap-title">比分矩阵</div>';
+  html += '<table class="score-heatmap"><tr><th></th>';
+  for (let a = 0; a <= 4; a++) html += `<th>${a}</th>`;
+  html += '</tr>';
+  for (let h = 0; h <= 4; h++) {
+    html += `<tr><th>${h}</th>`;
+    for (let a = 0; a <= 4; a++) {
+      const p = poissonPMF(hL, h) * poissonPMF(aL, a);
+      const intensity = Math.min(p / maxProb, 1);
+      const bg = `rgba(88,166,255,${(intensity * 0.8).toFixed(2)})`;
+      html += `<td style="background:${bg}" title="${h}-${a}: ${(p * 100).toFixed(1)}%">${(p * 100).toFixed(1)}</td>`;
+    }
+    html += '</tr>';
+  }
+  html += '</table>';
+  html += '<div class="score-heatmap-axis">← 客队进球 &nbsp;&nbsp; 主队进球 →</div>';
+
+  const overlay = document.getElementById('scoreModalOverlay');
+  const content = document.getElementById('scoreModalContent');
+  content.innerHTML = html;
+  overlay.classList.add('active');
+}
+
+function closeScoreModal() {
+  document.getElementById('scoreModalOverlay').classList.remove('active');
+}
+
 // ─── 初始化 ───
 async function init() {
   try {
@@ -79,6 +176,12 @@ function loadDate() {
     const probLabel = r.prob_direction ? `${r.prob_direction} ${probPct}` : probPct;
     const probDirClass = r.prob_direction === '主胜' ? 'hit' : (r.prob_direction === '客胜' ? 'miss' : 'draw');
 
+    // 泊松列：有 lambda 就可点击查看比分分布
+    const hasLambda = r.home_lambda > 0 || r.away_lambda > 0;
+    const poissonCell = hasLambda
+      ? `<td class="poisson-clickable" onclick='showScoreModal(${JSON.stringify(r).replace(/'/g, "&#39;")})'>${poissonStr}</td>`
+      : `<td>${poissonStr}</td>`;
+
     html += `<tr>
 <td>${i + 1} ${srcBadge}</td>
 <td>${r.league}</td>
@@ -89,7 +192,7 @@ function loadDate() {
 <td>${resultDisplay}</td>
 <td>${r.score || '-'}</td>
 <td>${oddsStr}</td>
-<td>${poissonStr}</td><td>${finalStr}</td>
+${poissonCell}<td>${finalStr}</td>
 <td>${evStr}</td><td>${kellyStr}</td>
 <td>${pinStr}</td><td>${hkjcStr}</td>
 </tr>`;
@@ -163,6 +266,14 @@ function bindEvents() {
   document.getElementById('dateSelect').addEventListener('change', loadDate);
   document.getElementById('showResulted').addEventListener('change', loadDate);
   document.getElementById('showPending').addEventListener('change', loadDate);
+
+  // 模态框关闭
+  document.getElementById('scoreModalOverlay').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeScoreModal();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeScoreModal();
+  });
 }
 
 // ─── Excel 下载 ───
