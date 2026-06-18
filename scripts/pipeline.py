@@ -3,12 +3,13 @@
 
 步骤顺序硬编码，从根本上杜绝 yml 排列出错：
   1. predict_from_odds   — OM赔率 → 泊松预测 INSERT DB
-  2. update_db_fusion    — LGBM融合概率填充
-  3. value_bet --all     — EV 重算
-  4. update_db_kelly     — Kelly 重算
-  5. align_and_merge --cleanup-db  — 去重复
-  6. align_and_merge --all         — 对齐合并 → processed/
-  7. push_db             — DB 推 Release
+  2. calc_lambda         — 补算 lambda（对 jingcai 等无 lambda 的记录）
+  3. update_db_fusion    — LGBM融合概率填充
+  4. value_bet --all     — EV 重算
+  5. update_db_kelly     — Kelly 重算
+  6. align_and_merge --cleanup-db  — 去重复
+  7. align_and_merge --all         — 对齐合并 → processed/
+  8. push_db             — DB 推 Release
 
 用法：
   python scripts/pipeline.py --date 2026-06-18 --db data/football.db
@@ -62,46 +63,52 @@ def main():
     if not args.skip_predict:
         run([sys.executable, os.path.join(SCRIPT_DIR, "predict_from_odds.py"),
              "--date", date, "--db", db],
-            label="1/7 predict_from_odds",
+            label="1/8 predict_from_odds",
             required=False)
     else:
         print("⏭️ 跳过 predict (--skip-predict)")
 
-    # 2. LGBM 融合概率
+    # 2. 补算 lambda（对 jingcai 等无 lambda 的记录用赔率反推）
+    run([sys.executable, os.path.join(SCRIPT_DIR, "calc_lambda.py"),
+         "--db", db, "--date", date],
+        label="2/8 calc_lambda",
+        required=False)
+
+    # 3. LGBM 融合概率
     run([sys.executable, os.path.join(SCRIPT_DIR, "update_db_fusion.py"),
          "--db", db],
-        label="2/7 update_db_fusion",
+        label="3/8 update_db_fusion",
         required=False)
 
-    # 3. EV 重算
+    # 4. EV 重算
     run([sys.executable, os.path.join(SCRIPT_DIR, "value_bet.py"),
          "--all", "--db", db],
-        label="3/7 value_bet (EV)",
+        label="4/8 value_bet (EV)",
         required=False)
 
-    # 4. Kelly 重算
+    # 5. Kelly 重算
     run([sys.executable, os.path.join(SCRIPT_DIR, "update_db_kelly.py"),
          "--db", db],
-        label="4/7 update_db_kelly",
+        label="5/8 update_db_kelly",
         required=False)
 
-    # 5. DB 去重
+    # 6. DB 去重
     run([sys.executable, os.path.join(SCRIPT_DIR, "align_and_merge.py"),
          "--cleanup-db", "--db", db],
-        label="5/7 cleanup_db_duplicates",
+        label="6/8 cleanup_db_duplicates",
         required=False)
 
-    # 6. 对齐合并 → processed/
+    # 7. 对齐合并 → processed/
     run([sys.executable, os.path.join(SCRIPT_DIR, "align_and_merge.py"),
          "--all", "--db", db],
-        label="6/7 align_and_merge",
+        label="7/8 align_and_merge",
         required=True)
 
-    # 7. 推送 DB 到 Release
+    # 8. 推送 DB 到 Release
     if not args.skip_push:
         run([sys.executable, os.path.join(SCRIPT_DIR, "push_db.py"),
              "--db", db],
-            label="7/7 push_db",
+            label="8/8 push_db",
             required=False)
     else:
         print("⏭️ 跳过 push_db (--skip-push)")
