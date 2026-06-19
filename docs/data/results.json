@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2026-06-19 23:29:32",
+    "generated_at": "2026-06-19 23:29:40",
     "total_dates": 30,
     "total_matches": 733,
     "date_range": {
@@ -9,13 +9,13 @@
     }
   },
   "summary": {
-    "total_matches": 605,
-    "ev_hits": 298,
-    "prob_hits": 293,
-    "any_hits": 378,
-    "ev_rate": 49.3,
-    "prob_rate": 48.4,
-    "any_rate": 62.5,
+    "total_matches": 612,
+    "ev_hits": 303,
+    "prob_hits": 298,
+    "any_hits": 384,
+    "ev_rate": 49.5,
+    "prob_rate": 48.7,
+    "any_rate": 62.7,
     "days": 30,
     "last_updated": "2026-06-19 23:29"
   },
@@ -32,13 +32,13 @@
     },
     "2026-06-18": {
       "total": 7,
-      "with_result": 0,
-      "ev_hits": 0,
-      "prob_hits": 0,
-      "any_hits": 0,
-      "ev_rate": 0,
-      "prob_rate": 0,
-      "any_rate": 0
+      "with_result": 7,
+      "ev_hits": 5,
+      "prob_hits": 5,
+      "any_hits": 6,
+      "ev_rate": 71.4,
+      "prob_rate": 71.4,
+      "any_rate": 85.7
     },
     "2026-06-17": {
       "total": 13,
@@ -2696,8 +2696,8 @@
           "d": 0.289,
           "l": 0.278
         },
-        "result": "",
-        "score": "",
+        "result": "平局",
+        "score": "1-1",
         "ev_direction": "主胜",
         "ev_hit": false,
         "prob_direction": "主胜",
@@ -2850,12 +2850,12 @@
           "d": 0.288,
           "l": 0.282
         },
-        "result": "",
-        "score": "",
+        "result": "主胜",
+        "score": "4-1",
         "ev_direction": "主胜",
-        "ev_hit": false,
+        "ev_hit": true,
         "prob_direction": "主胜",
-        "prob_hit": false,
+        "prob_hit": true,
         "fusion_direction": "主胜",
         "ev": {
           "w": -0.2702,
@@ -3004,12 +3004,12 @@
           "d": 0.274,
           "l": 0.279
         },
-        "result": "",
-        "score": "",
+        "result": "主胜",
+        "score": "6-0",
         "ev_direction": "主胜",
-        "ev_hit": false,
+        "ev_hit": true,
         "prob_direction": "主胜",
-        "prob_hit": false,
+        "prob_hit": true,
         "fusion_direction": "主胜",
         "ev": {
           "w": -0.3313,
@@ -3158,12 +3158,12 @@
           "d": 0.283,
           "l": 0.298
         },
-        "result": "",
-        "score": "",
+        "result": "主胜",
+        "score": "2-0",
         "ev_direction": "主胜",
-        "ev_hit": false,
+        "ev_hit": true,
         "prob_direction": "主胜",
-        "prob_hit": false,
+        "prob_hit": true,
         "fusion_direction": "主胜",
         "ev": {
           "w": -0.1468,
@@ -3312,10 +3312,10 @@
           "d": 0.278,
           "l": 0.291
         },
-        "result": "",
-        "score": "",
+        "result": "平局",
+        "score": "1-1",
         "ev_direction": "平局",
-        "ev_hit": false,
+        "ev_hit": true,
         "prob_direction": "主胜",
         "prob_hit": false,
         "fusion_direction": "主胜",
@@ -3466,12 +3466,12 @@
           "d": 0.266,
           "l": 0.291
         },
-        "result": "",
-        "score": "",
+        "result": "主胜",
+        "score": "1-0",
         "ev_direction": "客胜",
         "ev_hit": false,
         "prob_direction": "主胜",
-        "prob_hit": false,
+        "prob_hit": true,
         "fusion_direction": "主胜",
         "ev": {
           "w": -0.0527,
@@ -3620,12 +3620,12 @@
           "d": 0.258,
           "l": 0.308
         },
-        "result": "",
-        "score": "",
+        "result": "主胜",
+        "score": "2-1",
         "ev_direction": "主胜",
-        "ev_hit": false,
+        "ev_hit": true,
         "prob_direction": "主胜",
-        "prob_hit": false,
+        "prob_hit": true,
         "fusion_direction": "主胜",
         "ev": {
           "w": -0.3238,
