@@ -459,6 +459,52 @@
     "ou_liji": {},
     "ou_ms": {}
   },
+  "墨西哥_韩国": {
+    "home": "墨西哥",
+    "away": "韩国",
+    "open": {
+      "home_w": 0.87,
+      "handicap": -0.5,
+      "away_w": 0.97
+    },
+    "close": {
+      "home_w": 0.87,
+      "handicap": -0.25,
+      "away_w": 0.97
+    },
+    "source": "avg",
+    "liji": {
+      "home": "墨西哥",
+      "away": "韩国",
+      "open": {
+        "home_w": 0.85,
+        "handicap": -0.5,
+        "away_w": 0.99
+      },
+      "close": {
+        "home_w": 0.9,
+        "handicap": 0.0,
+        "away_w": 1.02
+      }
+    },
+    "ms": {
+      "home": "墨西哥",
+      "away": "韩国",
+      "open": {
+        "home_w": 0.92,
+        "handicap": -0.5,
+        "away_w": 0.92
+      },
+      "close": {
+        "home_w": 0.96,
+        "handicap": 0.0,
+        "away_w": 0.96
+      }
+    },
+    "ou": {},
+    "ou_liji": {},
+    "ou_ms": {}
+  },
   "捷克_南非": {
     "home": "捷克",
     "away": "南非",
@@ -468,9 +514,9 @@
       "away_w": 1.01
     },
     "close": {
-      "home_w": 0.88,
-      "handicap": -0.5,
-      "away_w": 0.97
+      "home_w": 1.99,
+      "handicap": -0.25,
+      "away_w": 1.15
     },
     "source": "avg",
     "liji": {
@@ -482,9 +528,9 @@
         "away_w": 1.08
       },
       "close": {
-        "home_w": 0.91,
-        "handicap": -0.5,
-        "away_w": 1.03
+        "home_w": 0.52,
+        "handicap": 0.0,
+        "away_w": 1.66
       }
     },
     "ms": {
@@ -496,9 +542,9 @@
         "away_w": 1.05
       },
       "close": {
-        "home_w": 0.86,
-        "handicap": -0.5,
-        "away_w": 1.08
+        "home_w": 0.54,
+        "handicap": 0.0,
+        "away_w": 1.61
       }
     },
     "ou": {},
@@ -514,9 +560,9 @@
       "away_w": 0.9
     },
     "close": {
-      "home_w": 0.94,
-      "handicap": -1.0,
-      "away_w": 0.91
+      "home_w": 2.41,
+      "handicap": -0.5,
+      "away_w": 1.19
     },
     "source": "avg",
     "liji": {
@@ -528,9 +574,9 @@
         "away_w": 1.13
       },
       "close": {
-        "home_w": 1.02,
-        "handicap": -1.0,
-        "away_w": 0.92
+        "home_w": 5.0,
+        "handicap": -0.25,
+        "away_w": 0.1
       }
     },
     "ms": {
@@ -542,9 +588,9 @@
         "away_w": 0.86
       },
       "close": {
-        "home_w": 1.03,
-        "handicap": -1.0,
-        "away_w": 0.91
+        "home_w": 3.7,
+        "handicap": -0.25,
+        "away_w": 0.17
       }
     },
     "ou": {},
@@ -560,9 +606,9 @@
       "away_w": 0.83
     },
     "close": {
-      "home_w": 0.92,
-      "handicap": -1.5,
-      "away_w": 0.93
+      "home_w": 2.85,
+      "handicap": -1.0,
+      "away_w": 0.48
     },
     "source": "avg",
     "liji": {
@@ -574,9 +620,9 @@
         "away_w": 1.19
       },
       "close": {
-        "home_w": 0.95,
-        "handicap": -1.5,
-        "away_w": 0.99
+        "home_w": 4.54,
+        "handicap": -0.25,
+        "away_w": 0.12
       }
     },
     "ms": {
@@ -588,55 +634,9 @@
         "away_w": 0.86
       },
       "close": {
-        "home_w": 0.95,
-        "handicap": -1.5,
-        "away_w": 0.99
-      }
-    },
-    "ou": {},
-    "ou_liji": {},
-    "ou_ms": {}
-  },
-  "墨西哥_韩国": {
-    "home": "墨西哥",
-    "away": "韩国",
-    "open": {
-      "home_w": 0.87,
-      "handicap": -0.5,
-      "away_w": 0.97
-    },
-    "close": {
-      "home_w": 1.0,
-      "handicap": -0.5,
-      "away_w": 0.86
-    },
-    "source": "avg",
-    "liji": {
-      "home": "墨西哥",
-      "away": "韩国",
-      "open": {
-        "home_w": 0.85,
-        "handicap": -0.5,
-        "away_w": 0.99
-      },
-      "close": {
-        "home_w": 1.08,
-        "handicap": -0.5,
-        "away_w": 0.85
-      }
-    },
-    "ms": {
-      "home": "墨西哥",
-      "away": "韩国",
-      "open": {
-        "home_w": 0.92,
-        "handicap": -0.5,
-        "away_w": 0.92
-      },
-      "close": {
-        "home_w": 1.08,
-        "handicap": -0.5,
-        "away_w": 0.85
+        "home_w": 1.88,
+        "handicap": -0.25,
+        "away_w": 0.43
       }
     },
     "ou": {},
@@ -698,9 +698,9 @@
       "away_w": 0.92
     },
     "close": {
-      "home_w": 0.91,
-      "handicap": -0.5,
-      "away_w": 0.91
+      "home_w": 2.43,
+      "handicap": -0.25,
+      "away_w": 0.87
     },
     "source": "avg",
     "liji": {},
@@ -718,9 +718,9 @@
       "away_w": 0.86
     },
     "close": {
-      "home_w": 0.91,
+      "home_w": 1.04,
       "handicap": -0.25,
-      "away_w": 0.89
+      "away_w": 1.95
     },
     "source": "avg",
     "liji": {},
