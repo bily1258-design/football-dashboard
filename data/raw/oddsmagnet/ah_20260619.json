@@ -1,96 +1,4 @@
 {
-  "瑞士_波黑": {
-    "home": "瑞士",
-    "away": "波黑",
-    "open": {
-      "home_w": 0.86,
-      "handicap": -1.0,
-      "away_w": 0.9
-    },
-    "close": {
-      "home_w": 1.08,
-      "handicap": -0.75,
-      "away_w": 0.78
-    },
-    "source": "avg",
-    "liji": {
-      "home": "瑞士",
-      "away": "波黑",
-      "open": {
-        "home_w": 0.72,
-        "handicap": -0.75,
-        "away_w": 1.13
-      },
-      "close": {
-        "home_w": 1.06,
-        "handicap": -0.5,
-        "away_w": 0.86
-      }
-    },
-    "ms": {
-      "home": "瑞士",
-      "away": "波黑",
-      "open": {
-        "home_w": 0.98,
-        "handicap": -0.75,
-        "away_w": 0.86
-      },
-      "close": {
-        "home_w": 1.0,
-        "handicap": -0.5,
-        "away_w": 0.92
-      }
-    },
-    "ou": {},
-    "ou_liji": {},
-    "ou_ms": {}
-  },
-  "加拿大_卡塔尔": {
-    "home": "加拿大",
-    "away": "卡塔尔",
-    "open": {
-      "home_w": 1.01,
-      "handicap": -0.75,
-      "away_w": 0.83
-    },
-    "close": {
-      "home_w": 0.91,
-      "handicap": -1.5,
-      "away_w": 0.94
-    },
-    "source": "avg",
-    "liji": {
-      "home": "加拿大",
-      "away": "卡塔尔",
-      "open": {
-        "home_w": 0.68,
-        "handicap": -0.75,
-        "away_w": 1.19
-      },
-      "close": {
-        "home_w": 0.91,
-        "handicap": -1.5,
-        "away_w": 1.03
-      }
-    },
-    "ms": {
-      "home": "加拿大",
-      "away": "卡塔尔",
-      "open": {
-        "home_w": 0.98,
-        "handicap": -0.75,
-        "away_w": 0.86
-      },
-      "close": {
-        "home_w": 0.91,
-        "handicap": -1.5,
-        "away_w": 1.03
-      }
-    },
-    "ou": {},
-    "ou_liji": {},
-    "ou_ms": {}
-  },
   "墨西哥_韩国": {
     "home": "墨西哥",
     "away": "韩国",
@@ -100,9 +8,9 @@
       "away_w": 0.97
     },
     "close": {
-      "home_w": 0.98,
-      "handicap": -0.5,
-      "away_w": 0.88
+      "home_w": 1.02,
+      "handicap": -0.25,
+      "away_w": 0.87
     },
     "source": "avg",
     "liji": {
@@ -114,9 +22,9 @@
         "away_w": 0.99
       },
       "close": {
-        "home_w": 1.14,
-        "handicap": -0.5,
-        "away_w": 0.81
+        "home_w": 0.84,
+        "handicap": 0.0,
+        "away_w": 1.08
       }
     },
     "ms": {
@@ -128,9 +36,9 @@
         "away_w": 0.92
       },
       "close": {
-        "home_w": 1.13,
-        "handicap": -0.5,
-        "away_w": 0.82
+        "home_w": 0.8,
+        "handicap": 0.0,
+        "away_w": 1.13
       }
     },
     "ou": {},
@@ -177,6 +85,98 @@
         "home_w": 0.54,
         "handicap": 0.0,
         "away_w": 1.61
+      }
+    },
+    "ou": {},
+    "ou_liji": {},
+    "ou_ms": {}
+  },
+  "瑞士_波黑": {
+    "home": "瑞士",
+    "away": "波黑",
+    "open": {
+      "home_w": 0.86,
+      "handicap": -1.0,
+      "away_w": 0.9
+    },
+    "close": {
+      "home_w": 2.41,
+      "handicap": -0.5,
+      "away_w": 1.19
+    },
+    "source": "avg",
+    "liji": {
+      "home": "瑞士",
+      "away": "波黑",
+      "open": {
+        "home_w": 0.72,
+        "handicap": -0.75,
+        "away_w": 1.13
+      },
+      "close": {
+        "home_w": 5.0,
+        "handicap": -0.25,
+        "away_w": 0.1
+      }
+    },
+    "ms": {
+      "home": "瑞士",
+      "away": "波黑",
+      "open": {
+        "home_w": 0.98,
+        "handicap": -0.75,
+        "away_w": 0.86
+      },
+      "close": {
+        "home_w": 3.7,
+        "handicap": -0.25,
+        "away_w": 0.17
+      }
+    },
+    "ou": {},
+    "ou_liji": {},
+    "ou_ms": {}
+  },
+  "加拿大_卡塔尔": {
+    "home": "加拿大",
+    "away": "卡塔尔",
+    "open": {
+      "home_w": 1.01,
+      "handicap": -0.75,
+      "away_w": 0.83
+    },
+    "close": {
+      "home_w": 2.85,
+      "handicap": -1.0,
+      "away_w": 0.48
+    },
+    "source": "avg",
+    "liji": {
+      "home": "加拿大",
+      "away": "卡塔尔",
+      "open": {
+        "home_w": 0.68,
+        "handicap": -0.75,
+        "away_w": 1.19
+      },
+      "close": {
+        "home_w": 4.54,
+        "handicap": -0.25,
+        "away_w": 0.12
+      }
+    },
+    "ms": {
+      "home": "加拿大",
+      "away": "卡塔尔",
+      "open": {
+        "home_w": 0.98,
+        "handicap": -0.75,
+        "away_w": 0.86
+      },
+      "close": {
+        "home_w": 1.88,
+        "handicap": -0.25,
+        "away_w": 0.43
       }
     },
     "ou": {},
@@ -238,9 +238,9 @@
       "away_w": 0.92
     },
     "close": {
-      "home_w": 0.89,
-      "handicap": -0.5,
-      "away_w": 0.93
+      "home_w": 2.43,
+      "handicap": -0.25,
+      "away_w": 0.87
     },
     "source": "avg",
     "liji": {},
@@ -258,9 +258,9 @@
       "away_w": 0.86
     },
     "close": {
-      "home_w": 0.92,
-      "handicap": -0.5,
-      "away_w": 0.89
+      "home_w": 1.04,
+      "handicap": -0.25,
+      "away_w": 1.95
     },
     "source": "avg",
     "liji": {},
@@ -278,26 +278,13 @@
       "away_w": 0.76
     },
     "close": {
-      "home_w": 0.98,
+      "home_w": 1.03,
       "handicap": -1.0,
-      "away_w": 0.87
+      "away_w": 0.82
     },
     "source": "avg",
     "liji": {},
-    "ms": {
-      "home": "美国",
-      "away": "澳大利亚",
-      "open": {
-        "home_w": 0.79,
-        "handicap": -0.5,
-        "away_w": 1.05
-      },
-      "close": {
-        "home_w": 1.13,
-        "handicap": -1.0,
-        "away_w": 0.8
-      }
-    },
+    "ms": {},
     "ou": {},
     "ou_liji": {},
     "ou_ms": {}
@@ -311,26 +298,13 @@
       "away_w": 0.76
     },
     "close": {
-      "home_w": 0.89,
+      "home_w": 0.91,
       "handicap": 0.75,
-      "away_w": 0.94
+      "away_w": 0.93
     },
     "source": "avg",
     "liji": {},
-    "ms": {
-      "home": "苏格兰",
-      "away": "摩洛哥",
-      "open": {
-        "home_w": 1.0,
-        "handicap": 0.25,
-        "away_w": 0.84
-      },
-      "close": {
-        "home_w": 0.91,
-        "handicap": 0.75,
-        "away_w": 1.01
-      }
-    },
+    "ms": {},
     "ou": {},
     "ou_liji": {},
     "ou_ms": {}
@@ -344,26 +318,13 @@
       "away_w": 0.94
     },
     "close": {
-      "home_w": 0.89,
+      "home_w": 0.88,
       "handicap": -2.5,
-      "away_w": 0.94
+      "away_w": 0.95
     },
     "source": "avg",
     "liji": {},
-    "ms": {
-      "home": "巴西",
-      "away": "海地",
-      "open": {
-        "home_w": 0.94,
-        "handicap": -3.25,
-        "away_w": 0.9
-      },
-      "close": {
-        "home_w": 0.89,
-        "handicap": -2.5,
-        "away_w": 1.01
-      }
-    },
+    "ms": {},
     "ou": {},
     "ou_liji": {},
     "ou_ms": {}
@@ -377,26 +338,13 @@
       "away_w": 0.58
     },
     "close": {
-      "home_w": 0.99,
+      "home_w": 1.01,
       "handicap": -0.5,
-      "away_w": 0.86
+      "away_w": 0.85
     },
     "source": "avg",
     "liji": {},
-    "ms": {
-      "home": "土耳其",
-      "away": "巴拉圭",
-      "open": {
-        "home_w": 0.94,
-        "handicap": -0.25,
-        "away_w": 0.9
-      },
-      "close": {
-        "home_w": 1.06,
-        "handicap": -0.5,
-        "away_w": 0.86
-      }
-    },
+    "ms": {},
     "ou": {},
     "ou_liji": {},
     "ou_ms": {}
