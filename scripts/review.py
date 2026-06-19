@@ -565,33 +565,34 @@ if __name__ == "__main__":
     # 推送看板（新架构：align_and_merge → merge_and_build → git push → GitHub Pages）
     try:
         import subprocess
-        dashboard_dir = os.path.dirname(os.path.abspath(__file__))  # 仓库根目录的scripts/
+        scripts_dir = os.path.dirname(os.path.abspath(__file__))  # scripts/
+        repo_dir = os.path.dirname(scripts_dir)  # 仓库根目录
 
         # Step 1: 对齐合并
         align_result = subprocess.run(
             [sys.executable, 'align_and_merge.py', '--date', target, '--db', DB_PATH],
-            cwd=dashboard_dir, capture_output=True, text=True, timeout=60
+            cwd=scripts_dir, capture_output=True, text=True, timeout=60
         )
 
-        # Step 2: 构建看板
+        # Step 2: 构建看板（--output 指向仓库根目录，使docs/输出到正确位置）
         build_result = subprocess.run(
-            [sys.executable, 'merge_and_build.py', '--db', DB_PATH, '--output', '.'],
-            cwd=dashboard_dir, capture_output=True, text=True, timeout=60
+            [sys.executable, 'merge_and_build.py', '--db', DB_PATH, '--output', repo_dir],
+            cwd=scripts_dir, capture_output=True, text=True, timeout=60
         )
         if build_result.returncode == 0:
             print(f"  build: {build_result.stdout.strip().split(chr(10))[-1]}")
-            # git commit + push
-            subprocess.run(['git', 'add', '-A'], cwd=dashboard_dir, capture_output=True)
+            # git commit + push（必须在仓库根目录执行）
+            subprocess.run(['git', 'add', '-A'], cwd=repo_dir, capture_output=True)
             commit_result = subprocess.run(
                 ['git', 'commit', '-m', f'update dashboard {target}'],
-                cwd=dashboard_dir, capture_output=True, text=True
+                cwd=repo_dir, capture_output=True, text=True
             )
             if 'nothing to commit' in commit_result.stdout:
                 print("  看板无变化，跳过推送")
             else:
                 push_result = subprocess.run(
                     ['git', 'push', 'origin', 'main'],
-                    cwd=dashboard_dir, capture_output=True, text=True, timeout=120
+                    cwd=repo_dir, capture_output=True, text=True, timeout=120
                 )
                 if push_result.returncode == 0:
                     print("✅ 看板已推送 → https://bily1258-design.github.io/football-dashboard/")
@@ -601,7 +602,7 @@ if __name__ == "__main__":
             # 推送DB到GitHub Release（供GA下载）
             push_db_result = subprocess.run(
                 [sys.executable, 'push_db.py', '--db', DB_PATH],
-                cwd=dashboard_dir, capture_output=True, text=True, timeout=60
+                cwd=scripts_dir, capture_output=True, text=True, timeout=60
             )
             if push_db_result.returncode == 0:
                 print("  ✅ DB已推送到Release")
