@@ -142,7 +142,7 @@ def _parse_single_match(block: str) -> Optional[Dict]:
     """解析单场比赛块，提取比分信息"""
     # 清理标记
     clean = block.replace('**完**', '完').replace('**', '')
-    clean = re.sub(r'\*\[\d+\]\*', '', clean)   # 排名 *[3]*
+    clean = re.sub(r'\*?\[\d+\]\*?', '', clean)   # 排名 *[3]* 或 [3]
     clean = re.sub(r'<[^>]+>', ' ', clean)        # HTML标签
     clean = unescape(clean)
     clean = re.sub(r'\s+', ' ', clean).strip()
