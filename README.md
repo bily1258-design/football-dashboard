@@ -123,7 +123,7 @@ football-dashboard/
 
 - **赔率**：中国足彩网 zgzcw.com
 - **Pinnacle**：api-football（bookmaker_id=4，日限100次）
-- **赛果**：足彩网 + 手动补录
+- **赛果**：500.com（WAF拦截中，当前靠足彩网+手动补录）
 - **积分榜**：球天下 data.qtx.com
 
 ## 看板地址
