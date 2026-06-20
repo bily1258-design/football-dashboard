@@ -702,7 +702,7 @@ def fetch_all(date_str: str = None, companies: List[str] = None,
 
     # 1. 百家平均 — 当天 + 前一天（覆盖凌晨比赛）
     avg_matches = {}
-    for d, label in [(prev_day, "前一天"), (curr_day, "当天")]:
+    for d, label in [(prev_day, "前一天"), (curr_day, "当天"), (next_day, "次日")]:
         print(f"  百家平均 {label}...")
         matches = fetch_avg(d)
         time.sleep(SLEEP_SEC)
@@ -712,7 +712,7 @@ def fetch_all(date_str: str = None, companies: List[str] = None,
         print(f"    -> {len(matches)} 场")
 
     # 北单
-    for d, label in [(prev_day, "前一天"), (curr_day, "当天")]:
+    for d, label in [(prev_day, "前一天"), (curr_day, "当天"), (next_day, "次日")]:
         bd = fetch_avg(d, page_type="bd")
         time.sleep(SLEEP_SEC)
         for m in bd:
@@ -726,7 +726,7 @@ def fetch_all(date_str: str = None, companies: List[str] = None,
 
     # 1.5 亚盘让球盘 (POST companyType=y) — 百家平均(竞彩+北单)
     ah_data = {}  # key -> {open: {}, close: {}, source: str}
-    for d, label in [(prev_day, "前一天"), (curr_day, "当天")]:
+    for d, label in [(prev_day, "前一天"), (curr_day, "当天"), (next_day, "次日")]:
         # 竞彩亚盘
         ah_avg = fetch_asian_handicap(d, company='0')
         time.sleep(SLEEP_SEC)
@@ -742,18 +742,36 @@ def fetch_all(date_str: str = None, companies: List[str] = None,
             print(f"    北单亚盘 {label}: {len(ah_bd)} 场")
     print(f"  亚盘汇总: {len(ah_data)} 场")
 
-    # 1.6 利记(company=15) + 明升(company=6) 亚盘
+    # 1.6 利记(company=15) + 明升(company=6) 亚盘 — 2026-06-20 改造：加北单(bd) 抓取
     liji_ah = {}
     ms_ah = {}
-    for d, label in [(prev_day, "前一天"), (curr_day, "当天")]:
+    for d, label in [(prev_day, "前一天"), (curr_day, "当天"), (next_day, "次日")]:
+        # 竞彩亚盘 - 利记
         lj = fetch_asian_handicap(d, company='15')
         time.sleep(SLEEP_SEC)
         for key, v in lj.items():
             liji_ah[key] = v
+        # 北单亚盘 - 利记（竞彩优先，北单补缺）
+        lj_bd = fetch_asian_handicap(d, page_type='bd', company='15')
+        time.sleep(SLEEP_SEC)
+        for key, v in lj_bd.items():
+            if key not in liji_ah:
+                liji_ah[key] = v
+        if lj_bd:
+            print(f"    利记北单 {label}: {len(lj_bd)} 场")
+        # 竞彩亚盘 - 明升
         ms = fetch_asian_handicap(d, company='6')
         time.sleep(SLEEP_SEC)
         for key, v in ms.items():
             ms_ah[key] = v
+        # 北单亚盘 - 明升（竞彩优先，北单补缺）
+        ms_bd = fetch_asian_handicap(d, page_type='bd', company='6')
+        time.sleep(SLEEP_SEC)
+        for key, v in ms_bd.items():
+            if key not in ms_ah:
+                ms_ah[key] = v
+        if ms_bd:
+            print(f"    明升北单 {label}: {len(ms_bd)} 场")
     print(f"  利记亚盘: {len(liji_ah)} 场 | 明升亚盘: {len(ms_ah)} 场")
 
     # 1.7 大小球 — 暂时禁用：足彩网companyType='d'返回的实为亚盘数据，非大小球
@@ -768,7 +786,7 @@ def fetch_all(date_str: str = None, companies: List[str] = None,
     for cid in companies:
         cname = COMPANY_MAP.get(cid, cid)
         all_odds = {}
-        for d in [prev_day, curr_day]:
+        for d in [prev_day, curr_day, next_day]:  # 2026-06-20 改造：48小时范围
             # 竞彩页
             matches = fetch_company(cid, d, page_type="jc")
             time.sleep(SLEEP_SEC)

@@ -1427,6 +1427,7 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=True):
     
     # 同时抓取前一天的数据（覆盖次日00:00-11:59的凌晨比赛）
     prev_day = (datetime.strptime(date_str, '%Y-%m-%d') - timedelta(days=1)).strftime('%Y-%m-%d')
+    next_day = (datetime.strptime(date_str, '%Y-%m-%d') + timedelta(days=1)).strftime('%Y-%m-%d')
     
     # Step 0: 检测zgzcw.com是否可用（WAF检测）
     zgzcw_available = False
@@ -1467,7 +1468,7 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=True):
             # oddsmagnet fallback也失败 → 从odds_api.py输出加载match_list
             print("[INFO] oddsmagnet fallback失败，从odds_api.py缓存加载match_list")
             match_list = []
-            for om_date in [prev_day, date_str]:
+            for om_date in [prev_day, date_str, next_day]:
                 om_file = os.path.join(DATA_BASE_DIR, "data", "raw", "oddsmagnet", f"{om_date.replace('-', '')}.json")
                 if os.path.exists(om_file):
                     try:
@@ -1520,14 +1521,16 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=True):
             # Step 1: 百家平均赔率（GET方式）- 当天+前一天
         match_list = fetch_match_list(date_str)
         match_list_prev = fetch_match_list(prev_day)
-        print(f"[INFO] 竞彩百家平均: 当天{len(match_list)}场, 前天{len(match_list_prev)}场")
-        match_list = match_list_prev + match_list  # 前一天放前面
+        match_list_next = fetch_match_list(next_day)
+        print(f"[INFO] 竞彩百家平均: 当天{len(match_list)}场, 前天{len(match_list_prev)}场, 次日{len(match_list_next)}场")
+        match_list = match_list_prev + match_list + match_list_next  # 48小时范围
     
         if include_beidan:
             match_list_bd = fetch_match_list(date_str, page_type='bd')
             match_list_bd_prev = fetch_match_list(prev_day, page_type='bd')
-            print(f"[INFO] 北单百家平均: 当天{len(match_list_bd)}场, 前天{len(match_list_bd_prev)}场")
-            match_list_bd = match_list_bd_prev + match_list_bd
+            match_list_bd_next = fetch_match_list(next_day, page_type='bd')
+            print(f"[INFO] 北单百家平均: 当天{len(match_list_bd)}场, 前天{len(match_list_bd_prev)}场, 次日{len(match_list_bd_next)}场")
+            match_list_bd = match_list_bd_prev + match_list_bd + match_list_bd_next
             # 去重合并：按match_id去重
             existing_ids = {m.get('match_id','') for m in match_list}
             for m in match_list_bd:
@@ -1543,21 +1546,29 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=True):
         time.sleep(6)
         pin_jc_prev = fetch_company_odds(prev_day, page_type='jc', company='106')
         time.sleep(6)
+        pin_jc_next = fetch_company_odds(next_day, page_type='jc', company='106')
+        time.sleep(6)
         pin_bd = fetch_company_odds(date_str, page_type='bd', company='106') if include_beidan else {}
         time.sleep(6)
         pin_bd_prev = fetch_company_odds(prev_day, page_type='bd', company='106') if include_beidan else {}
-        pin_all = {**pin_jc_prev, **pin_bd_prev, **pin_jc, **pin_bd}  # match_id -> pin_odds
-        print(f"[INFO] Pinnacle赔率: {len(pin_all)} 场 (前天jc{len(pin_jc_prev)}/bd{len(pin_bd_prev)}, 当天jc{len(pin_jc)}/bd{len(pin_bd)})")
+        time.sleep(6)
+        pin_bd_next = fetch_company_odds(next_day, page_type='bd', company='106') if include_beidan else {}
+        pin_all = {**pin_jc_prev, **pin_bd_prev, **pin_jc, **pin_bd, **pin_jc_next, **pin_bd_next}  # match_id -> pin_odds
+        print(f"[INFO] Pinnacle赔率: {len(pin_all)} 场 (前天jc{len(pin_jc_prev)}/bd{len(pin_bd_prev)}, 当天jc{len(pin_jc)}/bd{len(pin_bd)}, 次日jc{len(pin_jc_next)}/bd{len(pin_bd_next)})")
 
         # Step 3: 必发赔率（POST方式，aid=56=Betfair）- 当天+前一天（辅助参考）
         bf_jc = fetch_company_odds(date_str, page_type='jc', company='56')
         time.sleep(6)
         bf_jc_prev = fetch_company_odds(prev_day, page_type='jc', company='56')
         time.sleep(6)
+        bf_jc_next = fetch_company_odds(next_day, page_type='jc', company='56')
+        time.sleep(6)
         bf_bd = fetch_company_odds(date_str, page_type='bd', company='56') if include_beidan else {}
         time.sleep(6)
         bf_bd_prev = fetch_company_odds(prev_day, page_type='bd', company='56') if include_beidan else {}
-        bf_all = {**bf_jc_prev, **bf_bd_prev, **bf_jc, **bf_bd}
+        time.sleep(6)
+        bf_bd_next = fetch_company_odds(next_day, page_type='bd', company='56') if include_beidan else {}
+        bf_all = {**bf_jc_prev, **bf_bd_prev, **bf_jc, **bf_bd, **bf_jc_next, **bf_bd_next}
         print(f"[INFO] Betfair赔率: {len(bf_all)} 场")
     
         # Step 4: SB公司赔率（POST方式，aid=3）- 已取消抓取
@@ -1592,11 +1603,12 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=True):
         time.sleep(6)
         ah_avg_jc_prev = fetch_asian_handicap(prev_day, page_type='jc', company='0')
         time.sleep(6)
+        ah_avg_jc_next = fetch_asian_handicap(next_day, page_type='jc', company='0')
         # ah_hkjc_jc = fetch_asian_handicap(date_str, page_type='jc', company='136')  # 已取消
         # time.sleep(3)
         # ah_hkjc_jc_prev = fetch_asian_handicap(prev_day, page_type='jc', company='136')  # 已取消
         # time.sleep(3)
-        ah_avg_all = {**ah_avg_jc_prev, **ah_avg_jc}
+        ah_avg_all = {**ah_avg_jc_prev, **ah_avg_jc, **ah_avg_jc_next}
         ah_hkjc_all = {}  # HKJC亚盘已取消
         print(f"[INFO] 亚盘百家平均: {len(ah_avg_all)} 场, 亚盘HKJC: 已取消")
     
@@ -1618,7 +1630,7 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=True):
                 if isinstance(om_data, dict):
                     for key, item in om_data.items():
                         match_date = item.get('matchDate', '')
-                        if date_str and match_date != date_str and match_date != prev_day:
+                        if date_str and match_date != date_str and match_date != prev_day and match_date != next_day:
                             continue
                         parts = key.split(' vs ')
                         if len(parts) != 2: continue
@@ -1978,12 +1990,13 @@ def load_oddsmagnet_fallback(date_str=None):
         # 过滤日期
         match_date = item.get('matchDate', '')
         if date_str and match_date != date_str:
-            # 也包含前一天（覆盖凌晨比赛）
+            # 也包含前一天+次日（48小时范围，覆盖12:00边界比赛如6-21 12:00突尼斯vs日本）
             try:
                 from datetime import datetime, timedelta
                 target = datetime.strptime(date_str, '%Y-%m-%d')
                 prev_day = (target - timedelta(days=1)).strftime('%Y-%m-%d')
-                if match_date != prev_day:
+                next_day = (target + timedelta(days=1)).strftime('%Y-%m-%d')
+                if match_date != prev_day and match_date != next_day:
                     continue
             except:
                 continue
@@ -2344,7 +2357,7 @@ def save_to_db(matches, db_path, date_str=None):
                 om_matches = []
                 for key, item in om_data.items():
                     match_date = item.get('matchDate', '')
-                    if target_date and match_date != target_date and match_date != prev_day:
+                    if target_date and match_date != target_date and match_date != prev_day and match_date != next_day:
                         continue
                     parts = key.split(' vs ')
                     if len(parts) != 2: continue
