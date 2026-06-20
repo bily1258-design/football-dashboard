@@ -1,8 +1,8 @@
 {
   "meta": {
-    "generated_at": "2026-06-20 18:19:18",
+    "generated_at": "2026-06-20 20:12:03",
     "total_dates": 32,
-    "total_matches": 721,
+    "total_matches": 709,
     "date_range": {
       "from": "2026-05-15",
       "to": "2026-06-21"
@@ -17,7 +17,7 @@
     "prob_rate": 48.6,
     "any_rate": 62.2,
     "days": 32,
-    "last_updated": "2026-06-20 18:19"
+    "last_updated": "2026-06-20 20:12"
   },
   "daily_stats": {
     "2026-06-20": {
@@ -31,7 +31,7 @@
       "any_rate": 0
     },
     "2026-06-21": {
-      "total": 25,
+      "total": 13,
       "with_result": 0,
       "ev_hits": 0,
       "prob_hits": 0,
@@ -1266,18 +1266,18 @@
         }
       },
       {
-        "id": 1428,
+        "id": 1460,
         "date": "2026-06-20",
         "league": "巴西乙",
         "home": "隆德里纳",
         "away": "巴西竞技",
         "kickoff": "2026-06-20 22:00",
         "prediction": "主胜",
-        "prediction_prob": 0.404,
+        "prediction_prob": 0.403,
         "odds": {
-          "w": 2.52,
+          "w": 2.53,
           "d": 2.96,
-          "l": 2.81
+          "l": 2.79
         },
         "poisson": {
           "w": 0.444,
@@ -1285,40 +1285,40 @@
           "l": 0.284
         },
         "final_prob": {
-          "w": 0.405,
-          "d": 0.291,
-          "l": 0.305
+          "w": 0.404,
+          "d": 0.29,
+          "l": 0.306
         },
         "fusion_prob": {
-          "w": 0.415,
-          "d": 0.271,
-          "l": 0.313
+          "w": 0.39,
+          "d": 0.316,
+          "l": 0.295
         },
         "result": "",
         "score": "",
-        "ev_direction": "平局",
+        "ev_direction": "主胜",
         "ev_hit": false,
         "prob_direction": "主胜",
         "prob_hit": false,
         "fusion_direction": "主胜",
         "ev": {
-          "w": 0.1379,
-          "d": -0.1213,
-          "l": -0.0403
+          "w": 0.0838,
+          "d": 0.0041,
+          "l": -0.0962
         },
         "kelly": {
-          "w": 0.0154,
+          "w": 0.0167,
           "d": 0,
           "l": 0
         },
         "pinnacle": {
-          "w": 0,
-          "d": 0,
-          "l": 0,
+          "w": 2.68,
+          "d": 3.06,
+          "l": 2.95,
           "open": {
-            "w": 0,
-            "d": 0,
-            "l": 0
+            "w": 2.68,
+            "d": 3.06,
+            "l": 2.95
           }
         },
         "hkjc": {
@@ -1332,9 +1332,9 @@
         "reference_score": "",
         "cold_risk": "",
         "source": "om_only",
-        "odds_source": "百家平均",
-        "home_lambda": 1.366,
-        "away_lambda": 1.034,
+        "odds_source": "Pinnacle",
+        "home_lambda": 1.365,
+        "away_lambda": 1.035,
         "home_ranking": 0,
         "away_ranking": 0,
         "ah": {
@@ -1416,1854 +1416,6 @@
     ],
     "2026-06-21": [
       {
-        "id": 1414,
-        "date": "2026-06-21",
-        "league": "世界杯",
-        "home": "西班牙",
-        "away": "沙特阿拉伯",
-        "kickoff": "2026-06-22 00:00",
-        "prediction": "主胜",
-        "prediction_prob": 0.723,
-        "odds": {
-          "w": 1.09,
-          "d": 10.2,
-          "l": 25.19
-        },
-        "poisson": {
-          "w": 0.576,
-          "d": 0.246,
-          "l": 0.177
-        },
-        "final_prob": {
-          "w": 0.726,
-          "d": 0.167,
-          "l": 0.107
-        },
-        "fusion_prob": {
-          "w": 0.459,
-          "d": 0.257,
-          "l": 0.284
-        },
-        "result": "",
-        "score": "",
-        "ev_direction": "主胜",
-        "ev_hit": false,
-        "prob_direction": "主胜",
-        "prob_hit": false,
-        "fusion_direction": "主胜",
-        "ev": {
-          "w": -0.3702,
-          "d": 0.4996,
-          "l": 0.5
-        },
-        "kelly": {
-          "w": 0,
-          "d": 0.0881,
-          "l": 0.1272
-        },
-        "pinnacle": {
-          "w": 1.09,
-          "d": 10.87,
-          "l": 26.14,
-          "open": {
-            "w": 1.11,
-            "d": 9.11,
-            "l": 18.94
-          }
-        },
-        "hkjc": {
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "risk_level": "",
-        "stars": 0,
-        "confidence_index": 0,
-        "reference_score": "",
-        "cold_risk": "",
-        "source": "om_only",
-        "odds_source": "Pinnacle",
-        "home_lambda": 1.625,
-        "away_lambda": 0.775,
-        "home_ranking": 0,
-        "away_ranking": 0,
-        "hhad": {
-          "handicap": null,
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "ah": {
-          "handicap": -2.5,
-          "home_w": 0.93,
-          "away_w": 0.9,
-          "source": "avg",
-          "open": {
-            "handicap": -0.5,
-            "home_w": 0.85,
-            "away_w": 0.95
-          }
-        },
-        "liji": {
-          "close": {
-            "handicap": -2.5,
-            "home_w": 0.94,
-            "away_w": 0.96
-          },
-          "open": {
-            "handicap": -2.25,
-            "home_w": 0.93,
-            "away_w": 0.91
-          }
-        },
-        "ms": {
-          "close": {
-            "handicap": -2.5,
-            "home_w": 0.98,
-            "away_w": 0.92
-          },
-          "open": {
-            "handicap": -2.0,
-            "home_w": 0.8,
-            "away_w": 1.04
-          }
-        },
-        "pin_ah": {
-          "handicap": 0.0,
-          "home_w": 0,
-          "away_w": 0
-        },
-        "pin_ou": {
-          "line": 2.5,
-          "over": 2.37,
-          "under": 1.48
-        },
-        "ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        },
-        "liji_ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        },
-        "ms_ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        }
-      },
-      {
-        "id": 1434,
-        "date": "2026-06-21",
-        "league": "冰岛超",
-        "home": "哈夫纳夫约杜尔",
-        "away": "托尔阿克雷里",
-        "kickoff": "2026-06-22 02:00",
-        "prediction": "主胜",
-        "prediction_prob": 0.501,
-        "odds": {
-          "w": 1.76,
-          "d": 4.0,
-          "l": 3.53
-        },
-        "poisson": {
-          "w": 0.487,
-          "d": 0.266,
-          "l": 0.247
-        },
-        "final_prob": {
-          "w": 0.501,
-          "d": 0.246,
-          "l": 0.252
-        },
-        "fusion_prob": {
-          "w": 0.452,
-          "d": 0.283,
-          "l": 0.266
-        },
-        "result": "",
-        "score": "",
-        "ev_direction": "主胜",
-        "ev_hit": false,
-        "prob_direction": "主胜",
-        "prob_hit": false,
-        "fusion_direction": "主胜",
-        "ev": {
-          "w": -0.1216,
-          "d": 0.2271,
-          "l": 0.0326
-        },
-        "kelly": {
-          "w": 0,
-          "d": 0.0217,
-          "l": 0
-        },
-        "pinnacle": {
-          "w": 0,
-          "d": 0,
-          "l": 0,
-          "open": {
-            "w": 0,
-            "d": 0,
-            "l": 0
-          }
-        },
-        "hkjc": {
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "risk_level": "",
-        "stars": 0,
-        "confidence_index": 0,
-        "reference_score": "",
-        "cold_risk": "",
-        "source": "om_only",
-        "odds_source": "avg",
-        "home_lambda": 1.45,
-        "away_lambda": 0.95,
-        "home_ranking": 0,
-        "away_ranking": 0,
-        "hhad": {
-          "handicap": null,
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "ah": {
-          "handicap": -0.75,
-          "home_w": 0.94,
-          "away_w": 0.82,
-          "source": "avg",
-          "open": {
-            "handicap": -0.5,
-            "home_w": 1.04,
-            "away_w": 0.79
-          }
-        },
-        "liji": {
-          "close": {
-            "handicap": 0.0,
-            "home_w": 0,
-            "away_w": 0
-          },
-          "open": {
-            "handicap": 0.0,
-            "home_w": 0,
-            "away_w": 0
-          }
-        },
-        "ms": {
-          "close": {
-            "handicap": 0.0,
-            "home_w": 0,
-            "away_w": 0
-          },
-          "open": {
-            "handicap": 0.0,
-            "home_w": 0,
-            "away_w": 0
-          }
-        },
-        "pin_ah": {
-          "handicap": null,
-          "home_w": 0,
-          "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
-        },
-        "ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        },
-        "liji_ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        },
-        "ms_ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        }
-      },
-      {
-        "id": 1435,
-        "date": "2026-06-21",
-        "league": "冰岛超",
-        "home": "瓦鲁尔",
-        "away": "凯夫拉维克",
-        "kickoff": "2026-06-22 02:00",
-        "prediction": "主胜",
-        "prediction_prob": 0.447,
-        "odds": {
-          "w": 2.07,
-          "d": 3.95,
-          "l": 2.72
-        },
-        "poisson": {
-          "w": 0.457,
-          "d": 0.27,
-          "l": 0.273
-        },
-        "final_prob": {
-          "w": 0.447,
-          "d": 0.25,
-          "l": 0.303
-        },
-        "fusion_prob": {
-          "w": 0.422,
-          "d": 0.275,
-          "l": 0.303
-        },
-        "result": "",
-        "score": "",
-        "ev_direction": "客胜",
-        "ev_hit": false,
-        "prob_direction": "主胜",
-        "prob_hit": false,
-        "fusion_direction": "主胜",
-        "ev": {
-          "w": -0.0357,
-          "d": 0.1889,
-          "l": -0.0886
-        },
-        "kelly": {
-          "w": 0,
-          "d": 0.0145,
-          "l": 0
-        },
-        "pinnacle": {
-          "w": 0,
-          "d": 0,
-          "l": 0,
-          "open": {
-            "w": 0,
-            "d": 0,
-            "l": 0
-          }
-        },
-        "hkjc": {
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "risk_level": "",
-        "stars": 0,
-        "confidence_index": 0,
-        "reference_score": "",
-        "cold_risk": "",
-        "source": "om_only",
-        "odds_source": "avg",
-        "home_lambda": 1.391,
-        "away_lambda": 1.009,
-        "home_ranking": 0,
-        "away_ranking": 0,
-        "hhad": {
-          "handicap": null,
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "ah": {
-          "handicap": -0.25,
-          "home_w": 0.89,
-          "away_w": 0.88,
-          "source": "avg",
-          "open": {
-            "handicap": -0.5,
-            "home_w": 0.87,
-            "away_w": 0.9
-          }
-        },
-        "liji": {
-          "close": {
-            "handicap": 0.0,
-            "home_w": 0,
-            "away_w": 0
-          },
-          "open": {
-            "handicap": 0.0,
-            "home_w": 0,
-            "away_w": 0
-          }
-        },
-        "ms": {
-          "close": {
-            "handicap": 0.0,
-            "home_w": 0,
-            "away_w": 0
-          },
-          "open": {
-            "handicap": 0.0,
-            "home_w": 0,
-            "away_w": 0
-          }
-        },
-        "pin_ah": {
-          "handicap": null,
-          "home_w": 0,
-          "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
-        },
-        "ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        },
-        "liji_ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        },
-        "ms_ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        }
-      },
-      {
-        "id": 1436,
-        "date": "2026-06-21",
-        "league": "冰岛超",
-        "home": "贝雷达比历克",
-        "away": "KA阿克雷里",
-        "kickoff": "2026-06-22 02:00",
-        "prediction": "主胜",
-        "prediction_prob": 0.539,
-        "odds": {
-          "w": 1.58,
-          "d": 4.34,
-          "l": 4.15
-        },
-        "poisson": {
-          "w": 0.505,
-          "d": 0.263,
-          "l": 0.232
-        },
-        "final_prob": {
-          "w": 0.539,
-          "d": 0.236,
-          "l": 0.225
-        },
-        "fusion_prob": {
-          "w": 0.456,
-          "d": 0.282,
-          "l": 0.262
-        },
-        "result": "",
-        "score": "",
-        "ev_direction": "主胜",
-        "ev_hit": false,
-        "prob_direction": "主胜",
-        "prob_hit": false,
-        "fusion_direction": "主胜",
-        "ev": {
-          "w": -0.1936,
-          "d": 0.3033,
-          "l": 0.19
-        },
-        "kelly": {
-          "w": 0,
-          "d": 0.0336,
-          "l": 0.0138
-        },
-        "pinnacle": {
-          "w": 0,
-          "d": 0,
-          "l": 0,
-          "open": {
-            "w": 0,
-            "d": 0,
-            "l": 0
-          }
-        },
-        "hkjc": {
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "risk_level": "",
-        "stars": 0,
-        "confidence_index": 0,
-        "reference_score": "",
-        "cold_risk": "",
-        "source": "om_only",
-        "odds_source": "avg",
-        "home_lambda": 1.485,
-        "away_lambda": 0.915,
-        "home_ranking": 0,
-        "away_ranking": 0,
-        "hhad": {
-          "handicap": null,
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "ah": {
-          "handicap": -1.0,
-          "home_w": 0.94,
-          "away_w": 0.83,
-          "source": "avg",
-          "open": {
-            "handicap": -0.75,
-            "home_w": 0.95,
-            "away_w": 0.8
-          }
-        },
-        "liji": {
-          "close": {
-            "handicap": 0.0,
-            "home_w": 0,
-            "away_w": 0
-          },
-          "open": {
-            "handicap": 0.0,
-            "home_w": 0,
-            "away_w": 0
-          }
-        },
-        "ms": {
-          "close": {
-            "handicap": 0.0,
-            "home_w": 0,
-            "away_w": 0
-          },
-          "open": {
-            "handicap": 0.0,
-            "home_w": 0,
-            "away_w": 0
-          }
-        },
-        "pin_ah": {
-          "handicap": null,
-          "home_w": 0,
-          "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
-        },
-        "ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        },
-        "liji_ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        },
-        "ms_ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        }
-      },
-      {
-        "id": 1437,
-        "date": "2026-06-21",
-        "league": "冰岛超",
-        "home": "IBV韦斯特曼纳",
-        "away": "斯塔尔南",
-        "kickoff": "2026-06-22 02:00",
-        "prediction": "主胜",
-        "prediction_prob": 0.391,
-        "odds": {
-          "w": 2.54,
-          "d": 3.8,
-          "l": 2.23
-        },
-        "poisson": {
-          "w": 0.427,
-          "d": 0.274,
-          "l": 0.3
-        },
-        "final_prob": {
-          "w": 0.391,
-          "d": 0.256,
-          "l": 0.353
-        },
-        "fusion_prob": {
-          "w": 0.406,
-          "d": 0.27,
-          "l": 0.323
-        },
-        "result": "",
-        "score": "",
-        "ev_direction": "客胜",
-        "ev_hit": false,
-        "prob_direction": "主胜",
-        "prob_hit": false,
-        "fusion_direction": "主胜",
-        "ev": {
-          "w": 0.1375,
-          "d": 0.1312,
-          "l": -0.1923
-        },
-        "kelly": {
-          "w": 0.0105,
-          "d": 0.0047,
-          "l": 0
-        },
-        "pinnacle": {
-          "w": 0,
-          "d": 0,
-          "l": 0,
-          "open": {
-            "w": 0,
-            "d": 0,
-            "l": 0
-          }
-        },
-        "hkjc": {
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "risk_level": "",
-        "stars": 0,
-        "confidence_index": 0,
-        "reference_score": "",
-        "cold_risk": "",
-        "source": "om_only",
-        "odds_source": "avg",
-        "home_lambda": 1.331,
-        "away_lambda": 1.069,
-        "home_ranking": 0,
-        "away_ranking": 0,
-        "hhad": {
-          "handicap": null,
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "ah": {
-          "handicap": 0.75,
-          "home_w": 0.93,
-          "away_w": 0.85,
-          "source": "avg",
-          "open": {
-            "handicap": 0.5,
-            "home_w": 0.91,
-            "away_w": 0.83
-          }
-        },
-        "liji": {
-          "close": {
-            "handicap": 0.0,
-            "home_w": 0,
-            "away_w": 0
-          },
-          "open": {
-            "handicap": 0.0,
-            "home_w": 0,
-            "away_w": 0
-          }
-        },
-        "ms": {
-          "close": {
-            "handicap": 0.0,
-            "home_w": 0,
-            "away_w": 0
-          },
-          "open": {
-            "handicap": 0.0,
-            "home_w": 0,
-            "away_w": 0
-          }
-        },
-        "pin_ah": {
-          "handicap": null,
-          "home_w": 0,
-          "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
-        },
-        "ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        },
-        "liji_ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        },
-        "ms_ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        }
-      },
-      {
-        "id": 1415,
-        "date": "2026-06-21",
-        "league": "世界杯",
-        "home": "比利时",
-        "away": "伊朗",
-        "kickoff": "2026-06-22 03:00",
-        "prediction": "主胜",
-        "prediction_prob": 0.602,
-        "odds": {
-          "w": 1.43,
-          "d": 4.55,
-          "l": 7.4
-        },
-        "poisson": {
-          "w": 0.54,
-          "d": 0.256,
-          "l": 0.205
-        },
-        "final_prob": {
-          "w": 0.606,
-          "d": 0.229,
-          "l": 0.165
-        },
-        "fusion_prob": {
-          "w": 0.44,
-          "d": 0.264,
-          "l": 0.296
-        },
-        "result": "",
-        "score": "",
-        "ev_direction": "主胜",
-        "ev_hit": false,
-        "prob_direction": "主胜",
-        "prob_hit": false,
-        "fusion_direction": "主胜",
-        "ev": {
-          "w": -0.2993,
-          "d": 0.2738,
-          "l": 0.4957
-        },
-        "kelly": {
-          "w": 0,
-          "d": 0.0282,
-          "l": 0.093
-        },
-        "pinnacle": {
-          "w": 1.43,
-          "d": 4.77,
-          "l": 7.67,
-          "open": {
-            "w": 1.46,
-            "d": 4.27,
-            "l": 6.6
-          }
-        },
-        "hkjc": {
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "risk_level": "",
-        "stars": 0,
-        "confidence_index": 0,
-        "reference_score": "",
-        "cold_risk": "",
-        "source": "om_only",
-        "odds_source": "Pinnacle",
-        "home_lambda": 1.553,
-        "away_lambda": 0.847,
-        "home_ranking": 0,
-        "away_ranking": 0,
-        "hhad": {
-          "handicap": null,
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "ah": {
-          "handicap": -1.25,
-          "home_w": 1.01,
-          "away_w": 0.83,
-          "source": "avg",
-          "open": {
-            "handicap": -1.0,
-            "home_w": 0.91,
-            "away_w": 0.76
-          }
-        },
-        "liji": {
-          "close": {
-            "handicap": -1.25,
-            "home_w": 1.02,
-            "away_w": 0.9
-          },
-          "open": {
-            "handicap": -1.0,
-            "home_w": 0.74,
-            "away_w": 1.11
-          }
-        },
-        "ms": {
-          "close": {
-            "handicap": -1.25,
-            "home_w": 1.02,
-            "away_w": 0.9
-          },
-          "open": {
-            "handicap": -1.0,
-            "home_w": 0.79,
-            "away_w": 1.05
-          }
-        },
-        "pin_ah": {
-          "handicap": 0.0,
-          "home_w": 0,
-          "away_w": 0
-        },
-        "pin_ou": {
-          "line": 2.5,
-          "over": 2.77,
-          "under": 1.36
-        },
-        "ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        },
-        "liji_ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        },
-        "ms_ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        }
-      },
-      {
-        "id": 1438,
-        "date": "2026-06-21",
-        "league": "巴西乙",
-        "home": "雷加塔斯巴西",
-        "away": "福塔雷萨",
-        "kickoff": "2026-06-22 03:00",
-        "prediction": "主胜",
-        "prediction_prob": 0.435,
-        "odds": {
-          "w": 2.23,
-          "d": 3.15,
-          "l": 3.06
-        },
-        "poisson": {
-          "w": 0.46,
-          "d": 0.27,
-          "l": 0.27
-        },
-        "final_prob": {
-          "w": 0.663,
-          "d": 0.181,
-          "l": 0.156
-        },
-        "fusion_prob": {
-          "w": 0.442,
-          "d": 0.266,
-          "l": 0.292
-        },
-        "result": "",
-        "score": "",
-        "ev_direction": "主胜",
-        "ev_hit": false,
-        "prob_direction": "主胜",
-        "prob_hit": false,
-        "fusion_direction": "主胜",
-        "ev": {
-          "w": -0.3766,
-          "d": 0.4995,
-          "l": 0.5
-        },
-        "kelly": {
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "pinnacle": {
-          "w": 0,
-          "d": 0,
-          "l": 0,
-          "open": {
-            "w": 0,
-            "d": 0,
-            "l": 0
-          }
-        },
-        "hkjc": {
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "risk_level": "",
-        "stars": 0,
-        "confidence_index": 0,
-        "reference_score": "",
-        "cold_risk": "",
-        "source": "om_only",
-        "odds_source": "百家平均",
-        "home_lambda": 1.397,
-        "away_lambda": 1.003,
-        "home_ranking": 0,
-        "away_ranking": 0,
-        "hhad": {
-          "handicap": null,
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "ah": {
-          "handicap": -0.25,
-          "home_w": 0.99,
-          "away_w": 0.8,
-          "source": "avg",
-          "open": {
-            "handicap": -0.25,
-            "home_w": 0.87,
-            "away_w": 0.93
-          }
-        },
-        "liji": {
-          "close": {
-            "handicap": 0.0,
-            "home_w": 0,
-            "away_w": 0
-          },
-          "open": {
-            "handicap": 0.0,
-            "home_w": 0,
-            "away_w": 0
-          }
-        },
-        "ms": {
-          "close": {
-            "handicap": 0.0,
-            "home_w": 0,
-            "away_w": 0
-          },
-          "open": {
-            "handicap": 0.0,
-            "home_w": 0,
-            "away_w": 0
-          }
-        },
-        "pin_ah": {
-          "handicap": 0.0,
-          "home_w": 0,
-          "away_w": 0
-        },
-        "pin_ou": {
-          "line": 0.0,
-          "over": 0,
-          "under": 0
-        },
-        "ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        },
-        "liji_ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        },
-        "ms_ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        }
-      },
-      {
-        "id": 1439,
-        "date": "2026-06-21",
-        "league": "巴西乙",
-        "home": "圣贝尔纳多",
-        "away": "尤文图德",
-        "kickoff": "2026-06-22 04:00",
-        "prediction": "主胜",
-        "prediction_prob": 0.411,
-        "odds": {
-          "w": 2.45,
-          "d": 2.86,
-          "l": 2.96
-        },
-        "poisson": {
-          "w": 0.45,
-          "d": 0.271,
-          "l": 0.279
-        },
-        "final_prob": {
-          "w": 0.411,
-          "d": 0.295,
-          "l": 0.293
-        },
-        "fusion_prob": {
-          "w": 0.408,
-          "d": 0.283,
-          "l": 0.309
-        },
-        "result": "",
-        "score": "",
-        "ev_direction": "平局",
-        "ev_hit": false,
-        "prob_direction": "主胜",
-        "prob_hit": false,
-        "fusion_direction": "主胜",
-        "ev": {
-          "w": 0.0954,
-          "d": -0.1121,
-          "l": 0.0016
-        },
-        "kelly": {
-          "w": 0.0003,
-          "d": 0,
-          "l": 0
-        },
-        "pinnacle": {
-          "w": 0,
-          "d": 0,
-          "l": 0,
-          "open": {
-            "w": 0,
-            "d": 0,
-            "l": 0
-          }
-        },
-        "hkjc": {
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "risk_level": "",
-        "stars": 0,
-        "confidence_index": 0,
-        "reference_score": "",
-        "cold_risk": "",
-        "source": "om_only",
-        "odds_source": "avg",
-        "home_lambda": 1.378,
-        "away_lambda": 1.022,
-        "home_ranking": 0,
-        "away_ranking": 0,
-        "hhad": {
-          "handicap": null,
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "ah": {
-          "handicap": -0.25,
-          "home_w": 0.95,
-          "away_w": 0.86,
-          "source": "avg",
-          "open": {
-            "handicap": -1.75,
-            "home_w": 0.98,
-            "away_w": 0.82
-          }
-        },
-        "liji": {
-          "close": {
-            "handicap": -2.25,
-            "home_w": 0.97,
-            "away_w": 0.96
-          },
-          "open": {
-            "handicap": -1.5,
-            "home_w": 0.81,
-            "away_w": 1.03
-          }
-        },
-        "ms": {
-          "close": {
-            "handicap": -2.25,
-            "home_w": 0.97,
-            "away_w": 0.96
-          },
-          "open": {
-            "handicap": -1.5,
-            "home_w": 0.79,
-            "away_w": 1.05
-          }
-        },
-        "pin_ah": {
-          "handicap": null,
-          "home_w": 0,
-          "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
-        },
-        "ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        },
-        "liji_ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        },
-        "ms_ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        }
-      },
-      {
-        "id": 1440,
-        "date": "2026-06-21",
-        "league": "冰岛超",
-        "home": "弗拉姆",
-        "away": "维京古",
-        "kickoff": "2026-06-22 04:15",
-        "prediction": "客胜",
-        "prediction_prob": 0.454,
-        "odds": {
-          "w": 4.0,
-          "d": 4.22,
-          "l": 1.63
-        },
-        "poisson": {
-          "w": 0.373,
-          "d": 0.277,
-          "l": 0.35
-        },
-        "final_prob": {
-          "w": 0.3,
-          "d": 0.246,
-          "l": 0.454
-        },
-        "fusion_prob": {
-          "w": 0.322,
-          "d": 0.273,
-          "l": 0.405
-        },
-        "result": "",
-        "score": "",
-        "ev_direction": "客胜",
-        "ev_hit": false,
-        "prob_direction": "客胜",
-        "prob_hit": false,
-        "fusion_direction": "客胜",
-        "ev": {
-          "w": 0.3418,
-          "d": 0.2454,
-          "l": -0.2495
-        },
-        "kelly": {
-          "w": 0.0481,
-          "d": 0.0237,
-          "l": 0
-        },
-        "pinnacle": {
-          "w": 0,
-          "d": 0,
-          "l": 0,
-          "open": {
-            "w": 0,
-            "d": 0,
-            "l": 0
-          }
-        },
-        "hkjc": {
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "risk_level": "",
-        "stars": 0,
-        "confidence_index": 0,
-        "reference_score": "",
-        "cold_risk": "",
-        "source": "om_only",
-        "odds_source": "avg",
-        "home_lambda": 1.224,
-        "away_lambda": 1.176,
-        "home_ranking": 0,
-        "away_ranking": 0,
-        "hhad": {
-          "handicap": null,
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "ah": {
-          "handicap": 0.75,
-          "home_w": 0.92,
-          "away_w": 0.84,
-          "source": "avg",
-          "open": {
-            "handicap": 1.0,
-            "home_w": 0.87,
-            "away_w": 0.85
-          }
-        },
-        "liji": {
-          "close": {
-            "handicap": 0.0,
-            "home_w": 0,
-            "away_w": 0
-          },
-          "open": {
-            "handicap": 0.0,
-            "home_w": 0,
-            "away_w": 0
-          }
-        },
-        "ms": {
-          "close": {
-            "handicap": 0.0,
-            "home_w": 0,
-            "away_w": 0
-          },
-          "open": {
-            "handicap": 0.0,
-            "home_w": 0,
-            "away_w": 0
-          }
-        },
-        "pin_ah": {
-          "handicap": null,
-          "home_w": 0,
-          "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
-        },
-        "ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        },
-        "liji_ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        },
-        "ms_ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        }
-      },
-      {
-        "id": 1441,
-        "date": "2026-06-21",
-        "league": "巴西乙",
-        "home": "戈亚斯",
-        "away": "铁路工人",
-        "kickoff": "2026-06-22 05:30",
-        "prediction": "主胜",
-        "prediction_prob": 0.453,
-        "odds": {
-          "w": 2.11,
-          "d": 2.97,
-          "l": 3.51
-        },
-        "poisson": {
-          "w": 0.474,
-          "d": 0.268,
-          "l": 0.258
-        },
-        "final_prob": {
-          "w": 0.453,
-          "d": 0.288,
-          "l": 0.259
-        },
-        "fusion_prob": {
-          "w": 0.426,
-          "d": 0.286,
-          "l": 0.289
-        },
-        "result": "",
-        "score": "",
-        "ev_direction": "平局",
-        "ev_hit": false,
-        "prob_direction": "主胜",
-        "prob_hit": false,
-        "fusion_direction": "主胜",
-        "ev": {
-          "w": -0.0162,
-          "d": -0.07,
-          "l": 0.1085
-        },
-        "kelly": {
-          "w": 0,
-          "d": 0,
-          "l": 0.0027
-        },
-        "pinnacle": {
-          "w": 0,
-          "d": 0,
-          "l": 0,
-          "open": {
-            "w": 0,
-            "d": 0,
-            "l": 0
-          }
-        },
-        "hkjc": {
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "risk_level": "",
-        "stars": 0,
-        "confidence_index": 0,
-        "reference_score": "",
-        "cold_risk": "",
-        "source": "om_only",
-        "odds_source": "avg",
-        "home_lambda": 1.425,
-        "away_lambda": 0.975,
-        "home_ranking": 0,
-        "away_ranking": 0,
-        "hhad": {
-          "handicap": null,
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "ah": {
-          "handicap": -0.25,
-          "home_w": 0.87,
-          "away_w": 0.91,
-          "source": "avg",
-          "open": {
-            "handicap": -0.5,
-            "home_w": 0.97,
-            "away_w": 0.82
-          }
-        },
-        "liji": {
-          "close": {
-            "handicap": 0.0,
-            "home_w": 0,
-            "away_w": 0
-          },
-          "open": {
-            "handicap": 0.0,
-            "home_w": 0,
-            "away_w": 0
-          }
-        },
-        "ms": {
-          "close": {
-            "handicap": 0.0,
-            "home_w": 0,
-            "away_w": 0
-          },
-          "open": {
-            "handicap": 0.0,
-            "home_w": 0,
-            "away_w": 0
-          }
-        },
-        "pin_ah": {
-          "handicap": null,
-          "home_w": 0,
-          "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
-        },
-        "ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        },
-        "liji_ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        },
-        "ms_ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        }
-      },
-      {
-        "id": 1416,
-        "date": "2026-06-21",
-        "league": "世界杯",
-        "home": "乌拉圭",
-        "away": "佛得角",
-        "kickoff": "2026-06-22 06:00",
-        "prediction": "主胜",
-        "prediction_prob": 0.601,
-        "odds": {
-          "w": 1.44,
-          "d": 4.18,
-          "l": 8.24
-        },
-        "poisson": {
-          "w": 0.544,
-          "d": 0.255,
-          "l": 0.202
-        },
-        "final_prob": {
-          "w": 0.609,
-          "d": 0.236,
-          "l": 0.155
-        },
-        "fusion_prob": {
-          "w": 0.454,
-          "d": 0.272,
-          "l": 0.274
-        },
-        "result": "",
-        "score": "",
-        "ev_direction": "主胜",
-        "ev_hit": false,
-        "prob_direction": "主胜",
-        "prob_hit": false,
-        "fusion_direction": "主胜",
-        "ev": {
-          "w": -0.287,
-          "d": 0.2303,
-          "l": 0.4979
-        },
-        "kelly": {
-          "w": 0,
-          "d": 0.0218,
-          "l": 0.0867
-        },
-        "pinnacle": {
-          "w": 1.43,
-          "d": 4.42,
-          "l": 8.95,
-          "open": {
-            "w": 1.47,
-            "d": 4.26,
-            "l": 6.58
-          }
-        },
-        "hkjc": {
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "risk_level": "",
-        "stars": 0,
-        "confidence_index": 0,
-        "reference_score": "",
-        "cold_risk": "",
-        "source": "om_only",
-        "odds_source": "Pinnacle",
-        "home_lambda": 1.561,
-        "away_lambda": 0.839,
-        "home_ranking": 0,
-        "away_ranking": 0,
-        "hhad": {
-          "handicap": null,
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "ah": {
-          "handicap": -1.0,
-          "home_w": 0.84,
-          "away_w": 1.02,
-          "source": "avg",
-          "open": {
-            "handicap": -1.25,
-            "home_w": 1.01,
-            "away_w": 0.77
-          }
-        },
-        "liji": {
-          "close": {
-            "handicap": -1.0,
-            "home_w": 0.8,
-            "away_w": 1.13
-          },
-          "open": {
-            "handicap": -1.0,
-            "home_w": 0.76,
-            "away_w": 1.08
-          }
-        },
-        "ms": {
-          "close": {
-            "handicap": -1.0,
-            "home_w": 0.81,
-            "away_w": 1.12
-          },
-          "open": {
-            "handicap": -1.0,
-            "home_w": 0.74,
-            "away_w": 1.11
-          }
-        },
-        "pin_ah": {
-          "handicap": 0.0,
-          "home_w": 0,
-          "away_w": 0
-        },
-        "pin_ou": {
-          "line": 0.0,
-          "over": 0,
-          "under": 0
-        },
-        "ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        },
-        "liji_ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        },
-        "ms_ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        }
-      },
-      {
-        "id": 1417,
-        "date": "2026-06-21",
-        "league": "世界杯",
-        "home": "新西兰",
-        "away": "埃及",
-        "kickoff": "2026-06-22 09:00",
-        "prediction": "客胜",
-        "prediction_prob": 0.481,
-        "odds": {
-          "w": 5.57,
-          "d": 3.97,
-          "l": 1.6
-        },
-        "poisson": {
-          "w": 0.354,
-          "d": 0.277,
-          "l": 0.369
-        },
-        "final_prob": {
-          "w": 0.266,
-          "d": 0.25,
-          "l": 0.484
-        },
-        "fusion_prob": {
-          "w": 0.301,
-          "d": 0.282,
-          "l": 0.417
-        },
-        "result": "",
-        "score": "",
-        "ev_direction": "客胜",
-        "ev_hit": false,
-        "prob_direction": "客胜",
-        "prob_hit": false,
-        "fusion_direction": "客胜",
-        "ev": {
-          "w": 0.4411,
-          "d": 0.2402,
-          "l": -0.2711
-        },
-        "kelly": {
-          "w": 0.074,
-          "d": 0.0202,
-          "l": 0
-        },
-        "pinnacle": {
-          "w": 5.42,
-          "d": 4.31,
-          "l": 1.61,
-          "open": {
-            "w": 4.02,
-            "d": 3.54,
-            "l": 1.88
-          }
-        },
-        "hkjc": {
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "risk_level": "",
-        "stars": 0,
-        "confidence_index": 0,
-        "reference_score": "",
-        "cold_risk": "",
-        "source": "om_only",
-        "odds_source": "Pinnacle",
-        "home_lambda": 1.184,
-        "away_lambda": 1.216,
-        "home_ranking": 0,
-        "away_ranking": 0,
-        "hhad": {
-          "handicap": null,
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "ah": {
-          "handicap": 0.75,
-          "home_w": 0.97,
-          "away_w": 0.88,
-          "source": "avg",
-          "open": {
-            "handicap": 0.75,
-            "home_w": 0.82,
-            "away_w": 0.88
-          }
-        },
-        "liji": {
-          "close": {
-            "handicap": 0.75,
-            "home_w": 1.09,
-            "away_w": 0.83
-          },
-          "open": {
-            "handicap": 0.75,
-            "home_w": 0.99,
-            "away_w": 0.85
-          }
-        },
-        "ms": {
-          "close": {
-            "handicap": 0.75,
-            "home_w": 1.11,
-            "away_w": 0.82
-          },
-          "open": {
-            "handicap": 0.75,
-            "home_w": 1.05,
-            "away_w": 0.79
-          }
-        },
-        "pin_ah": {
-          "handicap": 0.0,
-          "home_w": 0,
-          "away_w": 0
-        },
-        "pin_ou": {
-          "line": 0.0,
-          "over": 0,
-          "under": 0
-        },
-        "ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        },
-        "liji_ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        },
-        "ms_ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        }
-      },
-      {
         "id": 1413,
         "date": "2026-06-21",
         "league": "世界杯",
@@ -3335,12 +1487,6 @@
         "away_lambda": 1.233,
         "home_ranking": 0,
         "away_ranking": 0,
-        "hhad": {
-          "handicap": null,
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
         "ah": {
           "handicap": 1.0,
           "home_w": 0.9,
@@ -3489,12 +1635,6 @@
         "away_lambda": 0.94,
         "home_ranking": 0,
         "away_ranking": 0,
-        "hhad": {
-          "handicap": null,
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
         "ah": {
           "handicap": -0.5,
           "home_w": 0.86,
@@ -3643,12 +1783,6 @@
         "away_lambda": 1.02,
         "home_ranking": 0,
         "away_ranking": 0,
-        "hhad": {
-          "handicap": null,
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
         "ah": {
           "handicap": -0.25,
           "home_w": 0.99,
@@ -3797,12 +1931,6 @@
         "away_lambda": 0.985,
         "home_ranking": 0,
         "away_ranking": 0,
-        "hhad": {
-          "handicap": null,
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
         "ah": {
           "handicap": -0.25,
           "home_w": 0.85,
@@ -3951,12 +2079,6 @@
         "away_lambda": 0.874,
         "home_ranking": 0,
         "away_ranking": 0,
-        "hhad": {
-          "handicap": null,
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
         "ah": {
           "handicap": -1.25,
           "home_w": 0.95,
@@ -4105,12 +2227,6 @@
         "away_lambda": 1.14,
         "home_ranking": 0,
         "away_ranking": 0,
-        "hhad": {
-          "handicap": null,
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
         "ah": {
           "handicap": 0.5,
           "home_w": 0.91,
@@ -4259,12 +2375,6 @@
         "away_lambda": 1.068,
         "home_ranking": 0,
         "away_ranking": 0,
-        "hhad": {
-          "handicap": null,
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
         "ah": {
           "handicap": 0.25,
           "home_w": 0.89,
@@ -4413,12 +2523,6 @@
         "away_lambda": 0.974,
         "home_ranking": 0,
         "away_ranking": 0,
-        "hhad": {
-          "handicap": null,
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
         "ah": {
           "handicap": -0.5,
           "home_w": 0.91,
@@ -4567,12 +2671,6 @@
         "away_lambda": 0.862,
         "home_ranking": 0,
         "away_ranking": 0,
-        "hhad": {
-          "handicap": null,
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
         "ah": {
           "handicap": -1.25,
           "home_w": 0.88,
@@ -4721,12 +2819,6 @@
         "away_lambda": 1.098,
         "home_ranking": 0,
         "away_ranking": 0,
-        "hhad": {
-          "handicap": null,
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
         "ah": {
           "handicap": 0.25,
           "home_w": 0.91,
@@ -4875,12 +2967,6 @@
         "away_lambda": 1.177,
         "home_ranking": 0,
         "away_ranking": 0,
-        "hhad": {
-          "handicap": null,
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
         "ah": {
           "handicap": 0.75,
           "home_w": 0.93,
@@ -5029,12 +3115,6 @@
         "away_lambda": 1.055,
         "home_ranking": 0,
         "away_ranking": 0,
-        "hhad": {
-          "handicap": null,
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
         "ah": {
           "handicap": -0.5,
           "home_w": 0.91,
@@ -5183,12 +3263,6 @@
         "away_lambda": 1.073,
         "home_ranking": 0,
         "away_ranking": 0,
-        "hhad": {
-          "handicap": null,
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
         "ah": {
           "handicap": 0.25,
           "home_w": 0.83,
@@ -5268,7 +3342,7 @@
     ],
     "2026-06-19": [
       {
-        "id": 1417,
+        "id": 1449,
         "date": "2026-06-19",
         "league": "挪甲",
         "home": "兰黑姆",
@@ -5292,9 +3366,9 @@
           "l": 0.227
         },
         "fusion_prob": {
-          "w": 0.424,
-          "d": 0.286,
-          "l": 0.289
+          "w": 0.444,
+          "d": 0.285,
+          "l": 0.271
         },
         "result": "主胜",
         "score": "3-2",
@@ -5304,9 +3378,9 @@
         "prob_hit": true,
         "fusion_direction": "主胜",
         "ev": {
-          "w": -0.2312,
-          "d": 0.2816,
-          "l": 0.2918
+          "w": -0.1981,
+          "d": 0.2744,
+          "l": 0.2148
         },
         "kelly": {
           "w": 0,
@@ -5314,13 +3388,13 @@
           "l": 0.0263
         },
         "pinnacle": {
-          "w": 0,
-          "d": 0,
-          "l": 0,
+          "w": 1.69,
+          "d": 4.36,
+          "l": 4.31,
           "open": {
-            "w": 0,
-            "d": 0,
-            "l": 0
+            "w": 1.69,
+            "d": 4.36,
+            "l": 4.31
           }
         },
         "hkjc": {
@@ -5334,7 +3408,7 @@
         "reference_score": "",
         "cold_risk": "",
         "source": "om_only",
-        "odds_source": "百家平均",
+        "odds_source": "Pinnacle",
         "home_lambda": 1.475,
         "away_lambda": 0.925,
         "home_ranking": 0,
@@ -5416,7 +3490,7 @@
         }
       },
       {
-        "id": 1418,
+        "id": 1450,
         "date": "2026-06-19",
         "league": "爱超",
         "home": "德罗赫达联",
@@ -5440,21 +3514,21 @@
           "l": 0.405
         },
         "fusion_prob": {
-          "w": 0.322,
-          "d": 0.262,
-          "l": 0.416
+          "w": 0.3,
+          "d": 0.263,
+          "l": 0.437
         },
         "result": "",
         "score": "",
-        "ev_direction": "客胜",
+        "ev_direction": "主胜",
         "ev_hit": false,
         "prob_direction": "客胜",
         "prob_hit": false,
         "fusion_direction": "客胜",
         "ev": {
-          "w": 0.2581,
-          "d": -0.0412,
-          "l": -0.1238
+          "w": 0.2575,
+          "d": -0.1062,
+          "l": -0.0731
         },
         "kelly": {
           "w": 0.0354,
@@ -5462,13 +3536,13 @@
           "l": 0
         },
         "pinnacle": {
-          "w": 0,
-          "d": 0,
-          "l": 0,
+          "w": 4.02,
+          "d": 3.19,
+          "l": 1.99,
           "open": {
-            "w": 0,
-            "d": 0,
-            "l": 0
+            "w": 4.02,
+            "d": 3.19,
+            "l": 1.99
           }
         },
         "hkjc": {
@@ -5482,7 +3556,7 @@
         "reference_score": "",
         "cold_risk": "",
         "source": "om_only",
-        "odds_source": "百家平均",
+        "odds_source": "Pinnacle",
         "home_lambda": 1.258,
         "away_lambda": 1.142,
         "home_ranking": 0,
@@ -5564,7 +3638,7 @@
         }
       },
       {
-        "id": 1419,
+        "id": 1451,
         "date": "2026-06-19",
         "league": "爱超",
         "home": "戈尔韦联",
@@ -5588,21 +3662,21 @@
           "l": 0.362
         },
         "fusion_prob": {
-          "w": 0.343,
-          "d": 0.274,
-          "l": 0.383
+          "w": 0.354,
+          "d": 0.292,
+          "l": 0.354
         },
         "result": "主胜",
         "score": "2-1",
-        "ev_direction": "平局",
+        "ev_direction": "客胜",
         "ev_hit": false,
         "prob_direction": "客胜",
         "prob_hit": false,
         "fusion_direction": "客胜",
         "ev": {
-          "w": 0.1173,
-          "d": -0.0537,
-          "l": -0.0516
+          "w": 0.2762,
+          "d": 0.0204,
+          "l": -0.1919
         },
         "kelly": {
           "w": 0.028,
@@ -5610,13 +3684,13 @@
           "l": 0
         },
         "pinnacle": {
-          "w": 0,
-          "d": 0,
-          "l": 0,
+          "w": 3.47,
+          "d": 3.28,
+          "l": 2.11,
           "open": {
-            "w": 0,
-            "d": 0,
-            "l": 0
+            "w": 3.47,
+            "d": 3.28,
+            "l": 2.11
           }
         },
         "hkjc": {
@@ -5630,7 +3704,7 @@
         "reference_score": "",
         "cold_risk": "",
         "source": "om_only",
-        "odds_source": "百家平均",
+        "odds_source": "Pinnacle",
         "home_lambda": 1.287,
         "away_lambda": 1.113,
         "home_ranking": 0,
@@ -5712,7 +3786,7 @@
         }
       },
       {
-        "id": 1420,
+        "id": 1452,
         "date": "2026-06-19",
         "league": "爱超",
         "home": "圣帕特里克竞技",
@@ -5736,9 +3810,9 @@
           "l": 0.139
         },
         "fusion_prob": {
-          "w": 0.475,
-          "d": 0.259,
-          "l": 0.265
+          "w": 0.463,
+          "d": 0.267,
+          "l": 0.269
         },
         "result": "主胜",
         "score": "2-0",
@@ -5748,9 +3822,9 @@
         "prob_hit": true,
         "fusion_direction": "主胜",
         "ev": {
-          "w": -0.3053,
-          "d": 0.3823,
-          "l": 0.4996
+          "w": -0.3414,
+          "d": 0.451,
+          "l": 0.5
         },
         "kelly": {
           "w": 0,
@@ -5758,13 +3832,13 @@
           "l": 0.0995
         },
         "pinnacle": {
-          "w": 0,
-          "d": 0,
-          "l": 0,
+          "w": 1.19,
+          "d": 6.16,
+          "l": 18.4,
           "open": {
-            "w": 0,
-            "d": 0,
-            "l": 0
+            "w": 1.19,
+            "d": 6.16,
+            "l": 18.4
           }
         },
         "hkjc": {
@@ -5778,7 +3852,7 @@
         "reference_score": "",
         "cold_risk": "",
         "source": "om_only",
-        "odds_source": "百家平均",
+        "odds_source": "Pinnacle",
         "home_lambda": 1.596,
         "away_lambda": 0.804,
         "home_ranking": 0,
@@ -5860,7 +3934,7 @@
         }
       },
       {
-        "id": 1421,
+        "id": 1453,
         "date": "2026-06-19",
         "league": "爱超",
         "home": "沃特福德联",
@@ -5884,9 +3958,9 @@
           "l": 0.463
         },
         "fusion_prob": {
-          "w": 0.302,
-          "d": 0.256,
-          "l": 0.442
+          "w": 0.315,
+          "d": 0.257,
+          "l": 0.428
         },
         "result": "客胜",
         "score": "0-2",
@@ -5896,9 +3970,9 @@
         "prob_hit": true,
         "fusion_direction": "客胜",
         "ev": {
-          "w": 0.411,
-          "d": 0.0874,
-          "l": -0.2147
+          "w": 0.373,
+          "d": 0.0482,
+          "l": -0.1991
         },
         "kelly": {
           "w": 0.0453,
@@ -5906,13 +3980,13 @@
           "l": 0
         },
         "pinnacle": {
-          "w": 0,
-          "d": 0,
-          "l": 0,
+          "w": 4.52,
+          "d": 3.92,
+          "l": 1.77,
           "open": {
-            "w": 0,
-            "d": 0,
-            "l": 0
+            "w": 4.52,
+            "d": 3.92,
+            "l": 1.77
           }
         },
         "hkjc": {
@@ -5926,7 +4000,7 @@
         "reference_score": "",
         "cold_risk": "",
         "source": "om_only",
-        "odds_source": "百家平均",
+        "odds_source": "Pinnacle",
         "home_lambda": 1.221,
         "away_lambda": 1.179,
         "home_ranking": 0,
@@ -6008,7 +4082,7 @@
         }
       },
       {
-        "id": 1422,
+        "id": 1454,
         "date": "2026-06-19",
         "league": "爱甲",
         "home": "布雷流浪者",
@@ -6032,9 +4106,9 @@
           "l": 0.219
         },
         "fusion_prob": {
-          "w": 0.424,
-          "d": 0.282,
-          "l": 0.294
+          "w": 0.452,
+          "d": 0.274,
+          "l": 0.274
         },
         "result": "主胜",
         "score": "5-2",
@@ -6044,9 +4118,9 @@
         "prob_hit": true,
         "fusion_direction": "主胜",
         "ev": {
-          "w": -0.2071,
-          "d": 0.1316,
-          "l": 0.3404
+          "w": -0.1924,
+          "d": 0.0896,
+          "l": 0.3847
         },
         "kelly": {
           "w": 0,
@@ -6054,13 +4128,13 @@
           "l": 0.0475
         },
         "pinnacle": {
-          "w": 0,
-          "d": 0,
-          "l": 0,
+          "w": 1.67,
+          "d": 3.77,
+          "l": 5.23,
           "open": {
-            "w": 0,
-            "d": 0,
-            "l": 0
+            "w": 1.67,
+            "d": 3.77,
+            "l": 5.23
           }
         },
         "hkjc": {
@@ -6074,7 +4148,7 @@
         "reference_score": "",
         "cold_risk": "",
         "source": "om_only",
-        "odds_source": "百家平均",
+        "odds_source": "Pinnacle",
         "home_lambda": 1.492,
         "away_lambda": 0.908,
         "home_ranking": 0,
@@ -6156,7 +4230,7 @@
         }
       },
       {
-        "id": 1423,
+        "id": 1455,
         "date": "2026-06-19",
         "league": "爱甲",
         "home": "阿斯隆城",
@@ -6180,9 +4254,9 @@
           "l": 0.316
         },
         "fusion_prob": {
-          "w": 0.366,
-          "d": 0.272,
-          "l": 0.363
+          "w": 0.386,
+          "d": 0.299,
+          "l": 0.315
         },
         "result": "平局",
         "score": "2-2",
@@ -6192,9 +4266,9 @@
         "prob_hit": false,
         "fusion_direction": "主胜",
         "ev": {
-          "w": -0.0318,
-          "d": -0.0348,
-          "l": 0.0637
+          "w": 0.0613,
+          "d": 0.0742,
+          "l": -0.1183
         },
         "kelly": {
           "w": 0,
@@ -6202,13 +4276,13 @@
           "l": 0
         },
         "pinnacle": {
-          "w": 0,
-          "d": 0,
-          "l": 0,
+          "w": 2.62,
+          "d": 3.43,
+          "l": 2.66,
           "open": {
-            "w": 0,
-            "d": 0,
-            "l": 0
+            "w": 2.62,
+            "d": 3.43,
+            "l": 2.66
           }
         },
         "hkjc": {
@@ -6222,7 +4296,7 @@
         "reference_score": "",
         "cold_risk": "",
         "source": "om_only",
-        "odds_source": "百家平均",
+        "odds_source": "Pinnacle",
         "home_lambda": 1.352,
         "away_lambda": 1.048,
         "home_ranking": 0,
@@ -6304,7 +4378,7 @@
         }
       },
       {
-        "id": 1424,
+        "id": 1456,
         "date": "2026-06-19",
         "league": "爱甲",
         "home": "都柏林大学",
@@ -6328,9 +4402,9 @@
           "l": 0.215
         },
         "fusion_prob": {
-          "w": 0.434,
-          "d": 0.277,
-          "l": 0.289
+          "w": 0.467,
+          "d": 0.269,
+          "l": 0.264
         },
         "result": "客胜",
         "score": "0-1",
@@ -6340,9 +4414,9 @@
         "prob_hit": false,
         "fusion_direction": "主胜",
         "ev": {
-          "w": -0.1827,
-          "d": 0.0751,
-          "l": 0.3346
+          "w": -0.2075,
+          "d": 0.1483,
+          "l": 0.4106
         },
         "kelly": {
           "w": 0,
@@ -6350,13 +4424,13 @@
           "l": 0.0574
         },
         "pinnacle": {
-          "w": 0,
-          "d": 0,
-          "l": 0,
+          "w": 1.58,
+          "d": 4.06,
+          "l": 5.68,
           "open": {
-            "w": 0,
-            "d": 0,
-            "l": 0
+            "w": 1.58,
+            "d": 4.06,
+            "l": 5.68
           }
         },
         "hkjc": {
@@ -6370,7 +4444,7 @@
         "reference_score": "",
         "cold_risk": "",
         "source": "om_only",
-        "odds_source": "百家平均",
+        "odds_source": "Pinnacle",
         "home_lambda": 1.504,
         "away_lambda": 0.896,
         "home_ranking": 0,
@@ -6452,7 +4526,7 @@
         }
       },
       {
-        "id": 1425,
+        "id": 1457,
         "date": "2026-06-19",
         "league": "爱甲",
         "home": "科布漫步者",
@@ -6476,9 +4550,9 @@
           "l": 0.197
         },
         "fusion_prob": {
-          "w": 0.429,
-          "d": 0.283,
-          "l": 0.288
+          "w": 0.438,
+          "d": 0.279,
+          "l": 0.283
         },
         "result": "主胜",
         "score": "3-1",
@@ -6488,9 +4562,9 @@
         "prob_hit": true,
         "fusion_direction": "主胜",
         "ev": {
-          "w": -0.2437,
-          "d": 0.1996,
-          "l": 0.4117
+          "w": -0.2994,
+          "d": 0.2805,
+          "l": 0.4961
         },
         "kelly": {
           "w": 0,
@@ -6498,13 +4572,13 @@
           "l": 0.0736
         },
         "pinnacle": {
-          "w": 0,
-          "d": 0,
-          "l": 0,
+          "w": 1.4,
+          "d": 4.43,
+          "l": 7.92,
           "open": {
-            "w": 0,
-            "d": 0,
-            "l": 0
+            "w": 1.4,
+            "d": 4.43,
+            "l": 7.92
           }
         },
         "hkjc": {
@@ -6518,7 +4592,7 @@
         "reference_score": "",
         "cold_risk": "",
         "source": "om_only",
-        "odds_source": "百家平均",
+        "odds_source": "Pinnacle",
         "home_lambda": 1.535,
         "away_lambda": 0.865,
         "home_ranking": 0,
@@ -6600,7 +4674,7 @@
         }
       },
       {
-        "id": 1426,
+        "id": 1458,
         "date": "2026-06-19",
         "league": "爱甲",
         "home": "科克城",
@@ -6624,9 +4698,9 @@
           "l": 0.15
         },
         "fusion_prob": {
-          "w": 0.455,
-          "d": 0.27,
-          "l": 0.275
+          "w": 0.443,
+          "d": 0.268,
+          "l": 0.288
         },
         "result": "主胜",
         "score": "4-0",
@@ -6636,9 +4710,9 @@
         "prob_hit": true,
         "fusion_direction": "主胜",
         "ev": {
-          "w": -0.3146,
-          "d": 0.4008,
-          "l": 0.4986
+          "w": -0.3358,
+          "d": 0.4065,
+          "l": 0.5
         },
         "kelly": {
           "w": 0,
@@ -6646,13 +4720,13 @@
           "l": 0.0908
         },
         "pinnacle": {
-          "w": 0,
-          "d": 0,
-          "l": 0,
+          "w": 1.26,
+          "d": 5.5,
+          "l": 11.57,
           "open": {
-            "w": 0,
-            "d": 0,
-            "l": 0
+            "w": 1.26,
+            "d": 5.5,
+            "l": 11.57
           }
         },
         "hkjc": {
@@ -6666,7 +4740,7 @@
         "reference_score": "",
         "cold_risk": "",
         "source": "om_only",
-        "odds_source": "百家平均",
+        "odds_source": "Pinnacle",
         "home_lambda": 1.574,
         "away_lambda": 0.826,
         "home_ranking": 0,
@@ -6748,7 +4822,7 @@
         }
       },
       {
-        "id": 1410,
+        "id": 1442,
         "date": "2026-06-19",
         "league": "世界杯",
         "home": "美国",
@@ -6772,9 +4846,9 @@
           "l": 0.197
         },
         "fusion_prob": {
-          "w": 0.435,
-          "d": 0.291,
-          "l": 0.274
+          "w": 0.442,
+          "d": 0.277,
+          "l": 0.281
         },
         "result": "主胜",
         "score": "2-0",
@@ -6784,9 +4858,9 @@
         "prob_hit": true,
         "fusion_direction": "主胜",
         "ev": {
-          "w": -0.2523,
-          "d": 0.2829,
-          "l": 0.3977
+          "w": -0.2561,
+          "d": 0.238,
+          "l": 0.4467
         },
         "kelly": {
           "w": 0,
@@ -6794,9 +4868,9 @@
           "l": 0.0622
         },
         "pinnacle": {
-          "w": 1.61,
-          "d": 4.4,
-          "l": 5.45,
+          "w": 1.59,
+          "d": 4.45,
+          "l": 6.0,
           "open": {
             "w": 1.89,
             "d": 3.65,
@@ -6844,9 +4918,9 @@
         },
         "ms": {
           "close": {
-            "handicap": 0.0,
-            "home_w": 0.74,
-            "away_w": 1.22
+            "handicap": -1.0,
+            "home_w": 0.81,
+            "away_w": 1.13
           },
           "open": {
             "handicap": -0.5,
@@ -6896,7 +4970,7 @@
         }
       },
       {
-        "id": 1427,
+        "id": 1459,
         "date": "2026-06-19",
         "league": "爱超",
         "home": "波希米亚人",
@@ -6920,9 +4994,9 @@
           "l": 0.247
         },
         "fusion_prob": {
-          "w": 0.425,
-          "d": 0.277,
-          "l": 0.297
+          "w": 0.434,
+          "d": 0.286,
+          "l": 0.279
         },
         "result": "客胜",
         "score": "1-2",
@@ -6932,9 +5006,9 @@
         "prob_hit": false,
         "fusion_direction": "主胜",
         "ev": {
-          "w": -0.1306,
-          "d": 0.0932,
-          "l": 0.1576
+          "w": -0.1884,
+          "d": 0.1309,
+          "l": 0.3065
         },
         "kelly": {
           "w": 0,
@@ -6942,13 +5016,13 @@
           "l": 0.035
         },
         "pinnacle": {
-          "w": 0,
-          "d": 0,
-          "l": 0,
+          "w": 1.73,
+          "d": 3.71,
+          "l": 4.55,
           "open": {
-            "w": 0,
-            "d": 0,
-            "l": 0
+            "w": 1.73,
+            "d": 3.71,
+            "l": 4.55
           }
         },
         "hkjc": {
@@ -6962,7 +5036,7 @@
         "reference_score": "",
         "cold_risk": "",
         "source": "om_only",
-        "odds_source": "百家平均",
+        "odds_source": "Pinnacle",
         "home_lambda": 1.47,
         "away_lambda": 0.93,
         "home_ranking": 0,
@@ -7044,7 +5118,7 @@
         }
       },
       {
-        "id": 1411,
+        "id": 1443,
         "date": "2026-06-19",
         "league": "世界杯",
         "home": "苏格兰",
@@ -7068,9 +5142,9 @@
           "l": 0.458
         },
         "fusion_prob": {
-          "w": 0.323,
+          "w": 0.32,
           "d": 0.294,
-          "l": 0.383
+          "l": 0.385
         },
         "result": "客胜",
         "score": "0-1",
@@ -7080,9 +5154,9 @@
         "prob_hit": true,
         "fusion_direction": "客胜",
         "ev": {
-          "w": 0.4532,
-          "d": 0.0976,
-          "l": -0.2694
+          "w": 0.4801,
+          "d": 0.1292,
+          "l": -0.2913
         },
         "kelly": {
           "w": 0.086,
@@ -7090,9 +5164,9 @@
           "l": 0
         },
         "pinnacle": {
-          "w": 5.27,
-          "d": 3.63,
-          "l": 1.77,
+          "w": 6.02,
+          "d": 3.76,
+          "l": 1.69,
           "open": {
             "w": 3.53,
             "d": 3.16,
@@ -7192,7 +5266,7 @@
         }
       },
       {
-        "id": 1412,
+        "id": 1444,
         "date": "2026-06-19",
         "league": "世界杯",
         "home": "巴西",
@@ -7216,9 +5290,9 @@
           "l": 0.108
         },
         "fusion_prob": {
-          "w": 0.427,
-          "d": 0.246,
-          "l": 0.327
+          "w": 0.428,
+          "d": 0.262,
+          "l": 0.31
         },
         "result": "主胜",
         "score": "3-0",
@@ -7228,8 +5302,8 @@
         "prob_hit": true,
         "fusion_direction": "主胜",
         "ev": {
-          "w": -0.3854,
-          "d": 0.4992,
+          "w": -0.3824,
+          "d": 0.4996,
           "l": 0.5
         },
         "kelly": {
@@ -7238,9 +5312,9 @@
           "l": 0.1481
         },
         "pinnacle": {
-          "w": 1.12,
+          "w": 1.14,
           "d": 11.0,
-          "l": 26.0,
+          "l": 20.5,
           "open": {
             "w": 1.09,
             "d": 11.94,
@@ -7340,7 +5414,7 @@
         }
       },
       {
-        "id": 1413,
+        "id": 1445,
         "date": "2026-06-19",
         "league": "世界杯",
         "home": "土耳其",
@@ -7364,9 +5438,9 @@
           "l": 0.247
         },
         "fusion_prob": {
-          "w": 0.395,
-          "d": 0.32,
-          "l": 0.286
+          "w": 0.394,
+          "d": 0.315,
+          "l": 0.291
         },
         "result": "客胜",
         "score": "0-1",
@@ -7376,9 +5450,9 @@
         "prob_hit": false,
         "fusion_direction": "主胜",
         "ev": {
-          "w": -0.1728,
-          "d": 0.1519,
-          "l": 0.1718
+          "w": -0.1234,
+          "d": 0.0792,
+          "l": 0.1269
         },
         "kelly": {
           "w": 0,
@@ -7386,9 +5460,9 @@
           "l": 0.015
         },
         "pinnacle": {
-          "w": 2.02,
-          "d": 3.52,
-          "l": 4.01,
+          "w": 2.17,
+          "d": 3.35,
+          "l": 3.79,
           "open": {
             "w": 2.25,
             "d": 3.16,
@@ -12156,6 +10230,11 @@
           "away_w": 0,
           "source": ""
         },
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -12190,11 +10269,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       }
     ],
@@ -16118,6 +14192,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -16152,11 +14231,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       },
       {
@@ -16226,6 +14300,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -16260,11 +14339,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       },
       {
@@ -16334,6 +14408,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -16368,11 +14447,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       },
       {
@@ -16442,6 +14516,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -16476,11 +14555,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       },
       {
@@ -16550,6 +14624,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -16584,11 +14663,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       },
       {
@@ -16658,6 +14732,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -16692,11 +14771,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       }
     ],
@@ -16838,6 +14912,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -16872,11 +14951,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       },
       {
@@ -16946,6 +15020,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -16980,11 +15059,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       },
       {
@@ -17054,6 +15128,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -17088,11 +15167,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       },
       {
@@ -17162,6 +15236,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -17196,11 +15275,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       },
       {
@@ -17270,6 +15344,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -17304,11 +15383,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       },
       {
@@ -17378,6 +15452,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -17412,11 +15491,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       },
       {
@@ -17486,6 +15560,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -17520,11 +15599,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       },
       {
@@ -17594,6 +15668,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -17628,11 +15707,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       },
       {
@@ -17702,6 +15776,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -17736,11 +15815,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       },
       {
@@ -17810,6 +15884,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -17844,11 +15923,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       }
     ],
@@ -17920,6 +15994,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -17954,11 +16033,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       },
       {
@@ -18028,6 +16102,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -18062,11 +16141,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       },
       {
@@ -18136,6 +16210,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -18170,11 +16249,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       },
       {
@@ -18244,6 +16318,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -18278,11 +16357,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       },
       {
@@ -18352,6 +16426,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -18386,11 +16465,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       },
       {
@@ -18460,6 +16534,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -18494,11 +16573,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       },
       {
@@ -18568,6 +16642,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -18602,11 +16681,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       },
       {
@@ -18676,6 +16750,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -18710,11 +16789,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       },
       {
@@ -18784,6 +16858,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -18818,11 +16897,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       },
       {
@@ -18892,6 +16966,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -18926,11 +17005,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       },
       {
@@ -19000,6 +17074,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -19034,11 +17113,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       },
       {
@@ -19108,6 +17182,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -19142,11 +17221,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       },
       {
@@ -19216,6 +17290,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -19250,11 +17329,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       },
       {
@@ -19324,6 +17398,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -19358,11 +17437,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       },
       {
@@ -19432,6 +17506,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -19466,11 +17545,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       },
       {
@@ -19540,6 +17614,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -19574,11 +17653,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       },
       {
@@ -19648,6 +17722,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -19682,11 +17761,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       },
       {
@@ -19756,6 +17830,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -19790,11 +17869,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       },
       {
@@ -19864,6 +17938,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -19898,11 +17977,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       },
       {
@@ -19972,6 +18046,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -20006,11 +18085,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       },
       {
@@ -20080,6 +18154,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -20114,11 +18193,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       },
       {
@@ -20188,6 +18262,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -20222,11 +18301,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       },
       {
@@ -20296,6 +18370,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -20330,11 +18409,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       },
       {
@@ -20404,6 +18478,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -20438,11 +18517,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       },
       {
@@ -20512,6 +18586,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -20546,11 +18625,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       },
       {
@@ -20620,6 +18694,11 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
         "ms_ou": {
           "over": 0,
           "line": null,
@@ -20654,11 +18733,6 @@
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         }
       }
     ],
