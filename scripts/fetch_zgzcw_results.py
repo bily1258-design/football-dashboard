@@ -175,6 +175,12 @@ def fetch_results(date_str: str, page_type: str = PAGE_JZ) -> List[Dict]:
         return fetch_with_playwright(date_str, page_type)
     
     results = parse_jz_results(html)
+    
+    # urllib拿到JS骨架(0场)→Playwright兜底渲染
+    if not results:
+        print(f'  ⚠️ urllib解析0场（可能JS未渲染），尝试Playwright...')
+        return fetch_with_playwright(date_str, page_type)
+    
     print(f'  ✅ {type_name}完场: {len(results)} 场')
     
     # 保存缓存
@@ -222,47 +228,48 @@ def fetch_with_playwright(date_str: str, page_type: str = PAGE_JZ) -> List[Dict]
         # 提取DOM文本
         body_text = page.evaluate('document.body.innerText')
         
-        # 解析文本中的赛果
-        # 格式: "队名 数字-数字 队名" 或 "队名 数字 - 数字 队名"
-        lines = body_text.split('\n')
-        for i, line in enumerate(lines):
-            # 匹配完场比赛的比分
-            score_match = re.search(
-                r'([\u4e00-\u9fa5A-Za-z·\'.]+)\s+(\d+)\s*[-–]\s*(\d+)\s+([\u4e00-\u9fa5A-Za-z·\'.]+)',
-                line.strip()
-            )
-            if not score_match:
-                continue
-            
-            home = score_match.group(1).strip()
-            hs = int(score_match.group(2))
-            as_ = int(score_match.group(3))
-            away = score_match.group(4).strip()
-            
-            if hs > 20 or as_ > 20:
-                continue
-            if len(home) < 2 or len(away) < 2:
-                continue
-            
-            # 检查附近行是否有"完"标记
-            context_text = ' '.join(lines[max(0, i-3):i+3])
-            if '完' not in context_text:
-                continue
-            
-            outcome = '主胜' if hs > as_ else ('平局' if hs == as_ else '客胜')
-            score_str = f'{hs}-{as_}'
-            
-            results.append({
-                'home': home,
-                'away': away,
-                'home_score': hs,
-                'away_score': as_,
-                'score': score_str,
-                'outcome': f'{outcome} {score_str}',
-                'league': '未知',
-                'time': '',
-                'source': f'zgzcw_{page_type}_pw',
-            })
+        # 复用parse_jz_results解析（格式与fetch_web一致）
+        results = parse_jz_results(body_text)
+        
+        # 如果parse_jz_results没匹配到（innerText格式差异），用简单正则兜底
+        if not results:
+            lines = body_text.split('\n')
+            for i, line in enumerate(lines):
+                score_match = re.search(
+                    r'([\u4e00-\u9fa5A-Za-z·\'.]+)\s+(\d+)\s*[-–]\s*(\d+)\s+([\u4e00-\u9fa5A-Za-z·\'.]+)',
+                    line.strip()
+                )
+                if not score_match:
+                    continue
+                
+                home = score_match.group(1).strip()
+                hs = int(score_match.group(2))
+                as_ = int(score_match.group(3))
+                away = score_match.group(4).strip()
+                
+                if hs > 20 or as_ > 20:
+                    continue
+                if len(home) < 2 or len(away) < 2:
+                    continue
+                
+                context_text = ' '.join(lines[max(0, i-3):i+3])
+                if '完' not in context_text:
+                    continue
+                
+                outcome = '主胜' if hs > as_ else ('平局' if hs == as_ else '客胜')
+                score_str = f'{hs}-{as_}'
+                
+                results.append({
+                    'home': home,
+                    'away': away,
+                    'home_score': hs,
+                    'away_score': as_,
+                    'score': score_str,
+                    'outcome': f'{outcome} {score_str}',
+                    'league': '未知',
+                    'time': '',
+                    'source': f'zgzcw_{page_type}_pw',
+                })
         
         browser.close()
     
