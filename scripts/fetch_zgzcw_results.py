@@ -201,9 +201,22 @@ def fetch_with_browser(date_str: str, page_type: str = PAGE_JZ) -> List[Dict]:
     # --- 方案1: chromium --dump-dom (Termux最简单，不需要chromedriver) ---
     import shutil
     import subprocess
-    chromium_path = shutil.which('chromium') or shutil.which('chromium-browser')
+    # Termux / 常见Linux路径
+    _CHROMIUM_CANDIDATES = [
+        shutil.which('chromium'),
+        shutil.which('chromium-browser'),
+        shutil.which('google-chrome'),
+        '/data/data/com.termux/files/usr/bin/chromium',
+        '/data/data/com.termux/files/usr/bin/chromium-browser',
+        '/usr/bin/chromium',
+        '/usr/bin/chromium-browser',
+        '/usr/bin/google-chrome',
+    ]
+    chromium_path = next((p for p in _CHROMIUM_CANDIDATES if p and os.path.isfile(p)), None)
+    if not chromium_path:
+        print('  ⚠️ 未找到chromium，跳过dump-dom方案')
     if chromium_path:
-        print(f'  [chromium dump-dom] 加载{type_name}页面...')
+        print(f'  [chromium dump-dom] 加载{type_name}页面... (chromium={chromium_path})')
         try:
             result = subprocess.run(
                 [
