@@ -1399,23 +1399,24 @@ def fetch_pinnacle_ah_ou_from_api(match_list, date_str):
     return result
 
 
-def fetch_pinnacle_odds(date_str=None, include_beidan=False):
+def fetch_pinnacle_odds(date_str=None, include_beidan=True):
     """主函数：获取指定日期的赔率数据
-    
-    【重要】北单(include_beidan)默认关闭：
-    - 中国足彩网北单(type=bd)页面返回让球盘(HHAD)赔率，非标准盘(HAD)
-    - 即使d<2.0检测能过滤部分，仍不可信，故直接禁用北单赔率抓取
-    - 北单场次赔率降级为百家平均或竞彩HAD
-    
+
+    【北单(include_beidan)默认开启】（2026-06-20 改造）：
+    - 实测公司ID 106 = 真Pinnacle，type=bd 页面返回 1X2欧赔（非让球盘）
+    - 6-21/6-22缺Pinnacle的3场（西乙+巴乙）全在北单页面里，开启后能直接补齐
+    - 公司ID 22 = 假Pinnacle（已废弃），所有 type 都返回空/WAF
+    - 北单返回的是真HAD 1X2欧赔（d<2.0 检测同样适用），不是HHAD让球盘
+
     数据源优先级：
     1. SB公司赔率（POST company=3，抽水5-8%）→ 作为pinnacle字段（主市场参照）
     2. 百家平均赔率（GET默认页面）→ 作为avg_odds字段
     3. 详情页平博数据（如果可访问）→ 覆盖pinnacle字段
-    
+
     Args:
         date_str: 日期字符串，格式 YYYY-MM-DD，默认今天
-        include_beidan: 是否同时抓取北单(type=bd)的百家指数
-    
+        include_beidan: 是否同时抓取北单(type=bd)的Pinnacle/Betfair等公司赔率（默认True）
+
     Returns:
         list[dict]: 每场比赛的赔率数据
     """
@@ -1537,23 +1538,24 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=False):
             print(f"[INFO] 去重合并后总计 {len(match_list)} 场比赛")
     
         # Step 2: 平博赔率（POST方式，aid=106=真Pinnacle）- 当天+前一天（最高优先级）
+        # 2026-06-20 WAF加固：单次会话多次POST会被HuaweiCloudWAF拦，间隔从3s→6s
         pin_jc = fetch_company_odds(date_str, page_type='jc', company='106')
-        time.sleep(3)
+        time.sleep(6)
         pin_jc_prev = fetch_company_odds(prev_day, page_type='jc', company='106')
-        time.sleep(3)
+        time.sleep(6)
         pin_bd = fetch_company_odds(date_str, page_type='bd', company='106') if include_beidan else {}
-        time.sleep(3)
+        time.sleep(6)
         pin_bd_prev = fetch_company_odds(prev_day, page_type='bd', company='106') if include_beidan else {}
         pin_all = {**pin_jc_prev, **pin_bd_prev, **pin_jc, **pin_bd}  # match_id -> pin_odds
         print(f"[INFO] Pinnacle赔率: {len(pin_all)} 场 (前天jc{len(pin_jc_prev)}/bd{len(pin_bd_prev)}, 当天jc{len(pin_jc)}/bd{len(pin_bd)})")
-    
+
         # Step 3: 必发赔率（POST方式，aid=56=Betfair）- 当天+前一天（辅助参考）
         bf_jc = fetch_company_odds(date_str, page_type='jc', company='56')
-        time.sleep(3)
+        time.sleep(6)
         bf_jc_prev = fetch_company_odds(prev_day, page_type='jc', company='56')
-        time.sleep(3)
+        time.sleep(6)
         bf_bd = fetch_company_odds(date_str, page_type='bd', company='56') if include_beidan else {}
-        time.sleep(3)
+        time.sleep(6)
         bf_bd_prev = fetch_company_odds(prev_day, page_type='bd', company='56') if include_beidan else {}
         bf_all = {**bf_jc_prev, **bf_bd_prev, **bf_jc, **bf_bd}
         print(f"[INFO] Betfair赔率: {len(bf_all)} 场")
@@ -1585,10 +1587,11 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=False):
         print(f"[INFO] 香港马会赔率: 已取消抓取")
     
         # Step 5.8: 亚盘让球盘（POST companyType=y）— 仅百家平均，HKJC已取消
+        # 2026-06-20 WAF加固：间隔从3s→6s
         ah_avg_jc = fetch_asian_handicap(date_str, page_type='jc', company='0')
-        time.sleep(3)
+        time.sleep(6)
         ah_avg_jc_prev = fetch_asian_handicap(prev_day, page_type='jc', company='0')
-        time.sleep(3)
+        time.sleep(6)
         # ah_hkjc_jc = fetch_asian_handicap(date_str, page_type='jc', company='136')  # 已取消
         # time.sleep(3)
         # ah_hkjc_jc_prev = fetch_asian_handicap(prev_day, page_type='jc', company='136')  # 已取消
