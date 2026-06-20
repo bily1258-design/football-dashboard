@@ -68,7 +68,10 @@ def _html_to_text(html: str) -> str:
     足彩网是table布局，每场比赛一个<tr>。
     策略：先压缩HTML换行，再按</tr>分场，每场数据在一行。
     """
-    # 先去掉HTML中的换行和多余空白（让同一<tr>内容在同一行）
+    # 先去掉<style>和<script>块（避免CSS/JS污染文本）
+    html = re.sub(r'<style[^>]*>.*?</style>', '', html, flags=re.IGNORECASE | re.DOTALL)
+    html = re.sub(r'<script[^>]*>.*?</script>', '', html, flags=re.IGNORECASE | re.DOTALL)
+    # 去掉HTML中的换行和多余空白（让同一<tr>内容在同一行）
     html = re.sub(r'\n', ' ', html)
     html = re.sub(r'\r', ' ', html)
     # 每个</tr>后面加换行（一场一行）
@@ -110,10 +113,6 @@ def parse_jz_results(html: str) -> List[Dict]:
     """
     results = []
     
-    # 先提取每场比赛的块：以周X+数字开头
-    # 每场比赛从 "周X数字" 或 "周X数字...完" 开始
-    # 用正则按"完"标记切分
-    
     # 按行或整段处理
     lines = html.split('\n') if '\n' in html else [html]
     
@@ -122,18 +121,30 @@ def parse_jz_results(html: str) -> List[Dict]:
         if '完' not in line:
             continue
         
-        # 找所有完场块：以"周"开头到下一个"周"或行尾
-        # 先按"周"拆分出各场比赛
-        matches = re.finditer(
+        # 竞彩格式: 周X+数字 开头 (如 "周四025世界杯...")
+        # 北单格式: 纯数字+联赛 开头 (如 "1 挪甲 第12轮...")
+        # 两种格式都用"完"标记完场
+        
+        # 先尝试竞彩格式
+        blocks_jz = list(re.finditer(
             r'(周[一二三四五六日]\d+.*?完.*?)(?=周[一二三四五六日]\d+|$)',
             line
-        )
+        ))
         
-        for m in matches:
-            block = m.group(1)
-            result = _parse_single_match(block)
-            if result:
-                results.append(result)
+        if blocks_jz:
+            for m in blocks_jz:
+                block = m.group(1)
+                result = _parse_single_match(block)
+                if result:
+                    results.append(result)
+        else:
+            # 北单格式: 每行一场，数字编号开头
+            # 格式: "1 挪甲 第12轮 06-20 01:00 完 0 [6] 兰黑姆 (-1 ) 3-2 利恩 [14] 0 1-1"
+            # _html_to_text 按 </tr> 分行，每行一场，直接匹配整行
+            if re.match(r'\d{1,3}\s+[\u4e00-\u9fa5]', line):
+                result = _parse_single_match(line)
+                if result:
+                    results.append(result)
     
     return results
 
@@ -150,10 +161,12 @@ def _parse_single_match(block: str) -> Optional[Dict]:
     # 提取赛事
     league = '未知'
     league_match = re.search(
-        r'(世界杯|欧洲杯|英超|西甲|意甲|德甲|法甲|中超|芬超|瑞典超|瑞典超甲|巴西甲|巴西乙|'
-        r'冰岛超|智利甲|日职|韩职|澳超|美职|挪超|挪甲|丹超|波超|荷甲|葡超|比甲|俄超|'
-        r'苏超|奥甲|捷甲|瑞士超|罗甲|匈甲|希超|土超|国际友谊|日乙|日联杯|韩联杯|'
-        r'英冠|英甲|英乙|西乙|意乙|德乙|法乙|中超杯|足协杯|社区盾|超级杯)',
+        r'(世界杯|欧洲杯|英超|西甲|意甲|德甲|法甲|中超|芬超|芬甲|瑞典超|瑞典超甲|巴西甲|巴西乙|'
+        r'冰岛超|智利甲|日职|日乙|韩职|澳超|美职|挪超|挪甲|丹超|波超|荷甲|葡超|比甲|俄超|'
+        r'苏超|奥甲|捷甲|瑞士超|罗甲|匈甲|希超|土超|国际友谊|日联杯|韩联杯|'
+        r'英冠|英甲|英乙|西乙|意乙|德乙|法乙|中超杯|足协杯|社区盾|超级杯|'
+        r'爱超|爱甲|波甲|阿甲|哥伦甲|乌拉甲|巴拉甲|智利乙|墨超|墨甲|'
+        r'韩乙|澳维超|日丙|美乙|冰岛甲|法丙|西丙|意丙|德丙)',
         clean
     )
     if league_match:
