@@ -385,20 +385,35 @@ def step_daily_report(date_str: str, incremental: bool = False):
 
 
 def step_backfill_results(date_str: str, db_path: str = None):
-    """Step: 从足彩网抓赛果回填DB（优先于500.com）"""
+    """Step: 从足彩网抓赛果回填DB（优先于500.com）
+    
+    回填当天+前一天：当天可能有凌晨完场的，前一天是主要完场日
+    """
     print("\n" + "=" * 50)
-    print(f"STEP: 赛果回填 — {date_str}")
+    print(f"STEP: 赛果回填 — {date_str} + 前一天")
     print("=" * 50)
+
+    total = 0
+    # 回填当天和前一天
+    dates = [date_str]
+    try:
+        prev = (datetime.strptime(date_str, '%Y-%m-%d') - timedelta(days=1)).strftime('%Y-%m-%d')
+        dates.append(prev)
+    except:
+        pass
 
     try:
         from fetch_zgzcw_results import fetch_results, PAGE_JZ, PAGE_BD, backfill_db as _backfill_zgzcw
-        results = fetch_results(date_str, PAGE_JZ)
-        bd_results = fetch_results(date_str, PAGE_BD)
-        all_results = results + bd_results
-        if all_results:
-            count = _backfill_zgzcw(all_results, db_path)
-            print(f"✅ 足彩网回填 {count} 条")
-            return count
+        for d in dates:
+            results = fetch_results(d, PAGE_JZ)
+            bd_results = fetch_results(d, PAGE_BD)
+            all_results = results + bd_results
+            if all_results:
+                count = _backfill_zgzcw(all_results, db_path)
+                total += count
+        if total > 0:
+            print(f"✅ 足彩网回填共 {total} 条")
+            return total
         else:
             print("  足彩网无赛果数据，尝试500.com...")
     except Exception as e:
@@ -406,18 +421,15 @@ def step_backfill_results(date_str: str, db_path: str = None):
 
     # 兜底: 500.com缓存
     try:
-        from fetch_500com_termux import fetch_results as _fetch_500com
-        base = date_str.replace('-', '')
-        next_base = (datetime.strptime(date_str, '%Y-%m-%d') + timedelta(days=1)).strftime('%Y%m%d')
-        cache_files = [
-            os.path.join(CACHE_DIR, f"500com_results_{base}.json"),
-            os.path.join(CACHE_DIR, f"500com_results_{next_base}.json"),
-        ]
         all_500 = []
-        for cf in cache_files:
-            if os.path.exists(cf):
-                with open(cf, 'r', encoding='utf-8') as f:
-                    all_500.extend(json.load(f).get('results', []))
+        for d in dates:
+            base = d.replace('-', '')
+            next_base = (datetime.strptime(d, '%Y-%m-%d') + timedelta(days=1)).strftime('%Y%m%d')
+            for suffix in [base, next_base]:
+                cf = os.path.join(CACHE_DIR, f"500com_results_{suffix}.json")
+                if os.path.exists(cf):
+                    with open(cf, 'r', encoding='utf-8') as f:
+                        all_500.extend(json.load(f).get('results', []))
         if all_500:
             from review import _backfill_results
             count = _backfill_results(all_500)
@@ -427,7 +439,7 @@ def step_backfill_results(date_str: str, db_path: str = None):
         print(f"⚠️ 500.com兜底也失败: {e}")
 
     print("  无赛果可回填")
-    return 0
+    return total
 
 
 def step_review(date_str: str):
