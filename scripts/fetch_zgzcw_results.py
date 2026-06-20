@@ -194,17 +194,64 @@ def fetch_results(date_str: str, page_type: str = PAGE_JZ) -> List[Dict]:
 
 
 def fetch_with_browser(date_str: str, page_type: str = PAGE_JZ) -> List[Dict]:
-    """JS未渲染时用浏览器DOM提取（优先selenium，回退playwright）"""
+    """JS未渲染时用浏览器DOM提取（优先chromium dump-dom，回退selenium/playwright）"""
     type_name = '竞彩' if page_type == PAGE_JZ else '北单'
     url = f'https://live.zgzcw.com/{page_type}/?date={date_str}'
     
-    # --- 方案1: Selenium (Termux chromium) ---
+    # --- 方案1: chromium --dump-dom (Termux最简单，不需要chromedriver) ---
+    import shutil
+    import subprocess
+    chromium_path = shutil.which('chromium') or shutil.which('chromium-browser')
+    if chromium_path:
+        print(f'  [chromium dump-dom] 加载{type_name}页面...')
+        try:
+            result = subprocess.run(
+                [
+                    chromium_path,
+                    '--headless',
+                    '--no-sandbox',
+                    '--disable-gpu',
+                    '--disable-dev-shm-usage',
+                    '--virtual-time-budget=8000',
+                    f'--user-agent=Mozilla/5.0 (Linux; Android 11; Pixel 5) '
+                    'AppleWebKit/537.36 Chrome/90.0.4430.91 Mobile Safari/537.36',
+                    '--lang=zh-CN',
+                    '--dump-dom',
+                    url,
+                ],
+                capture_output=True, text=True, timeout=30,
+            )
+            html = result.stdout
+            if html and len(html) > 500:
+                results = parse_jz_results(html)
+                if results:
+                    print(f'  ✅ chromium dump-dom {type_name}完场: {len(results)} 场')
+                    return results
+                # 正则兜底
+                results = _fallback_parse(html, page_type)
+                if results:
+                    print(f'  ✅ chromium dump-dom(兜底) {type_name}完场: {len(results)} 场')
+                    return results
+                if '--debug' in sys.argv:
+                    print(f'  ⚠️ dump-dom拿到 {len(html)} 字符但解析0场')
+                    # 保存调试
+                    debug_file = os.path.join(CACHE_DIR or '/tmp', f'debug_dump_{page_type}_{date_str}.html')
+                    os.makedirs(os.path.dirname(debug_file), exist_ok=True)
+                    with open(debug_file, 'w', encoding='utf-8') as f:
+                        f.write(html[:5000])
+                    print(f'  📄 调试输出: {debug_file}')
+            else:
+                print(f'  ⚠️ chromium dump-dom返回空或过短({len(html) if html else 0}字符)')
+        except subprocess.TimeoutExpired:
+            print('  ⚠️ chromium dump-dom超时(30s)')
+        except Exception as e:
+            print(f'  ⚠️ chromium dump-dom失败: {e}')
+    
+    # --- 方案2: Selenium (需要chromedriver) ---
     try:
         from selenium import webdriver
         from selenium.webdriver.chrome.options import Options
         from selenium.webdriver.chrome.service import Service
-        from selenium.webdriver.support.ui import WebDriverWait
-        from selenium.webdriver.support import expected_conditions as EC
         
         print(f'  [Selenium] 加载{type_name}页面...')
         opts = Options()
@@ -217,16 +264,12 @@ def fetch_with_browser(date_str: str, page_type: str = PAGE_JZ) -> List[Dict]:
                           'AppleWebKit/537.36 Chrome/90.0.4430.91 Mobile Safari/537.36')
         opts.add_argument('--lang=zh-CN')
         
-        # Termux chromium 路径
-        import shutil
-        chromium_path = shutil.which('chromium') or shutil.which('chromium-browser')
         if chromium_path:
             opts.binary_location = chromium_path
         
         try:
             driver = webdriver.Chrome(options=opts)
         except Exception:
-            # 如果默认启动失败，尝试指定chromedriver
             try:
                 service = Service(shutil.which('chromedriver') or '/usr/bin/chromedriver')
                 driver = webdriver.Chrome(service=service, options=opts)
@@ -238,21 +281,15 @@ def fetch_with_browser(date_str: str, page_type: str = PAGE_JZ) -> List[Dict]:
             try:
                 driver.get(url)
                 time.sleep(3)
-                
-                # 滚动加载
                 for _ in range(5):
                     driver.execute_script('window.scrollBy(0, 500)')
                     time.sleep(0.5)
-                
                 body_text = driver.find_element('tag name', 'body').text
                 driver.quit()
-                
                 results = parse_jz_results(body_text)
                 if results:
                     print(f'  ✅ Selenium {type_name}完场: {len(results)} 场')
                     return results
-                
-                # parse_jz_results没匹配到，简单正则兜底
                 results = _fallback_parse(body_text, page_type)
                 print(f'  ✅ Selenium {type_name}完场: {len(results)} 场')
                 return results
@@ -263,15 +300,16 @@ def fetch_with_browser(date_str: str, page_type: str = PAGE_JZ) -> List[Dict]:
                 except:
                     pass
     except ImportError:
-        print('  ⚠️ 未安装selenium，尝试playwright...')
+        print('  ⚠️ 未安装selenium，跳过...')
     
-    # --- 方案2: Playwright ---
+    # --- 方案3: Playwright ---
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
-        print('  ❌ selenium和playwright都未安装')
-        print('     安装: pip install selenium (需要chromium)')
-        print('     或者: pip install playwright && playwright install chromium')
+        print('  ❌ chromium/selenium/playwright均不可用')
+        print('     Termux: pkg install chromium (已安装即可)')
+        print('     Selenium: pip install selenium + chromedriver')
+        print('     Playwright: pip install playwright && playwright install chromium')
         return []
     
     print(f'  [Playwright] 加载{type_name}页面...')
@@ -285,20 +323,15 @@ def fetch_with_browser(date_str: str, page_type: str = PAGE_JZ) -> List[Dict]:
             locale='zh-CN',
         )
         page = context.new_page()
-        
         page.goto(url, wait_until='domcontentloaded', timeout=30000)
         time.sleep(3)
-        
         for _ in range(5):
             page.evaluate('window.scrollBy(0, 500)')
             time.sleep(0.5)
-        
         body_text = page.evaluate('document.body.innerText')
-        
         results = parse_jz_results(body_text)
         if not results:
             results = _fallback_parse(body_text, page_type)
-        
         browser.close()
     
     print(f'  ✅ Playwright {type_name}完场: {len(results)} 场')
