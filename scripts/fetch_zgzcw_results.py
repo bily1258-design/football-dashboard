@@ -165,21 +165,21 @@ def fetch_results(date_str: str, page_type: str = PAGE_JZ) -> List[Dict]:
     if not html:
         # 检查是否被WAF拦截
         if '访问被拦截' in str(html) or '418' in str(html):
-            print('  ⚠️ WAF拦截，尝试Playwright方案...')
-            return fetch_with_playwright(date_str, page_type)
+            print('  ⚠️ WAF拦截，尝试浏览器方案...')
+            return fetch_with_browser(date_str, page_type)
         return []
     
     # 检查WAF
     if '访问被拦截' in html or '攻击行为' in html:
-        print('  ⚠️ WAF拦截，尝试Playwright方案...')
-        return fetch_with_playwright(date_str, page_type)
+        print('  ⚠️ WAF拦截，尝试浏览器方案...')
+        return fetch_with_browser(date_str, page_type)
     
     results = parse_jz_results(html)
     
     # urllib拿到JS骨架(0场)→Playwright兜底渲染
     if not results:
-        print(f'  ⚠️ urllib解析0场（可能JS未渲染），尝试Playwright...')
-        return fetch_with_playwright(date_str, page_type)
+        print(f'  ⚠️ urllib解析0场（可能JS未渲染），尝试浏览器...')
+        return fetch_with_browser(date_str, page_type)
     
     print(f'  ✅ {type_name}完场: {len(results)} 场')
     
@@ -193,18 +193,88 @@ def fetch_results(date_str: str, page_type: str = PAGE_JZ) -> List[Dict]:
     return results
 
 
-def fetch_with_playwright(date_str: str, page_type: str = PAGE_JZ) -> List[Dict]:
-    """WAF拦截时用Playwright DOM提取"""
-    try:
-        from playwright.sync_api import sync_playwright
-    except ImportError:
-        print('  ❌ 未安装playwright，无法绕过WAF')
-        print('     安装: pip install playwright && playwright install chromium')
-        return []
-    
+def fetch_with_browser(date_str: str, page_type: str = PAGE_JZ) -> List[Dict]:
+    """JS未渲染时用浏览器DOM提取（优先selenium，回退playwright）"""
     type_name = '竞彩' if page_type == PAGE_JZ else '北单'
     url = f'https://live.zgzcw.com/{page_type}/?date={date_str}'
     
+    # --- 方案1: Selenium (Termux chromium) ---
+    try:
+        from selenium import webdriver
+        from selenium.webdriver.chrome.options import Options
+        from selenium.webdriver.chrome.service import Service
+        from selenium.webdriver.support.ui import WebDriverWait
+        from selenium.webdriver.support import expected_conditions as EC
+        
+        print(f'  [Selenium] 加载{type_name}页面...')
+        opts = Options()
+        opts.add_argument('--headless')
+        opts.add_argument('--no-sandbox')
+        opts.add_argument('--disable-gpu')
+        opts.add_argument('--disable-dev-shm-usage')
+        opts.add_argument('--window-size=412,915')
+        opts.add_argument('--user-agent=Mozilla/5.0 (Linux; Android 11; Pixel 5) '
+                          'AppleWebKit/537.36 Chrome/90.0.4430.91 Mobile Safari/537.36')
+        opts.add_argument('--lang=zh-CN')
+        
+        # Termux chromium 路径
+        import shutil
+        chromium_path = shutil.which('chromium') or shutil.which('chromium-browser')
+        if chromium_path:
+            opts.binary_location = chromium_path
+        
+        try:
+            driver = webdriver.Chrome(options=opts)
+        except Exception:
+            # 如果默认启动失败，尝试指定chromedriver
+            try:
+                service = Service(shutil.which('chromedriver') or '/usr/bin/chromedriver')
+                driver = webdriver.Chrome(service=service, options=opts)
+            except Exception as e2:
+                print(f'  ❌ Selenium启动失败: {e2}')
+                driver = None
+        
+        if driver:
+            try:
+                driver.get(url)
+                time.sleep(3)
+                
+                # 滚动加载
+                for _ in range(5):
+                    driver.execute_script('window.scrollBy(0, 500)')
+                    time.sleep(0.5)
+                
+                body_text = driver.find_element('tag name', 'body').text
+                driver.quit()
+                
+                results = parse_jz_results(body_text)
+                if results:
+                    print(f'  ✅ Selenium {type_name}完场: {len(results)} 场')
+                    return results
+                
+                # parse_jz_results没匹配到，简单正则兜底
+                results = _fallback_parse(body_text, page_type)
+                print(f'  ✅ Selenium {type_name}完场: {len(results)} 场')
+                return results
+            except Exception as e:
+                print(f'  ❌ Selenium执行失败: {e}')
+                try:
+                    driver.quit()
+                except:
+                    pass
+    except ImportError:
+        print('  ⚠️ 未安装selenium，尝试playwright...')
+    
+    # --- 方案2: Playwright ---
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        print('  ❌ selenium和playwright都未安装')
+        print('     安装: pip install selenium (需要chromium)')
+        print('     或者: pip install playwright && playwright install chromium')
+        return []
+    
+    print(f'  [Playwright] 加载{type_name}页面...')
     results = []
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
@@ -216,64 +286,66 @@ def fetch_with_playwright(date_str: str, page_type: str = PAGE_JZ) -> List[Dict]
         )
         page = context.new_page()
         
-        print(f'  [Playwright] 加载{type_name}页面...')
         page.goto(url, wait_until='domcontentloaded', timeout=30000)
         time.sleep(3)
         
-        # 滚动加载所有比赛
         for _ in range(5):
             page.evaluate('window.scrollBy(0, 500)')
             time.sleep(0.5)
         
-        # 提取DOM文本
         body_text = page.evaluate('document.body.innerText')
         
-        # 复用parse_jz_results解析（格式与fetch_web一致）
         results = parse_jz_results(body_text)
-        
-        # 如果parse_jz_results没匹配到（innerText格式差异），用简单正则兜底
         if not results:
-            lines = body_text.split('\n')
-            for i, line in enumerate(lines):
-                score_match = re.search(
-                    r'([\u4e00-\u9fa5A-Za-z·\'.]+)\s+(\d+)\s*[-–]\s*(\d+)\s+([\u4e00-\u9fa5A-Za-z·\'.]+)',
-                    line.strip()
-                )
-                if not score_match:
-                    continue
-                
-                home = score_match.group(1).strip()
-                hs = int(score_match.group(2))
-                as_ = int(score_match.group(3))
-                away = score_match.group(4).strip()
-                
-                if hs > 20 or as_ > 20:
-                    continue
-                if len(home) < 2 or len(away) < 2:
-                    continue
-                
-                context_text = ' '.join(lines[max(0, i-3):i+3])
-                if '完' not in context_text:
-                    continue
-                
-                outcome = '主胜' if hs > as_ else ('平局' if hs == as_ else '客胜')
-                score_str = f'{hs}-{as_}'
-                
-                results.append({
-                    'home': home,
-                    'away': away,
-                    'home_score': hs,
-                    'away_score': as_,
-                    'score': score_str,
-                    'outcome': f'{outcome} {score_str}',
-                    'league': '未知',
-                    'time': '',
-                    'source': f'zgzcw_{page_type}_pw',
-                })
+            results = _fallback_parse(body_text, page_type)
         
         browser.close()
     
     print(f'  ✅ Playwright {type_name}完场: {len(results)} 场')
+    return results
+
+
+def _fallback_parse(body_text: str, page_type: str = PAGE_JZ) -> List[Dict]:
+    """innerText格式差异时的简单正则兜底解析"""
+    results = []
+    lines = body_text.split('\n')
+    for i, line in enumerate(lines):
+        score_match = re.search(
+            r'([\u4e00-\u9fa5A-Za-z·\'.]+)\s+(\d+)\s*[-–]\s*(\d+)\s+([\u4e00-\u9fa5A-Za-z·\'.]+)',
+            line.strip()
+        )
+        if not score_match:
+            continue
+        
+        home = score_match.group(1).strip()
+        hs = int(score_match.group(2))
+        as_ = int(score_match.group(3))
+        away = score_match.group(4).strip()
+        
+        if hs > 20 or as_ > 20:
+            continue
+        if len(home) < 2 or len(away) < 2:
+            continue
+        
+        context_text = ' '.join(lines[max(0, i-3):i+3])
+        if '完' not in context_text:
+            continue
+        
+        outcome = '主胜' if hs > as_ else ('平局' if hs == as_ else '客胜')
+        score_str = f'{hs}-{as_}'
+        
+        results.append({
+            'home': home,
+            'away': away,
+            'home_score': hs,
+            'away_score': as_,
+            'score': score_str,
+            'outcome': f'{outcome} {score_str}',
+            'league': '未知',
+            'time': '',
+            'source': f'zgzcw_{page_type}_browser',
+        })
+    
     return results
 
 
