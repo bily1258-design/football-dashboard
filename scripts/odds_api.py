@@ -695,6 +695,7 @@ def fetch_all(date_str: str = None, companies: List[str] = None,
 
     prev_day = (datetime.strptime(date_str, '%Y-%m-%d') - timedelta(days=1)).strftime('%Y%m%d')
     curr_day = date_str.replace('-', '')
+    next_day = (datetime.strptime(date_str, '%Y-%m-%d') + timedelta(days=1)).strftime('%Y%m%d')
 
     print(f"\n{'='*50}")
     print(f"赔率抓取: {date_str}")
