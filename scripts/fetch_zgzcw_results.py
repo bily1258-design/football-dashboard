@@ -65,95 +65,141 @@ def fetch_page(date_str: str, page_type: str = PAGE_JZ) -> Optional[str]:
 def parse_jz_results(html: str) -> List[Dict]:
     """解析竞彩赛果页面HTML，提取完场比赛的比分
     
-    足彩网页面文本格式（fetch_web渲染后）：
-    序号赛事轮次时间状态主队（让球）比分客队半场...
-    例: 周一013世界杯 小组赛 06-16 00:00 **完** 0西班牙(**-2** ) 0-0佛得角0 0-0**101-10:00下双**
+    足彩网页面文本格式（dump-dom / fetch_web渲染后）：
+    周四025世界杯 小组赛 06-19 00:00 **完** 0捷克(**-1** ) 1-1南非0 1-0**103-11:12下双**
+    
+    关键格式：
+    - **完**标记完场
+    - **完**后紧跟排名数字(0)然后主队名
+    - 主队名后让球括号如(**-1** )
+    - )后紧跟 比分(如1-1)
+    - 比分后紧跟客队名
+    - 客队名后可能紧跟排名数字
+    - 排名后半场比分如0 1-0
+    - **...**标记各种附加信息
     """
     results = []
     
-    # 按行处理
+    # 先提取每场比赛的块：以周X+数字开头
+    # 每场比赛从 "周X数字" 或 "周X数字...完" 开始
+    # 用正则按"完"标记切分
+    
+    # 按行或整段处理
     lines = html.split('\n') if '\n' in html else [html]
     
     for line in lines:
         # 只处理完场比赛
-        if '**完**' not in line and '完' not in line:
+        if '完' not in line:
             continue
         
-        # 清理标记
-        clean = line.replace('**完**', '').replace('**', '')
-        clean = re.sub(r'\*\[\d+\]\*', '', clean)  # 排名标记 *[4]*
-        clean = re.sub(r'<[^>]+>', ' ', clean)      # HTML标签
-        from html import unescape as _unescape
-        clean = _unescape(clean)
-        clean = re.sub(r'\s+', ' ', clean).strip()
-        
-        # 提取比分：让球括号 ) 后面紧跟的 数字-数字
-        score_m = re.search(r'\)\s*(\d+)\s*[-–]\s*(\d+)\s*([\u4e00-\u9fa5A-Za-z·\'.]+)', clean)
-        if not score_m:
-            # 无让球括号的情况：队名 数字-数字 队名
-            score_m = re.search(
-                r'([\u4e00-\u9fa5A-Za-z·\'.]+)\s+(\d+)\s*[-–]\s*(\d+)\s+([\u4e00-\u9fa5A-Za-z·\'.]+)',
-                clean
-            )
-            if score_m:
-                home = score_m.group(1).strip()
-                home_score = int(score_m.group(2))
-                away_score = int(score_m.group(3))
-                away = score_m.group(4).strip()
-            else:
-                continue
-        else:
-            home_score = int(score_m.group(1))
-            away_score = int(score_m.group(2))
-            away = score_m.group(3).strip()
-            # 提取主队：让球括号前面的中文名
-            home_m = re.search(r'([\u4e00-\u9fa5A-Za-z·\'.]+)\s*(?:\([^)]*\))', clean)
-            home = home_m.group(1).strip() if home_m else ''
-        
-        # 过滤无效数据
-        if home_score > 20 or away_score > 20:
-            continue
-        if len(home) < 2 or len(away) < 2:
-            continue
-        
-        # 提取赛事
-        league = '未知'
-        league_match = re.search(
-            r'(世界杯|欧洲杯|英超|西甲|意甲|德甲|法甲|中超|芬超|瑞典超|瑞典超甲|巴西甲|巴西乙|'
-            r'冰岛超|智利甲|日职|韩职|澳超|美职|挪超|挪甲|丹超|波超|荷甲|葡超|比甲|俄超|'
-            r'苏超|奥甲|捷甲|瑞士超|罗甲|匈甲|希超|土超|国际友谊|日乙|日联杯|韩联杯|'
-            r'英冠|英甲|英乙|西乙|意乙|德乙|法乙|中超杯|足协杯|社区盾|超级杯)',
-            clean
+        # 找所有完场块：以"周"开头到下一个"周"或行尾
+        # 先按"周"拆分出各场比赛
+        matches = re.finditer(
+            r'(周[一二三四五六日]\d+.*?完.*?)(?=周[一二三四五六日]\d+|$)',
+            line
         )
-        if league_match:
-            league = league_match.group(1)
         
-        time_match = re.search(r'(\d{2}:\d{2})', clean)
-        time_str = time_match.group(1) if time_match else ''
-        
-        # 判定赛果方向
-        if home_score > away_score:
-            outcome = '主胜'
-        elif home_score == away_score:
-            outcome = '平局'
-        else:
-            outcome = '客胜'
-        
-        score_str = f'{home_score}-{away_score}'
-        
-        results.append({
-            'home': home,
-            'away': away,
-            'home_score': home_score,
-            'away_score': away_score,
-            'score': score_str,
-            'outcome': f'{outcome} {score_str}',
-            'league': league,
-            'time': time_str,
-            'source': 'zgzcw_jz',
-        })
+        for m in matches:
+            block = m.group(1)
+            result = _parse_single_match(block)
+            if result:
+                results.append(result)
     
     return results
+
+
+def _parse_single_match(block: str) -> Optional[Dict]:
+    """解析单场比赛块，提取比分信息"""
+    # 清理标记
+    clean = block.replace('**完**', '完').replace('**', '')
+    clean = re.sub(r'\*\[\d+\]\*', '', clean)   # 排名 *[3]*
+    clean = re.sub(r'<[^>]+>', ' ', clean)        # HTML标签
+    clean = unescape(clean)
+    clean = re.sub(r'\s+', ' ', clean).strip()
+    
+    # 提取赛事
+    league = '未知'
+    league_match = re.search(
+        r'(世界杯|欧洲杯|英超|西甲|意甲|德甲|法甲|中超|芬超|瑞典超|瑞典超甲|巴西甲|巴西乙|'
+        r'冰岛超|智利甲|日职|韩职|澳超|美职|挪超|挪甲|丹超|波超|荷甲|葡超|比甲|俄超|'
+        r'苏超|奥甲|捷甲|瑞士超|罗甲|匈甲|希超|土超|国际友谊|日乙|日联杯|韩联杯|'
+        r'英冠|英甲|英乙|西乙|意乙|德乙|法乙|中超杯|足协杯|社区盾|超级杯)',
+        clean
+    )
+    if league_match:
+        league = league_match.group(1)
+    
+    time_match = re.search(r'(\d{2}:\d{2})', clean)
+    time_str = time_match.group(1) if time_match else ''
+    
+    # 提取比分和队名
+    # 格式1: 让球括号 )后紧跟比分: 捷克(**-1** ) 1-1南非0
+    #   ) 1-1  → 比分
+    #   主队在让球括号前，客队在比分后
+    
+    # 方案A: 有让球括号
+    score_m = re.search(r'\)\s*(\d+)\s*[-–]\s*(\d+)', clean)
+    if score_m:
+        home_score = int(score_m.group(1))
+        away_score = int(score_m.group(2))
+        
+        # 主队：完/排名数字后到让球括号前
+        # "完 0捷克(**-1** )" → 取完和(之间的中文
+        pre_paren = clean[:score_m.start()].rstrip()
+        home_m = re.search(r'([\u4e00-\u9fa5A-Za-z·\'.\-\s]+?)\s*\(', pre_paren)
+        if home_m:
+            # 取最后一个匹配（括号前最近的队名）
+            home = home_m.group(1).strip()
+            # 去掉开头的数字（排名）
+            home = re.sub(r'^\d+', '', home).strip()
+        else:
+            home = ''
+        
+        # 客队：比分后紧跟的中文名
+        after_score = clean[score_m.end():]
+        away_m = re.match(r'\s*([\u4e00-\u9fa5A-Za-z·\'.]+)', after_score)
+        away = away_m.group(1).strip() if away_m else ''
+    else:
+        # 方案B: 无让球括号，直接队名 比分 队名
+        score_m = re.search(
+            r'([\u4e00-\u9fa5A-Za-z·\'.]+)\s+(\d+)\s*[-–]\s*(\d+)\s+([\u4e00-\u9fa5A-Za-z·\'.]+)',
+            clean
+        )
+        if score_m:
+            home = re.sub(r'^\d+', '', score_m.group(1)).strip()
+            home_score = int(score_m.group(2))
+            away_score = int(score_m.group(3))
+            away = score_m.group(4).strip()
+        else:
+            return None
+    
+    # 过滤无效数据
+    if home_score > 20 or away_score > 20:
+        return None
+    if len(home) < 2 or len(away) < 2:
+        return None
+    
+    # 判定赛果方向
+    if home_score > away_score:
+        outcome = '主胜'
+    elif home_score == away_score:
+        outcome = '平局'
+    else:
+        outcome = '客胜'
+    
+    score_str = f'{home_score}-{away_score}'
+    
+    return {
+        'home': home,
+        'away': away,
+        'home_score': home_score,
+        'away_score': away_score,
+        'score': score_str,
+        'outcome': f'{outcome} {score_str}',
+        'league': league,
+        'time': time_str,
+        'source': 'zgzcw_jz',
+    }
 
 
 def fetch_results(date_str: str, page_type: str = PAGE_JZ) -> List[Dict]:
@@ -245,14 +291,17 @@ def fetch_with_browser(date_str: str, page_type: str = PAGE_JZ) -> List[Dict]:
                 if results:
                     print(f'  ✅ chromium dump-dom(兜底) {type_name}完场: {len(results)} 场')
                     return results
-                if '--debug' in sys.argv:
+                if '--debug' in sys.argv or not results:
                     print(f'  ⚠️ dump-dom拿到 {len(html)} 字符但解析0场')
-                    # 保存调试
+                    # 保存调试（含更多内容方便排查）
                     debug_file = os.path.join(CACHE_DIR or '/tmp', f'debug_dump_{page_type}_{date_str}.html')
                     os.makedirs(os.path.dirname(debug_file), exist_ok=True)
                     with open(debug_file, 'w', encoding='utf-8') as f:
-                        f.write(html[:5000])
+                        f.write(html[:20000])
                     print(f'  📄 调试输出: {debug_file}')
+                    # 输出前1000字符供终端查看
+                    if '--debug' in sys.argv:
+                        print(f'  📄 前1000字符: {repr(html[:1000])}')
             else:
                 print(f'  ⚠️ chromium dump-dom返回空或过短({len(html) if html else 0}字符)')
         except subprocess.TimeoutExpired:
