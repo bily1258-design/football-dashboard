@@ -5,7 +5,7 @@ on:
     branches: [main]
     paths:
       - 'data/raw/**'
-      - 'docs/** '
+      - 'docs/**'
       - 'data/reports/**'
       - 'data/processed/**'
   release:
@@ -67,6 +67,7 @@ jobs:
           fi
 
       - name: Build Dashboard
+        if: ${{ false }}
         run: |
           if [ -f data/football.db ]; then
             python scripts/build.py --db data/football.db --output .
