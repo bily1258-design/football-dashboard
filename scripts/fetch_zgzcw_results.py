@@ -62,6 +62,36 @@ def fetch_page(date_str: str, page_type: str = PAGE_JZ) -> Optional[str]:
         return None
 
 
+def _html_to_text(html: str) -> str:
+    """将dump-dom HTML转为纯文本（模拟innerText）
+    
+    足彩网是table布局，每场比赛一个<tr>。
+    策略：先压缩HTML换行，再按</tr>分场，每场数据在一行。
+    """
+    # 先去掉HTML中的换行和多余空白（让同一<tr>内容在同一行）
+    html = re.sub(r'\n', ' ', html)
+    html = re.sub(r'\r', ' ', html)
+    # 每个</tr>后面加换行（一场一行）
+    html = re.sub(r'</tr>', '\n', html, flags=re.IGNORECASE)
+    # td/th内容用空格连接
+    html = re.sub(r'</?t[dh][^>]*>', ' ', html, flags=re.IGNORECASE)
+    # br/p/div换行
+    html = re.sub(r'<br\s*/?>', '\n', html, flags=re.IGNORECASE)
+    for tag in ['div', 'p', 'li', 'h1', 'h2', 'h3', 'h4']:
+        html = re.sub(rf'</?{tag}[^>]*>', '\n', html, flags=re.IGNORECASE)
+    # 去掉所有剩余HTML标签
+    html = re.sub(r'<[^>]+>', '', html)
+    # 解码HTML实体
+    html = unescape(html)
+    # 压缩空白但保留换行
+    lines = []
+    for line in html.split('\n'):
+        line = re.sub(r'[ \t]+', ' ', line).strip()
+        if line:
+            lines.append(line)
+    return '\n'.join(lines)
+
+
 def parse_jz_results(html: str) -> List[Dict]:
     """解析竞彩赛果页面HTML，提取完场比赛的比分
     
@@ -143,17 +173,29 @@ def _parse_single_match(block: str) -> Optional[Dict]:
         home_score = int(score_m.group(1))
         away_score = int(score_m.group(2))
         
-        # 主队：完/排名数字后到让球括号前
-        # "完 0捷克(**-1** )" → 取完和(之间的中文
+        # 主队：从"完"标记后面取到让球括号前
+        # 格式: "完 0捷克(-1)" 或 "完 0捷克(**-1** )"
         pre_paren = clean[:score_m.start()].rstrip()
-        home_m = re.search(r'([\u4e00-\u9fa5A-Za-z·\'.\-\s]+?)\s*\(', pre_paren)
-        if home_m:
-            # 取最后一个匹配（括号前最近的队名）
-            home = home_m.group(1).strip()
-            # 去掉开头的数字（排名）
-            home = re.sub(r'^\d+', '', home).strip()
+        
+        # 找"完"标记位置，从其后开始提取队名
+        wan_pos = pre_paren.rfind('完')
+        if wan_pos >= 0:
+            after_wan = pre_paren[wan_pos + 1:].strip()
+            # 跳过排名数字
+            after_wan = re.sub(r'^\d+', '', after_wan).strip()
+            # 排名标记如 *[3]* 
+            after_wan = re.sub(r'^\*\[\d+\]\*', '', after_wan).strip()
+            after_wan = re.sub(r'^\d+', '', after_wan).strip()
+            # 取到(之前的文本作为主队
+            paren_pos = after_wan.rfind('(')
+            if paren_pos > 0:
+                home = after_wan[:paren_pos].strip()
+            else:
+                home = after_wan
         else:
-            home = ''
+            # 回退：取(前的中文
+            home_m = re.search(r'([\u4e00-\u9fa5A-Za-z·\'.]+)\s*\(', pre_paren)
+            home = home_m.group(1).strip() if home_m else ''
         
         # 客队：比分后紧跟的中文名
         after_score = clean[score_m.end():]
@@ -280,30 +322,33 @@ def fetch_with_browser(date_str: str, page_type: str = PAGE_JZ) -> List[Dict]:
                 ],
                 capture_output=True, text=True, timeout=30,
             )
-            html = result.stdout
-            if html and len(html) > 500:
-                results = parse_jz_results(html)
+            raw_html = result.stdout
+            if raw_html and len(raw_html) > 500:
+                # dump-dom返回HTML，需先转为文本再解析
+                text = _html_to_text(raw_html)
+                if '--debug' in sys.argv:
+                    print(f'  📊 dump-dom: {len(raw_html)} chars HTML → {len(text)} chars text')
+                results = parse_jz_results(text)
                 if results:
                     print(f'  ✅ chromium dump-dom {type_name}完场: {len(results)} 场')
                     return results
                 # 正则兜底
-                results = _fallback_parse(html, page_type)
+                results = _fallback_parse(text, page_type)
                 if results:
                     print(f'  ✅ chromium dump-dom(兜底) {type_name}完场: {len(results)} 场')
                     return results
                 if '--debug' in sys.argv or not results:
-                    print(f'  ⚠️ dump-dom拿到 {len(html)} 字符但解析0场')
-                    # 保存调试（含更多内容方便排查）
-                    debug_file = os.path.join(CACHE_DIR or '/tmp', f'debug_dump_{page_type}_{date_str}.html')
+                    print(f'  ⚠️ dump-dom解析0场 (HTML {len(raw_html)} chars → text {len(text)} chars)')
+                    # 保存调试文本
+                    debug_file = os.path.join(CACHE_DIR or '/tmp', f'debug_dump_{page_type}_{date_str}.txt')
                     os.makedirs(os.path.dirname(debug_file), exist_ok=True)
                     with open(debug_file, 'w', encoding='utf-8') as f:
-                        f.write(html[:20000])
+                        f.write(text[:20000])
                     print(f'  📄 调试输出: {debug_file}')
-                    # 输出前1000字符供终端查看
                     if '--debug' in sys.argv:
-                        print(f'  📄 前1000字符: {repr(html[:1000])}')
+                        print(f'  📄 前500字符: {text[:500]}')
             else:
-                print(f'  ⚠️ chromium dump-dom返回空或过短({len(html) if html else 0}字符)')
+                print(f'  ⚠️ chromium dump-dom返回空或过短({len(raw_html) if raw_html else 0}字符)')
         except subprocess.TimeoutExpired:
             print('  ⚠️ chromium dump-dom超时(30s)')
         except Exception as e:
