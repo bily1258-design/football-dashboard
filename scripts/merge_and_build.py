@@ -11,6 +11,8 @@ import os, sys, json, sqlite3, re, math, argparse
 from datetime import datetime, timedelta
 from collections import defaultdict
 
+from team_aliases import canonical as _canonical, match_key as _match_key
+
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 REPO_DIR = os.path.dirname(SCRIPT_DIR)
 PROCESSED_DIR = os.path.join(REPO_DIR, "data", "processed")
@@ -261,21 +263,22 @@ def load_from_db(db_path: str, max_days=999) -> dict:
         })
     conn.close()
 
-    # A3去重+补AH：同 (home, away) 只保留一条，同 source 取 id 更大
+    # A3去重+补AH：同 (canonical_home, canonical_away) 只保留一条，同 source 取 id 更大
     # 保留记录 AH 为空时从同 key 其他记录补
     total_dedup = 0
     total_ah_fixed = 0
+    total_alias_hits = 0
     for date in list(by_date.keys()):
         records = by_date[date]
         if len(records) <= 1:
             continue
         groups = {}
         for r in records:
-            key = (r['home'], r['away'])
+            key = _match_key(r['home'], r['away'])
             groups.setdefault(key, []).append(r)
         seen = {}
         for r in records:
-            key = (r['home'], r['away'])
+            key = _match_key(r['home'], r['away'])
             if key not in seen:
                 seen[key] = r
             else:
@@ -284,6 +287,8 @@ def load_from_db(db_path: str, max_days=999) -> dict:
                     seen[key] = r
                 elif r['source'] == prev['source'] and r['id'] > prev['id']:
                     seen[key] = r
+                if r['home'] != prev['home'] or r['away'] != prev['away']:
+                    total_alias_hits += 1
         # 补AH
         ah_fixed = 0
         for key, kept in seen.items():
@@ -299,8 +304,8 @@ def load_from_db(db_path: str, max_days=999) -> dict:
             by_date[date] = list(seen.values())
             total_dedup += len(records) - len(seen)
             total_ah_fixed += ah_fixed
-    if total_dedup or total_ah_fixed:
-        print(f"  [merge] 去重 {total_dedup} 条, 补AH {total_ah_fixed} 条")
+    if total_dedup or total_ah_fixed or total_alias_hits:
+        print(f"  [merge] 去重 {total_dedup} 条, 补AH {total_ah_fixed} 条, 别名匹配 {total_alias_hits} 条")
 
     return by_date
 
@@ -531,15 +536,18 @@ def main():
                     if len(db_records) > len(by_date[d_key]):
                         by_date[d_key] = db_records
                     else:
-                        # 用 (home, away) 匹配（id可能不一致）
-                        db_by_match = {(r.get('home',''), r.get('away','')): r for r in db_records}
+                        # 用归一化(home, away)匹配（别名归一化后跨源同场）
+                        db_by_match = {}
+                        for r in db_records:
+                            mk = _match_key(r.get('home',''), r.get('away',''))
+                            db_by_match.setdefault(mk, r)
                         db_by_id = {r['id']: r for r in db_records}
                         for proc_rec in by_date[d_key]:
-                            # 优先id匹配，回退到(home,away)匹配
+                            # 优先id匹配，回退到归一化(home,away)匹配
                             db_rec = db_by_id.get(proc_rec.get('id'))
                             if not db_rec:
-                                match_key = (proc_rec.get('home',''), proc_rec.get('away',''))
-                                db_rec = db_by_match.get(match_key)
+                                match_k = _match_key(proc_rec.get('home',''), proc_rec.get('away',''))
+                                db_rec = db_by_match.get(match_k)
                             if db_rec:
                                 for k in _NEW_KEYS:
                                     if (k not in proc_rec or not isinstance(proc_rec.get(k), dict)) and k in db_rec and isinstance(db_rec.get(k), dict):
@@ -566,13 +574,14 @@ def main():
     if not by_date:
         print('[ERROR] 无数据'); sys.exit(1)
 
-    # 最终去重：竞彩窗口调整后，同一天内同(home,away)可能重复
+    # 最终去重：竞彩窗口调整后，同一天内同(canonical_home,canonical_away)可能重复
     total_final_dedup = 0
+    total_final_alias = 0
     for d_key in list(by_date.keys()):
         records = by_date[d_key]
         seen = {}
         for r in records:
-            key = (r.get('home',''), r.get('away',''))
+            key = _match_key(r.get('home',''), r.get('away',''))
             if key not in seen:
                 seen[key] = r
             else:
@@ -582,11 +591,15 @@ def main():
                     seen[key] = r
                 elif r.get('id', 0) > prev.get('id', 0):
                     seen[key] = r
+                if r.get('home','') != prev.get('home','') or r.get('away','') != prev.get('away',''):
+                    total_final_alias += 1
         if len(seen) < len(records):
             by_date[d_key] = list(seen.values())
             total_final_dedup += len(records) - len(seen)
     if total_final_dedup:
         print(f'📌 最终去重 {total_final_dedup} 条（竞彩窗口调整后跨源重复）')
+    if total_final_alias:
+        print(f'📌 别名归一化匹配 {total_final_alias} 条（跨源队名不一致）')
 
     daily_stats = build_daily_stats(by_date)
     summary = build_summary(daily_stats)
