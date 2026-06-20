@@ -1,6 +1,6 @@
 {
   "date": "2026-06-20",
-  "fetch_time": "2026-06-20 11:17:56",
+  "fetch_time": "2026-06-20 12:03:05",
   "matches": {
     "土耳其_巴拉圭": {
       "info": {
@@ -29,18 +29,6 @@
             "l": 0.19,
             "direction": "客升"
           }
-        },
-        "pinnacle": {
-          "source": "pinnacle",
-          "odds_w": 2.17,
-          "odds_d": 3.35,
-          "odds_l": 3.79,
-          "margin": 0.0232,
-          "implied_prob": {
-            "w": 0.4504,
-            "d": 0.2917,
-            "l": 0.2579
-          }
         }
       },
       "ah": {
@@ -50,9 +38,9 @@
           "away_w": 0.58
         },
         "close": {
-          "home_w": 0.97,
-          "handicap": -0.5,
-          "away_w": 0.87
+          "home_w": 1.0,
+          "handicap": -1.0,
+          "away_w": 0.83
         },
         "source": "avg"
       },
@@ -63,9 +51,9 @@
           "away_w": 0.92
         },
         "close": {
-          "home_w": 1.06,
-          "handicap": -0.75,
-          "away_w": 0.86
+          "home_w": 1.07,
+          "handicap": -1.25,
+          "away_w": 0.83
         }
       },
       "ms_ah": {
@@ -75,9 +63,9 @@
           "away_w": 0.9
         },
         "close": {
-          "home_w": 1.03,
-          "handicap": -0.75,
-          "away_w": 0.89
+          "home_w": 1.05,
+          "handicap": -1.25,
+          "away_w": 0.85
         }
       }
     },
@@ -107,18 +95,6 @@
             "d": 0.12,
             "l": -0.23,
             "direction": "平稳"
-          }
-        },
-        "pinnacle": {
-          "source": "pinnacle",
-          "odds_w": 1.59,
-          "odds_d": 4.45,
-          "odds_l": 6.0,
-          "margin": 0.0203,
-          "implied_prob": {
-            "w": 0.6164,
-            "d": 0.2202,
-            "l": 0.1633
           }
         }
       },
@@ -187,18 +163,6 @@
             "l": -0.44,
             "direction": "主升"
           }
-        },
-        "pinnacle": {
-          "source": "pinnacle",
-          "odds_w": 6.02,
-          "odds_d": 3.76,
-          "odds_l": 1.69,
-          "margin": 0.0238,
-          "implied_prob": {
-            "w": 0.1623,
-            "d": 0.2598,
-            "l": 0.578
-          }
         }
       },
       "ah": {
@@ -266,18 +230,6 @@
             "l": -22.46,
             "direction": "平稳"
           }
-        },
-        "pinnacle": {
-          "source": "pinnacle",
-          "odds_w": 1.14,
-          "odds_d": 11.0,
-          "odds_l": 20.5,
-          "margin": 0.0169,
-          "implied_prob": {
-            "w": 0.8626,
-            "d": 0.0894,
-            "l": 0.048
-          }
         }
       },
       "ah": {
@@ -331,31 +283,19 @@
         "avg": {
           "source": "avg",
           "odds_w": 1.71,
-          "odds_d": 4.0,
+          "odds_d": 3.99,
           "odds_l": 4.54,
-          "margin": 0.0551,
+          "margin": 0.0557,
           "implied_prob": {
-            "w": 0.5543,
-            "d": 0.237,
-            "l": 0.2088
+            "w": 0.5539,
+            "d": 0.2374,
+            "l": 0.2086
           },
           "movement": {
             "w": 0.1,
-            "d": 0.04,
+            "d": 0.03,
             "l": 0.3,
             "direction": "客升"
-          }
-        },
-        "pinnacle": {
-          "source": "pinnacle",
-          "odds_w": 1.74,
-          "odds_d": 4.12,
-          "odds_l": 4.61,
-          "margin": 0.0343,
-          "implied_prob": {
-            "w": 0.5556,
-            "d": 0.2347,
-            "l": 0.2097
           }
         }
       },
@@ -366,35 +306,11 @@
           "away_w": 0.78
         },
         "close": {
-          "home_w": 0.9,
+          "home_w": 0.89,
           "handicap": -0.75,
-          "away_w": 0.94
+          "away_w": 0.95
         },
         "source": "avg"
-      },
-      "liji_ah": {
-        "open": {
-          "home_w": 0.7,
-          "handicap": -0.5,
-          "away_w": 1.16
-        },
-        "close": {
-          "home_w": 0.95,
-          "handicap": -0.75,
-          "away_w": 0.97
-        }
-      },
-      "ms_ah": {
-        "open": {
-          "home_w": 0.79,
-          "handicap": -0.5,
-          "away_w": 1.05
-        },
-        "close": {
-          "home_w": 0.99,
-          "handicap": -0.75,
-          "away_w": 0.93
-        }
       }
     },
     "德国_科特迪瓦": {
@@ -411,30 +327,18 @@
           "source": "avg",
           "odds_w": 1.52,
           "odds_d": 4.5,
-          "odds_l": 5.71,
-          "margin": 0.0552,
+          "odds_l": 5.7,
+          "margin": 0.0555,
           "implied_prob": {
-            "w": 0.6235,
-            "d": 0.2106,
-            "l": 0.166
+            "w": 0.6233,
+            "d": 0.2105,
+            "l": 0.1662
           },
           "movement": {
             "w": 0.15,
             "d": 0.19,
-            "l": -0.97,
+            "l": -0.98,
             "direction": "主升"
-          }
-        },
-        "pinnacle": {
-          "source": "pinnacle",
-          "odds_w": 1.54,
-          "odds_d": 4.77,
-          "odds_l": 5.6,
-          "margin": 0.0376,
-          "implied_prob": {
-            "w": 0.6258,
-            "d": 0.2021,
-            "l": 0.1721
           }
         }
       },
@@ -450,30 +354,6 @@
           "away_w": 1.0
         },
         "source": "avg"
-      },
-      "liji_ah": {
-        "open": {
-          "home_w": 0.69,
-          "handicap": -0.75,
-          "away_w": 1.17
-        },
-        "close": {
-          "home_w": 0.85,
-          "handicap": -1.0,
-          "away_w": 1.07
-        }
-      },
-      "ms_ah": {
-        "open": {
-          "home_w": 0.79,
-          "handicap": -0.75,
-          "away_w": 1.05
-        },
-        "close": {
-          "home_w": 0.86,
-          "handicap": -1.0,
-          "away_w": 1.06
-        }
       }
     },
     "厄瓜多尔_库拉索": {
@@ -489,31 +369,19 @@
         "avg": {
           "source": "avg",
           "odds_w": 1.12,
-          "odds_d": 9.27,
-          "odds_l": 22.16,
-          "margin": 0.0459,
+          "odds_d": 9.09,
+          "odds_l": 21.57,
+          "margin": 0.0493,
           "implied_prob": {
-            "w": 0.8537,
-            "d": 0.1031,
-            "l": 0.0431
+            "w": 0.851,
+            "d": 0.1048,
+            "l": 0.0442
           },
           "movement": {
             "w": 0.04,
-            "d": 2.11,
-            "l": 5.16,
+            "d": 1.93,
+            "l": 4.57,
             "direction": "客升"
-          }
-        },
-        "pinnacle": {
-          "source": "pinnacle",
-          "odds_w": 1.11,
-          "odds_d": 9.31,
-          "odds_l": 21.05,
-          "margin": 0.0558,
-          "implied_prob": {
-            "w": 0.8533,
-            "d": 0.1017,
-            "l": 0.045
           }
         }
       },
@@ -524,35 +392,11 @@
           "away_w": 0.82
         },
         "close": {
-          "home_w": 0.91,
+          "home_w": 0.94,
           "handicap": -2.25,
-          "away_w": 0.91
+          "away_w": 0.89
         },
         "source": "avg"
-      },
-      "liji_ah": {
-        "open": {
-          "home_w": 0.81,
-          "handicap": -1.5,
-          "away_w": 1.03
-        },
-        "close": {
-          "home_w": 0.95,
-          "handicap": -2.25,
-          "away_w": 0.95
-        }
-      },
-      "ms_ah": {
-        "open": {
-          "home_w": 0.79,
-          "handicap": -1.5,
-          "away_w": 1.05
-        },
-        "close": {
-          "home_w": 0.97,
-          "handicap": -2.25,
-          "away_w": 0.93
-        }
       }
     },
     "兰黑姆_利恩": {
@@ -1085,17 +929,17 @@
           "source": "avg",
           "odds_w": 2.1,
           "odds_d": 3.3,
-          "odds_l": 3.29,
-          "margin": 0.0832,
+          "odds_l": 3.3,
+          "margin": 0.0822,
           "implied_prob": {
-            "w": 0.4396,
-            "d": 0.2798,
-            "l": 0.2806
+            "w": 0.44,
+            "d": 0.28,
+            "l": 0.28
           },
           "movement": {
             "w": -0.05,
             "d": -0.2,
-            "l": 0.34,
+            "l": 0.35,
             "direction": "客升"
           }
         }
@@ -1204,9 +1048,8 @@
   "summary": {
     "total": 22,
     "sources": [
-      "avg",
-      "pinnacle"
+      "avg"
     ],
-    "pinnacle_coverage": 0.32
+    "pinnacle_coverage": 0.0
   }
 }
