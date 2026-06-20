@@ -1,7 +1,7 @@
 {
   "meta": {
-    "generated_at": "2026-06-20 22:32:07",
-    "total_dates": 32,
+    "generated_at": "2026-06-20 22:58:26",
+    "total_dates": 33,
     "total_matches": 721,
     "date_range": {
       "from": "2026-05-15",
@@ -16,12 +16,12 @@
     "ev_rate": 48.6,
     "prob_rate": 48.6,
     "any_rate": 61.9,
-    "days": 32,
-    "last_updated": "2026-06-20 22:32"
+    "days": 33,
+    "last_updated": "2026-06-20 22:58"
   },
   "daily_stats": {
     "2026-06-20": {
-      "total": 7,
+      "total": 8,
       "with_result": 0,
       "ev_hits": 0,
       "prob_hits": 0,
@@ -31,7 +31,7 @@
       "any_rate": 0
     },
     "2026-06-21": {
-      "total": 25,
+      "total": 24,
       "with_result": 0,
       "ev_hits": 0,
       "prob_hits": 0,
@@ -61,24 +61,24 @@
       "any_rate": 85.7
     },
     "2026-06-17": {
-      "total": 6,
-      "with_result": 6,
-      "ev_hits": 4,
-      "prob_hits": 4,
-      "any_hits": 4,
-      "ev_rate": 66.7,
-      "prob_rate": 66.7,
-      "any_rate": 66.7
+      "total": 5,
+      "with_result": 5,
+      "ev_hits": 3,
+      "prob_hits": 3,
+      "any_hits": 3,
+      "ev_rate": 60.0,
+      "prob_rate": 60.0,
+      "any_rate": 60.0
     },
     "2026-06-16": {
-      "total": 9,
-      "with_result": 8,
-      "ev_hits": 5,
-      "prob_hits": 6,
-      "any_hits": 6,
-      "ev_rate": 62.5,
-      "prob_rate": 75.0,
-      "any_rate": 75.0
+      "total": 10,
+      "with_result": 9,
+      "ev_hits": 6,
+      "prob_hits": 7,
+      "any_hits": 7,
+      "ev_rate": 66.7,
+      "prob_rate": 77.8,
+      "any_rate": 77.8
     },
     "2026-06-15": {
       "total": 10,
@@ -91,14 +91,14 @@
       "any_rate": 37.5
     },
     "2026-06-14": {
-      "total": 25,
-      "with_result": 14,
+      "total": 24,
+      "with_result": 13,
       "ev_hits": 9,
       "prob_hits": 4,
       "any_hits": 10,
-      "ev_rate": 64.3,
-      "prob_rate": 28.6,
-      "any_rate": 71.4
+      "ev_rate": 69.2,
+      "prob_rate": 30.8,
+      "any_rate": 76.9
     },
     "2026-06-08": {
       "total": 6,
@@ -149,6 +149,16 @@
       "ev_rate": 37.5,
       "prob_rate": 37.5,
       "any_rate": 37.5
+    },
+    "2026-06-13": {
+      "total": 1,
+      "with_result": 1,
+      "ev_hits": 0,
+      "prob_hits": 0,
+      "any_hits": 0,
+      "ev_rate": 0.0,
+      "prob_rate": 0.0,
+      "any_rate": 0.0
     },
     "2026-06-04": {
       "total": 5,
@@ -350,6 +360,7 @@
     "2026-06-16",
     "2026-06-15",
     "2026-06-14",
+    "2026-06-13",
     "2026-06-09",
     "2026-06-08",
     "2026-06-07",
@@ -1233,6 +1244,154 @@
           "line": 0.0,
           "over": 0,
           "under": 0
+        },
+        "ou": {
+          "over": 0,
+          "line": 0.0,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": 0.0,
+            "under": 0
+          }
+        },
+        "liji_ou": {
+          "over": 0,
+          "line": 0.0,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": 0.0,
+            "under": 0
+          }
+        },
+        "ms_ou": {
+          "over": 0,
+          "line": 0.0,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": 0.0,
+            "under": 0
+          }
+        }
+      },
+      {
+        "id": 1413,
+        "date": "2026-06-20",
+        "league": "世界杯",
+        "home": "突尼斯",
+        "away": "日本",
+        "kickoff": "2026-06-21 12:00",
+        "prediction": "客胜",
+        "prediction_prob": 0.494,
+        "odds": {
+          "w": 6.41,
+          "d": 3.97,
+          "l": 1.56
+        },
+        "poisson": {
+          "w": 0.346,
+          "d": 0.276,
+          "l": 0.378
+        },
+        "final_prob": {
+          "w": 0.247,
+          "d": 0.256,
+          "l": 0.497
+        },
+        "fusion_prob": {
+          "w": 0.318,
+          "d": 0.289,
+          "l": 0.393
+        },
+        "result": "",
+        "score": "",
+        "ev_direction": "客胜",
+        "ev_hit": false,
+        "prob_direction": "客胜",
+        "prob_hit": false,
+        "fusion_direction": "客胜",
+        "ev": {
+          "w": 0.4901,
+          "d": 0.2104,
+          "l": -0.31
+        },
+        "kelly": {
+          "w": 0.0962,
+          "d": 0.0246,
+          "l": 0
+        },
+        "pinnacle": {
+          "w": 6.58,
+          "d": 4.13,
+          "l": 1.58,
+          "open": {
+            "w": 4.14,
+            "d": 3.32,
+            "l": 1.93
+          }
+        },
+        "hkjc": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "risk_level": "",
+        "stars": 0,
+        "confidence_index": 0,
+        "reference_score": "",
+        "cold_risk": "",
+        "source": "om_only",
+        "odds_source": "Pinnacle",
+        "home_lambda": 1.167,
+        "away_lambda": 1.233,
+        "home_ranking": 0,
+        "away_ranking": 0,
+        "ah": {
+          "handicap": 1.0,
+          "home_w": 0.9,
+          "away_w": 0.95,
+          "source": "avg",
+          "open": {
+            "handicap": 0.75,
+            "home_w": 0.67,
+            "away_w": 1.03
+          }
+        },
+        "liji": {
+          "close": {
+            "handicap": 1.0,
+            "home_w": 0.91,
+            "away_w": 1.02
+          },
+          "open": {
+            "handicap": 0.5,
+            "home_w": 0.85,
+            "away_w": 0.99
+          }
+        },
+        "ms": {
+          "close": {
+            "handicap": 1.0,
+            "home_w": 0.91,
+            "away_w": 1.02
+          },
+          "open": {
+            "handicap": 0.0,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "pin_ah": {
+          "handicap": 0.0,
+          "home_w": 0,
+          "away_w": 0
+        },
+        "pin_ou": {
+          "line": 2.5,
+          "over": 2.13,
+          "under": 1.76
         },
         "ou": {
           "over": 0,
@@ -3259,160 +3418,6 @@
           "open": {
             "over": 0,
             "line": null,
-            "under": 0
-          }
-        }
-      },
-      {
-        "id": 1417,
-        "date": "2026-06-21",
-        "league": "世界杯",
-        "home": "突尼斯",
-        "away": "日本",
-        "kickoff": "2026-06-21 12:00",
-        "prediction": "客胜",
-        "prediction_prob": 0.499,
-        "odds": {
-          "w": 6.61,
-          "d": 4.03,
-          "l": 1.54
-        },
-        "poisson": {
-          "w": 0.344,
-          "d": 0.276,
-          "l": 0.38
-        },
-        "final_prob": {
-          "w": 0.46,
-          "d": 0.218,
-          "l": 0.322
-        },
-        "fusion_prob": {
-          "w": 0.25,
-          "d": 0.356,
-          "l": 0.394
-        },
-        "result": "",
-        "score": "",
-        "ev_direction": "客胜",
-        "ev_hit": false,
-        "prob_direction": "主胜",
-        "prob_hit": false,
-        "fusion_direction": "客胜",
-        "ev": {
-          "w": -0.4059,
-          "d": 0.493,
-          "l": 0.3763
-        },
-        "kelly": {
-          "w": 0.0543,
-          "d": 0.0592,
-          "l": 0
-        },
-        "pinnacle": {
-          "w": 1.93,
-          "d": 7.0,
-          "l": 4.2,
-          "open": {
-            "w": 23.0,
-            "d": 4.14,
-            "l": 3.32
-          }
-        },
-        "hkjc": {
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "risk_level": "",
-        "stars": 0,
-        "confidence_index": 0,
-        "reference_score": "",
-        "cold_risk": "",
-        "source": "om_only",
-        "odds_source": "Pinnacle",
-        "home_lambda": 1.163,
-        "away_lambda": 1.237,
-        "home_ranking": 0,
-        "away_ranking": 0,
-        "hhad": {
-          "handicap": null,
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "ah": {
-          "handicap": 1.0,
-          "home_w": 0.94,
-          "away_w": 0.91,
-          "source": "avg",
-          "open": {
-            "handicap": 0.75,
-            "home_w": 0.67,
-            "away_w": 1.03
-          }
-        },
-        "liji": {
-          "close": {
-            "handicap": 1.0,
-            "home_w": 0.94,
-            "away_w": 0.99
-          },
-          "open": {
-            "handicap": 0.5,
-            "home_w": 0.85,
-            "away_w": 0.99
-          }
-        },
-        "ms": {
-          "close": {
-            "handicap": 1.0,
-            "home_w": 0.94,
-            "away_w": 0.99
-          },
-          "open": {
-            "handicap": -0.5,
-            "home_w": 0.98,
-            "away_w": 0.86
-          }
-        },
-        "pin_ah": {
-          "handicap": 0.0,
-          "home_w": 0,
-          "away_w": 0
-        },
-        "pin_ou": {
-          "line": 0.0,
-          "over": 0,
-          "under": 0
-        },
-        "ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        },
-        "liji_ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        },
-        "ms_ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
             "under": 0
           }
         }
@@ -8824,154 +8829,6 @@
         }
       },
       {
-        "id": 1359,
-        "date": "2026-06-17",
-        "league": "世界杯",
-        "home": "奥地利",
-        "away": "约旦",
-        "kickoff": "2026-06-17 12:00",
-        "prediction": "主胜",
-        "prediction_prob": 0.616,
-        "odds": {
-          "w": 1.38,
-          "d": 4.76,
-          "l": 8.32
-        },
-        "poisson": {
-          "w": 0.546,
-          "d": 0.254,
-          "l": 0.2
-        },
-        "final_prob": {
-          "w": 0.616,
-          "d": 0.227,
-          "l": 0.157
-        },
-        "fusion_prob": {
-          "w": 0.395,
-          "d": 0.298,
-          "l": 0.307
-        },
-        "result": "主胜",
-        "score": "3-1",
-        "ev_direction": "主胜",
-        "ev_hit": true,
-        "prob_direction": "主胜",
-        "prob_hit": true,
-        "fusion_direction": "主胜",
-        "ev": {
-          "w": -0.3497,
-          "d": 0.38,
-          "l": 0.4996
-        },
-        "kelly": {
-          "w": 0,
-          "d": 0.0556,
-          "l": 0.1063
-        },
-        "pinnacle": {
-          "w": 1.4,
-          "d": 4.9,
-          "l": 9.3,
-          "open": {
-            "w": 1.33,
-            "d": 5.22,
-            "l": 8.01
-          }
-        },
-        "hkjc": {
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "risk_level": "",
-        "stars": 0,
-        "confidence_index": 0,
-        "reference_score": "",
-        "cold_risk": "",
-        "source": "om_only",
-        "odds_source": "Pinnacle",
-        "home_lambda": 1.565,
-        "away_lambda": 0.835,
-        "home_ranking": 0,
-        "away_ranking": 0,
-        "ah": {
-          "handicap": -0.5,
-          "home_w": 3.23,
-          "away_w": 1.06,
-          "source": "avg",
-          "open": {
-            "handicap": -1.5,
-            "home_w": 0.91,
-            "away_w": 0.88
-          }
-        },
-        "liji": {
-          "close": {
-            "handicap": 0.0,
-            "home_w": 0,
-            "away_w": 0
-          },
-          "open": {
-            "handicap": -1.5,
-            "home_w": 0.98,
-            "away_w": 0.86
-          }
-        },
-        "ms": {
-          "close": {
-            "handicap": 0.0,
-            "home_w": 0,
-            "away_w": 0
-          },
-          "open": {
-            "handicap": -1.25,
-            "home_w": 0.72,
-            "away_w": 1.13
-          }
-        },
-        "pin_ah": {
-          "handicap": 0.0,
-          "home_w": 0,
-          "away_w": 0
-        },
-        "pin_ou": {
-          "line": 0.0,
-          "over": 0,
-          "under": 0
-        },
-        "ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        },
-        "liji_ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        },
-        "ms_ou": {
-          "over": 0,
-          "line": 0.0,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": 0.0,
-            "under": 0
-          }
-        }
-      },
-      {
         "id": 1363,
         "date": "2026-06-17",
         "league": "芬超",
@@ -10748,6 +10605,154 @@
             "under": 0
           }
         }
+      },
+      {
+        "id": 1359,
+        "date": "2026-06-16",
+        "league": "世界杯",
+        "home": "奥地利",
+        "away": "约旦",
+        "kickoff": "2026-06-17 12:00",
+        "prediction": "主胜",
+        "prediction_prob": 0.616,
+        "odds": {
+          "w": 1.38,
+          "d": 4.76,
+          "l": 8.32
+        },
+        "poisson": {
+          "w": 0.546,
+          "d": 0.254,
+          "l": 0.2
+        },
+        "final_prob": {
+          "w": 0.616,
+          "d": 0.227,
+          "l": 0.157
+        },
+        "fusion_prob": {
+          "w": 0.395,
+          "d": 0.298,
+          "l": 0.307
+        },
+        "result": "主胜",
+        "score": "3-1",
+        "ev_direction": "主胜",
+        "ev_hit": true,
+        "prob_direction": "主胜",
+        "prob_hit": true,
+        "fusion_direction": "主胜",
+        "ev": {
+          "w": -0.3497,
+          "d": 0.38,
+          "l": 0.4996
+        },
+        "kelly": {
+          "w": 0,
+          "d": 0.0556,
+          "l": 0.1063
+        },
+        "pinnacle": {
+          "w": 1.4,
+          "d": 4.9,
+          "l": 9.3,
+          "open": {
+            "w": 1.33,
+            "d": 5.22,
+            "l": 8.01
+          }
+        },
+        "hkjc": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "risk_level": "",
+        "stars": 0,
+        "confidence_index": 0,
+        "reference_score": "",
+        "cold_risk": "",
+        "source": "om_only",
+        "odds_source": "Pinnacle",
+        "home_lambda": 1.565,
+        "away_lambda": 0.835,
+        "home_ranking": 0,
+        "away_ranking": 0,
+        "ah": {
+          "handicap": -0.5,
+          "home_w": 3.23,
+          "away_w": 1.06,
+          "source": "avg",
+          "open": {
+            "handicap": -1.5,
+            "home_w": 0.91,
+            "away_w": 0.88
+          }
+        },
+        "liji": {
+          "close": {
+            "handicap": 0.0,
+            "home_w": 0,
+            "away_w": 0
+          },
+          "open": {
+            "handicap": -1.5,
+            "home_w": 0.98,
+            "away_w": 0.86
+          }
+        },
+        "ms": {
+          "close": {
+            "handicap": 0.0,
+            "home_w": 0,
+            "away_w": 0
+          },
+          "open": {
+            "handicap": -1.25,
+            "home_w": 0.72,
+            "away_w": 1.13
+          }
+        },
+        "pin_ah": {
+          "handicap": 0.0,
+          "home_w": 0,
+          "away_w": 0
+        },
+        "pin_ou": {
+          "line": 0.0,
+          "over": 0,
+          "under": 0
+        },
+        "ou": {
+          "over": 0,
+          "line": 0.0,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": 0.0,
+            "under": 0
+          }
+        },
+        "liji_ou": {
+          "over": 0,
+          "line": 0.0,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": 0.0,
+            "under": 0
+          }
+        },
+        "ms_ou": {
+          "over": 0,
+          "line": 0.0,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": 0.0,
+            "under": 0
+          }
+        }
       }
     ],
     "2026-06-15": [
@@ -12156,15 +12161,20 @@
           "away_w": 0,
           "source": ""
         },
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -12186,15 +12196,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       }
     ],
@@ -13513,160 +13518,6 @@
           "handicap": -0.25,
           "home_w": 2.3,
           "away_w": 0.97,
-          "source": "avg",
-          "open": {
-            "handicap": null,
-            "home_w": 0,
-            "away_w": 0
-          }
-        },
-        "liji": {
-          "close": {
-            "handicap": null,
-            "home_w": 0,
-            "away_w": 0
-          },
-          "open": {
-            "handicap": null,
-            "home_w": 0,
-            "away_w": 0
-          }
-        },
-        "ms": {
-          "close": {
-            "handicap": null,
-            "home_w": 0,
-            "away_w": 0
-          },
-          "open": {
-            "handicap": null,
-            "home_w": 0,
-            "away_w": 0
-          }
-        },
-        "pin_ah": {
-          "handicap": null,
-          "home_w": 0,
-          "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
-        },
-        "ou": {
-          "over": 0,
-          "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
-        },
-        "liji_ou": {
-          "over": 0,
-          "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
-        },
-        "ms_ou": {
-          "over": 0,
-          "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
-        }
-      },
-      {
-        "id": 1192,
-        "date": "2026-06-14",
-        "league": "世界杯",
-        "home": "澳大利亚",
-        "away": "土耳其",
-        "kickoff": "2026-06-14 12:00",
-        "prediction": "客胜",
-        "prediction_prob": 0.462,
-        "odds": {
-          "w": 5.22,
-          "d": 3.67,
-          "l": 1.69
-        },
-        "poisson": {
-          "w": 0.36,
-          "d": 0.277,
-          "l": 0.363
-        },
-        "final_prob": {
-          "w": 0.271,
-          "d": 0.27,
-          "l": 0.459
-        },
-        "fusion_prob": {
-          "w": 0.284,
-          "d": 0.276,
-          "l": 0.44
-        },
-        "result": "主胜",
-        "score": "2-0",
-        "ev_direction": "客胜",
-        "ev_hit": false,
-        "prob_direction": "客胜",
-        "prob_hit": false,
-        "fusion_direction": "客胜",
-        "ev": {
-          "w": 0.4041,
-          "d": 0.0448,
-          "l": -0.1947
-        },
-        "kelly": {
-          "w": 0.0572,
-          "d": 0.0021,
-          "l": 0
-        },
-        "pinnacle": {
-          "w": 5.36,
-          "d": 3.7,
-          "l": 1.76,
-          "open": {
-            "w": 0,
-            "d": 0,
-            "l": 0
-          }
-        },
-        "hkjc": {
-          "w": 5.2,
-          "d": 3.6,
-          "l": 1.54
-        },
-        "risk_level": "",
-        "stars": 0,
-        "confidence_index": 0,
-        "reference_score": "",
-        "cold_risk": "",
-        "source": "om_only",
-        "odds_source": "avg",
-        "home_lambda": 1.197,
-        "away_lambda": 1.203,
-        "home_ranking": 0,
-        "away_ranking": 0,
-        "hhad": {
-          "handicap": null,
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "ah": {
-          "handicap": 0.0,
-          "home_w": 2.18,
-          "away_w": 1.25,
           "source": "avg",
           "open": {
             "handicap": null,
@@ -16118,15 +15969,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -16148,15 +16004,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       },
       {
@@ -16226,15 +16077,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -16256,15 +16112,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       },
       {
@@ -16334,15 +16185,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -16364,15 +16220,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       },
       {
@@ -16442,15 +16293,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -16472,15 +16328,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       },
       {
@@ -16550,15 +16401,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -16580,15 +16436,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       },
       {
@@ -16658,15 +16509,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -16688,15 +16544,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       }
     ],
@@ -16838,15 +16689,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -16868,15 +16724,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       },
       {
@@ -16946,15 +16797,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -16976,15 +16832,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       },
       {
@@ -17054,15 +16905,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -17084,15 +16940,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       },
       {
@@ -17162,15 +17013,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -17192,15 +17048,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       },
       {
@@ -17270,15 +17121,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -17300,15 +17156,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       },
       {
@@ -17378,15 +17229,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -17408,15 +17264,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       },
       {
@@ -17486,15 +17337,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -17516,15 +17372,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       },
       {
@@ -17594,15 +17445,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -17624,15 +17480,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       },
       {
@@ -17702,15 +17553,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -17732,15 +17588,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       },
       {
@@ -17810,15 +17661,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -17840,15 +17696,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       }
     ],
@@ -17920,15 +17771,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -17950,15 +17806,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       },
       {
@@ -18028,15 +17879,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -18058,15 +17914,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       },
       {
@@ -18136,15 +17987,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -18166,15 +18022,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       },
       {
@@ -18244,15 +18095,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -18274,15 +18130,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       },
       {
@@ -18352,15 +18203,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -18382,15 +18238,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       },
       {
@@ -18460,15 +18311,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -18490,15 +18346,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       },
       {
@@ -18568,15 +18419,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -18598,15 +18454,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       },
       {
@@ -18676,15 +18527,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -18706,15 +18562,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       },
       {
@@ -18784,15 +18635,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -18814,15 +18670,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       },
       {
@@ -18892,15 +18743,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -18922,15 +18778,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       },
       {
@@ -19000,15 +18851,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -19030,15 +18886,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       },
       {
@@ -19108,15 +18959,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -19138,15 +18994,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       },
       {
@@ -19216,15 +19067,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -19246,15 +19102,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       },
       {
@@ -19324,15 +19175,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -19354,15 +19210,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       },
       {
@@ -19432,15 +19283,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -19462,15 +19318,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       },
       {
@@ -19540,15 +19391,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -19570,15 +19426,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       },
       {
@@ -19648,15 +19499,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -19678,15 +19534,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       },
       {
@@ -19756,15 +19607,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -19786,15 +19642,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       },
       {
@@ -19864,15 +19715,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -19894,15 +19750,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       },
       {
@@ -19972,15 +19823,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -20002,15 +19858,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       },
       {
@@ -20080,15 +19931,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -20110,15 +19966,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       },
       {
@@ -20188,15 +20039,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -20218,15 +20074,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       },
       {
@@ -20296,15 +20147,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -20326,15 +20182,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       },
       {
@@ -20404,15 +20255,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -20434,15 +20290,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       },
       {
@@ -20512,15 +20363,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -20542,15 +20398,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       },
       {
@@ -20620,15 +20471,20 @@
         "away_lambda": 0,
         "home_ranking": 0,
         "away_ranking": 0,
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
         "pin_ah": {
           "handicap": null,
           "home_w": 0,
           "away_w": 0
-        },
-        "pin_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0
         },
         "ou": {
           "over": 0,
@@ -20650,15 +20506,10 @@
             "under": 0
           }
         },
-        "liji_ou": {
-          "over": 0,
+        "pin_ou": {
           "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
+          "over": 0,
+          "under": 0
         }
       }
     ],
@@ -22132,6 +21983,162 @@
           "home_w": 0,
           "away_w": 0,
           "source": "",
+          "open": {
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "liji": {
+          "close": {
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
+          },
+          "open": {
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "ms": {
+          "close": {
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
+          },
+          "open": {
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "pin_ah": {
+          "handicap": null,
+          "home_w": 0,
+          "away_w": 0
+        },
+        "pin_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0
+        },
+        "ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
+        "ms_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        }
+      }
+    ],
+    "2026-06-13": [
+      {
+        "id": 1192,
+        "date": "2026-06-13",
+        "league": "世界杯",
+        "home": "澳大利亚",
+        "away": "土耳其",
+        "kickoff": "2026-06-14 12:00",
+        "prediction": "客胜",
+        "prediction_prob": 0.462,
+        "odds": {
+          "w": 5.22,
+          "d": 3.67,
+          "l": 1.69
+        },
+        "poisson": {
+          "w": 0.36,
+          "d": 0.277,
+          "l": 0.363
+        },
+        "final_prob": {
+          "w": 0.271,
+          "d": 0.27,
+          "l": 0.459
+        },
+        "fusion_prob": {
+          "w": 0.284,
+          "d": 0.276,
+          "l": 0.44
+        },
+        "result": "主胜",
+        "score": "2-0",
+        "ev_direction": "客胜",
+        "ev_hit": false,
+        "prob_direction": "客胜",
+        "prob_hit": false,
+        "fusion_direction": "客胜",
+        "ev": {
+          "w": 0.4041,
+          "d": 0.0448,
+          "l": -0.1947
+        },
+        "kelly": {
+          "w": 0.0572,
+          "d": 0.0021,
+          "l": 0
+        },
+        "pinnacle": {
+          "w": 5.36,
+          "d": 3.7,
+          "l": 1.76,
+          "open": {
+            "w": 0,
+            "d": 0,
+            "l": 0
+          }
+        },
+        "hkjc": {
+          "w": 5.2,
+          "d": 3.6,
+          "l": 1.54
+        },
+        "risk_level": "",
+        "stars": 0,
+        "confidence_index": 0,
+        "reference_score": "",
+        "cold_risk": "",
+        "source": "om_only",
+        "odds_source": "avg",
+        "home_lambda": 1.197,
+        "away_lambda": 1.203,
+        "home_ranking": 0,
+        "away_ranking": 0,
+        "hhad": {
+          "handicap": null,
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "ah": {
+          "handicap": 0.0,
+          "home_w": 2.18,
+          "away_w": 1.25,
+          "source": "avg",
           "open": {
             "handicap": null,
             "home_w": 0,
