@@ -2101,11 +2101,11 @@ def save_to_db(matches, db_path, date_str=None):
         conn.close()
         return 0
     
-    # 计算时间窗口：前一天12:00 ~ 次日11:59（覆盖日职联早场等跨日比赛）
+    # 计算时间窗口：前一天12:00 ~ 次日12:06（覆盖12:00整点边界比赛，如世界杯6-21 12:00突尼斯vs日本）
     prev_day = (datetime.strptime(target_date, '%Y-%m-%d') - timedelta(days=1)).strftime('%Y-%m-%d')
     next_day = (datetime.strptime(target_date, '%Y-%m-%d') + timedelta(days=1)).strftime('%Y-%m-%d')
     window_start = f"{prev_day} 12:00"
-    window_end = f"{next_day} 11:59"
+    window_end = f"{next_day} 12:06"  # 2026-06-20 改造：11:59 -> 12:06，覆盖12:00整点边界
     
     # 从数据库读取时间窗口内的所有记录
     cursor.execute("""

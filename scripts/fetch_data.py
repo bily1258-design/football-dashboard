@@ -78,7 +78,7 @@ def step_update_ah(date_str: str, db_path: str = None):
     prev_day = (datetime.strptime(date_str, '%Y-%m-%d') - timedelta(days=1)).strftime('%Y-%m-%d')
     window_start = f"{prev_day} 12:00"
     next_day = (datetime.strptime(date_str, '%Y-%m-%d') + timedelta(days=1)).strftime('%Y-%m-%d')
-    window_end = f"{next_day} 11:59"
+    window_end = f"{next_day} 12:06"  # 2026-06-20 改造：11:59 -> 12:06，覆盖12:00整点边界
     
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
