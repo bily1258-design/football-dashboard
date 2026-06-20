@@ -763,15 +763,22 @@ def fetch_all(date_str: str = None, companies: List[str] = None,
     ou_ms = {}
     print(f"  大小球: 跳过足彩网抓取（companyType=d返回亚盘数据），改用api-football")
 
-    # 2. 各公司
+    # 2. 各公司（2026-06-20 改造：启用北单page_type=bd，与百家平均/亚盘一致）
     company_data = {}
     for cid in companies:
         cname = COMPANY_MAP.get(cid, cid)
         all_odds = {}
         for d in [prev_day, curr_day]:
-            matches = fetch_company(cid, d)
+            # 竞彩页
+            matches = fetch_company(cid, d, page_type="jc")
             time.sleep(SLEEP_SEC)
             for m in matches:
+                key = f"{m['home']}_{m['away']}"
+                all_odds[key] = m
+            # 北单页
+            matches_bd = fetch_company(cid, d, page_type="bd")
+            time.sleep(SLEEP_SEC)
+            for m in matches_bd:
                 key = f"{m['home']}_{m['away']}"
                 all_odds[key] = m
         company_data[cid] = all_odds
