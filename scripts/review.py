@@ -149,6 +149,24 @@ def get_top_direction(final_win, final_draw, final_loss) -> str:
 
 # ========== 赛果回填 ==========
 
+def backfill_from_zgzcw(target_date: str) -> int:
+    """从足彩网竞彩比分直播抓赛果回填DB（队名同源，优先于500.com）"""
+    from fetch_zgzcw_results import fetch_results, PAGE_JZ, PAGE_BD, backfill_db as _backfill_zgzcw
+    
+    print(f"  足彩网赛果回填: {target_date}")
+    results = fetch_results(target_date, PAGE_JZ)
+    # 也抓北单补充
+    bd_results = fetch_results(target_date, PAGE_BD)
+    all_results = results + bd_results
+    
+    if not all_results:
+        print(f"  足彩网无赛果数据")
+        return 0
+    
+    print(f"  足彩网: {len(all_results)} 条赛果（竞彩{len(results)}+北单{len(bd_results)}）")
+    return _backfill_zgzcw(all_results, DB_PATH)
+
+
 def backfill_from_500com(target_date: str) -> int:
     """从500.com缓存文件回填赛果到football.db
 
@@ -356,9 +374,11 @@ def run_review(target_date: str = None) -> str:
     print(f"\n{'='*50}")
     print(f"统一复盘: {target_date}")
 
-    # 0. 从500.com缓存回填赛果
+    # 0. 优先从足彩网回填赛果（队名同源），不足再用500.com
     print("回填赛果...")
-    backfill_from_500com(target_date)
+    zgzcw_count = backfill_from_zgzcw(target_date)
+    if zgzcw_count == 0:
+        backfill_from_500com(target_date)
 
     # 1. 查目标日期全天有赛果的记录（固定日历日，不用相对24小时）
     date_start = f"{target_date} 00:00"
