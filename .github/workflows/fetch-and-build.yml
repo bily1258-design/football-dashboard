@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'data/raw/**'
+      - 'docs/** '
       - 'data/reports/**'
       - 'data/processed/**'
   release:
