@@ -48,7 +48,7 @@ def load_from_processed(max_days=999) -> dict:
             if kickoff:
                 try:
                     kt = datetime.strptime(kickoff, '%Y-%m-%d %H:%M')
-                    if kt.hour < 12:
+                    if kt.hour < 12 or (kt.hour == 12 and kt.minute < 6):
                         prev_day = (kt - timedelta(days=1)).strftime('%Y-%m-%d')
                         rec = dict(rec)  # 浅拷贝，不修改原数据
                         rec['date'] = prev_day
@@ -129,7 +129,7 @@ def load_from_db(db_path: str, max_days=999) -> dict:
         if kickoff:
             try:
                 kt = datetime.strptime(kickoff, '%Y-%m-%d %H:%M')
-                if kt.hour < 12:
+                if kt.hour < 12 or (kt.hour == 12 and kt.minute < 6):
                     prev_day = (kt - timedelta(days=1)).strftime('%Y-%m-%d')
                     date = prev_day
                     d['date'] = prev_day
