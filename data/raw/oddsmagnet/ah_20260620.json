@@ -8,9 +8,9 @@
       "away_w": 0.58
     },
     "close": {
-      "home_w": 0.94,
+      "home_w": 0.97,
       "handicap": -0.5,
-      "away_w": 0.91
+      "away_w": 0.87
     },
     "source": "avg",
     "liji": {
@@ -22,9 +22,9 @@
         "away_w": 0.92
       },
       "close": {
-        "home_w": 0.84,
-        "handicap": -0.25,
-        "away_w": 1.11
+        "home_w": 1.06,
+        "handicap": -0.75,
+        "away_w": 0.86
       }
     },
     "ms": {
@@ -36,9 +36,9 @@
         "away_w": 0.9
       },
       "close": {
-        "home_w": 1.11,
-        "handicap": -0.5,
-        "away_w": 0.84
+        "home_w": 1.03,
+        "handicap": -0.75,
+        "away_w": 0.89
       }
     },
     "ou": {},
@@ -412,13 +412,39 @@
       "away_w": 0.78
     },
     "close": {
-      "home_w": 0.89,
+      "home_w": 0.9,
       "handicap": -0.75,
-      "away_w": 0.95
+      "away_w": 0.94
     },
     "source": "avg",
-    "liji": {},
-    "ms": {},
+    "liji": {
+      "home": "荷兰",
+      "away": "瑞典",
+      "open": {
+        "home_w": 0.7,
+        "handicap": -0.5,
+        "away_w": 1.16
+      },
+      "close": {
+        "home_w": 0.95,
+        "handicap": -0.75,
+        "away_w": 0.97
+      }
+    },
+    "ms": {
+      "home": "荷兰",
+      "away": "瑞典",
+      "open": {
+        "home_w": 0.79,
+        "handicap": -0.5,
+        "away_w": 1.05
+      },
+      "close": {
+        "home_w": 0.99,
+        "handicap": -0.75,
+        "away_w": 0.93
+      }
+    },
     "ou": {},
     "ou_liji": {},
     "ou_ms": {}
@@ -437,8 +463,34 @@
       "away_w": 1.0
     },
     "source": "avg",
-    "liji": {},
-    "ms": {},
+    "liji": {
+      "home": "德国",
+      "away": "科特迪瓦",
+      "open": {
+        "home_w": 0.69,
+        "handicap": -0.75,
+        "away_w": 1.17
+      },
+      "close": {
+        "home_w": 0.85,
+        "handicap": -1.0,
+        "away_w": 1.07
+      }
+    },
+    "ms": {
+      "home": "德国",
+      "away": "科特迪瓦",
+      "open": {
+        "home_w": 0.79,
+        "handicap": -0.75,
+        "away_w": 1.05
+      },
+      "close": {
+        "home_w": 0.86,
+        "handicap": -1.0,
+        "away_w": 1.06
+      }
+    },
     "ou": {},
     "ou_liji": {},
     "ou_ms": {}
@@ -452,13 +504,39 @@
       "away_w": 0.82
     },
     "close": {
-      "home_w": 0.88,
+      "home_w": 0.91,
       "handicap": -2.25,
-      "away_w": 0.94
+      "away_w": 0.91
     },
     "source": "avg",
-    "liji": {},
-    "ms": {},
+    "liji": {
+      "home": "厄瓜多尔",
+      "away": "库拉索",
+      "open": {
+        "home_w": 0.81,
+        "handicap": -1.5,
+        "away_w": 1.03
+      },
+      "close": {
+        "home_w": 0.95,
+        "handicap": -2.25,
+        "away_w": 0.95
+      }
+    },
+    "ms": {
+      "home": "厄瓜多尔",
+      "away": "库拉索",
+      "open": {
+        "home_w": 0.79,
+        "handicap": -1.5,
+        "away_w": 1.05
+      },
+      "close": {
+        "home_w": 0.97,
+        "handicap": -2.25,
+        "away_w": 0.93
+      }
+    },
     "ou": {},
     "ou_liji": {},
     "ou_ms": {}
@@ -492,7 +570,7 @@
       "away_w": 0.79
     },
     "close": {
-      "home_w": 0.87,
+      "home_w": 0.86,
       "handicap": -0.25,
       "away_w": 0.96
     },
