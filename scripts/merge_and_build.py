@@ -23,7 +23,7 @@ WEEKDAY_CN = ['周一','周二','周三','周四','周五','周六','周日']
 
 
 def load_from_processed(max_days=999) -> dict:
-    """从 processed 目录加载数据"""
+    """从 processed 目录加载数据，并做竞彩窗口调整（凌晨00:00-11:59归前一天）"""
     by_date = {}
     if not os.path.exists(PROCESSED_DIR):
         return by_date
@@ -38,7 +38,31 @@ def load_from_processed(max_days=999) -> dict:
         with open(path, 'r', encoding='utf-8') as f:
             data = json.load(f)
         d = data.get('date', f"{date_key[:4]}-{date_key[4:6]}-{date_key[6:8]}")
-        by_date[d] = data.get('records', [])
+        records = data.get('records', [])
+        # 竞彩窗口调整：凌晨00:00-11:59的比赛归到前一天
+        adjusted = []
+        for rec in records:
+            kickoff = rec.get('kickoff', '')
+            if kickoff:
+                try:
+                    kt = datetime.strptime(kickoff, '%Y-%m-%d %H:%M')
+                    if kt.hour < 12:
+                        prev_day = (kt - timedelta(days=1)).strftime('%Y-%m-%d')
+                        rec = dict(rec)  # 浅拷贝，不修改原数据
+                        rec['date'] = prev_day
+                        d_new = prev_day
+                    else:
+                        d_new = rec.get('date', d)
+                except:
+                    d_new = rec.get('date', d)
+            else:
+                d_new = rec.get('date', d)
+            adjusted.append((d_new, rec))
+        # 重新按调整后的日期分组
+        for d_new, rec in adjusted:
+            if d_new not in by_date:
+                by_date[d_new] = []
+            by_date[d_new].append(rec)
     return by_date
 
 
@@ -541,6 +565,28 @@ def main():
                 print(f'📌 DB补充{n_ah_merged}条记录的ah/liji/ms字段')
     if not by_date:
         print('[ERROR] 无数据'); sys.exit(1)
+
+    # 最终去重：竞彩窗口调整后，同一天内同(home,away)可能重复
+    total_final_dedup = 0
+    for d_key in list(by_date.keys()):
+        records = by_date[d_key]
+        seen = {}
+        for r in records:
+            key = (r.get('home',''), r.get('away',''))
+            if key not in seen:
+                seen[key] = r
+            else:
+                prev = seen[key]
+                # 竞彩优先，id更大优先
+                if r.get('source') == 'jingcai' and prev.get('source') != 'jingcai':
+                    seen[key] = r
+                elif r.get('id', 0) > prev.get('id', 0):
+                    seen[key] = r
+        if len(seen) < len(records):
+            by_date[d_key] = list(seen.values())
+            total_final_dedup += len(records) - len(seen)
+    if total_final_dedup:
+        print(f'📌 最终去重 {total_final_dedup} 条（竞彩窗口调整后跨源重复）')
 
     daily_stats = build_daily_stats(by_date)
     summary = build_summary(daily_stats)
