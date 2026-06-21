@@ -1366,8 +1366,10 @@ def fetch_pinnacle_ah_ou_from_api(match_list, date_str):
             continue
         
         fixture_id = matched_fx.get("fixture_id")
-        print(f"  [API] {home_cn} vs {away_cn} -> fixture={fixture_id} ({matched_fx['home_team']} vs {matched_fx['away_team']}) [{match_method}]")
-        
+        api_home = matched_fx.get("home_team", "")
+        api_away = matched_fx.get("away_team", "")
+        print(f"  [API] {home_cn} vs {away_cn} -> fixture={fixture_id} ({api_home} vs {api_away}) [{match_method}]")
+
         # Step 3: 获取Pinnacle AH
         ah_raw = fetch_api_football_pinnacle(fixture_id, bet_type=4)
         api_call_count += 1
@@ -1390,6 +1392,12 @@ def fetch_pinnacle_ah_ou_from_api(match_list, date_str):
         else:
             print(f"    Pinnacle OU: 无数据")
         
+        # 检测主客是否颠倒：用竞彩赔率方向跟 Pinnacle 赔率方向对比
+        # 竞彩 low_odds 方向 vs Pinnacle AH home_odd/away_odd 方向
+        # 竞彩低赔方=热门；Pinnacle AH home_odd低=主队热门
+        # 如果竞彩热门是客队（away），但 Pinnacle AH 显示主队热门 → swap
+        is_swapped = False
+        # swap 检测放到 save_to_db 里做（那里有完整的竞彩+Pinnacle数据）
         result[match_id] = {
             "pin_ah": pin_ah,
             "pin_ou": pin_ou,
@@ -1701,6 +1709,17 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=True):
             pinnacle_movement = {}
         if pinnacle_open.get('d', 0) > 0 and pinnacle_open.get('d', 0) < 2.0:
             pinnacle_open = {}
+
+        # 异常赔率过滤：单个值>30且其他值<10 → api-football脏数据（如w=47）
+        for pin_label, pin_dict in [('open', pinnacle_open), ('close', pinnacle_close)]:
+            vals = [pin_dict.get('w', 0), pin_dict.get('d', 0), pin_dict.get('l', 0)]
+            nonzero_vals = [v for v in vals if v > 0]
+            if nonzero_vals and max(nonzero_vals) > 30 and sum(1 for v in nonzero_vals if v < 10) >= 2:
+                print(f"  [WARN] Pinnacle {pin_label} 异常赔率 {vals}，已丢弃")
+                if pin_label == 'open':
+                    pinnacle_open = {}
+                else:
+                    pinnacle_close = {}
         
         # oddsmagnet补充Pinnacle（POST失败时）
         if pinnacle_open.get('w', 0) == 0 and om_item:
@@ -2249,16 +2268,52 @@ def save_to_db(matches, db_path, date_str=None):
         db_home = best_match[1]
         db_away = best_match[2]
         matched_db_ids.add(record_id)
-        
-        print(f"[MATCH] {home} vs {away} -> DB {db_home} vs {db_away} [{match_method}] 评分={best_score:.2f}")
-        
+
+        # 检测web数据主客是否跟DB主客颠倒（用赔率方向判断）
+        db_swapped = False
+        # web端低赔方向 vs DB端低赔方向
+        web_w = m.get('odds_win', 0) or m.get('odds', {}).get('w', 0) or 0
+        web_l = m.get('odds_loss', 0) or m.get('odds', {}).get('l', 0) or 0
+        db_w = 0
+        db_l = 0
+        # 从DB记录读竞彩赔率（best_match是tuple: id, home, away, time）
+        # 需要在SQL查询时也取 odds_win/odds_loss，但当前best_match没有
+        # fallback: 用web赔率+Pinnacle方向对比
+        pin_w = pin_close.get('w', 0) if pin_close.get('w', 0) > 0 else pin_open.get('w', 0)
+        pin_l = pin_close.get('l', 0) if pin_close.get('l', 0) > 0 else pin_open.get('l', 0)
+        if web_w > 0 and web_l > 0 and pin_w > 0 and pin_l > 0:
+            web_fav_home = web_w < web_l  # 竞彩热门在主队？
+            pin_fav_home = pin_w < pin_l  # Pinnacle热门在主队？
+            if web_fav_home != pin_fav_home:
+                db_swapped = True
+        if db_swapped:
+            print(f"[MATCH] {home} vs {away} -> DB {db_home} vs {db_away} [{match_method}] 评分={best_score:.2f} ⚠️主客颠倒(赔率方向)")
+        else:
+            print(f"[MATCH] {home} vs {away} -> DB {db_home} vs {db_away} [{match_method}] 评分={best_score:.2f}")
+
         record_id = best_match[0]
         db_home = best_match[1]
         db_away = best_match[2]
-        
+
         pin_open = m.get('pinnacle_open', {})
         pin_close = m.get('pinnacle_close', {})
         pin_movement = m.get('pinnacle_movement', {})
+
+        # 主客颠倒时翻转 Pinnacle 胜平负（w ↔ l）和 movement
+        if db_swapped:
+            if pin_open.get('w', 0) > 0 or pin_open.get('l', 0) > 0:
+                pin_open = {'w': pin_open.get('l', 0), 'd': pin_open.get('d', 0), 'l': pin_open.get('w', 0)}
+            if pin_close.get('w', 0) > 0 or pin_close.get('l', 0) > 0:
+                pin_close = {'w': pin_close.get('l', 0), 'd': pin_close.get('d', 0), 'l': pin_close.get('w', 0)}
+            if pin_movement:
+                mw = pin_movement.get('w', '')
+                ml = pin_movement.get('l', '')
+                pin_movement = dict(pin_movement)
+                pin_movement['w'] = ml
+                pin_movement['l'] = mw
+                m['pinnacle_movement'] = pin_movement
+            print(f"  ⚠️ Pinnacle翻转: open={pin_open} / close={pin_close}")
+
         implied = m.get('implied_prob', {})
         margin = m.get('pinnacle_margin', 0)
         
@@ -2294,12 +2349,12 @@ def save_to_db(matches, db_path, date_str=None):
         ms_ou_open = ou_ms_m.get('open', {})
 
         # 保护已有非零ah数据：只在DB原值为0/NULL时才写入新值（防止WAF拦截0值覆盖Termux完整数据）
-        ah_hc_val = ah_close.get('handicap', 0) or 0
-        ah_hw_val = ah_close.get('home_w', 0) or 0
-        ah_aw_val = ah_close.get('away_w', 0) or 0
-        pin_ah_hc_val = pin_ah.get('handicap', 0) or 0
-        pin_ah_hw_val = pin_ah.get('home_odd', 0) or 0
-        pin_ah_aw_val = pin_ah.get('away_odd', 0) or 0
+        ah_hc_val = _or_none(ah_close, 'handicap', 'home_w', 'away_w', k='handicap')
+        ah_hw_val = _or_none(ah_close, 'handicap', 'home_w', 'away_w', k='home_w')
+        ah_aw_val = _or_none(ah_close, 'handicap', 'home_w', 'away_w', k='away_w')
+        pin_ah_hc_val = _or_none(pin_ah, 'handicap', 'home_odd', 'away_odd', k='handicap')
+        pin_ah_hw_val = _or_none(pin_ah, 'handicap', 'home_odd', 'away_odd', k='home_odd')
+        pin_ah_aw_val = _or_none(pin_ah, 'handicap', 'home_odd', 'away_odd', k='away_odd')
         # 2026-06-21 改造：pin_ou 改用 _or_none helper（line/over/under 三字段全 0 → None，COALESCE 保留 DB 旧值）
         pin_ou_line_val = _or_none(pin_ou, 'line', 'over', 'under', k='line')
         pin_ou_over_val = _or_none(pin_ou, 'line', 'over', 'under', k='over')
@@ -2335,13 +2390,13 @@ def save_to_db(matches, db_path, date_str=None):
                 hkjc_open_w = ?, hkjc_open_d = ?, hkjc_open_l = ?,
                 hkjc_close_w = ?, hkjc_close_d = ?, hkjc_close_l = ?,
                 odds_source = ?,
-                ah_handicap = CASE WHEN ah_handicap IS NOT NULL AND ah_handicap != 0 THEN ah_handicap ELSE ? END,
-                ah_home_water = CASE WHEN ah_handicap IS NOT NULL AND ah_handicap != 0 THEN ah_home_water ELSE ? END,
-                ah_away_water = CASE WHEN ah_handicap IS NOT NULL AND ah_handicap != 0 THEN ah_away_water ELSE ? END,
-                ah_source = CASE WHEN ah_handicap IS NOT NULL AND ah_handicap != 0 THEN ah_source ELSE ? END,
-                pin_ah_handicap = CASE WHEN pin_ah_handicap IS NOT NULL AND pin_ah_handicap != 0 THEN pin_ah_handicap ELSE ? END,
-                pin_ah_home_water = CASE WHEN pin_ah_handicap IS NOT NULL AND pin_ah_handicap != 0 THEN pin_ah_home_water ELSE ? END,
-                pin_ah_away_water = CASE WHEN pin_ah_handicap IS NOT NULL AND pin_ah_handicap != 0 THEN pin_ah_away_water ELSE ? END,
+                ah_handicap = COALESCE(?, ah_handicap),
+                ah_home_water = COALESCE(?, ah_home_water),
+                ah_away_water = COALESCE(?, ah_away_water),
+                ah_source = COALESCE(?, ah_source),
+                pin_ah_handicap = COALESCE(?, pin_ah_handicap),
+                pin_ah_home_water = COALESCE(?, pin_ah_home_water),
+                pin_ah_away_water = COALESCE(?, pin_ah_away_water),
                 pin_ou_line = COALESCE(?, pin_ou_line),
                 pin_ou_over = COALESCE(?, pin_ou_over),
                 pin_ou_under = COALESCE(?, pin_ou_under),
@@ -2422,8 +2477,31 @@ def save_to_db(matches, db_path, date_str=None):
                             best_match = om_m
                     
                     if best_match and best_sim >= 0.4:
+                        # 检测OM数据主客是否跟DB颠倒（用赔率方向判断）
+                        om_swapped = False
+                        om_w = best_match.get('pinnacle_open', {}).get('w', 0)
+                        om_l = best_match.get('pinnacle_open', {}).get('l', 0)
+                        db_w_field = 0  # 从DB取竞彩赔率（当前 unmatched_records 没带赔率字段）
+                        db_l_field = 0
+                        # fallback: Pinnacle w/l 跟百家平均方向对比
+                        avg_w = best_match.get('avg_odds_open', {}).get('w', 0)
+                        avg_l = best_match.get('avg_odds_open', {}).get('l', 0)
+                        if om_w > 0 and om_l > 0 and avg_w > 0 and avg_l > 0:
+                            om_fav_home = om_w < om_l
+                            avg_fav_home = avg_w < avg_l
+                            if om_fav_home != avg_fav_home:
+                                om_swapped = True
+
                         pin_open = best_match.get('pinnacle_open', {})
                         pin_close = best_match.get('pinnacle_close', {})
+
+                        # 主客颠倒时翻转 Pinnacle 胜平负
+                        if om_swapped:
+                            if pin_open.get('w', 0) > 0 or pin_open.get('l', 0) > 0:
+                                pin_open = {'w': pin_open.get('l', 0), 'd': pin_open.get('d', 0), 'l': pin_open.get('w', 0)}
+                            if pin_close.get('w', 0) > 0 or pin_close.get('l', 0) > 0:
+                                pin_close = {'w': pin_close.get('l', 0), 'd': pin_close.get('d', 0), 'l': pin_close.get('w', 0)}
+
                         implied = best_match.get('implied_prob', {})
                         margin = best_match.get('pinnacle_margin', 0)
                         avg_open = best_match.get('avg_odds_open', {})
@@ -2446,9 +2524,9 @@ def save_to_db(matches, db_path, date_str=None):
                         ms_ou_open = {}
 
                         # 保护已有非零ah数据：只在DB原值为0/NULL时才写入新值
-                        om_ah_hc = ah_close.get('handicap', 0) or 0
-                        om_ah_hw = ah_close.get('home_w', 0) or 0
-                        om_ah_aw = ah_close.get('away_w', 0) or 0
+                        om_ah_hc = _or_none(ah_close, 'handicap', 'home_w', 'away_w', k='handicap')
+                        om_ah_hw = _or_none(ah_close, 'handicap', 'home_w', 'away_w', k='home_w')
+                        om_ah_aw = _or_none(ah_close, 'handicap', 'home_w', 'away_w', k='away_w')
 
                         cursor.execute("""
                             UPDATE poisson_predictions SET
@@ -2461,13 +2539,13 @@ def save_to_db(matches, db_path, date_str=None):
                                 hkjc_open_w = ?, hkjc_open_d = ?, hkjc_open_l = ?,
                                 hkjc_close_w = ?, hkjc_close_d = ?, hkjc_close_l = ?,
                                 odds_source = ?,
-                                ah_handicap = CASE WHEN ah_handicap IS NOT NULL AND ah_handicap != 0 THEN ah_handicap ELSE ? END,
-                                ah_home_water = CASE WHEN ah_handicap IS NOT NULL AND ah_handicap != 0 THEN ah_home_water ELSE ? END,
-                                ah_away_water = CASE WHEN ah_handicap IS NOT NULL AND ah_handicap != 0 THEN ah_away_water ELSE ? END,
-                                ah_source = CASE WHEN ah_handicap IS NOT NULL AND ah_handicap != 0 THEN ah_source ELSE ? END,
-                                pin_ah_handicap = CASE WHEN pin_ah_handicap IS NOT NULL AND pin_ah_handicap != 0 THEN pin_ah_handicap ELSE ? END,
-                                pin_ah_home_water = CASE WHEN pin_ah_handicap IS NOT NULL AND pin_ah_handicap != 0 THEN pin_ah_home_water ELSE ? END,
-                                pin_ah_away_water = CASE WHEN pin_ah_handicap IS NOT NULL AND pin_ah_handicap != 0 THEN pin_ah_away_water ELSE ? END,
+                                ah_handicap = COALESCE(?, ah_handicap),
+                                ah_home_water = COALESCE(?, ah_home_water),
+                                ah_away_water = COALESCE(?, ah_away_water),
+                                ah_source = COALESCE(?, ah_source),
+                                pin_ah_handicap = COALESCE(?, pin_ah_handicap),
+                                pin_ah_home_water = COALESCE(?, pin_ah_home_water),
+                                pin_ah_away_water = COALESCE(?, pin_ah_away_water),
                                 pin_ou_line = COALESCE(?, pin_ou_line),
                                 pin_ou_over = COALESCE(?, pin_ou_over),
                                 pin_ou_under = COALESCE(?, pin_ou_under),
@@ -2490,7 +2568,7 @@ def save_to_db(matches, db_path, date_str=None):
                             0, 0, 0,  # hkjc_close — 已取消，值全为0
                             best_match.get('odds_source', ''),
                             om_ah_hc, om_ah_hw, om_ah_aw, ah_source,
-                            0, 0, 0,  # pin_ah — OM fallback无此数据，仅补空值
+                            None, None, None,  # pin_ah — OM fallback无此数据，COALESCE 保留 DB 旧值
                             None, None, None,  # pin_ou — OM fallback无此数据，COALESCE 保留 DB 旧值
                             None, None, None,  # ou close — OM fallback无此数据，COALESCE 保留 DB 旧值
                             None, None, None,  # ou open
