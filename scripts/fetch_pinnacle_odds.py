@@ -2554,6 +2554,9 @@ def load_odds_cache(date_str, latest=True):
         for cf in cache_files:
             with open(cf, 'r', encoding='utf-8') as f:
                 data = json.load(f)
+            # 2026-06-21 修复：跳过 OM fallback 的 cache（schema 不兼容 save_to_db，写 dict 格式 + info/odds 嵌套结构）
+            if data.get('source') == 'oddsmagnet_fallback':
+                continue
             pin_count = data.get('summary', {}).get('pinnacle', 0)
             total_count = data.get('summary', {}).get('total', 0)
             if pin_count > best_pin or (pin_count == best_pin and total_count > (best_data.get('summary',{}).get('total',0) if best_data else 0)):
