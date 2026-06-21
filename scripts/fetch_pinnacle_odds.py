@@ -2271,20 +2271,16 @@ def save_to_db(matches, db_path, date_str=None):
 
         # 检测web数据主客是否跟DB主客颠倒（用赔率方向判断）
         db_swapped = False
-        # web端低赔方向 vs DB端低赔方向
-        web_w = m.get('odds_win', 0) or m.get('odds', {}).get('w', 0) or 0
-        web_l = m.get('odds_loss', 0) or m.get('odds', {}).get('l', 0) or 0
-        db_w = 0
-        db_l = 0
-        # 从DB记录读竞彩赔率（best_match是tuple: id, home, away, time）
-        # 需要在SQL查询时也取 odds_win/odds_loss，但当前best_match没有
-        # fallback: 用web赔率+Pinnacle方向对比
+        # DB端竞彩赔率方向 vs Pinnacle方向
+        # best_match现在包含 (id, home, away, time, odds_win, odds_loss)
+        db_jcw = best_match[4] or 0  # DB竞彩主胜赔率
+        db_jcl = best_match[5] or 0  # DB竞彩客胜赔率
         pin_w = pin_close.get('w', 0) if pin_close.get('w', 0) > 0 else pin_open.get('w', 0)
         pin_l = pin_close.get('l', 0) if pin_close.get('l', 0) > 0 else pin_open.get('l', 0)
-        if web_w > 0 and web_l > 0 and pin_w > 0 and pin_l > 0:
-            web_fav_home = web_w < web_l  # 竞彩热门在主队？
+        if db_jcw > 0 and db_jcl > 0 and pin_w > 0 and pin_l > 0:
+            jc_fav_home = db_jcw < db_jcl  # 竞彩热门在主队？
             pin_fav_home = pin_w < pin_l  # Pinnacle热门在主队？
-            if web_fav_home != pin_fav_home:
+            if jc_fav_home != pin_fav_home:
                 db_swapped = True
         if db_swapped:
             print(f"[MATCH] {home} vs {away} -> DB {db_home} vs {db_away} [{match_method}] 评分={best_score:.2f} ⚠️主客颠倒(赔率方向)")
