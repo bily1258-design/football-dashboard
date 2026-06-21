@@ -1454,6 +1454,35 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=True):
         pin_ah_oyzs = pin_oyzs.get('ah', {})
         pin_ou_oyzs = pin_oyzs.get('ou', {})
 
+        # Pinnacle 1X2 (from oyzs) — 补充POST失败时的空缺
+        pin_1x2_oyzs = pin_oyzs.get('1x2', {})
+        pin_1x2_close_oyzs = pin_1x2_oyzs.get('close', {})
+        pin_1x2_open_oyzs = pin_1x2_oyzs.get('open', {})
+        if (pin_1x2_close_oyzs.get('w', 0) > 0 and pin_1x2_close_oyzs.get('l', 0) > 0):
+            # oyzs有Pinnacle 1X2数据，如果POST无数据或POST数据=竞彩(即oddsmagnet备份)，用oyzs覆盖
+            pin_open_w = pinnacle_open.get('w', 0)
+            pin_close_w = pinnacle_close.get('w', 0)
+            jc_w = m.get('odds_win', 0) or m.get('jc_w', 0) or 0
+            need_oyzs_1x2 = False
+            if pin_open_w == 0 or pin_close_w == 0:
+                need_oyzs_1x2 = True
+            elif jc_w > 0 and abs(pin_open_w - jc_w) < 0.01:
+                # POST数据=竞彩(oddsmagnet备份)，用oyzs真实数据覆盖
+                need_oyzs_1x2 = True
+            if need_oyzs_1x2:
+                ow = pin_1x2_open_oyzs.get('w', 0)
+                od_val = pin_1x2_open_oyzs.get('d', 0)
+                ol = pin_1x2_open_oyzs.get('l', 0)
+                cw = pin_1x2_close_oyzs.get('w', 0)
+                cd_val = pin_1x2_close_oyzs.get('d', 0)
+                cl = pin_1x2_close_oyzs.get('l', 0)
+                if ow > 0:
+                    pinnacle_open = {'w': ow, 'd': od_val, 'l': ol}
+                if cw > 0:
+                    pinnacle_close = {'w': cw, 'd': cd_val, 'l': cl}
+                    pinnacle_movement = {'w': 'stable', 'd': 'stable', 'l': 'stable'}
+                print(f"  Pinnacle 1X2(oyzs补充): open {ow:.2f}/{od_val:.2f}/{ol:.2f} close {cw:.2f}/{cd_val:.2f}/{cl:.2f}")
+
         if pin_ah_oyzs.get('close', {}).get('handicap', 0) != 0:
             ah_c = pin_ah_oyzs['close']
             ah_o = pin_ah_oyzs.get('open', {})
@@ -1912,7 +1941,16 @@ def save_to_db(matches, db_path, date_str=None):
             jc_fav_home = db_jcw < db_jcl  # 竞彩热门在主队？
             pin_fav_home = pin_w < pin_l  # Pinnacle热门在主队？
             if jc_fav_home != pin_fav_home:
-                db_swapped = True
+                # 额外验证：翻转后赔率是否更接近竞彩
+                # 防止赔率分歧被误判为主客颠倒
+                ratio_no_swap = max(pin_w, db_jcw) / max(min(pin_w, db_jcw), 0.01)
+                ratio_swap = max(pin_l, db_jcw) / max(min(pin_l, db_jcw), 0.01)
+                # 翻转后pin_l比pin_w更接近db_jcw → 真的是颠倒
+                # 翻转后差距反而更大 → 不是颠倒，只是赔率分歧
+                if ratio_swap < ratio_no_swap:
+                    db_swapped = True
+                else:
+                    print(f"  [INFO] 方向不一致但赔率差距大，不翻转(pin w={pin_w}/l={pin_l} vs JC w={db_jcw}/l={db_jcl})")
         if db_swapped:
             print(f"[MATCH] {home} vs {away} -> DB {db_home} vs {db_away} [{match_method}] 评分={best_score:.2f} ⚠️主客颠倒(赔率方向)")
         else:
@@ -1926,7 +1964,7 @@ def save_to_db(matches, db_path, date_str=None):
         pin_close = m.get('pinnacle_close', {})
         pin_movement = m.get('pinnacle_movement', {})
 
-        # 主客颠倒时翻转 Pinnacle 胜平负（w ↔ l）和 movement
+        # 主客颠倒时翻转 Pinnacle 胜平负（w ↔ l）和 movement + AH/OU
         if db_swapped:
             if pin_open.get('w', 0) > 0 or pin_open.get('l', 0) > 0:
                 pin_open = {'w': pin_open.get('l', 0), 'd': pin_open.get('d', 0), 'l': pin_open.get('w', 0)}
@@ -1939,6 +1977,55 @@ def save_to_db(matches, db_path, date_str=None):
                 pin_movement['w'] = ml
                 pin_movement['l'] = mw
                 m['pinnacle_movement'] = pin_movement
+            # 翻转Pinnacle AH: handicap取反, home↔away
+            for ah_key in ['pin_ah', 'pin_ah_open']:
+                ah = m.get(ah_key, {})
+                if ah and ah.get('handicap', 0) != 0:
+                    m[ah_key] = {
+                        'handicap': -ah['handicap'],
+                        'home_odd': ah.get('away_odd', 0),
+                        'away_odd': ah.get('home_odd', 0),
+                    }
+            # 翻转Pinnacle OU: over↔under
+            for ou_key in ['pin_ou']:
+                ou = m.get(ou_key, {})
+                for sub_key in ['close', 'open']:
+                    sub = ou.get(sub_key, {})
+                    if sub and sub.get('line', 0) != 0:
+                        ou[sub_key] = {'line': sub['line'], 'over': sub.get('under', 0), 'under': sub.get('over', 0)}
+            # 翻转HKJC 1X2 + AH + OU
+            for hkjc_key in ['hkjc_open', 'hkjc_close']:
+                hkjc_dict = m.get(hkjc_key, {})
+                if hkjc_dict and hkjc_dict.get('w', 0) > 0:
+                    m[hkjc_key] = {'w': hkjc_dict.get('l', 0), 'd': hkjc_dict.get('d', 0), 'l': hkjc_dict.get('w', 0)}
+            for hkjc_ah_key in ['ah_hkjc_open', 'ah_hkjc_close']:
+                hkjc_ah = m.get(hkjc_ah_key, {})
+                if hkjc_ah and hkjc_ah.get('handicap', 0) != 0:
+                    m[hkjc_ah_key] = {
+                        'handicap': -hkjc_ah['handicap'],
+                        'home_w': hkjc_ah.get('away_w', 0),
+                        'away_w': hkjc_ah.get('home_w', 0),
+                    }
+            hkjc_ou = m.get('hkjc_ou', {})
+            for sub_key in ['close', 'open']:
+                sub = hkjc_ou.get(sub_key, {})
+                if sub and sub.get('line', 0) != 0:
+                    hkjc_ou[sub_key] = {'line': sub['line'], 'over': sub.get('under', 0), 'under': sub.get('over', 0)}
+            # 翻转利记/明升 AH + OU
+            for prefix in ['liji_ah', 'ms_ah']:
+                for sub_key in ['close', 'open']:
+                    ah_sub = m.get(prefix, {}).get(sub_key, {})
+                    if ah_sub and ah_sub.get('handicap', 0) != 0:
+                        m[prefix][sub_key] = {
+                            'handicap': -ah_sub['handicap'],
+                            'home_w': ah_sub.get('away_w', 0),
+                            'away_w': ah_sub.get('home_w', 0),
+                        }
+            for prefix in ['ou_liji', 'ou_ms']:
+                for sub_key in ['close', 'open']:
+                    ou_sub = m.get(prefix, {}).get(sub_key, {})
+                    if ou_sub and ou_sub.get('line', 0) != 0:
+                        m[prefix][sub_key] = {'line': ou_sub['line'], 'over': ou_sub.get('under', 0), 'under': ou_sub.get('over', 0)}
             print(f"  ⚠️ Pinnacle翻转: open={pin_open} / close={pin_close}")
 
         implied = m.get('implied_prob', {})
