@@ -1230,29 +1230,59 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=True):
             except Exception as e:
                 print(f"[WARN] oddsmagnet fallback加载失败: {e}")
 
-    # Step 5.9: 从足彩网POST获取Pinnacle亚盘（替代已移除的api-football）
-    pin_ah_all = {}
+    # Step 5.9: 从 oyzs_ajax 获取 Pinnacle/HKJC/利记/明升 的 1X2+AH+OU 三合一数据
+    # Pinnacle 在 oyzs 的公司ID是 22（不是 bjzs 的 106）
+    oyzs_data = {}  # key -> {home, away, companies: {pinnacle: {...}, hkjc: {...}, ...}}
     if len(match_list) > 0:
         try:
-            # 竞彩亚盘
-            pin_ah_jc = fetch_asian_handicap(date_str, page_type='jc', company='106')
-            time.sleep(6)
-            pin_ah_jc_prev = fetch_asian_handicap(prev_day, page_type='jc', company='106')
-            time.sleep(6)
-            pin_ah_jc_next = fetch_asian_handicap(next_day, page_type='jc', company='106')
-            # 北单亚盘
-            pin_ah_bd = fetch_asian_handicap(date_str, page_type='bd', company='106') if include_beidan else {}
-            time.sleep(6)
-            pin_ah_bd_prev = fetch_asian_handicap(prev_day, page_type='bd', company='106') if include_beidan else {}
-            time.sleep(6)
-            pin_ah_bd_next = fetch_asian_handicap(next_day, page_type='bd', company='106') if include_beidan else {}
-            pin_ah_all = {**pin_ah_jc_prev, **pin_ah_bd_prev, **pin_ah_jc, **pin_ah_bd, **pin_ah_jc_next, **pin_ah_bd_next}
-            print(f"[INFO] Pinnacle亚盘(足彩网POST): {len(pin_ah_all)} 场")
+            sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+            from odds_api import fetch_oyzs
+            for d, label in [(prev_day, "前一天"), (date_str.replace('-',''), "当天"), (next_day, "次日")]:
+                oyzs = fetch_oyzs(d)
+                time.sleep(6)
+                for key, v in oyzs.items():
+                    if key not in oyzs_data:
+                        oyzs_data[key] = v
+                if include_beidan:
+                    oyzs_bd = fetch_oyzs(d, page_type='bd')
+                    time.sleep(6)
+                    for key, v in oyzs_bd.items():
+                        if key not in oyzs_data:
+                            oyzs_data[key] = v
+            oyzs_stats = {'pinnacle': 0, 'hkjc': 0, 'liji': 0, 'mingsheng': 0}
+            for mk, mv in oyzs_data.items():
+                for ck in oyzs_stats:
+                    if ck in mv.get('companies', {}):
+                        oyzs_stats[ck] += 1
+            print(f"[INFO] oyzs数据: {len(oyzs_data)} 场 [Pin:{oyzs_stats['pinnacle']} HKJC:{oyzs_stats['hkjc']} 利记:{oyzs_stats['liji']} 明升:{oyzs_stats['mingsheng']}]")
         except Exception as e:
-            print(f"[WARN] Pinnacle亚盘POST失败: {e}")
+            print(f"[WARN] oyzs获取失败: {e}")
 
-    # Step 5.95: 大小球数据（OU暂不从api-football获取，保留odds_api.py路径）
-    ou_data_all = {}  # {match_key: {ou, ou_liji, ou_ms}} — 暂为空
+    # Step 5.9b: 从 oyzs_json 缓存读取（fallback，odds_api.py 已保存）
+    if not oyzs_data:
+        oyzs_cache_path = os.path.join(DATA_BASE_DIR, "data", "raw", "oddsmagnet", f"oyzs_{date_str.replace('-','')}.json")
+        if os.path.exists(oyzs_cache_path):
+            try:
+                with open(oyzs_cache_path, 'r', encoding='utf-8') as f:
+                    oyzs_raw = json.load(f)
+                # 转换为 fetch_oyzs 返回的格式
+                for key, entry in oyzs_raw.items():
+                    companies = {}
+                    if entry.get('pin_ah') or entry.get('pin_ou'):
+                        companies['pinnacle'] = {'ah': entry.get('pin_ah', {}), 'ou': entry.get('pin_ou', {})}
+                    if entry.get('hkjc_ah') or entry.get('hkjc_ou'):
+                        companies['hkjc'] = {'ah': entry.get('hkjc_ah', {}), 'ou': entry.get('hkjc_ou', {})}
+                    liji = entry.get('liji_ah') or entry.get('liji_ou')
+                    if liji:
+                        companies['liji'] = {'ah': entry.get('liji_ah', {}), 'ou': entry.get('liji_ou', {})}
+                    ms = entry.get('ms_ah') or entry.get('ms_ou')
+                    if ms:
+                        companies['mingsheng'] = {'ah': entry.get('ms_ah', {}), 'ou': entry.get('ms_ou', {})}
+                    if companies:
+                        oyzs_data[key] = {'home': entry.get('home', ''), 'away': entry.get('away', ''), 'companies': companies}
+                print(f"[INFO] oyzs缓存: {len(oyzs_data)} 场")
+            except Exception as e:
+                print(f"[WARN] oyzs缓存读取失败: {e}")
 
     # Step 6: 合并数据，赔率优先级：平博 > 百家平均 (SB已取消)
     results = []
@@ -1396,54 +1426,60 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=True):
         m['betfair_open'] = betfair_open
         m['betfair_close'] = betfair_close
         
-        # 香港马会赔率（交叉验证参考）
-        hkjc_data = hkjc_all.get(match_id, {})
-        hkjc_open = hkjc_data.get('open', {})
-        hkjc_close = hkjc_data.get('close', {})
-        
+        # 香港马会赔率 — 从 oyzs_data 获取
+        oyzs_key = f"{home}_{away}"
+        oyzs_match = oyzs_data.get(oyzs_key, {})
+        if not oyzs_match:
+            # 模糊匹配
+            for fk, fv in oyzs_data.items():
+                if home in fk and away in fk:
+                    oyzs_match = fv
+                    break
+
+        oyzs_companies = oyzs_match.get('companies', {})
+
+        # HKJC 1X2 + AH + OU (from oyzs)
+        hkjc_oyzs = oyzs_companies.get('hkjc', {})
+        hkjc_1x2 = hkjc_oyzs.get('1x2', {})
+        hkjc_open = hkjc_1x2.get('open', {})
+        hkjc_close = hkjc_1x2.get('close', {})
+
         # HHAD让球盘检测
         if hkjc_close.get('d', 0) > 0 and hkjc_close.get('d', 0) < 2.0:
             print(f"  [WARN] HKJC疑似让球盘(d={hkjc_close['d']:.2f}<2.0)，已丢弃")
             hkjc_open = {}
             hkjc_close = {}
-        
-        # oddsmagnet补充HKJC — 已取消，不再补充
-        # if hkjc_open.get('w', 0) == 0 and om_item:
-        #     hkjc_ow = om_item.get('hkjc_open_w', 0) or 0
-        #     hkjc_od = om_item.get('hkjc_open_d', 0) or 0
-        #     hkjc_ol = om_item.get('hkjc_open_l', 0) or 0
-        #     if hkjc_ow > 0:
-        #         hkjc_open = {'w': hkjc_ow, 'd': hkjc_od, 'l': hkjc_ol}
-        #         hkjc_close = {'w': hkjc_ow, 'd': hkjc_od, 'l': hkjc_ol}
-        #         print(f"  HKJC(oddsmagnet): {hkjc_ow:.2f}/{hkjc_od:.2f}/{hkjc_ol:.2f}")
-        
+
         m['hkjc_open'] = hkjc_open
         m['hkjc_close'] = hkjc_close
-        
+
         if hkjc_open.get('w', 0) > 0:
             print(f"  HKJC初盘: {hkjc_open['w']:.2f}/{hkjc_open['d']:.2f}/{hkjc_open['l']:.2f}")
             print(f"  HKJC最新: {hkjc_close['w']:.2f}/{hkjc_close['d']:.2f}/{hkjc_close['l']:.2f}")
-        
-        # 亚盘让球盘
-        ah_avg_data = ah_avg_all.get(match_id, {})
-        ah_hkjc_data = ah_hkjc_all.get(match_id, {})
-        m['ah_avg_open'] = ah_avg_data.get('open', {})
-        m['ah_avg_close'] = ah_avg_data.get('close', {})
-        m['ah_hkjc_open'] = ah_hkjc_data.get('open', {})
-        m['ah_hkjc_close'] = ah_hkjc_data.get('close', {})
-        
-        if ah_avg_data.get('close', {}).get('handicap', 0) != 0:
-            ah_c = ah_avg_data['close']
-            print(f"  亚盘(百家): 盘口{ah_c['handicap']} 主水{ah_c['home_w']:.2f} 客水{ah_c['away_w']:.2f}")
-        elif ah_hkjc_data.get('close', {}).get('handicap', 0) != 0:
-            ah_c = ah_hkjc_data['close']
-            print(f"  亚盘(HKJC): 盘口{ah_c['handicap']} 主水{ah_c['home_w']:.2f} 客水{ah_c['away_w']:.2f}")
 
-        # Pinnacle亚盘 (from 足彩网POST)
-        pin_ah_match = pin_ah_all.get(match_id, {})
-        if pin_ah_match.get('close', {}).get('handicap', 0) != 0:
-            ah_c = pin_ah_match['close']
-            ah_o = pin_ah_match.get('open', {})
+        # HKJC AH + OU (from oyzs)
+        hkjc_ah_data = hkjc_oyzs.get('ah', {})
+        hkjc_ou_data = hkjc_oyzs.get('ou', {})
+        m['ah_hkjc_open'] = hkjc_ah_data.get('open', {})
+        m['ah_hkjc_close'] = hkjc_ah_data.get('close', {})
+        m['hkjc_ou'] = hkjc_ou_data
+
+        if hkjc_ah_data.get('close', {}).get('handicap', 0) != 0:
+            ah_c = hkjc_ah_data['close']
+            print(f"  亚盘(HKJC): 盘口{ah_c['handicap']} 主水{ah_c.get('home_w',0):.2f} 客水{ah_c.get('away_w',0):.2f}")
+
+        if hkjc_ou_data.get('close', {}).get('line', 0) != 0:
+            ou_c = hkjc_ou_data['close']
+            print(f"  大小球(HKJC): {ou_c.get('over',0):.2f}/{ou_c.get('line',0)}/{ou_c.get('under',0):.2f}")
+
+        # Pinnacle亚盘+大小球 (from oyzs)
+        pin_oyzs = oyzs_companies.get('pinnacle', {})
+        pin_ah_oyzs = pin_oyzs.get('ah', {})
+        pin_ou_oyzs = pin_oyzs.get('ou', {})
+
+        if pin_ah_oyzs.get('close', {}).get('handicap', 0) != 0:
+            ah_c = pin_ah_oyzs['close']
+            ah_o = pin_ah_oyzs.get('open', {})
             m['pin_ah'] = {
                 'handicap': ah_c.get('handicap', 0),
                 'home_odd': ah_c.get('home_w', 0),
@@ -1454,24 +1490,26 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=True):
                 'home_odd': ah_o.get('home_w', 0),
                 'away_odd': ah_o.get('away_w', 0),
             }
+            print(f"  亚盘(Pin): 盘口{ah_c['handicap']} 主水{ah_c.get('home_w',0):.2f} 客水{ah_c.get('away_w',0):.2f}")
         else:
             m['pin_ah'] = {}
             m['pin_ah_open'] = {}
-        # Pinnacle大小球 (api-football已移除，暂无数据源)
-        m['pin_ou'] = {}
+        m['pin_ou'] = pin_ou_oyzs
 
-        # 大小球数据 (from odds_api.py ah_YYYYMMDD.json)
-        ou_key = f"{home}_{away}"
-        ou_item = ou_data_all.get(ou_key, {})
-        if not ou_item:
-            # 模糊匹配
-            for fk, fv in ou_data_all.items():
-                if home in fk and away in fk:
-                    ou_item = fv
-                    break
-        m['ou'] = ou_item.get('ou', {})
-        m['ou_liji'] = ou_item.get('ou_liji', {})
-        m['ou_ms'] = ou_item.get('ou_ms', {})
+        if pin_ou_oyzs.get('close', {}).get('line', 0) != 0:
+            ou_c = pin_ou_oyzs['close']
+            print(f"  大小球(Pin): {ou_c.get('over',0):.2f}/{ou_c.get('line',0)}/{ou_c.get('under',0):.2f}")
+
+        # 利记/明升 大小球 (from oyzs)
+        liji_oyzs = oyzs_companies.get('liji') or oyzs_companies.get('利记') or {}
+        ms_oyzs = oyzs_companies.get('mingsheng') or oyzs_companies.get('明升') or oyzs_companies.get('sb') or {}
+
+        m['ou_liji'] = liji_oyzs.get('ou', {})
+        m['ou_ms'] = ms_oyzs.get('ou', {})
+
+        # 利记/明升 亚盘 (from oyzs)
+        m['liji_ah'] = liji_oyzs.get('ah', {})
+        m['ms_ah'] = ms_oyzs.get('ah', {})
 
         # 计算去抽水概率（基于主市场参照）
         pin_open = m.get('pinnacle_open', {})
@@ -1929,32 +1967,42 @@ def save_to_db(matches, db_path, date_str=None):
         avg_open = m.get('avg_odds_open', m.get('avg_open', {}))
         avg_close = m.get('avg_odds_close', m.get('avg_close', {}))
         
-        # 香港马会欧赔 — 已取消抓取，值全为0（保留DB列兼容旧数据）
-        # hkjc_open = m.get('hkjc_open', {})
-        # hkjc_close = m.get('hkjc_close', {})
-        hkjc_open = {}
-        hkjc_close = {}
+        # 香港马会欧赔 (from oyzs)
+        hkjc_open = m.get('hkjc_open', {})
+        hkjc_close = m.get('hkjc_close', {})
 
-        # 亚盘让球盘（仅百家平均，HKJC已取消）
+        # 亚盘让球盘（百家平均）
         ah_close = m.get('ah_avg_close') or {}
         ah_source = 'avg' if m.get('ah_avg_close') else ''
 
-        # Pinnacle亚盘 (from 足彩网POST) + 大小球
+        # Pinnacle亚盘+大小球 (from oyzs)
         pin_ah = m.get('pin_ah', {})
+        pin_ah_open = m.get('pin_ah_open', {})
         pin_ou = m.get('pin_ou', {})
 
-        # 大小球数据 (from odds_api.py ah file)
-        ou_data_m = m.get('ou', {})
+        # HKJC AH+OU (from oyzs)
+        hkjc_ah = m.get('hkjc_ou', {}).get('close', {}) and m.get('ah_hkjc_close', {}) or {}
+        hkjc_ah_open_data = m.get('ah_hkjc_open', {})
+        hkjc_ah_close_data = m.get('ah_hkjc_close', {})
+        hkjc_ou_data = m.get('hkjc_ou', {})
+
+        # 利记/明升 大小球 (from oyzs)
         ou_liji_m = m.get('ou_liji', {})
         ou_ms_m = m.get('ou_ms', {})
 
+        # 利记/明升 亚盘 (from oyzs)
+        liji_ah_data = m.get('liji_ah', {})
+        ms_ah_data = m.get('ms_ah', {})
+
         # 提取大小球即时/初盘数据
-        ou_close = ou_data_m.get('close', {})
-        ou_open = ou_data_m.get('open', {})
         liji_ou_close = ou_liji_m.get('close', {})
         liji_ou_open = ou_liji_m.get('open', {})
         ms_ou_close = ou_ms_m.get('close', {})
         ms_ou_open = ou_ms_m.get('open', {})
+
+        # HKJC OU
+        hkjc_ou_close = hkjc_ou_data.get('close', {})
+        hkjc_ou_open = hkjc_ou_data.get('open', {})
 
         # 保护已有非零ah数据：只在DB原值为0/NULL时才写入新值（防止WAF拦截0值覆盖Termux完整数据）
         ah_hc_val = _or_none(ah_close, 'handicap', 'home_w', 'away_w', k='handicap')
@@ -1963,29 +2011,60 @@ def save_to_db(matches, db_path, date_str=None):
         pin_ah_hc_val = _or_none(pin_ah, 'handicap', 'home_odd', 'away_odd', k='handicap')
         pin_ah_hw_val = _or_none(pin_ah, 'handicap', 'home_odd', 'away_odd', k='home_odd')
         pin_ah_aw_val = _or_none(pin_ah, 'handicap', 'home_odd', 'away_odd', k='away_odd')
-        # 2026-06-21 改造：pin_ou 改用 _or_none helper（line/over/under 三字段全 0 → None，COALESCE 保留 DB 旧值）
-        pin_ou_line_val = _or_none(pin_ou, 'line', 'over', 'under', k='line')
-        pin_ou_over_val = _or_none(pin_ou, 'line', 'over', 'under', k='over')
-        pin_ou_under_val = _or_none(pin_ou, 'line', 'over', 'under', k='under')
-        # 2026-06-21 改造：ou 段 18 个字段改用 _or_none helper（over/line/under 三字段全 0 → None，COALESCE 保留 DB 旧值）
-        ou_close_o = _or_none(ou_close, 'over', 'line', 'under', k='over')
-        ou_close_l = _or_none(ou_close, 'over', 'line', 'under', k='line')
-        ou_close_u = _or_none(ou_close, 'over', 'line', 'under', k='under')
-        ou_open_o = _or_none(ou_open, 'over', 'line', 'under', k='over')
-        ou_open_l = _or_none(ou_open, 'over', 'line', 'under', k='line')
-        ou_open_u = _or_none(ou_open, 'over', 'line', 'under', k='under')
+        # Pinnacle AH open
+        pin_ah_open_hc_val = _or_none(pin_ah_open, 'handicap', 'home_odd', 'away_odd', k='handicap')
+        pin_ah_open_hw_val = _or_none(pin_ah_open, 'handicap', 'home_odd', 'away_odd', k='home_odd')
+        pin_ah_open_aw_val = _or_none(pin_ah_open, 'handicap', 'home_odd', 'away_odd', k='away_odd')
+        # Pinnacle OU
+        pin_ou_close = pin_ou.get('close', {})
+        pin_ou_open_data = pin_ou.get('open', {})
+        pin_ou_line_val = _or_none(pin_ou_close, 'line', 'over', 'under', k='line')
+        pin_ou_over_val = _or_none(pin_ou_close, 'line', 'over', 'under', k='over')
+        pin_ou_under_val = _or_none(pin_ou_close, 'line', 'over', 'under', k='under')
+        pin_ou_open_line_val = _or_none(pin_ou_open_data, 'line', 'over', 'under', k='line')
+        pin_ou_open_over_val = _or_none(pin_ou_open_data, 'line', 'over', 'under', k='over')
+        pin_ou_open_under_val = _or_none(pin_ou_open_data, 'line', 'over', 'under', k='under')
+        # HKJC AH
+        hkjc_ah_hc_val = _or_none(hkjc_ah_close_data, 'handicap', 'home_w', 'away_w', k='handicap')
+        hkjc_ah_hw_val = _or_none(hkjc_ah_close_data, 'handicap', 'home_w', 'away_w', k='home_w')
+        hkjc_ah_aw_val = _or_none(hkjc_ah_close_data, 'handicap', 'home_w', 'away_w', k='away_w')
+        hkjc_ah_open_hc_val = _or_none(hkjc_ah_open_data, 'handicap', 'home_w', 'away_w', k='handicap')
+        hkjc_ah_open_hw_val = _or_none(hkjc_ah_open_data, 'handicap', 'home_w', 'away_w', k='home_w')
+        hkjc_ah_open_aw_val = _or_none(hkjc_ah_open_data, 'handicap', 'home_w', 'away_w', k='away_w')
+        # HKJC OU
+        hkjc_ou_line_val = _or_none(hkjc_ou_close, 'line', 'over', 'under', k='line')
+        hkjc_ou_over_val = _or_none(hkjc_ou_close, 'line', 'over', 'under', k='over')
+        hkjc_ou_under_val = _or_none(hkjc_ou_close, 'line', 'over', 'under', k='under')
+        hkjc_ou_open_line_val = _or_none(hkjc_ou_open, 'line', 'over', 'under', k='line')
+        hkjc_ou_open_over_val = _or_none(hkjc_ou_open, 'line', 'over', 'under', k='over')
+        hkjc_ou_open_under_val = _or_none(hkjc_ou_open, 'line', 'over', 'under', k='under')
+        # 利记 OU
         liji_ou_close_o = _or_none(liji_ou_close, 'over', 'line', 'under', k='over')
         liji_ou_close_l = _or_none(liji_ou_close, 'over', 'line', 'under', k='line')
         liji_ou_close_u = _or_none(liji_ou_close, 'over', 'line', 'under', k='under')
         liji_ou_open_o = _or_none(liji_ou_open, 'over', 'line', 'under', k='over')
         liji_ou_open_l = _or_none(liji_ou_open, 'over', 'line', 'under', k='line')
         liji_ou_open_u = _or_none(liji_ou_open, 'over', 'line', 'under', k='under')
+        # 明升 OU
         ms_ou_close_o = _or_none(ms_ou_close, 'over', 'line', 'under', k='over')
         ms_ou_close_l = _or_none(ms_ou_close, 'over', 'line', 'under', k='line')
         ms_ou_close_u = _or_none(ms_ou_close, 'over', 'line', 'under', k='under')
         ms_ou_open_o = _or_none(ms_ou_open, 'over', 'line', 'under', k='over')
         ms_ou_open_l = _or_none(ms_ou_open, 'over', 'line', 'under', k='line')
         ms_ou_open_u = _or_none(ms_ou_open, 'over', 'line', 'under', k='under')
+        # 利记/明升 AH
+        liji_ah_hc_val = _or_none(liji_ah_data.get('close', {}), 'handicap', 'home_w', 'away_w', k='handicap')
+        liji_ah_hw_val = _or_none(liji_ah_data.get('close', {}), 'handicap', 'home_w', 'away_w', k='home_w')
+        liji_ah_aw_val = _or_none(liji_ah_data.get('close', {}), 'handicap', 'home_w', 'away_w', k='away_w')
+        liji_ah_open_hc_val = _or_none(liji_ah_data.get('open', {}), 'handicap', 'home_w', 'away_w', k='handicap')
+        liji_ah_open_hw_val = _or_none(liji_ah_data.get('open', {}), 'handicap', 'home_w', 'away_w', k='home_w')
+        liji_ah_open_aw_val = _or_none(liji_ah_data.get('open', {}), 'handicap', 'home_w', 'away_w', k='away_w')
+        ms_ah_hc_val = _or_none(ms_ah_data.get('close', {}), 'handicap', 'home_w', 'away_w', k='handicap')
+        ms_ah_hw_val = _or_none(ms_ah_data.get('close', {}), 'handicap', 'home_w', 'away_w', k='home_w')
+        ms_ah_aw_val = _or_none(ms_ah_data.get('close', {}), 'handicap', 'home_w', 'away_w', k='away_w')
+        ms_ah_open_hc_val = _or_none(ms_ah_data.get('open', {}), 'handicap', 'home_w', 'away_w', k='handicap')
+        ms_ah_open_hw_val = _or_none(ms_ah_data.get('open', {}), 'handicap', 'home_w', 'away_w', k='home_w')
+        ms_ah_open_aw_val = _or_none(ms_ah_data.get('open', {}), 'handicap', 'home_w', 'away_w', k='away_w')
 
         cursor.execute("""
             UPDATE poisson_predictions SET
@@ -2005,11 +2084,39 @@ def save_to_db(matches, db_path, date_str=None):
                 pin_ah_handicap = COALESCE(?, pin_ah_handicap),
                 pin_ah_home_water = COALESCE(?, pin_ah_home_water),
                 pin_ah_away_water = COALESCE(?, pin_ah_away_water),
+                pin_ah_open_handicap = COALESCE(?, pin_ah_open_handicap),
+                pin_ah_open_home_water = COALESCE(?, pin_ah_open_home_water),
+                pin_ah_open_away_water = COALESCE(?, pin_ah_open_away_water),
                 pin_ou_line = COALESCE(?, pin_ou_line),
                 pin_ou_over = COALESCE(?, pin_ou_over),
                 pin_ou_under = COALESCE(?, pin_ou_under),
-                ou_over = COALESCE(?, ou_over), ou_line = COALESCE(?, ou_line), ou_under = COALESCE(?, ou_under),
-                ou_open_over = COALESCE(?, ou_open_over), ou_open_line = COALESCE(?, ou_open_line), ou_open_under = COALESCE(?, ou_open_under),
+                pin_ou_open_line = COALESCE(?, pin_ou_open_line),
+                pin_ou_open_over = COALESCE(?, pin_ou_open_over),
+                pin_ou_open_under = COALESCE(?, pin_ou_open_under),
+                hkjc_ah_handicap = COALESCE(?, hkjc_ah_handicap),
+                hkjc_ah_home_water = COALESCE(?, hkjc_ah_home_water),
+                hkjc_ah_away_water = COALESCE(?, hkjc_ah_away_water),
+                hkjc_ah_open_handicap = COALESCE(?, hkjc_ah_open_handicap),
+                hkjc_ah_open_home_water = COALESCE(?, hkjc_ah_open_home_water),
+                hkjc_ah_open_away_water = COALESCE(?, hkjc_ah_open_away_water),
+                hkjc_ou_line = COALESCE(?, hkjc_ou_line),
+                hkjc_ou_over = COALESCE(?, hkjc_ou_over),
+                hkjc_ou_under = COALESCE(?, hkjc_ou_under),
+                hkjc_ou_open_line = COALESCE(?, hkjc_ou_open_line),
+                hkjc_ou_open_over = COALESCE(?, hkjc_ou_open_over),
+                hkjc_ou_open_under = COALESCE(?, hkjc_ou_open_under),
+                liji_handicap = COALESCE(?, liji_handicap),
+                liji_home_water = COALESCE(?, liji_home_water),
+                liji_away_water = COALESCE(?, liji_away_water),
+                liji_open_handicap = COALESCE(?, liji_open_handicap),
+                liji_open_home_water = COALESCE(?, liji_open_home_water),
+                liji_open_away_water = COALESCE(?, liji_open_away_water),
+                ms_handicap = COALESCE(?, ms_handicap),
+                ms_home_water = COALESCE(?, ms_home_water),
+                ms_away_water = COALESCE(?, ms_away_water),
+                ms_open_handicap = COALESCE(?, ms_open_handicap),
+                ms_open_home_water = COALESCE(?, ms_open_home_water),
+                ms_open_away_water = COALESCE(?, ms_open_away_water),
                 liji_ou_over = COALESCE(?, liji_ou_over), liji_ou_line = COALESCE(?, liji_ou_line), liji_ou_under = COALESCE(?, liji_ou_under),
                 liji_ou_open_over = COALESCE(?, liji_ou_open_over), liji_ou_open_line = COALESCE(?, liji_ou_open_line), liji_ou_open_under = COALESCE(?, liji_ou_open_under),
                 ms_ou_over = COALESCE(?, ms_ou_over), ms_ou_line = COALESCE(?, ms_ou_line), ms_ou_under = COALESCE(?, ms_ou_under),
@@ -2028,9 +2135,17 @@ def save_to_db(matches, db_path, date_str=None):
             m.get('odds_source', ''),
             ah_hc_val, ah_hw_val, ah_aw_val, ah_source,
             pin_ah_hc_val, pin_ah_hw_val, pin_ah_aw_val,
+            pin_ah_open_hc_val, pin_ah_open_hw_val, pin_ah_open_aw_val,
             pin_ou_line_val, pin_ou_over_val, pin_ou_under_val,
-            ou_close_o, ou_close_l, ou_close_u,
-            ou_open_o, ou_open_l, ou_open_u,
+            pin_ou_open_line_val, pin_ou_open_over_val, pin_ou_open_under_val,
+            hkjc_ah_hc_val, hkjc_ah_hw_val, hkjc_ah_aw_val,
+            hkjc_ah_open_hc_val, hkjc_ah_open_hw_val, hkjc_ah_open_aw_val,
+            hkjc_ou_line_val, hkjc_ou_over_val, hkjc_ou_under_val,
+            hkjc_ou_open_line_val, hkjc_ou_open_over_val, hkjc_ou_open_under_val,
+            liji_ah_hc_val, liji_ah_hw_val, liji_ah_aw_val,
+            liji_ah_open_hc_val, liji_ah_open_hw_val, liji_ah_open_aw_val,
+            ms_ah_hc_val, ms_ah_hw_val, ms_ah_aw_val,
+            ms_ah_open_hc_val, ms_ah_open_hw_val, ms_ah_open_aw_val,
             liji_ou_close_o, liji_ou_close_l, liji_ou_close_u,
             liji_ou_open_o, liji_ou_open_l, liji_ou_open_u,
             ms_ou_close_o, ms_ou_close_l, ms_ou_close_u,

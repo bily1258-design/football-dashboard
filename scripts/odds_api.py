@@ -32,6 +32,7 @@ CACHE_DIR = os.path.join(REPO_DIR, "data", "cache")
 
 # ====== 配置 ======
 BASE_URL = "https://plzx.zgzcw.com/bjzs"
+OYZS_URL = "https://odds.zgzcw.com/odds/oyzs_ajax.action"  # 欧亚指数三合一API
 SLEEP_SEC = 5.0  # 请求间隔，避免触发WAF
 MAX_RETRY = 2    # WAF拦截时最大重试次数
 
@@ -44,10 +45,23 @@ HEADERS = {
 
 COMPANY_MAP = {
     "0": "百家平均",
-    "106": "Pinnacle",
-    # "136": "HKJC",   # 已取消抓取
-    # "3": "SB",        # 已取消抓取
+    "106": "Pinnacle",    # bjzs POST 用 106
     "56": "Betfair",
+}
+
+# oyzs_ajax 欧亚指数页面的公司ID（与 bjzs 不同！）
+# Pinnacle 在 oyzs 里是 22，在 bjzs 里是 106
+OYZS_COMPANY_MAP = {
+    "22": "Pinnacle",
+    "15": "利记",
+    "6": "明升",
+    "136": "HKJC",
+    "3": "SB",
+    "7": "澳门",
+    "9": "威",
+    "10": "易",
+    "13": "Interwetten",
+    "16": "盈",
 }
 
 
@@ -446,6 +460,207 @@ def _parse_json_odds(raw: str) -> List[List[Dict]]:
 
 
 # ================================================================
+#  足彩网 — 欧亚指数三合一 (oyzs_ajax)
+# ================================================================
+
+def fetch_oyzs(date_str: str, company_ids: List[str] = None,
+               page_type: str = None) -> Dict:
+    """从欧亚指数页面获取 1X2 + 亚盘 + 大小球 三合一数据
+
+    一次请求返回多个公司的完整赔率，比分开POST高效得多。
+    通过 odds.zgzcw.com 域名访问，绕过 plzx 域名的 WAF 拦截。
+
+    关键：Pinnacle 在 oyzs 的公司ID是 22（不是 bjzs 的 106）
+
+    Args:
+        date_str: YYYYMMDD格式
+        company_ids: 公司ID列表（oyzs ID），默认 ['22','15','6','136']
+        page_type: None=竞彩, 'bd'=北单
+
+    Returns: {
+        'match_id': {
+            'home': str, 'away': str, 'league': str, 'kickoff': str,
+            'companies': {
+                'pinnacle': {
+                    '1x2': {'open': {w,d,l}, 'close': {w,d,l}},
+                    'ah': {'open': {home_w,handicap,away_w}, 'close': {home_w,handicap,away_w}},
+                    'ou': {'open': {over,line,under}, 'close': {over,line,under}},
+                },
+                'hkjc': {...}, 'liji': {...}, 'mingsheng': {...}
+            }
+        }
+    }
+    """
+    if company_ids is None:
+        company_ids = ['22', '15', '6', '136']
+
+    session = requests.Session()
+    session.headers.update({
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+                       '(KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
+        'Accept': '*/*',
+        'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+    })
+
+    # 先访问 odds.zgzcw.com 主页获取 WAF cookie (HWWAFSESID + JSESSIONID)
+    for attempt in range(MAX_RETRY + 1):
+        try:
+            r0 = session.get('https://odds.zgzcw.com', timeout=20)
+            if r0.status_code == 200 and not _is_waf(r0.text):
+                break
+            if attempt < MAX_RETRY:
+                wait = SLEEP_SEC * (attempt + 2)
+                print(f"  ⚠️ oyzs主页 WAF拦截，{wait:.0f}s后重试({attempt+1}/{MAX_RETRY})...")
+                time.sleep(wait)
+            else:
+                print(f"  ❌ oyzs主页 重试耗尽")
+                return {}
+        except Exception as e:
+            if attempt < MAX_RETRY:
+                time.sleep(SLEEP_SEC * 2)
+            else:
+                print(f"  ❌ oyzs主页: {e}")
+                return {}
+
+    # 构造 oyzs_ajax 请求
+    issue = f"{date_str[:4]}-{date_str[4:6]}-{date_str[6:8]}"
+    companies_str = ','.join(company_ids)
+
+    # type=jc 竞彩 / type=bd 北单
+    req_type = page_type if page_type else 'jc'
+
+    headers = {
+        'X-Requested-With': 'XMLHttpRequest',
+        'Origin': 'https://odds.zgzcw.com',
+        'Referer': f'https://odds.zgzcw.com/oyzs/?date={date_str}',
+        'Content-Type': 'application/x-www-form-urlencoded',
+    }
+    data = f'type={req_type}&issue={issue}&date={date_str}&companys={companies_str}'
+
+    for attempt in range(MAX_RETRY + 1):
+        try:
+            resp = session.post(OYZS_URL, headers=headers, data=data, timeout=20)
+            if resp.status_code == 200:
+                break
+            if attempt < MAX_RETRY:
+                wait = SLEEP_SEC * (attempt + 2)
+                print(f"  ⚠️ oyzs_ajax {resp.status_code}，{wait:.0f}s后重试({attempt+1}/{MAX_RETRY})...")
+                time.sleep(wait)
+            else:
+                print(f"  ❌ oyzs_ajax 重试耗尽 (status={resp.status_code})")
+                return {}
+        except Exception as e:
+            if attempt < MAX_RETRY:
+                time.sleep(SLEEP_SEC * 2)
+            else:
+                print(f"  ❌ oyzs_ajax: {e}")
+                return {}
+
+    # 解析 JSON
+    try:
+        result = json.loads(resp.text)
+    except json.JSONDecodeError:
+        print(f"  ❌ oyzs_ajax JSON解析失败: {resp.text[:200]}")
+        return {}
+
+    if not isinstance(result, list):
+        print(f"  ❌ oyzs_ajax 返回格式异常: {type(result)}")
+        return {}
+
+    # 转换为结构化数据
+    output = {}
+    for match in result:
+        mid = str(match.get('ID', ''))
+        home = match.get('HOST_NAME', '').strip()
+        away = match.get('GUEST_NAME', '').strip()
+        league = match.get('LEAGUE_NAME_SIMPLY', '').strip()
+        kickoff = match.get('MATCH_TIME', '').strip()
+
+        if not home or not away:
+            continue
+
+        companies = {}
+        for odds in match.get('listOdds', []):
+            cid = str(odds.get('SOURCE_COMPANY_ID', ''))
+            cname = OYZS_COMPANY_MAP.get(cid, f'company_{cid}')
+            key = cname.lower().replace(' ', '')
+
+            # 解析 1X2 欧赔
+            open_w = _safe_float(odds.get('FIRST_WIN', 0))
+            open_d = _safe_float(odds.get('FIRST_SAME', 0))
+            open_l = _safe_float(odds.get('FIRST_LOST', 0))
+            close_w = _safe_float(odds.get('WIN', 0))
+            close_d = _safe_float(odds.get('SAME', 0))
+            close_l = _safe_float(odds.get('LOST', 0))
+
+            # 解析亚盘（水位和盘口可能为负数/小数，不用 _safe_float 的 1.01~50 限制）
+            def _oyzs_float(v, default=0.0):
+                if not v:
+                    return default
+                try:
+                    f = float(str(v).strip())
+                    return f if f != 0 else default
+                except (ValueError, TypeError):
+                    return default
+
+            ah_open_hw = _oyzs_float(odds.get('FIRST_HOST', 0))
+            ah_open_hc = _oyzs_float(odds.get('FIRST_HANDICAP', 0))
+            ah_open_aw = _oyzs_float(odds.get('FIRST_GUEST', 0))
+            ah_close_hw = _oyzs_float(odds.get('HOST', 0))
+            ah_close_hc = _oyzs_float(odds.get('HANDICAP', 0))
+            ah_close_aw = _oyzs_float(odds.get('GUEST', 0))
+
+            # 解析大小球（水位可能 < 1.01）
+            ou_open_over = _oyzs_float(odds.get('FIRST_BIG', 0))
+            ou_open_line = _oyzs_float(odds.get('DW_FIRST_HANDICAP', 0))
+            ou_open_under = _oyzs_float(odds.get('FIRST_SMALL', 0))
+            ou_close_over = _oyzs_float(odds.get('BIG', 0))
+            ou_close_line = _oyzs_float(odds.get('DW_HANDICAP', 0))
+            ou_close_under = _oyzs_float(odds.get('SMALL', 0))
+
+            company_data = {
+                'company_id': cid,
+                'company_name': cname,
+                '1x2': {
+                    'open': {'w': open_w, 'd': open_d, 'l': open_l},
+                    'close': {'w': close_w, 'd': close_d, 'l': close_l},
+                },
+                'ah': {
+                    'open': {'home_w': ah_open_hw, 'handicap': ah_open_hc, 'away_w': ah_open_aw},
+                    'close': {'home_w': ah_close_hw, 'handicap': ah_close_hc, 'away_w': ah_close_aw},
+                },
+                'ou': {
+                    'open': {'over': ou_open_over, 'line': ou_open_line, 'under': ou_open_under},
+                    'close': {'over': ou_close_over, 'line': ou_close_line, 'under': ou_close_under},
+                },
+            }
+            companies[key] = company_data
+
+        match_key = f"{home}_{away}"
+        output[match_key] = {
+            'match_id': mid,
+            'home': home,
+            'away': away,
+            'league': league,
+            'kickoff': kickoff,
+            'companies': companies,
+        }
+
+    # 统计
+    stats = {}
+    for mk, m in output.items():
+        for ck, c in m['companies'].items():
+            if ck not in stats:
+                stats[ck] = 0
+            stats[ck] += 1
+    stats_str = ' | '.join(f"{k}:{v}" for k, v in stats.items())
+    pt = '北单' if page_type == 'bd' else '竞彩'
+    print(f"  oyzs {pt}: {len(output)} 场 [{stats_str}]")
+
+    return output
+
+
+# ================================================================
 #  多源聚合
 # ================================================================
 #  足彩网 — 亚盘让球盘 (POST companyType=y)
@@ -680,9 +895,15 @@ def fetch_all(date_str: str = None, companies: List[str] = None,
               do_compare: bool = False) -> Dict:
     """聚合所有赔率源
 
+    数据源：
+    1. 百家平均 (GET bjzs) — 1X2 欧赔
+    2. 百家平均亚盘 (POST bjzs companyType=y company=0) — 亚盘
+    3. oyzs_ajax 欧亚指数 (POST odds.zgzcw.com) — Pinnacle/HKJC/利记/明升 三合一(1X2+AH+OU)
+    4. Betfair (POST bjzs company=56) — 1X2 欧赔
+
     Args:
         date_str: YYYY-MM-DD，默认今天
-        companies: 要抓的公司ID列表，默认['106','136','3']
+        companies: 要抓的公司ID列表(bjzs ID)，默认['56']仅Betfair
         do_compare: 是否自动做BSD多源对比
 
     Returns: {date, fetch_time, matches, summary}
@@ -691,7 +912,7 @@ def fetch_all(date_str: str = None, companies: List[str] = None,
         date_str = datetime.now().strftime('%Y-%m-%d')
 
     if companies is None:
-        companies = ["106"]
+        companies = ["56"]  # Betfair，其他公司走 oyzs
 
     prev_day = (datetime.strptime(date_str, '%Y-%m-%d') - timedelta(days=1)).strftime('%Y%m%d')
     curr_day = date_str.replace('-', '')
@@ -701,7 +922,7 @@ def fetch_all(date_str: str = None, companies: List[str] = None,
     print(f"赔率抓取: {date_str}")
     print(f"{'='*50}")
 
-    # 1. 百家平均 — 当天 + 前一天（覆盖凌晨比赛）
+    # ====== 1. 百家平均 (GET) ======
     avg_matches = {}
     for d, label in [(prev_day, "前一天"), (curr_day, "当天"), (next_day, "次日")]:
         print(f"  百家平均 {label}...")
@@ -712,7 +933,6 @@ def fetch_all(date_str: str = None, companies: List[str] = None,
             avg_matches[key] = m
         print(f"    -> {len(matches)} 场")
 
-    # 北单
     for d, label in [(prev_day, "前一天"), (curr_day, "当天"), (next_day, "次日")]:
         bd = fetch_avg(d, page_type="bd")
         time.sleep(SLEEP_SEC)
@@ -725,76 +945,59 @@ def fetch_all(date_str: str = None, companies: List[str] = None,
 
     print(f"  百家平均汇总: {len(avg_matches)} 场")
 
-    # 1.5 亚盘让球盘 (POST companyType=y) — 百家平均(竞彩+北单)
-    ah_data = {}  # key -> {open: {}, close: {}, source: str}
+    # ====== 2. 百家平均亚盘 (POST companyType=y company=0) ======
+    ah_data = {}
     for d, label in [(prev_day, "前一天"), (curr_day, "当天"), (next_day, "次日")]:
-        # 竞彩亚盘
         ah_avg = fetch_asian_handicap(d, company='0')
         time.sleep(SLEEP_SEC)
         for key, v in ah_avg.items():
             ah_data[key] = {**v, 'source': 'avg'}
-        # 北单亚盘
         ah_bd = fetch_asian_handicap(d, page_type='bd', company='0')
         time.sleep(SLEEP_SEC)
         for key, v in ah_bd.items():
-            if key not in ah_data:  # 竞彩优先，北单补缺
+            if key not in ah_data:
                 ah_data[key] = {**v, 'source': 'avg'}
         if ah_bd:
             print(f"    北单亚盘 {label}: {len(ah_bd)} 场")
-    print(f"  亚盘汇总: {len(ah_data)} 场")
+    print(f"  百家平均亚盘: {len(ah_data)} 场")
 
-    # 1.6 利记(company=15) + 明升(company=6) 亚盘 — 2026-06-20 改造：加北单(bd) 抓取
-    liji_ah = {}
-    ms_ah = {}
+    # ====== 3. oyzs_ajax 欧亚指数三合一 ======
+    # Pinnacle(22)/利记(15)/明升(6)/HKJC(136)
+    oyzs_data = {}  # key -> {home, away, companies: {pinnacle: {...}, hkjc: {...}, ...}}
     for d, label in [(prev_day, "前一天"), (curr_day, "当天"), (next_day, "次日")]:
-        # 竞彩亚盘 - 利记
-        lj = fetch_asian_handicap(d, company='15')
+        oyzs = fetch_oyzs(d)
         time.sleep(SLEEP_SEC)
-        for key, v in lj.items():
-            liji_ah[key] = v
-        # 北单亚盘 - 利记（竞彩优先，北单补缺）
-        lj_bd = fetch_asian_handicap(d, page_type='bd', company='15')
+        for key, v in oyzs.items():
+            if key not in oyzs_data:
+                oyzs_data[key] = v
+        # 北单
+        oyzs_bd = fetch_oyzs(d, page_type='bd')
         time.sleep(SLEEP_SEC)
-        for key, v in lj_bd.items():
-            if key not in liji_ah:
-                liji_ah[key] = v
-        if lj_bd:
-            print(f"    利记北单 {label}: {len(lj_bd)} 场")
-        # 竞彩亚盘 - 明升
-        ms = fetch_asian_handicap(d, company='6')
-        time.sleep(SLEEP_SEC)
-        for key, v in ms.items():
-            ms_ah[key] = v
-        # 北单亚盘 - 明升（竞彩优先，北单补缺）
-        ms_bd = fetch_asian_handicap(d, page_type='bd', company='6')
-        time.sleep(SLEEP_SEC)
-        for key, v in ms_bd.items():
-            if key not in ms_ah:
-                ms_ah[key] = v
-        if ms_bd:
-            print(f"    明升北单 {label}: {len(ms_bd)} 场")
-    print(f"  利记亚盘: {len(liji_ah)} 场 | 明升亚盘: {len(ms_ah)} 场")
+        for key, v in oyzs_bd.items():
+            if key not in oyzs_data:
+                oyzs_data[key] = v
+        if oyzs_bd:
+            print(f"    oyzs北单 {label}: {len(oyzs_bd)} 场")
 
-    # 1.7 大小球 — 暂时禁用：足彩网companyType='d'返回的实为亚盘数据，非大小球
-    # 大小球数据暂无可靠数据源（api-football已移除，足彩网companyType=d返回亚盘数据）
-    ou_data = {}
-    ou_liji = {}
-    ou_ms = {}
-    print(f"  大小球: 跳过（暂无可靠数据源）")
+    # 统计 oyzs 各公司覆盖
+    oyzs_stats = {'pinnacle': 0, 'hkjc': 0, 'liji': 0, 'mingsheng': 0}
+    for mk, m in oyzs_data.items():
+        for ck in oyzs_stats:
+            if ck in m.get('companies', {}):
+                oyzs_stats[ck] += 1
+    print(f"  oyzs汇总: {len(oyzs_data)} 场 [Pin:{oyzs_stats['pinnacle']} HKJC:{oyzs_stats['hkjc']} 利记:{oyzs_stats['liji']} 明升:{oyzs_stats['mingsheng']}]")
 
-    # 2. 各公司（2026-06-20 改造：启用北单page_type=bd，与百家平均/亚盘一致）
+    # ====== 4. Betfair 等 (POST bjzs) ======
     company_data = {}
     for cid in companies:
         cname = COMPANY_MAP.get(cid, cid)
         all_odds = {}
-        for d in [prev_day, curr_day, next_day]:  # 2026-06-20 改造：48小时范围
-            # 竞彩页
+        for d in [prev_day, curr_day, next_day]:
             matches = fetch_company(cid, d, page_type="jc")
             time.sleep(SLEEP_SEC)
             for m in matches:
                 key = f"{m['home']}_{m['away']}"
                 all_odds[key] = m
-            # 北单页
             matches_bd = fetch_company(cid, d, page_type="bd")
             time.sleep(SLEEP_SEC)
             for m in matches_bd:
@@ -803,7 +1006,7 @@ def fetch_all(date_str: str = None, companies: List[str] = None,
         company_data[cid] = all_odds
         print(f"  {cname}: {len(all_odds)} 场")
 
-    # 3. 按 match_key 聚合
+    # ====== 5. 按 match_key 聚合 ======
     merged = {}
     for key, m in avg_matches.items():
         merged[key] = {
@@ -826,30 +1029,171 @@ def fetch_all(date_str: str = None, companies: List[str] = None,
             },
         }
 
-    # 3.5 合并亚盘数据到 merged
+    # 5.1 合并百家平均亚盘
     ah_merged = 0
     for key, ah in ah_data.items():
-        if key in merged:
-            merged[key]["ah"] = {
+        target = merged.get(key)
+        if not target:
+            fk = _fuzzy_match(ah.get("home", ""), ah.get("away", ""), merged)
+            target = merged.get(fk) if fk else None
+        if target:
+            target["ah"] = {
                 "open": ah.get("open", {}),
                 "close": ah.get("close", {}),
                 "source": ah.get("source", ""),
             }
             ah_merged += 1
-        else:
-            # 模糊匹配
-            fk = _fuzzy_match(ah.get("home", ""), ah.get("away", ""), merged)
-            if fk:
-                merged[fk]["ah"] = {
-                    "open": ah.get("open", {}),
-                    "close": ah.get("close", {}),
-                    "source": ah.get("source", ""),
-                }
-                ah_merged += 1
     if ah_merged:
-        print(f"  亚盘匹配: {ah_merged}/{len(ah_data)} 场")
+        print(f"  百家平均亚盘匹配: {ah_merged}/{len(ah_data)} 场")
 
-    # 1.6 保存亚盘数据为独立文件，供 fetch_pinnacle_odds.py 读取写入DB
+    # 5.2 合并 oyzs 数据（Pinnacle/HKJC/利记/明升 的 1X2+AH+OU）
+    oyzs_merged_counts = {'pinnacle': 0, 'hkjc': 0, 'liji': 0, 'mingsheng': 0}
+
+    for key, oyzs_match in oyzs_data.items():
+        target = merged.get(key)
+        if not target:
+            fk = _fuzzy_match(oyzs_match.get("home", ""), oyzs_match.get("away", ""), merged)
+            target = merged.get(fk) if fk else None
+        if not target:
+            # 新比赛（百家平均没覆盖的），创建新条目
+            target = {
+                "info": {
+                    "match_id": oyzs_match.get("match_id", ""),
+                    "number": "",
+                    "league": oyzs_match.get("league", ""),
+                    "kickoff": oyzs_match.get("kickoff", ""),
+                    "home": oyzs_match["home"],
+                    "away": oyzs_match["away"],
+                },
+                "odds": {},
+            }
+            merged[key] = target
+
+        companies = oyzs_match.get("companies", {})
+
+        # --- Pinnacle ---
+        if "pinnacle" in companies:
+            pin = companies["pinnacle"]
+            c1x2 = pin.get("1x2", {})
+            close = c1x2.get("close", {})
+            open_odds = c1x2.get("open", {})
+            cw, cd, cl = close.get("w", 0), close.get("d", 0), close.get("l", 0)
+            if cw > 0 and cl > 0:
+                target["odds"]["pinnacle"] = {
+                    "source": "pinnacle",
+                    "odds_w": cw, "odds_d": cd, "odds_l": cl,
+                    "open_w": open_odds.get("w", 0),
+                    "open_d": open_odds.get("d", 0),
+                    "open_l": open_odds.get("l", 0),
+                    "margin": margin(cw, cd, cl),
+                    "implied_prob": dict(zip(["w","d","l"], _calc_implied(cw, cd, cl))),
+                }
+            # Pinnacle AH
+            target["pin_ah"] = pin.get("ah", {})
+            # Pinnacle OU
+            target["pin_ou"] = pin.get("ou", {})
+            oyzs_merged_counts['pinnacle'] += 1
+
+        # --- HKJC ---
+        if "hkjc" in companies:
+            hkjc = companies["hkjc"]
+            c1x2 = hkjc.get("1x2", {})
+            close = c1x2.get("close", {})
+            open_odds = c1x2.get("open", {})
+            cw, cd, cl = close.get("w", 0), close.get("d", 0), close.get("l", 0)
+            if cw > 0 and cl > 0:
+                target["odds"]["hkjc"] = {
+                    "source": "hkjc",
+                    "odds_w": cw, "odds_d": cd, "odds_l": cl,
+                    "open_w": open_odds.get("w", 0),
+                    "open_d": open_odds.get("d", 0),
+                    "open_l": open_odds.get("l", 0),
+                    "margin": margin(cw, cd, cl),
+                    "implied_prob": dict(zip(["w","d","l"], _calc_implied(cw, cd, cl))),
+                }
+            # HKJC AH + OU
+            target["hkjc_ah"] = hkjc.get("ah", {})
+            target["hkjc_ou"] = hkjc.get("ou", {})
+            oyzs_merged_counts['hkjc'] += 1
+
+        # --- 利记 ---
+        if "liji" in companies or "利记" in companies:
+            liji = companies.get("liji") or companies.get("利记")
+            c1x2 = liji.get("1x2", {})
+            close = c1x2.get("close", {})
+            cw, cd, cl = close.get("w", 0), close.get("d", 0), close.get("l", 0)
+            if cw > 0 and cl > 0:
+                target["odds"]["liji"] = {
+                    "source": "liji",
+                    "odds_w": cw, "odds_d": cd, "odds_l": cl,
+                    "margin": margin(cw, cd, cl),
+                    "implied_prob": dict(zip(["w","d","l"], _calc_implied(cw, cd, cl))),
+                }
+            # 利记 AH + OU
+            target["liji_ah"] = liji.get("ah", {})
+            target["liji_ou"] = liji.get("ou", {})
+            oyzs_merged_counts['liji'] += 1
+
+        # --- 明升 ---
+        if "mingsheng" in companies or "明升" in companies or "sb" in companies:
+            ms = companies.get("mingsheng") or companies.get("明升") or companies.get("sb")
+            c1x2 = ms.get("1x2", {})
+            close = c1x2.get("close", {})
+            cw, cd, cl = close.get("w", 0), close.get("d", 0), close.get("l", 0)
+            if cw > 0 and cl > 0:
+                target["odds"]["mingsheng"] = {
+                    "source": "mingsheng",
+                    "odds_w": cw, "odds_d": cd, "odds_l": cl,
+                    "margin": margin(cw, cd, cl),
+                    "implied_prob": dict(zip(["w","d","l"], _calc_implied(cw, cd, cl))),
+                }
+            # 明升 AH + OU
+            target["ms_ah"] = ms.get("ah", {})
+            target["ms_ou"] = ms.get("ou", {})
+            oyzs_merged_counts['mingsheng'] += 1
+
+    counts_str = ' | '.join(f"{k}:{v}" for k, v in oyzs_merged_counts.items())
+    print(f"  oyzs匹配: {counts_str}")
+
+    # 5.3 保存 oyzs 亚盘+大小球数据为独立文件，供 fetch_pinnacle_odds.py 读取写入DB
+    if oyzs_data:
+        oyzs_output = {}
+        for key, oyzs_match in oyzs_data.items():
+            companies = oyzs_match.get("companies", {})
+            entry = {
+                "home": oyzs_match.get("home", ""),
+                "away": oyzs_match.get("away", ""),
+                "match_id": oyzs_match.get("match_id", ""),
+            }
+            # Pinnacle AH + OU
+            if "pinnacle" in companies:
+                pin = companies["pinnacle"]
+                entry["pin_ah"] = pin.get("ah", {})
+                entry["pin_ou"] = pin.get("ou", {})
+            # HKJC AH + OU
+            if "hkjc" in companies:
+                hkjc = companies["hkjc"]
+                entry["hkjc_ah"] = hkjc.get("ah", {})
+                entry["hkjc_ou"] = hkjc.get("ou", {})
+            # 利记 AH + OU
+            liji = companies.get("liji") or companies.get("利记")
+            if liji:
+                entry["liji_ah"] = liji.get("ah", {})
+                entry["liji_ou"] = liji.get("ou", {})
+            # 明升 AH + OU
+            ms = companies.get("mingsheng") or companies.get("明升") or companies.get("sb")
+            if ms:
+                entry["ms_ah"] = ms.get("ah", {})
+                entry["ms_ou"] = ms.get("ou", {})
+            oyzs_output[key] = entry
+
+        oyzs_path = os.path.join(RAW_DIR, f"oyzs_{curr_day}.json")
+        os.makedirs(RAW_DIR, exist_ok=True)
+        with open(oyzs_path, 'w', encoding='utf-8') as f:
+            json.dump(oyzs_output, f, ensure_ascii=False, indent=2)
+        print(f"  oyzs数据保存: {oyzs_path}")
+
+    # 同时保留百家平均亚盘的 ah_YYYYMMDD.json（兼容旧流程）
     if ah_data:
         ah_output = {}
         for key, ah in ah_data.items():
@@ -859,53 +1203,16 @@ def fetch_all(date_str: str = None, companies: List[str] = None,
                 "open": ah.get("open", {}),
                 "close": ah.get("close", {}),
                 "source": ah.get("source", ""),
-                # 利记/明升亚盘(含初盘+即时盘)
-                "liji": liji_ah.get(key, {}),
-                "ms": ms_ah.get(key, {}),
-                # 大小球(含初盘+即时盘) — 百家平均/利记/明升
-                "ou": ou_data.get(key, {}),
-                "ou_liji": ou_liji.get(key, {}),
-                "ou_ms": ou_ms.get(key, {}),
             }
         ah_path = os.path.join(RAW_DIR, f"ah_{curr_day}.json")
         with open(ah_path, 'w', encoding='utf-8') as f:
             json.dump(ah_output, f, ensure_ascii=False, indent=2)
-        print(f"  亚盘数据保存: {ah_path}")
+        print(f"  百家平均亚盘保存: {ah_path}")
 
-    # 1.7 合并利记/明升亚盘到 merged（含open+close）
-    liji_merged = 0
-    ms_merged = 0
-    for key, ah in liji_ah.items():
-        target = merged.get(key)
-        if not target:
-            fk = _fuzzy_match(ah.get("home", ""), ah.get("away", ""), merged)
-            target = merged.get(fk) if fk else None
-        if target:
-            target["liji_ah"] = {
-                "open": ah.get("open", {}),
-                "close": ah.get("close", {}),
-            }
-            liji_merged += 1
-
-    for key, ah in ms_ah.items():
-        target = merged.get(key)
-        if not target:
-            fk = _fuzzy_match(ah.get("home", ""), ah.get("away", ""), merged)
-            target = merged.get(fk) if fk else None
-        if target:
-            target["ms_ah"] = {
-                "open": ah.get("open", {}),
-                "close": ah.get("close", {}),
-            }
-            ms_merged += 1
-
-    if liji_merged or ms_merged:
-        print(f"  利记亚盘匹配: {liji_merged} 场 | 明升亚盘匹配: {ms_merged} 场")
-
+    # 5.4 合并 Betfair 等其他公司
     for cid, odds_dict in company_data.items():
         cname = COMPANY_MAP.get(cid, cid).lower().replace(" ", "")
         for key, m in odds_dict.items():
-            # 先精确匹配
             if key in merged:
                 if cname not in merged[key]["odds"]:
                     merged[key]["odds"][cname] = {
@@ -915,7 +1222,6 @@ def fetch_all(date_str: str = None, companies: List[str] = None,
                         "implied_prob": m.get("implied_prob", {}),
                     }
             else:
-                # 模糊匹配
                 fk = _fuzzy_match(m["home"], m["away"], merged)
                 if fk and cname not in merged[fk]["odds"]:
                     merged[fk]["odds"][cname] = {
@@ -925,7 +1231,6 @@ def fetch_all(date_str: str = None, companies: List[str] = None,
                         "implied_prob": m.get("implied_prob", {}),
                     }
                 elif not fk:
-                    # 新比赛（百家平均没覆盖的）
                     merged[key] = {
                         "info": {"match_id": m.get("match_id", ""), "number": "",
                                  "league": "", "kickoff": "",
@@ -1130,7 +1435,7 @@ if __name__ == "__main__":
     p.add_argument("--source", default="all",
                    choices=["all", "avg", "pinnacle", "hkjc", "sb"],
                    help="[已废弃] 赔率源筛选，默认仅抓取Pinnacle(106)+百家平均")
-    p.add_argument("--companies", help="公司ID列表，逗号分隔，默认106")
+    p.add_argument("--companies", help="公司ID列表(bjzs ID)，逗号分隔，默认56(Betfair)")
     p.add_argument("--compare", action="store_true", help="抓完后自动BSD对比")
     p.add_argument("--load", help="读取缓存 YYYYMMDD")
     p.add_argument("--sleep", type=float, default=3.0, help="请求间隔秒数")
@@ -1157,11 +1462,11 @@ if __name__ == "__main__":
         if args.companies:
             companies = args.companies.split(",")
         elif args.source == "pinnacle":
-            companies = ["106"]
+            companies = ["56"]  # Betfair 走 bjzs，Pinnacle 走 oyzs
         elif args.source == "hkjc":
-            companies = ["136"]
+            companies = ["56"]
         elif args.source == "sb":
-            companies = ["3"]
+            companies = ["56"]
 
         fetch_all(args.date, companies=companies, do_compare=args.compare)
 
