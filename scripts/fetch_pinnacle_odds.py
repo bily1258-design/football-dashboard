@@ -1162,31 +1162,9 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=True):
         bf_all = {**bf_jc_prev, **bf_bd_prev, **bf_jc, **bf_bd, **bf_jc_next, **bf_bd_next}
         print(f"[INFO] Betfair赔率: {len(bf_all)} 场")
     
-        # Step 4: SB公司赔率（POST方式，aid=3）- 已取消抓取
-        # sb_jc = fetch_sb_odds(date_str, page_type='jc')
-        # time.sleep(3)
-        # sb_jc_prev = fetch_sb_odds(prev_day, page_type='jc')
-        # time.sleep(3)
-        # sb_bd = fetch_sb_odds(date_str, page_type='bd') if include_beidan else {}
-        # time.sleep(3)
-        # sb_bd_prev = fetch_sb_odds(prev_day, page_type='bd') if include_beidan else {}
-        # sb_all = {**sb_jc_prev, **sb_bd_prev, **sb_jc, **sb_bd}
-        # print(f"[INFO] SB公司赔率: {len(sb_all)} 场")
+        # Step 4/5: SB和HKJC已由oyzs_ajax三合一接口接管，不再单独POST抓取
         sb_all = {}
-        print(f"[INFO] SB公司赔率: 已取消抓取")
-
-        # Step 5: 香港马会赔率（POST方式，aid=136）- 已取消抓取
-        # hkjc_jc = fetch_company_odds(date_str, page_type='jc', company='136')
-        # time.sleep(3)
-        # hkjc_jc_prev = fetch_company_odds(prev_day, page_type='jc', company='136')
-        # time.sleep(3)
-        # hkjc_bd = fetch_company_odds(date_str, page_type='bd', company='136') if include_beidan else {}
-        # time.sleep(3)
-        # hkjc_bd_prev = fetch_company_odds(prev_day, page_type='bd', company='136') if include_beidan else {}
-        # hkjc_all = {**hkjc_jc_prev, **hkjc_bd_prev, **hkjc_jc, **hkjc_bd}
-        # print(f"[INFO] 香港马会赔率: {len(hkjc_all)} 场")
         hkjc_all = {}
-        print(f"[INFO] 香港马会赔率: 已取消抓取")
     
         # Step 5.8: 亚盘让球盘（POST companyType=y）— 仅百家平均，HKJC已取消
         # 2026-06-20 WAF加固：间隔从3s→6s
@@ -1200,8 +1178,7 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=True):
         # ah_hkjc_jc_prev = fetch_asian_handicap(prev_day, page_type='jc', company='136')  # 已取消
         # time.sleep(3)
         ah_avg_all = {**ah_avg_jc_prev, **ah_avg_jc, **ah_avg_jc_next}
-        ah_hkjc_all = {}  # HKJC亚盘已取消
-        print(f"[INFO] 亚盘百家平均: {len(ah_avg_all)} 场, 亚盘HKJC: 已取消")
+        ah_hkjc_all = {}  # HKJC亚盘已由oyzs_ajax接管
     
     # Step 5.5: 加载oddsmagnet缓存补充POST失败的赔源
     om_fallback = {}
