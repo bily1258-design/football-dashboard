@@ -79,6 +79,8 @@ def load_from_db(db_path: str, max_days=999) -> dict:
     _NEW_COLUMNS = [
         ('pin_ah_handicap', 'REAL'), ('pin_ah_home_water', 'REAL'), ('pin_ah_away_water', 'REAL'),
         ('pin_ou_line', 'REAL'), ('pin_ou_over', 'REAL'), ('pin_ou_under', 'REAL'),
+        ('pin_ah_open_handicap', 'REAL'), ('pin_ah_open_home_water', 'REAL'), ('pin_ah_open_away_water', 'REAL'),
+        ('pin_ou_open_line', 'REAL'), ('pin_ou_open_over', 'REAL'), ('pin_ou_open_under', 'REAL'),
         ('ou_over', 'REAL'), ('ou_line', 'REAL'), ('ou_under', 'REAL'),
         ('ou_open_over', 'REAL'), ('ou_open_line', 'REAL'), ('ou_open_under', 'REAL'),
         ('liji_ou_over', 'REAL'), ('liji_ou_line', 'REAL'), ('liji_ou_under', 'REAL'),
@@ -86,6 +88,11 @@ def load_from_db(db_path: str, max_days=999) -> dict:
         ('ms_ou_over', 'REAL'), ('ms_ou_line', 'REAL'), ('ms_ou_under', 'REAL'),
         ('ms_ou_open_over', 'REAL'), ('ms_ou_open_line', 'REAL'), ('ms_ou_open_under', 'REAL'),
         ('pinnacle_open_w', 'REAL'), ('pinnacle_open_d', 'REAL'), ('pinnacle_open_l', 'REAL'),
+        ('hkjc_ah_handicap', 'REAL'), ('hkjc_ah_home_water', 'REAL'), ('hkjc_ah_away_water', 'REAL'),
+        ('hkjc_ah_open_handicap', 'REAL'), ('hkjc_ah_open_home_water', 'REAL'), ('hkjc_ah_open_away_water', 'REAL'),
+        ('hkjc_ou_line', 'REAL'), ('hkjc_ou_over', 'REAL'), ('hkjc_ou_under', 'REAL'),
+        ('hkjc_ou_open_line', 'REAL'), ('hkjc_ou_open_over', 'REAL'), ('hkjc_ou_open_under', 'REAL'),
+        ('hkjc_open_w', 'REAL'), ('hkjc_open_d', 'REAL'), ('hkjc_open_l', 'REAL'),
     ]
     cur.execute("PRAGMA table_info(poisson_predictions)")
     existing = {row[1] for row in cur.fetchall()}
@@ -112,13 +119,20 @@ def load_from_db(db_path: str, max_days=999) -> dict:
         ms_handicap, ms_home_water, ms_away_water, \
         ms_open_handicap, ms_open_home_water, ms_open_away_water, \
         pin_ah_handicap, pin_ah_home_water, pin_ah_away_water, \
+        pin_ah_open_handicap, pin_ah_open_home_water, pin_ah_open_away_water, \
         pin_ou_line, pin_ou_over, pin_ou_under, \
+        pin_ou_open_line, pin_ou_open_over, pin_ou_open_under, \
         ou_over, ou_line, ou_under, \
         ou_open_over, ou_open_line, ou_open_under, \
         liji_ou_over, liji_ou_line, liji_ou_under, \
         liji_ou_open_over, liji_ou_open_line, liji_ou_open_under, \
         ms_ou_over, ms_ou_line, ms_ou_under, \
-        ms_ou_open_over, ms_ou_open_line, ms_ou_open_under \
+        ms_ou_open_over, ms_ou_open_line, ms_ou_open_under, \
+        hkjc_open_w, hkjc_open_d, hkjc_open_l, \
+        hkjc_ah_handicap, hkjc_ah_home_water, hkjc_ah_away_water, \
+        hkjc_ah_open_handicap, hkjc_ah_open_home_water, hkjc_ah_open_away_water, \
+        hkjc_ou_line, hkjc_ou_over, hkjc_ou_under, \
+        hkjc_ou_open_line, hkjc_ou_open_over, hkjc_ou_open_under \
         FROM poisson_predictions WHERE date >= ? ORDER BY date DESC, kickoff_time, id", (cutoff,))
     by_date = {}
     for r in cur.fetchall():
@@ -170,7 +184,10 @@ def load_from_db(db_path: str, max_days=999) -> dict:
                 'w': d.get('pinnacle_close_w',0) or 0, 'd': d.get('pinnacle_close_d',0) or 0, 'l': d.get('pinnacle_close_l',0) or 0,
                 'open': {'w': d.get('pinnacle_open_w',0) or 0, 'd': d.get('pinnacle_open_d',0) or 0, 'l': d.get('pinnacle_open_l',0) or 0},
             },
-            'hkjc': {'w': d.get('hkjc_close_w',0) or 0, 'd': d.get('hkjc_close_d',0) or 0, 'l': d.get('hkjc_close_l',0) or 0},
+            'hkjc': {
+                'w': d.get('hkjc_close_w',0) or 0, 'd': d.get('hkjc_close_d',0) or 0, 'l': d.get('hkjc_close_l',0) or 0,
+                'open': {'w': d.get('hkjc_open_w',0) or 0, 'd': d.get('hkjc_open_d',0) or 0, 'l': d.get('hkjc_open_l',0) or 0},
+            },
             'risk_level': d.get('risk_level','') or '', 'stars': stars,
             'confidence_index': round(ci,2), 'reference_score': d.get('reference_score','') or '',
             'cold_risk': d.get('cold_risk','') or '', 'source': d.get('source','jingcai'),
@@ -224,11 +241,21 @@ def load_from_db(db_path: str, max_days=999) -> dict:
                 'handicap': d.get('pin_ah_handicap', None),
                 'home_w': d.get('pin_ah_home_water', 0) or 0,
                 'away_w': d.get('pin_ah_away_water', 0) or 0,
+                'open': {
+                    'handicap': d.get('pin_ah_open_handicap', None),
+                    'home_w': d.get('pin_ah_open_home_water', 0) or 0,
+                    'away_w': d.get('pin_ah_open_away_water', 0) or 0,
+                },
             },
             'pin_ou': {
                 'line': d.get('pin_ou_line', None),
                 'over': d.get('pin_ou_over', 0) or 0,
                 'under': d.get('pin_ou_under', 0) or 0,
+                'open': {
+                    'line': d.get('pin_ou_open_line', None),
+                    'over': d.get('pin_ou_open_over', 0) or 0,
+                    'under': d.get('pin_ou_open_under', 0) or 0,
+                },
             },
             'ou': {
                 'over': d.get('ou_over', 0) or 0,
@@ -258,6 +285,26 @@ def load_from_db(db_path: str, max_days=999) -> dict:
                     'over': d.get('ms_ou_open_over', 0) or 0,
                     'line': d.get('ms_ou_open_line', None),
                     'under': d.get('ms_ou_open_under', 0) or 0,
+                },
+            },
+            'hkjc_ah': {
+                'handicap': d.get('hkjc_ah_handicap', None),
+                'home_w': d.get('hkjc_ah_home_water', 0) or 0,
+                'away_w': d.get('hkjc_ah_away_water', 0) or 0,
+                'open': {
+                    'handicap': d.get('hkjc_ah_open_handicap', None),
+                    'home_w': d.get('hkjc_ah_open_home_water', 0) or 0,
+                    'away_w': d.get('hkjc_ah_open_away_water', 0) or 0,
+                },
+            },
+            'hkjc_ou': {
+                'line': d.get('hkjc_ou_line', None),
+                'over': d.get('hkjc_ou_over', 0) or 0,
+                'under': d.get('hkjc_ou_under', 0) or 0,
+                'open': {
+                    'line': d.get('hkjc_ou_open_line', None),
+                    'over': d.get('hkjc_ou_open_over', 0) or 0,
+                    'under': d.get('hkjc_ou_open_under', 0) or 0,
                 },
             },
         })
@@ -526,11 +573,14 @@ def main():
                 print(f'📌 DB补充{len(missing)}天缺失数据: {sorted(missing.keys())}')
             # DB中同日期记录数更多时也更新（processed可能缺新插入的场次）
             # 同时用DB的新字段（pin_ah/ou等）补充processed旧记录
-            _NEW_KEYS = {'pin_ah', 'pin_ou', 'ou', 'liji_ou', 'ms_ou'}
+            _NEW_KEYS = {'pin_ah', 'pin_ou', 'ou', 'liji_ou', 'ms_ou', 'hkjc_ah', 'hkjc_ou'}
             # ah/liji/ms字段：processed为空或handicap=0时，用DB非零值覆盖
             _AH_KEYS = {'ah', 'liji', 'ms'}
+            # hkjc 1X2初盘同步
+            _HKJC_KEYS = {'hkjc'}
             n_merged = 0
             n_ah_merged = 0
+            n_hkjc_merged = 0
             for d_key, db_records in db_data.items():
                 if d_key in by_date:
                     if len(db_records) > len(by_date[d_key]):
@@ -567,10 +617,26 @@ def main():
                                     if (p_hc is None or p_hc == 0) and d_hc is not None and d_hc != 0:
                                         proc_rec[k] = d_val
                                         n_ah_merged += 1
+                                # hkjc 1X2+AH+OU同步：DB有open/ah/ou数据时覆盖
+                                for k in _HKJC_KEYS:
+                                    p_val = proc_rec.get(k)
+                                    d_val = db_rec.get(k)
+                                    if not isinstance(p_val, dict):
+                                        p_val = {}
+                                    if not isinstance(d_val, dict):
+                                        continue
+                                    # DB有open初盘或AH/OU数据时覆盖
+                                    d_has_open = isinstance(d_val.get('open'), dict) and (d_val['open'].get('w') or 0) > 0
+                                    p_has_open = isinstance(p_val.get('open'), dict) and (p_val['open'].get('w') or 0) > 0
+                                    if d_has_open and not p_has_open:
+                                        proc_rec[k] = d_val
+                                        n_hkjc_merged += 1
             if n_merged:
                 print(f'📌 DB补充{n_merged}条记录的新字段')
             if n_ah_merged:
                 print(f'📌 DB补充{n_ah_merged}条记录的ah/liji/ms字段')
+            if n_hkjc_merged:
+                print(f'📌 DB补充{n_hkjc_merged}条记录的hkjc字段')
     if not by_date:
         print('[ERROR] 无数据'); sys.exit(1)
 

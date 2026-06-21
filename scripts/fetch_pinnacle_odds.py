@@ -1803,7 +1803,7 @@ def save_to_db(matches, db_path, date_str=None):
     
     # 从数据库读取时间窗口内的所有记录
     cursor.execute("""
-        SELECT id, home_team, away_team, kickoff_time 
+        SELECT id, home_team, away_team, kickoff_time, odds_win, odds_loss 
         FROM poisson_predictions 
         WHERE kickoff_time >= ? AND kickoff_time <= ?
     """, (window_start, window_end))
@@ -1839,7 +1839,7 @@ def save_to_db(matches, db_path, date_str=None):
         match_method = ''
         
         for record in db_records:
-            record_id, db_home, db_away, db_time = record
+            record_id, db_home, db_away, db_time, db_odds_w, db_odds_l = record
             if record_id in matched_db_ids:
                 continue
             
@@ -1894,7 +1894,7 @@ def save_to_db(matches, db_path, date_str=None):
         # 兜底：宽松队名匹配（sim>=0.4），无需时间匹配
         if not best_match or best_score < 0.3:
             for record in db_records:
-                record_id, db_home, db_away, db_time = record
+                record_id, db_home, db_away, db_time, db_odds_w, db_odds_l = record
                 if record_id in matched_db_ids:
                     continue
                 sim_home = team_name_similarity(home, db_home)
@@ -1919,14 +1919,18 @@ def save_to_db(matches, db_path, date_str=None):
         db_away = best_match[2]
         matched_db_ids.add(record_id)
 
+        # 先从match数据取Pinnacle赔率，用于swap检测
+        _pin_open = m.get('pinnacle_open', {})
+        _pin_close = m.get('pinnacle_close', {})
+
         # 检测web数据主客是否跟DB主客颠倒（用赔率方向判断）
         db_swapped = False
         # DB端竞彩赔率方向 vs Pinnacle方向
         # best_match现在包含 (id, home, away, time, odds_win, odds_loss)
         db_jcw = best_match[4] or 0  # DB竞彩主胜赔率
         db_jcl = best_match[5] or 0  # DB竞彩客胜赔率
-        pin_w = pin_close.get('w', 0) if pin_close.get('w', 0) > 0 else pin_open.get('w', 0)
-        pin_l = pin_close.get('l', 0) if pin_close.get('l', 0) > 0 else pin_open.get('l', 0)
+        pin_w = _pin_close.get('w', 0) if _pin_close.get('w', 0) > 0 else _pin_open.get('w', 0)
+        pin_l = _pin_close.get('l', 0) if _pin_close.get('l', 0) > 0 else _pin_open.get('l', 0)
         if db_jcw > 0 and db_jcl > 0 and pin_w > 0 and pin_l > 0:
             jc_fav_home = db_jcw < db_jcl  # 竞彩热门在主队？
             pin_fav_home = pin_w < pin_l  # Pinnacle热门在主队？
@@ -2188,7 +2192,7 @@ def save_to_db(matches, db_path, date_str=None):
                 
                 om_matched = 0
                 for record in unmatched_records:
-                    record_id, db_home, db_away, db_time = record
+                    record_id, db_home, db_away, db_time, db_odds_w, db_odds_l = record
                     best_match = None
                     best_sim = 0
                     for om_m in om_matches:

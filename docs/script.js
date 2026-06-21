@@ -47,10 +47,55 @@ function openAhModal(record) {
 
   // 3. HKJC
   const hkjc = record.hkjc || {};
+  const hkjcOpen = hkjc.open || {};
   html += '<tr><td class="ah-col-label"><span class="ah-badge ah-badge-hkjc">HKJC</span></td>';
   html += `<td>${hkjc.w || '-'}</td><td>${hkjc.d || '-'}</td><td>${hkjc.l || '-'}</td></tr>`;
 
   html += '</table>';
+
+  // ===== HKJC 区（亚盘+大小球）=====
+  const hkjcAh = record.hkjc_ah || {};
+  const hkjcOu = record.hkjc_ou || {};
+  const hasHkjcAh = hkjcAh.handicap !== null && hkjcAh.handicap !== undefined && hkjcAh.handicap !== 0;
+  const hasHkjcOu = hkjcOu.line !== null && hkjcOu.line !== undefined && hkjcOu.line !== 0;
+  const hasHkjcOpen = (hkjcOpen.w || 0) > 0;
+
+  if (hasHkjcAh || hasHkjcOu || hasHkjcOpen) {
+    html += '<div class="ah-section-title"><span class="ah-badge ah-badge-hkjc">HKJC</span></div>';
+
+    // HKJC 1X2欧赔（初盘/即时）
+    if (hasHkjcOpen) {
+      html += '<table class="ah-odds-table">';
+      html += '<tr><th></th><th>主胜</th><th>平</th><th>客胜</th></tr>';
+      html += `<tr><td class="ah-col-label">初盘</td><td>${hkjcOpen.w || '-'}</td><td>${hkjcOpen.d || '-'}</td><td>${hkjcOpen.l || '-'}</td></tr>`;
+      html += `<tr><td class="ah-col-label">即时</td><td>${hkjc.w || '-'}</td><td>${hkjc.d || '-'}</td><td>${hkjc.l || '-'}</td></tr>`;
+      html += '</table>';
+    }
+
+    // HKJC 亚盘
+    if (hasHkjcAh) {
+      const hkjcAhOpen = hkjcAh.open || {};
+      html += '<table class="ah-odds-table">';
+      html += '<tr><th></th><th>盘口</th><th>主水</th><th>客水</th></tr>';
+      if (hkjcAhOpen.handicap !== null && hkjcAhOpen.handicap !== undefined && hkjcAhOpen.handicap !== 0) {
+        html += `<tr><td class="ah-col-label">初盘</td><td>${handicapToChinese(hkjcAhOpen.handicap)}</td><td>${hkjcAhOpen.home_w || '-'}</td><td>${hkjcAhOpen.away_w || '-'}</td></tr>`;
+      }
+      html += `<tr><td class="ah-col-label">即时</td><td>${handicapToChinese(hkjcAh.handicap)}</td><td>${hkjcAh.home_w || '-'}</td><td>${hkjcAh.away_w || '-'}</td></tr>`;
+      html += '</table>';
+    }
+
+    // HKJC 大小球
+    if (hasHkjcOu) {
+      const hkjcOuOpen = hkjcOu.open || {};
+      html += '<table class="ah-odds-table">';
+      html += '<tr><th></th><th>盘口线</th><th>大球</th><th>小球</th></tr>';
+      if (hkjcOuOpen.line !== null && hkjcOuOpen.line !== undefined && hkjcOuOpen.line !== 0) {
+        html += `<tr><td class="ah-col-label">初盘</td><td>${hkjcOuOpen.line || '-'}</td><td>${hkjcOuOpen.over || '-'}</td><td>${hkjcOuOpen.under || '-'}</td></tr>`;
+      }
+      html += `<tr><td class="ah-col-label">即时</td><td>${hkjcOu.line || '-'}</td><td>${hkjcOu.over || '-'}</td><td>${hkjcOu.under || '-'}</td></tr>`;
+      html += '</table>';
+    }
+  }
 
   // ===== Pinnacle 区（标题高亮）=====
   const pinAh = record.pin_ah || {};
@@ -66,8 +111,12 @@ function openAhModal(record) {
 
     // Pinnacle 亚盘
     if (hasPinAh) {
+      const pinAhOpen = pinAh.open || {};
       html += '<table class="ah-odds-table">';
       html += '<tr><th></th><th>盘口</th><th>主水</th><th>客水</th></tr>';
+      if (pinAhOpen.handicap !== null && pinAhOpen.handicap !== undefined && pinAhOpen.handicap !== 0) {
+        html += `<tr><td class="ah-col-label">初盘</td><td>${handicapToChinese(pinAhOpen.handicap)}</td><td>${pinAhOpen.home_w || '-'}</td><td>${pinAhOpen.away_w || '-'}</td></tr>`;
+      }
       html += `<tr><td class="ah-col-label">即时</td><td>${handicapToChinese(pinAh.handicap)}</td><td>${pinAh.home_w || '-'}</td><td>${pinAh.away_w || '-'}</td></tr>`;
       html += '</table>';
     }
@@ -85,8 +134,12 @@ function openAhModal(record) {
 
     // Pinnacle 大小球
     if (hasPinOu) {
+      const pinOuOpen = pinOu.open || {};
       html += '<table class="ah-odds-table">';
       html += '<tr><th></th><th>盘口线</th><th>大球</th><th>小球</th></tr>';
+      if (pinOuOpen.line !== null && pinOuOpen.line !== undefined && pinOuOpen.line !== 0) {
+        html += `<tr><td class="ah-col-label">初盘</td><td>${pinOuOpen.line || '-'}</td><td>${pinOuOpen.over || '-'}</td><td>${pinOuOpen.under || '-'}</td></tr>`;
+      }
       html += `<tr><td class="ah-col-label">即时</td><td>${pinOu.line || '-'}</td><td>${pinOu.over || '-'}</td><td>${pinOu.under || '-'}</td></tr>`;
       html += '</table>';
     }
