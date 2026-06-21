@@ -668,9 +668,6 @@ def fetch_company_odds(date_str=None, page_type=None, company='106'):
     return result
 
 
-def fetch_sb_odds(date_str=None, page_type=None):
-    """通过POST方式抓取SB公司赔率（company=3）- 保留兼容接口"""
-    return fetch_company_odds(date_str, page_type, company='3')
 
 
 def parse_ah_value(text):
@@ -1809,7 +1806,7 @@ def save_to_db(matches, db_path, date_str=None):
     
     # 从数据库读取时间窗口内的所有记录
     cursor.execute("""
-        SELECT id, home_team, away_team, kickoff_time, odds_win, odds_loss 
+        SELECT id, home_team, away_team, kickoff_time 
         FROM poisson_predictions 
         WHERE kickoff_time >= ? AND kickoff_time <= ?
     """, (window_start, window_end))
@@ -1845,7 +1842,7 @@ def save_to_db(matches, db_path, date_str=None):
         match_method = ''
         
         for record in db_records:
-            record_id, db_home, db_away, db_time, db_odds_w, db_odds_l = record
+            record_id, db_home, db_away, db_time = record[:4]
             if record_id in matched_db_ids:
                 continue
             
@@ -1900,7 +1897,7 @@ def save_to_db(matches, db_path, date_str=None):
         # 兜底：宽松队名匹配（sim>=0.4），无需时间匹配
         if not best_match or best_score < 0.3:
             for record in db_records:
-                record_id, db_home, db_away, db_time, db_odds_w, db_odds_l = record
+                record_id, db_home, db_away, db_time = record[:4]
                 if record_id in matched_db_ids:
                     continue
                 sim_home = team_name_similarity(home, db_home)
@@ -1925,108 +1922,11 @@ def save_to_db(matches, db_path, date_str=None):
         db_away = best_match[2]
         matched_db_ids.add(record_id)
 
-        # 先从match数据取Pinnacle赔率，用于swap检测
-        _pin_open = m.get('pinnacle_open', {})
-        _pin_close = m.get('pinnacle_close', {})
-
-        # 检测web数据主客是否跟DB主客颠倒（用赔率方向判断）
-        db_swapped = False
-        # DB端竞彩赔率方向 vs Pinnacle方向
-        # best_match现在包含 (id, home, away, time, odds_win, odds_loss)
-        db_jcw = best_match[4] or 0  # DB竞彩主胜赔率
-        db_jcl = best_match[5] or 0  # DB竞彩客胜赔率
-        pin_w = _pin_close.get('w', 0) if _pin_close.get('w', 0) > 0 else _pin_open.get('w', 0)
-        pin_l = _pin_close.get('l', 0) if _pin_close.get('l', 0) > 0 else _pin_open.get('l', 0)
-        if db_jcw > 0 and db_jcl > 0 and pin_w > 0 and pin_l > 0:
-            jc_fav_home = db_jcw < db_jcl  # 竞彩热门在主队？
-            pin_fav_home = pin_w < pin_l  # Pinnacle热门在主队？
-            if jc_fav_home != pin_fav_home:
-                # 额外验证：翻转后赔率是否更接近竞彩
-                # 防止赔率分歧被误判为主客颠倒
-                ratio_no_swap = max(pin_w, db_jcw) / max(min(pin_w, db_jcw), 0.01)
-                ratio_swap = max(pin_l, db_jcw) / max(min(pin_l, db_jcw), 0.01)
-                # 翻转后pin_l比pin_w更接近db_jcw → 真的是颠倒
-                # 翻转后差距反而更大 → 不是颠倒，只是赔率分歧
-                if ratio_swap < ratio_no_swap:
-                    db_swapped = True
-                else:
-                    print(f"  [INFO] 方向不一致但赔率差距大，不翻转(pin w={pin_w}/l={pin_l} vs JC w={db_jcw}/l={db_jcl})")
-        if db_swapped:
-            print(f"[MATCH] {home} vs {away} -> DB {db_home} vs {db_away} [{match_method}] 评分={best_score:.2f} ⚠️主客颠倒(赔率方向)")
-        else:
-            print(f"[MATCH] {home} vs {away} -> DB {db_home} vs {db_away} [{match_method}] 评分={best_score:.2f}")
-
-        record_id = best_match[0]
-        db_home = best_match[1]
-        db_away = best_match[2]
+        print(f"[MATCH] {home} vs {away} -> DB {db_home} vs {db_away} [{match_method}] 评分={best_score:.2f}")
 
         pin_open = m.get('pinnacle_open', {})
         pin_close = m.get('pinnacle_close', {})
         pin_movement = m.get('pinnacle_movement', {})
-
-        # 主客颠倒时翻转 Pinnacle 胜平负（w ↔ l）和 movement + AH/OU
-        if db_swapped:
-            if pin_open.get('w', 0) > 0 or pin_open.get('l', 0) > 0:
-                pin_open = {'w': pin_open.get('l', 0), 'd': pin_open.get('d', 0), 'l': pin_open.get('w', 0)}
-            if pin_close.get('w', 0) > 0 or pin_close.get('l', 0) > 0:
-                pin_close = {'w': pin_close.get('l', 0), 'd': pin_close.get('d', 0), 'l': pin_close.get('w', 0)}
-            if pin_movement:
-                mw = pin_movement.get('w', '')
-                ml = pin_movement.get('l', '')
-                pin_movement = dict(pin_movement)
-                pin_movement['w'] = ml
-                pin_movement['l'] = mw
-                m['pinnacle_movement'] = pin_movement
-            # 翻转Pinnacle AH: handicap取反, home↔away
-            for ah_key in ['pin_ah', 'pin_ah_open']:
-                ah = m.get(ah_key, {})
-                if ah and ah.get('handicap', 0) != 0:
-                    m[ah_key] = {
-                        'handicap': -ah['handicap'],
-                        'home_odd': ah.get('away_odd', 0),
-                        'away_odd': ah.get('home_odd', 0),
-                    }
-            # 翻转Pinnacle OU: over↔under
-            for ou_key in ['pin_ou']:
-                ou = m.get(ou_key, {})
-                for sub_key in ['close', 'open']:
-                    sub = ou.get(sub_key, {})
-                    if sub and sub.get('line', 0) != 0:
-                        ou[sub_key] = {'line': sub['line'], 'over': sub.get('under', 0), 'under': sub.get('over', 0)}
-            # 翻转HKJC 1X2 + AH + OU
-            for hkjc_key in ['hkjc_open', 'hkjc_close']:
-                hkjc_dict = m.get(hkjc_key, {})
-                if hkjc_dict and hkjc_dict.get('w', 0) > 0:
-                    m[hkjc_key] = {'w': hkjc_dict.get('l', 0), 'd': hkjc_dict.get('d', 0), 'l': hkjc_dict.get('w', 0)}
-            for hkjc_ah_key in ['ah_hkjc_open', 'ah_hkjc_close']:
-                hkjc_ah = m.get(hkjc_ah_key, {})
-                if hkjc_ah and hkjc_ah.get('handicap', 0) != 0:
-                    m[hkjc_ah_key] = {
-                        'handicap': -hkjc_ah['handicap'],
-                        'home_w': hkjc_ah.get('away_w', 0),
-                        'away_w': hkjc_ah.get('home_w', 0),
-                    }
-            hkjc_ou = m.get('hkjc_ou', {})
-            for sub_key in ['close', 'open']:
-                sub = hkjc_ou.get(sub_key, {})
-                if sub and sub.get('line', 0) != 0:
-                    hkjc_ou[sub_key] = {'line': sub['line'], 'over': sub.get('under', 0), 'under': sub.get('over', 0)}
-            # 翻转利记/明升 AH + OU
-            for prefix in ['liji_ah', 'ms_ah']:
-                for sub_key in ['close', 'open']:
-                    ah_sub = m.get(prefix, {}).get(sub_key, {})
-                    if ah_sub and ah_sub.get('handicap', 0) != 0:
-                        m[prefix][sub_key] = {
-                            'handicap': -ah_sub['handicap'],
-                            'home_w': ah_sub.get('away_w', 0),
-                            'away_w': ah_sub.get('home_w', 0),
-                        }
-            for prefix in ['ou_liji', 'ou_ms']:
-                for sub_key in ['close', 'open']:
-                    ou_sub = m.get(prefix, {}).get(sub_key, {})
-                    if ou_sub and ou_sub.get('line', 0) != 0:
-                        m[prefix][sub_key] = {'line': ou_sub['line'], 'over': ou_sub.get('under', 0), 'under': ou_sub.get('over', 0)}
-            print(f"  ⚠️ Pinnacle翻转: open={pin_open} / close={pin_close}")
 
         implied = m.get('implied_prob', {})
         margin = m.get('pinnacle_margin', 0)
@@ -2256,7 +2156,7 @@ def save_to_db(matches, db_path, date_str=None):
                 
                 om_matched = 0
                 for record in unmatched_records:
-                    record_id, db_home, db_away, db_time, db_odds_w, db_odds_l = record
+                    record_id, db_home, db_away, db_time = record[:4]
                     best_match = None
                     best_sim = 0
                     for om_m in om_matches:
@@ -2268,30 +2168,8 @@ def save_to_db(matches, db_path, date_str=None):
                             best_match = om_m
                     
                     if best_match and best_sim >= 0.4:
-                        # 检测OM数据主客是否跟DB颠倒（用赔率方向判断）
-                        om_swapped = False
-                        om_w = best_match.get('pinnacle_open', {}).get('w', 0)
-                        om_l = best_match.get('pinnacle_open', {}).get('l', 0)
-                        db_w_field = 0  # 从DB取竞彩赔率（当前 unmatched_records 没带赔率字段）
-                        db_l_field = 0
-                        # fallback: Pinnacle w/l 跟百家平均方向对比
-                        avg_w = best_match.get('avg_odds_open', {}).get('w', 0)
-                        avg_l = best_match.get('avg_odds_open', {}).get('l', 0)
-                        if om_w > 0 and om_l > 0 and avg_w > 0 and avg_l > 0:
-                            om_fav_home = om_w < om_l
-                            avg_fav_home = avg_w < avg_l
-                            if om_fav_home != avg_fav_home:
-                                om_swapped = True
-
                         pin_open = best_match.get('pinnacle_open', {})
                         pin_close = best_match.get('pinnacle_close', {})
-
-                        # 主客颠倒时翻转 Pinnacle 胜平负
-                        if om_swapped:
-                            if pin_open.get('w', 0) > 0 or pin_open.get('l', 0) > 0:
-                                pin_open = {'w': pin_open.get('l', 0), 'd': pin_open.get('d', 0), 'l': pin_open.get('w', 0)}
-                            if pin_close.get('w', 0) > 0 or pin_close.get('l', 0) > 0:
-                                pin_close = {'w': pin_close.get('l', 0), 'd': pin_close.get('d', 0), 'l': pin_close.get('w', 0)}
 
                         implied = best_match.get('implied_prob', {})
                         margin = best_match.get('pinnacle_margin', 0)
