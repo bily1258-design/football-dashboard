@@ -4120,7 +4120,7 @@ def main():
             log("\n🔄 推送DB到GitHub Release...")
             push_db_result = _sp.run(
                 ['python3', 'scripts/push_db.py', '--db', DB_PATH],
-                cwd=dashboard_dir, capture_output=True, text=True, timeout=60
+                cwd=dashboard_dir, capture_output=True, text=True, timeout=300
             )
             if push_db_result.returncode == 0:
                 log("  ✅ DB已推送到Release")
@@ -4131,7 +4131,7 @@ def main():
             log("🔄 对齐合并DB数据...")
             align_result = _sp.run(
                 ['python3', 'scripts/align_and_merge.py', '--date', date_str, '--db', DB_PATH],
-                cwd=dashboard_dir, capture_output=True, text=True, timeout=60
+                cwd=dashboard_dir, capture_output=True, text=True, timeout=120
             )
             if align_result.returncode != 0:
                 log(f"  ⚠️ align失败: {align_result.stderr[:80]}")
@@ -4140,7 +4140,7 @@ def main():
             log("🔄 构建看板...")
             build_result = _sp.run(
                 ['python3', 'scripts/merge_and_build.py', '--db', DB_PATH, '--output', '.'],
-                cwd=dashboard_dir, capture_output=True, text=True, timeout=60
+                cwd=dashboard_dir, capture_output=True, text=True, timeout=120
             )
             if build_result.returncode == 0:
                 # git commit + push

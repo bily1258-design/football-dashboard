@@ -168,7 +168,7 @@ def upload_asset(token, release_id, db_path):
         'X-GitHub-Api-Version': '2022-11-28',
     }, method='POST')
     try:
-        resp = urllib.request.urlopen(req, timeout=60)
+        resp = urllib.request.urlopen(req, timeout=180)
         result = json.loads(resp.read())
         print(f'✅ DB已上传: {result["browser_download_url"]} ({len(content)//1024}KB)')
         return True
