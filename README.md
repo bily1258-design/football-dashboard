@@ -127,16 +127,15 @@ football-dashboard/
 | 数据 | 抓取方式 | 说明 |
 |------|---------|------|
 | 百家平均欧赔 | GET + POST | 竞彩+北单，3天窗口 |
-| Pinnacle 1X2 | POST company=106 | companyType=b |
-| Pinnacle 亚盘 | POST company=106 | companyType=y，竞彩+北单+前后天6次POST |
 | 百家平均亚盘 | POST company=0 | companyType=y |
-| 利记亚盘 | POST company=15 | companyType=y |
-| 明升亚盘 | POST company=6 | companyType=y |
+| Pinnacle/HKJC/利记/明升 1X2+AH+OU | **oyzs_ajax 三合一** | odds.zgzcw.com，一次请求4家公司×3类型 |
 | Betfair | POST company=56 | companyType=b |
 | 赛果 | 500.com | fetch_500com_results.py |
 | 积分榜 | 球天下 data.qtx.com | fetch_standings_qtx.py |
 
-> **Pinnacle 大小球（OU）暂无数据源**：足彩网 companyType=d 返回的实为亚盘数据而非大小球，pin_ou 字段暂为空，DB 旧值靠 COALESCE 保留。
+> **oyzs_ajax 三合一接口**（2026-06-22起）：`odds.zgzcw.com/odds/oyzs_ajax.action` 一次请求返回 Pinnacle(22)/HKJC(136)/利记(15)/明升(6) 的1X2欧赔+亚盘+大小球（含初盘+即时盘），替代之前的散装POST（6次×4公司=24次请求→1次）。
+
+> **注意**：百家平均(0)和Betfair(56)不在oyzs_ajax中提供，仍使用bjzs POST。plzx域名被WAF拦截，百家平均GET/POST需通过odds.zgzcw.com或Termux本地跑。
 
 ### 队名别名归一化
 `team_aliases.py` 维护50+队名别名映射，解决跨源队名译名不一致问题：
@@ -148,7 +147,7 @@ football-dashboard/
 
 亚盘列优先级：**Pinnacle → 利记 → 百家平均**
 
-所有亚盘数据通过足彩网 POST（companyType=y）抓取，6次POST覆盖竞彩+北单+前后天窗口。
+Pinnacle/HKJC/利记/明升的亚盘+大小球数据通过 oyzs_ajax 三合一接口获取（含初盘+即时盘）。百家平均亚盘仍通过 bjzs POST（companyType=y）获取。
 
 ### Pinnacle 主客 swap 检测
 
