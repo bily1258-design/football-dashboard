@@ -776,11 +776,11 @@ def fetch_all(date_str: str = None, companies: List[str] = None,
     print(f"  利记亚盘: {len(liji_ah)} 场 | 明升亚盘: {len(ms_ah)} 场")
 
     # 1.7 大小球 — 暂时禁用：足彩网companyType='d'返回的实为亚盘数据，非大小球
-    # 大小球数据改为从api-football获取Pinnacle OU（见fetch_pinnacle_odds.py Step 5.9）
+    # 大小球数据暂无可靠数据源（api-football已移除，足彩网companyType=d返回亚盘数据）
     ou_data = {}
     ou_liji = {}
     ou_ms = {}
-    print(f"  大小球: 跳过足彩网抓取（companyType=d返回亚盘数据），改用api-football")
+    print(f"  大小球: 跳过（暂无可靠数据源）")
 
     # 2. 各公司（2026-06-20 改造：启用北单page_type=bd，与百家平均/亚盘一致）
     company_data = {}

@@ -721,7 +721,7 @@ def fetch_asian_handicap(date_str=None, page_type=None, company='0'):
     import requests as req
     import random
     
-    company_names = {'0': '百家平均', '136': 'HKJC'}
+    company_names = {'0': '百家平均', '136': 'HKJC', '106': 'Pinnacle'}
     company_name = company_names.get(company, f'aid={company}')
     
     data = {
@@ -989,423 +989,6 @@ def parse_detail_page(html):
     return result
 
 
-# ========== api-football Pinnacle 亚盘+大小球 ==========
-
-API_FOOTBALL_BASE = "https://v3.football.api-sports.io"
-API_FOOTBALL_KEY = "c942c5c572a6e946b196acd5321427c3"
-PINNACLE_BOOKMAKER_ID = 4  # api-football中Pinnacle的bookmaker_id
-
-# 中英文队名映射（足彩网中文名 → api-football英文名）
-# 后续可通过LLM模糊匹配补充
-TEAM_CN_EN_MAP = {
-    # 常见队名，后续可通过搜索扩充
-}
-
-
-def fetch_api_football_fixtures(date_str):
-    """获取api-football当天所有比赛的fixture_id
-    
-    Args:
-        date_str: YYYY-MM-DD格式
-    Returns:
-        list[dict]: [{fixture_id, home_team, away_team, league, kickoff}]
-    """
-    import requests
-    url = f"{API_FOOTBALL_BASE}/fixtures"
-    headers = {"x-apisports-key": API_FOOTBALL_KEY}
-    params = {"date": date_str, "timezone": "Asia/Shanghai"}
-    
-    try:
-        resp = requests.get(url, headers=headers, params=params, timeout=15)
-        if resp.status_code != 200:
-            print(f"[WARN] api-football fixtures HTTP {resp.status_code}")
-            return []
-        data = resp.json()
-        if data.get("errors"):
-            print(f"[WARN] api-football fixtures errors: {data['errors']}")
-            return []
-        
-        fixtures = []
-        for item in data.get("response", []):
-            fixture = item.get("fixture", {})
-            teams = item.get("teams", {})
-            league = item.get("league", {})
-            
-            fixtures.append({
-                "fixture_id": fixture.get("id"),
-                "home_team": teams.get("home", {}).get("name", ""),
-                "away_team": teams.get("away", {}).get("name", ""),
-                "home_team_cn": "",  # 待模糊匹配填充
-                "away_team_cn": "",
-                "league": league.get("name", ""),
-                "kickoff": fixture.get("date", ""),
-            })
-        
-        print(f"[INFO] api-football fixtures: {len(fixtures)} 场 ({date_str})")
-        return fixtures
-    except Exception as e:
-        print(f"[WARN] api-football fixtures 请求失败: {e}")
-        return []
-
-
-def fetch_api_football_pinnacle(fixture_id, bet_type):
-    """从api-football获取Pinnacle的亚盘或大小球赔率
-    
-    Args:
-        fixture_id: api-football的fixture ID
-        bet_type: 4=Asian Handicap, 5=Goals Over/Under
-    
-    Returns:
-        For AH (bet=4): {handicap_line: {home_odd, away_odd}} 全部盘口线
-        For OU (bet=5): {line: {over, under}} 全部盘口线
-        失败返回空dict
-    """
-    import requests
-    url = f"{API_FOOTBALL_BASE}/odds"
-    headers = {"x-apisports-key": API_FOOTBALL_KEY}
-    params = {
-        "fixture": fixture_id,
-        "bookmaker": PINNACLE_BOOKMAKER_ID,
-        "bet": bet_type,
-    }
-    
-    try:
-        resp = requests.get(url, headers=headers, params=params, timeout=15)
-        if resp.status_code != 200:
-            return {}
-        data = resp.json()
-        if data.get("errors"):
-            return {}
-        
-        result = {}
-        for item in data.get("response", []):
-            for bk in item.get("bookmakers", []):
-                if bk.get("id") != PINNACLE_BOOKMAKER_ID:
-                    continue
-                for bet in bk.get("bets", []):
-                    if str(bet.get("id")) != str(bet_type):
-                        continue
-                    for val in bet.get("values", []):
-                        if bet_type == 4:
-                            # Asian Handicap: value=handicap_line, odd=home_odd, odd2=away_odd
-                            handicap = val.get("value", "")
-                            home_odd = _safe_float_api(val.get("odd", 0))
-                            away_odd = _safe_float_api(val.get("odd2", 0))
-                            if handicap and home_odd > 0 and away_odd > 0:
-                                try:
-                                    h = float(handicap)
-                                    result[handicap] = {"home_odd": home_odd, "away_odd": away_odd, "handicap": h}
-                                except ValueError:
-                                    pass
-                        elif bet_type == 5:
-                            # Goals Over/Under: value="Over/Under 2.5", odd=over/under
-                            value_str = val.get("value", "")
-                            odd = _safe_float_api(val.get("odd", 0))
-                            # Parse: "Over 2.5" or "Under 2.5"
-                            if "Over" in value_str:
-                                try:
-                                    line = float(value_str.replace("Over", "").strip())
-                                    if str(line) not in result:
-                                        result[str(line)] = {"over": odd, "under": 0, "line": line}
-                                    else:
-                                        result[str(line)]["over"] = odd
-                                except ValueError:
-                                    pass
-                            elif "Under" in value_str:
-                                try:
-                                    line = float(value_str.replace("Under", "").strip())
-                                    if str(line) not in result:
-                                        result[str(line)] = {"over": 0, "under": odd, "line": line}
-                                    else:
-                                        result[str(line)]["under"] = odd
-                                except ValueError:
-                                    pass
-        return result
-    except Exception as e:
-        print(f"[WARN] api-football odds (fixture={fixture_id}, bet={bet_type}): {e}")
-        return {}
-
-
-def _safe_float_api(val, default=0.0):
-    """安全转换api-football返回的赔率值"""
-    if not val:
-        return default
-    try:
-        return float(str(val).strip())
-    except (ValueError, TypeError):
-        return default
-
-
-def extract_pinnacle_ah_main(ah_data):
-    """从Pinnacle AH数据中选取主盘口线（handicap绝对值最小的非零行）
-    
-    Args:
-        ah_data: {handicap_str: {home_odd, away_odd, handicap}}
-    Returns:
-        {handicap, home_odd, away_odd} 或空dict
-    """
-    if not ah_data:
-        return {}
-    
-    best = None
-    best_abs = float('inf')
-    for key, val in ah_data.items():
-        h = val.get("handicap", 0)
-        if h == 0:
-            continue  # 跳过平手盘
-        abs_h = abs(h)
-        if abs_h < best_abs:
-            best_abs = abs_h
-            best = val
-    
-    if not best and ah_data:
-        # 所有盘口线都是0，取第一条
-        best = list(ah_data.values())[0]
-    
-    if not best:
-        return {}
-    
-    return {
-        "handicap": best.get("handicap", 0),
-        "home_odd": best.get("home_odd", 0),
-        "away_odd": best.get("away_odd", 0),
-    }
-
-
-def extract_pinnacle_ou_main(ou_data):
-    """从Pinnacle OU数据中选取主盘口线（line最接近2.5的行）
-    
-    Args:
-        ou_data: {line_str: {over, under, line}}
-    Returns:
-        {line, over, under} 或空dict
-    """
-    if not ou_data:
-        return {}
-    
-    best = None
-    best_diff = float('inf')
-    for key, val in ou_data.items():
-        line = val.get("line", 0)
-        if line <= 0:
-            continue
-        diff = abs(line - 2.5)
-        if diff < best_diff:
-            best_diff = diff
-            best = val
-    
-    if not best and ou_data:
-        best = list(ou_data.values())[0]
-    
-    if not best:
-        return {}
-    
-    return {
-        "line": best.get("line", 0),
-        "over": best.get("over", 0),
-        "under": best.get("under", 0),
-    }
-
-
-def match_team_cn_to_en(cn_name, fixtures):
-    """将中文队名模糊匹配到api-football的英文队名
-    
-    Returns: fixture dict 或 None
-    """
-    # 简单包含匹配（后续可增强为LLM翻译+模糊匹配）
-    for fx in fixtures:
-        en_home = fx.get("home_team", "").lower()
-        en_away = fx.get("away_team", "").lower()
-        cn_lower = cn_name.lower()
-        
-        # 直接尝试映射表
-        en_mapped = TEAM_CN_EN_MAP.get(cn_name.strip(), "")
-        if en_mapped:
-            if en_mapped.lower() in en_home or en_home in en_mapped.lower():
-                return fx
-            if en_mapped.lower() in en_away or en_away in en_mapped.lower():
-                return fx
-        
-        # 模糊包含匹配（中文名可能包含英文名的部分）
-        # 例如："利物浦" 可能匹配 "Liverpool"
-        # 这里用简单的字符级匹配作为fallback
-    
-    return None
-
-
-def fetch_pinnacle_ah_ou_from_api(match_list, date_str):
-    """从api-football获取Pinnacle亚盘和大小球数据
-    
-    流程:
-    1. 用fixtures?date=获取当天所有比赛
-    2. 通过队名模糊匹配找到对应fixture_id
-    3. 逐场调用odds?fixture={id}&bookmaker=4&bet=4 获取Pinnacle AH
-    4. 逐场调用odds?fixture={id}&bookmaker=4&bet=5 获取Pinnacle OU
-    
-    API日限100次，每天8-10场比赛需要约 1+8+8=17次请求
-    
-    Returns:
-        dict: {match_key: {pin_ah: {handicap, home_odd, away_odd}, pin_ou: {line, over, under}}}
-    """
-    import time as _time
-    
-    result = {}
-    
-    # Step 1: 获取当天所有fixtures
-    fixtures = fetch_api_football_fixtures(date_str)
-    if not fixtures:
-        print("[WARN] api-football: 无fixtures数据，跳过Pinnacle AH/OU")
-        return result
-    
-    _time.sleep(7)  # 10次/分钟限制，间隔7秒
-    
-    # Step 2: 逐场匹配并获取Pinnacle AH/OU
-    # 匹配策略：开赛时间精确匹配（同一分钟开赛的跨联赛比赛极少）
-    # fallback: 队名相似度匹配
-    api_call_count = 1  # 已用1次获取fixtures
-    
-    # 构建fixtures时间索引
-    fx_by_time = {}
-    for fx in fixtures:
-        kickoff = fx.get("kickoff", "")
-        if kickoff:
-            hm = kickoff[11:16] if len(kickoff) >= 16 else ""
-            if hm:
-                fx_by_time.setdefault(hm, []).append(fx)
-    
-    for m in match_list:
-        home_cn = m.get("home", "")
-        away_cn = m.get("away", "")
-        match_id = m.get("match_id", "")
-        match_key = f"{home_cn}_{away_cn}"
-        kickoff_raw = m.get("kickoff", "")  # 格式: "2026-06-18 17:59" 或 "06-19 00:00"
-        
-        # 从kickoff提取HH:MM
-        match_hm = ""
-        if kickoff_raw:
-            # 尝试不同格式
-            for fmt in ["%Y-%m-%d %H:%M", "%m-%d %H:%M"]:
-                try:
-                    from datetime import datetime as _dt
-                    kt = _dt.strptime(kickoff_raw.strip(), fmt)
-                    match_hm = kt.strftime("%H:%M")
-                    break
-                except ValueError:
-                    continue
-            # 简单提取
-            if not match_hm and len(kickoff_raw) >= 5:
-                match_hm = kickoff_raw[-5:]
-        
-        matched_fx = None
-        match_method = ""
-        
-        # 策略1: 按开赛时间精确匹配
-        if match_hm and match_hm in fx_by_time:
-            candidates = fx_by_time[match_hm]
-            if len(candidates) == 1:
-                matched_fx = candidates[0]
-                match_method = f"time={match_hm}"
-            else:
-                # 多场同时间，用队名辅助区分
-                best_sim = 0
-                for fx in candidates:
-                    sim_h = team_name_similarity(home_cn, fx.get("home_team", ""))
-                    sim_a = team_name_similarity(away_cn, fx.get("away_team", ""))
-                    avg = (sim_h + sim_a) / 2
-                    if avg > best_sim:
-                        best_sim = avg
-                        matched_fx = fx
-                if matched_fx:
-                    match_method = f"time={match_hm}+name(sim={best_sim:.2f})"
-        
-        # 策略2: 时间匹配失败，±30分钟内搜索
-        if not matched_fx and match_hm:
-            try:
-                from datetime import datetime as _dt, timedelta as _td
-                base = _dt.strptime(match_hm, "%H:%M")
-                for delta_min in [1, -1, 2, -2, 5, -5, 15, -15, 30, -30]:
-                    check_time = (base + _td(minutes=delta_min)).strftime("%H:%M")
-                    if check_time in fx_by_time:
-                        candidates = fx_by_time[check_time]
-                        if len(candidates) == 1:
-                            matched_fx = candidates[0]
-                            match_method = f"time≈{check_time}(±{abs(delta_min)}min)"
-                            break
-                        else:
-                            best_sim = 0
-                            for fx in candidates:
-                                sim_h = team_name_similarity(home_cn, fx.get("home_team", ""))
-                                sim_a = team_name_similarity(away_cn, fx.get("away_team", ""))
-                                avg = (sim_h + sim_a) / 2
-                                if avg > best_sim:
-                                    best_sim = avg
-                                    matched_fx = fx
-                            if matched_fx and best_sim > 0.15:
-                                match_method = f"time≈{check_time}+name(sim={best_sim:.2f})"
-                                break
-            except Exception:
-                pass
-        
-        # 策略3: fallback纯队名匹配
-        if not matched_fx:
-            best_score = 0
-            for fx in fixtures:
-                sim_home = team_name_similarity(home_cn, fx.get("home_team", ""))
-                sim_away = team_name_similarity(away_cn, fx.get("away_team", ""))
-                avg_sim = (sim_home + sim_away) / 2
-                if avg_sim > best_score:
-                    best_score = avg_sim
-                    matched_fx = fx
-            if matched_fx and best_score >= 0.3:
-                match_method = f"name(sim={best_score:.2f})"
-            else:
-                matched_fx = None
-        
-        if not matched_fx:
-            print(f"  [API] {home_cn} vs {away_cn} 无匹配 (kickoff={match_hm})")
-            continue
-        
-        fixture_id = matched_fx.get("fixture_id")
-        api_home = matched_fx.get("home_team", "")
-        api_away = matched_fx.get("away_team", "")
-        print(f"  [API] {home_cn} vs {away_cn} -> fixture={fixture_id} ({api_home} vs {api_away}) [{match_method}]")
-
-        # Step 3: 获取Pinnacle AH
-        ah_raw = fetch_api_football_pinnacle(fixture_id, bet_type=4)
-        api_call_count += 1
-        _time.sleep(7)  # 频率限制
-        
-        pin_ah = extract_pinnacle_ah_main(ah_raw)
-        if pin_ah:
-            print(f"    Pinnacle AH: 让球={pin_ah['handicap']} 主水={pin_ah['home_odd']:.2f} 客水={pin_ah['away_odd']:.2f}")
-        else:
-            print(f"    Pinnacle AH: 无数据")
-        
-        # Step 4: 获取Pinnacle OU
-        ou_raw = fetch_api_football_pinnacle(fixture_id, bet_type=5)
-        api_call_count += 1
-        _time.sleep(7)  # 频率限制
-        
-        pin_ou = extract_pinnacle_ou_main(ou_raw)
-        if pin_ou:
-            print(f"    Pinnacle OU: 盘口={pin_ou['line']} 大球={pin_ou['over']:.2f} 小球={pin_ou['under']:.2f}")
-        else:
-            print(f"    Pinnacle OU: 无数据")
-        
-        # 检测主客是否颠倒：用竞彩赔率方向跟 Pinnacle 赔率方向对比
-        # 竞彩 low_odds 方向 vs Pinnacle AH home_odd/away_odd 方向
-        # 竞彩低赔方=热门；Pinnacle AH home_odd低=主队热门
-        # 如果竞彩热门是客队（away），但 Pinnacle AH 显示主队热门 → swap
-        is_swapped = False
-        # swap 检测放到 save_to_db 里做（那里有完整的竞彩+Pinnacle数据）
-        result[match_id] = {
-            "pin_ah": pin_ah,
-            "pin_ou": pin_ou,
-        }
-    
-    print(f"[INFO] api-football Pinnacle AH/OU: {len(result)}/{len(match_list)} 场匹配 (API调用{api_call_count}次)")
-    return result
-
 
 def fetch_pinnacle_odds(date_str=None, include_beidan=True):
     """主函数：获取指定日期的赔率数据
@@ -1647,15 +1230,28 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=True):
             except Exception as e:
                 print(f"[WARN] oddsmagnet fallback加载失败: {e}")
 
-    # Step 5.9: 从api-football获取Pinnacle亚盘和大小球
-    pin_ah_ou_data = {}
-    try:
-        pin_ah_ou_data = fetch_pinnacle_ah_ou_from_api(match_list, date_str)
-    except Exception as e:
-        print(f"[WARN] api-football Pinnacle AH/OU 获取失败: {e}")
+    # Step 5.9: 从足彩网POST获取Pinnacle亚盘（替代已移除的api-football）
+    pin_ah_all = {}
+    if len(match_list) > 0:
+        try:
+            # 竞彩亚盘
+            pin_ah_jc = fetch_asian_handicap(date_str, page_type='jc', company='106')
+            time.sleep(6)
+            pin_ah_jc_prev = fetch_asian_handicap(prev_day, page_type='jc', company='106')
+            time.sleep(6)
+            pin_ah_jc_next = fetch_asian_handicap(next_day, page_type='jc', company='106')
+            # 北单亚盘
+            pin_ah_bd = fetch_asian_handicap(date_str, page_type='bd', company='106') if include_beidan else {}
+            time.sleep(6)
+            pin_ah_bd_prev = fetch_asian_handicap(prev_day, page_type='bd', company='106') if include_beidan else {}
+            time.sleep(6)
+            pin_ah_bd_next = fetch_asian_handicap(next_day, page_type='bd', company='106') if include_beidan else {}
+            pin_ah_all = {**pin_ah_jc_prev, **pin_ah_bd_prev, **pin_ah_jc, **pin_ah_bd, **pin_ah_jc_next, **pin_ah_bd_next}
+            print(f"[INFO] Pinnacle亚盘(足彩网POST): {len(pin_ah_all)} 场")
+        except Exception as e:
+            print(f"[WARN] Pinnacle亚盘POST失败: {e}")
 
-    # Step 5.95: 大小球数据 — 足彩网companyType=d返回亚盘数据，已禁用
-    # 大小球数据仅从api-football Pinnacle OU获取（Step 5.9的pin_ah_ou_data）
+    # Step 5.95: 大小球数据（OU暂不从api-football获取，保留odds_api.py路径）
     ou_data_all = {}  # {match_key: {ou, ou_liji, ou_ms}} — 暂为空
 
     # Step 6: 合并数据，赔率优先级：平博 > 百家平均 (SB已取消)
@@ -1710,7 +1306,7 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=True):
         if pinnacle_open.get('d', 0) > 0 and pinnacle_open.get('d', 0) < 2.0:
             pinnacle_open = {}
 
-        # 异常赔率过滤：单个值>30且其他值<10 → api-football脏数据（如w=47）
+        # 异常赔率过滤：单个值>30且其他值<10 → 脏数据
         for pin_label, pin_dict in [('open', pinnacle_open), ('close', pinnacle_close)]:
             vals = [pin_dict.get('w', 0), pin_dict.get('d', 0), pin_dict.get('l', 0)]
             nonzero_vals = [v for v in vals if v > 0]
@@ -1843,10 +1439,26 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=True):
             ah_c = ah_hkjc_data['close']
             print(f"  亚盘(HKJC): 盘口{ah_c['handicap']} 主水{ah_c['home_w']:.2f} 客水{ah_c['away_w']:.2f}")
 
-        # Pinnacle亚盘和大小球 (from api-football)
-        pin_ah_ou = pin_ah_ou_data.get(match_id, {})
-        m['pin_ah'] = pin_ah_ou.get('pin_ah', {})
-        m['pin_ou'] = pin_ah_ou.get('pin_ou', {})
+        # Pinnacle亚盘 (from 足彩网POST)
+        pin_ah_match = pin_ah_all.get(match_id, {})
+        if pin_ah_match.get('close', {}).get('handicap', 0) != 0:
+            ah_c = pin_ah_match['close']
+            ah_o = pin_ah_match.get('open', {})
+            m['pin_ah'] = {
+                'handicap': ah_c.get('handicap', 0),
+                'home_odd': ah_c.get('home_w', 0),
+                'away_odd': ah_c.get('away_w', 0),
+            }
+            m['pin_ah_open'] = {
+                'handicap': ah_o.get('handicap', 0),
+                'home_odd': ah_o.get('home_w', 0),
+                'away_odd': ah_o.get('away_w', 0),
+            }
+        else:
+            m['pin_ah'] = {}
+            m['pin_ah_open'] = {}
+        # Pinnacle大小球 (api-football已移除，暂无数据源)
+        m['pin_ou'] = {}
 
         # 大小球数据 (from odds_api.py ah_YYYYMMDD.json)
         ou_key = f"{home}_{away}"
@@ -2327,7 +1939,7 @@ def save_to_db(matches, db_path, date_str=None):
         ah_close = m.get('ah_avg_close') or {}
         ah_source = 'avg' if m.get('ah_avg_close') else ''
 
-        # Pinnacle亚盘和大小球 (from api-football)
+        # Pinnacle亚盘 (from 足彩网POST) + 大小球
         pin_ah = m.get('pin_ah', {})
         pin_ou = m.get('pin_ou', {})
 
