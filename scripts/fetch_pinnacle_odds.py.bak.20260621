@@ -2068,7 +2068,7 @@ def load_oddsmagnet_fallback(date_str=None):
 
 def save_to_db(matches, db_path, date_str=None):
     """将赔率数据写入数据库
-
+    
     匹配策略（v2）：
     1. 按开赛时间分组，同时间段内做队名匹配（容忍不同中文译名）
     2. 队名匹配：正向+反向，阈值0.3（跨数据源中文译名差异大）
@@ -2076,19 +2076,7 @@ def save_to_db(matches, db_path, date_str=None):
     """
     if not matches:
         return 0
-
-    def _or_none(d, *check_keys, k):
-        """通用 helper：dict 空或所有 check_keys 字段都 0 → None；否则返回 d.get(k)。
-
-        用于亚盘/OU 段写入：dict 三个相关字段全 0（视作"没抓到"）→ 返回 None，
-        COALESCE(?, col) 在 SQL 端会保留 DB 旧值；真数据则正常返回写入。
-        """
-        if not d:
-            return None
-        if all((d.get(ck, 0) or 0) == 0 for ck in check_keys):
-            return None
-        return d.get(k)
-
+    
     # 确保目录存在
     os.makedirs(os.path.dirname(db_path) if os.path.dirname(db_path) else '.', exist_ok=True)
     
@@ -2300,29 +2288,9 @@ def save_to_db(matches, db_path, date_str=None):
         pin_ah_hc_val = pin_ah.get('handicap', 0) or 0
         pin_ah_hw_val = pin_ah.get('home_odd', 0) or 0
         pin_ah_aw_val = pin_ah.get('away_odd', 0) or 0
-        # 2026-06-21 改造：pin_ou 改用 _or_none helper（line/over/under 三字段全 0 → None，COALESCE 保留 DB 旧值）
-        pin_ou_line_val = _or_none(pin_ou, 'line', 'over', 'under', k='line')
-        pin_ou_over_val = _or_none(pin_ou, 'line', 'over', 'under', k='over')
-        pin_ou_under_val = _or_none(pin_ou, 'line', 'over', 'under', k='under')
-        # 2026-06-21 改造：ou 段 18 个字段改用 _or_none helper（over/line/under 三字段全 0 → None，COALESCE 保留 DB 旧值）
-        ou_close_o = _or_none(ou_close, 'over', 'line', 'under', k='over')
-        ou_close_l = _or_none(ou_close, 'over', 'line', 'under', k='line')
-        ou_close_u = _or_none(ou_close, 'over', 'line', 'under', k='under')
-        ou_open_o = _or_none(ou_open, 'over', 'line', 'under', k='over')
-        ou_open_l = _or_none(ou_open, 'over', 'line', 'under', k='line')
-        ou_open_u = _or_none(ou_open, 'over', 'line', 'under', k='under')
-        liji_ou_close_o = _or_none(liji_ou_close, 'over', 'line', 'under', k='over')
-        liji_ou_close_l = _or_none(liji_ou_close, 'over', 'line', 'under', k='line')
-        liji_ou_close_u = _or_none(liji_ou_close, 'over', 'line', 'under', k='under')
-        liji_ou_open_o = _or_none(liji_ou_open, 'over', 'line', 'under', k='over')
-        liji_ou_open_l = _or_none(liji_ou_open, 'over', 'line', 'under', k='line')
-        liji_ou_open_u = _or_none(liji_ou_open, 'over', 'line', 'under', k='under')
-        ms_ou_close_o = _or_none(ms_ou_close, 'over', 'line', 'under', k='over')
-        ms_ou_close_l = _or_none(ms_ou_close, 'over', 'line', 'under', k='line')
-        ms_ou_close_u = _or_none(ms_ou_close, 'over', 'line', 'under', k='under')
-        ms_ou_open_o = _or_none(ms_ou_open, 'over', 'line', 'under', k='over')
-        ms_ou_open_l = _or_none(ms_ou_open, 'over', 'line', 'under', k='line')
-        ms_ou_open_u = _or_none(ms_ou_open, 'over', 'line', 'under', k='under')
+        pin_ou_line_val = pin_ou.get('line', 0) or 0
+        pin_ou_over_val = pin_ou.get('over', 0) or 0
+        pin_ou_under_val = pin_ou.get('under', 0) or 0
 
         cursor.execute("""
             UPDATE poisson_predictions SET
@@ -2342,15 +2310,15 @@ def save_to_db(matches, db_path, date_str=None):
                 pin_ah_handicap = CASE WHEN pin_ah_handicap IS NOT NULL AND pin_ah_handicap != 0 THEN pin_ah_handicap ELSE ? END,
                 pin_ah_home_water = CASE WHEN pin_ah_handicap IS NOT NULL AND pin_ah_handicap != 0 THEN pin_ah_home_water ELSE ? END,
                 pin_ah_away_water = CASE WHEN pin_ah_handicap IS NOT NULL AND pin_ah_handicap != 0 THEN pin_ah_away_water ELSE ? END,
-                pin_ou_line = COALESCE(?, pin_ou_line),
-                pin_ou_over = COALESCE(?, pin_ou_over),
-                pin_ou_under = COALESCE(?, pin_ou_under),
-                ou_over = COALESCE(?, ou_over), ou_line = COALESCE(?, ou_line), ou_under = COALESCE(?, ou_under),
-                ou_open_over = COALESCE(?, ou_open_over), ou_open_line = COALESCE(?, ou_open_line), ou_open_under = COALESCE(?, ou_open_under),
-                liji_ou_over = COALESCE(?, liji_ou_over), liji_ou_line = COALESCE(?, liji_ou_line), liji_ou_under = COALESCE(?, liji_ou_under),
-                liji_ou_open_over = COALESCE(?, liji_ou_open_over), liji_ou_open_line = COALESCE(?, liji_ou_open_line), liji_ou_open_under = COALESCE(?, liji_ou_open_under),
-                ms_ou_over = COALESCE(?, ms_ou_over), ms_ou_line = COALESCE(?, ms_ou_line), ms_ou_under = COALESCE(?, ms_ou_under),
-                ms_ou_open_over = COALESCE(?, ms_ou_open_over), ms_ou_open_line = COALESCE(?, ms_ou_open_line), ms_ou_open_under = COALESCE(?, ms_ou_open_under)
+                pin_ou_line = CASE WHEN pin_ou_line IS NOT NULL AND pin_ou_line != 0 THEN pin_ou_line ELSE ? END,
+                pin_ou_over = CASE WHEN pin_ou_line IS NOT NULL AND pin_ou_line != 0 THEN pin_ou_over ELSE ? END,
+                pin_ou_under = CASE WHEN pin_ou_line IS NOT NULL AND pin_ou_line != 0 THEN pin_ou_under ELSE ? END,
+                ou_over = ?, ou_line = ?, ou_under = ?,
+                ou_open_over = ?, ou_open_line = ?, ou_open_under = ?,
+                liji_ou_over = ?, liji_ou_line = ?, liji_ou_under = ?,
+                liji_ou_open_over = ?, liji_ou_open_line = ?, liji_ou_open_under = ?,
+                ms_ou_over = ?, ms_ou_line = ?, ms_ou_under = ?,
+                ms_ou_open_over = ?, ms_ou_open_line = ?, ms_ou_open_under = ?
             WHERE id = ?
         """, (
             pin_open.get('w', 0), pin_open.get('d', 0), pin_open.get('l', 0),
@@ -2366,12 +2334,12 @@ def save_to_db(matches, db_path, date_str=None):
             ah_hc_val, ah_hw_val, ah_aw_val, ah_source,
             pin_ah_hc_val, pin_ah_hw_val, pin_ah_aw_val,
             pin_ou_line_val, pin_ou_over_val, pin_ou_under_val,
-            ou_close_o, ou_close_l, ou_close_u,
-            ou_open_o, ou_open_l, ou_open_u,
-            liji_ou_close_o, liji_ou_close_l, liji_ou_close_u,
-            liji_ou_open_o, liji_ou_open_l, liji_ou_open_u,
-            ms_ou_close_o, ms_ou_close_l, ms_ou_close_u,
-            ms_ou_open_o, ms_ou_open_l, ms_ou_open_u,
+            ou_close.get('over', 0) or 0, ou_close.get('line', 0) or 0, ou_close.get('under', 0) or 0,
+            ou_open.get('over', 0) or 0, ou_open.get('line', 0) or 0, ou_open.get('under', 0) or 0,
+            liji_ou_close.get('over', 0) or 0, liji_ou_close.get('line', 0) or 0, liji_ou_close.get('under', 0) or 0,
+            liji_ou_open.get('over', 0) or 0, liji_ou_open.get('line', 0) or 0, liji_ou_open.get('under', 0) or 0,
+            ms_ou_close.get('over', 0) or 0, ms_ou_close.get('line', 0) or 0, ms_ou_close.get('under', 0) or 0,
+            ms_ou_open.get('over', 0) or 0, ms_ou_open.get('line', 0) or 0, ms_ou_open.get('under', 0) or 0,
             record_id
         ))
         updated += 1
@@ -2468,15 +2436,15 @@ def save_to_db(matches, db_path, date_str=None):
                                 pin_ah_handicap = CASE WHEN pin_ah_handicap IS NOT NULL AND pin_ah_handicap != 0 THEN pin_ah_handicap ELSE ? END,
                                 pin_ah_home_water = CASE WHEN pin_ah_handicap IS NOT NULL AND pin_ah_handicap != 0 THEN pin_ah_home_water ELSE ? END,
                                 pin_ah_away_water = CASE WHEN pin_ah_handicap IS NOT NULL AND pin_ah_handicap != 0 THEN pin_ah_away_water ELSE ? END,
-                                pin_ou_line = COALESCE(?, pin_ou_line),
-                                pin_ou_over = COALESCE(?, pin_ou_over),
-                                pin_ou_under = COALESCE(?, pin_ou_under),
-                                ou_over = COALESCE(?, ou_over), ou_line = COALESCE(?, ou_line), ou_under = COALESCE(?, ou_under),
-                                ou_open_over = COALESCE(?, ou_open_over), ou_open_line = COALESCE(?, ou_open_line), ou_open_under = COALESCE(?, ou_open_under),
-                                liji_ou_over = COALESCE(?, liji_ou_over), liji_ou_line = COALESCE(?, liji_ou_line), liji_ou_under = COALESCE(?, liji_ou_under),
-                                liji_ou_open_over = COALESCE(?, liji_ou_open_over), liji_ou_open_line = COALESCE(?, liji_ou_open_line), liji_ou_open_under = COALESCE(?, liji_ou_open_under),
-                                ms_ou_over = COALESCE(?, ms_ou_over), ms_ou_line = COALESCE(?, ms_ou_line), ms_ou_under = COALESCE(?, ms_ou_under),
-                                ms_ou_open_over = COALESCE(?, ms_ou_open_over), ms_ou_open_line = COALESCE(?, ms_ou_open_line), ms_ou_open_under = COALESCE(?, ms_ou_open_under)
+                                pin_ou_line = CASE WHEN pin_ou_line IS NOT NULL AND pin_ou_line != 0 THEN pin_ou_line ELSE ? END,
+                                pin_ou_over = CASE WHEN pin_ou_line IS NOT NULL AND pin_ou_line != 0 THEN pin_ou_over ELSE ? END,
+                                pin_ou_under = CASE WHEN pin_ou_line IS NOT NULL AND pin_ou_line != 0 THEN pin_ou_under ELSE ? END,
+                                ou_over = ?, ou_line = ?, ou_under = ?,
+                                ou_open_over = ?, ou_open_line = ?, ou_open_under = ?,
+                                liji_ou_over = ?, liji_ou_line = ?, liji_ou_under = ?,
+                                liji_ou_open_over = ?, liji_ou_open_line = ?, liji_ou_open_under = ?,
+                                ms_ou_over = ?, ms_ou_line = ?, ms_ou_under = ?,
+                                ms_ou_open_over = ?, ms_ou_open_line = ?, ms_ou_open_under = ?
                             WHERE id = ?
                         """, (
                             pin_open.get('w', 0), pin_open.get('d', 0), pin_open.get('l', 0),
@@ -2491,13 +2459,13 @@ def save_to_db(matches, db_path, date_str=None):
                             best_match.get('odds_source', ''),
                             om_ah_hc, om_ah_hw, om_ah_aw, ah_source,
                             0, 0, 0,  # pin_ah — OM fallback无此数据，仅补空值
-                            None, None, None,  # pin_ou — OM fallback无此数据，COALESCE 保留 DB 旧值
-                            None, None, None,  # ou close — OM fallback无此数据，COALESCE 保留 DB 旧值
-                            None, None, None,  # ou open
-                            None, None, None,  # liji_ou close
-                            None, None, None,  # liji_ou open
-                            None, None, None,  # ms_ou close
-                            None, None, None,  # ms_ou open
+                            0, 0, 0,  # pin_ou — OM fallback无此数据
+                            0, 0, 0,  # ou close
+                            0, 0, 0,  # ou open
+                            0, 0, 0,  # liji_ou close
+                            0, 0, 0,  # liji_ou open
+                            0, 0, 0,  # ms_ou close
+                            0, 0, 0,  # ms_ou open
                             record_id
                         ))
                         om_matched += 1

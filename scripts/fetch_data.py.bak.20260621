@@ -73,37 +73,7 @@ def step_update_ah(date_str: str, db_path: str = None):
     
     import sqlite3, json
     from datetime import datetime, timedelta
-
-    def _ah_or_none(d, k):
-        """亚盘 close/open dict 取值。
-        - dict 为空 → None
-        - dict 三个字段（盘口/主水/客水）全 0 → None（视作"没抓到"，COALESCE 保留 DB 旧值）
-        - 否则返回 dict.get(k)（真平手 0.0 也能正常取到）
-        """
-        if not d:
-            return None
-        h = d.get('handicap', 0) or 0
-        hw = d.get('home_w', 0) or 0
-        aw = d.get('away_w', 0) or 0
-        if h == 0 and hw == 0 and aw == 0:
-            return None
-        return d.get(k)
-
-    def _ou_or_none(d, k):
-        """OU 大小球 dict 取值。
-        - dict 为空 → None
-        - dict 三个字段（over/line/under）全 0 → None（视作"没抓到"，COALESCE 保留 DB 旧值）
-        - 否则返回 dict.get(k)（line=0 不算"全 0"，只要 over/under 水位非 0 就放过）
-        """
-        if not d:
-            return None
-        o = d.get('over', 0) or 0
-        l = d.get('line', 0) or 0
-        u = d.get('under', 0) or 0
-        if o == 0 and l == 0 and u == 0:
-            return None
-        return d.get(k)
-
+    
     ah_updated = 0
     prev_day = (datetime.strptime(date_str, '%Y-%m-%d') - timedelta(days=1)).strftime('%Y-%m-%d')
     window_start = f"{prev_day} 12:00"
@@ -153,13 +123,7 @@ def step_update_ah(date_str: str, db_path: str = None):
                 ah_home = ah.get('home', '')
                 ah_away = ah.get('away', '')
                 ah_close = ah.get('close', {})
-                if not ah_close:
-                    continue
-                # 2026-06-21 改造：要求 close 三字段（盘口/主水/客水）至少一个非零才算"真数据"
-                # 原版只判 handicap+home_w 两个，会把"真平手(0/0.85/0.95)"和"空 close(0/0/0)"混在一起
-                if (ah_close.get('handicap', 0) == 0
-                    and ah_close.get('home_w', 0) == 0
-                    and ah_close.get('away_w', 0) == 0):
+                if not ah_close or (ah_close.get('handicap', 0) == 0 and ah_close.get('home_w', 0) == 0):
                     continue
                 
                 # 逐条相似度匹配，避免精确队名匹配漏掉同名变体（如"沙特"vs"沙特阿拉伯"）
@@ -179,41 +143,26 @@ def step_update_ah(date_str: str, db_path: str = None):
                 
                 if matched_ids:
                     # 逐条更新所有相似匹配的记录（按id，不依赖精确队名）
-                    # 2026-06-21 改造：用 _ah_or_none helper 统一处理"没抓到 vs 真平手 vs 真数据"三种场景
-                    # 返回 None → COALESCE 保留 DB 旧值；返回 0.0/非零 → 写入
-                    ah_val = _ah_or_none(ah_close, 'handicap')
-                    hw_val = _ah_or_none(ah_close, 'home_w')
-                    aw_val = _ah_or_none(ah_close, 'away_w')
+                    ah_val = ah_close.get('handicap', 0) or 0
+                    hw_val = ah_close.get('home_w', 0) or 0
+                    aw_val = ah_close.get('away_w', 0) or 0
                     src_val = ah.get('source', 'avg')
 
                     # 百家平均初盘
                     ah_open = ah.get('open', {})
-                    ah_open_h = _ah_or_none(ah_open, 'handicap')
-                    ah_open_hw = _ah_or_none(ah_open, 'home_w')
-                    ah_open_aw = _ah_or_none(ah_open, 'away_w')
+                    ah_open_h = ah_open.get('handicap', 0) or 0
+                    ah_open_hw = ah_open.get('home_w', 0) or 0
+                    ah_open_aw = ah_open.get('away_w', 0) or 0
 
                     # 利记/明升数据
                     liji = ah.get('liji', {})
                     liji_close = liji.get('close', {})
                     liji_open = liji.get('open', {})
-                    liji_h = _ah_or_none(liji_close, 'handicap')
-                    liji_hw = _ah_or_none(liji_close, 'home_w')
-                    liji_aw = _ah_or_none(liji_close, 'away_w')
-                    liji_oh = _ah_or_none(liji_open, 'handicap')
-                    liji_ohw = _ah_or_none(liji_open, 'home_w')
-                    liji_oaw = _ah_or_none(liji_open, 'away_w')
-
                     ms = ah.get('ms', {})
                     ms_close = ms.get('close', {})
                     ms_open = ms.get('open', {})
-                    ms_h = _ah_or_none(ms_close, 'handicap')
-                    ms_hw = _ah_or_none(ms_close, 'home_w')
-                    ms_aw = _ah_or_none(ms_close, 'away_w')
-                    ms_oh = _ah_or_none(ms_open, 'handicap')
-                    ms_ohw = _ah_or_none(ms_open, 'home_w')
-                    ms_oaw = _ah_or_none(ms_open, 'away_w')
 
-                    # 大小球数据（OU 段 2026-06-21 改造：用 _ou_or_none helper 统一处理"没抓到 vs 真数据"，SQL 同步改 COALESCE 保留旧值）
+                    # 大小球数据
                     ou = ah.get('ou', {})
                     ou_close = ou.get('close', {})
                     ou_open = ou.get('open', {})
@@ -224,67 +173,48 @@ def step_update_ah(date_str: str, db_path: str = None):
                     ou_ms_close = ou_ms.get('close', {})
                     ou_ms_open = ou_ms.get('open', {})
 
-                    ou_o = _ou_or_none(ou_close, 'over')
-                    ou_l = _ou_or_none(ou_close, 'line')
-                    ou_u = _ou_or_none(ou_close, 'under')
-                    ou_op_o = _ou_or_none(ou_open, 'over')
-                    ou_op_l = _ou_or_none(ou_open, 'line')
-                    ou_op_u = _ou_or_none(ou_open, 'under')
-                    ou_liji_o = _ou_or_none(ou_liji_close, 'over')
-                    ou_liji_l = _ou_or_none(ou_liji_close, 'line')
-                    ou_liji_u = _ou_or_none(ou_liji_close, 'under')
-                    ou_liji_op_o = _ou_or_none(ou_liji_open, 'over')
-                    ou_liji_op_l = _ou_or_none(ou_liji_open, 'line')
-                    ou_liji_op_u = _ou_or_none(ou_liji_open, 'under')
-                    ou_ms_o = _ou_or_none(ou_ms_close, 'over')
-                    ou_ms_l = _ou_or_none(ou_ms_close, 'line')
-                    ou_ms_u = _ou_or_none(ou_ms_close, 'under')
-                    ou_ms_op_o = _ou_or_none(ou_ms_open, 'over')
-                    ou_ms_op_l = _ou_or_none(ou_ms_open, 'line')
-                    ou_ms_op_u = _ou_or_none(ou_ms_open, 'under')
-
                     cnt = 0
                     for rid in matched_ids:
                         cursor.execute("""
                             UPDATE poisson_predictions SET
-                                ah_handicap = COALESCE(?, ah_handicap),
-                                ah_home_water = COALESCE(?, ah_home_water),
-                                ah_away_water = COALESCE(?, ah_away_water),
-                                ah_source = COALESCE(?, ah_source),
-                                ah_open_handicap = COALESCE(?, ah_open_handicap),
-                                ah_open_home_water = COALESCE(?, ah_open_home_water),
-                                ah_open_away_water = COALESCE(?, ah_open_away_water),
-                                liji_handicap = COALESCE(?, liji_handicap),
-                                liji_home_water = COALESCE(?, liji_home_water),
-                                liji_away_water = COALESCE(?, liji_away_water),
-                                liji_open_handicap = COALESCE(?, liji_open_handicap),
-                                liji_open_home_water = COALESCE(?, liji_open_home_water),
-                                liji_open_away_water = COALESCE(?, liji_open_away_water),
-                                ms_handicap = COALESCE(?, ms_handicap),
-                                ms_home_water = COALESCE(?, ms_home_water),
-                                ms_away_water = COALESCE(?, ms_away_water),
-                                ms_open_handicap = COALESCE(?, ms_open_handicap),
-                                ms_open_home_water = COALESCE(?, ms_open_home_water),
-                                ms_open_away_water = COALESCE(?, ms_open_away_water),
-                                ou_over = COALESCE(?, ou_over), ou_line = COALESCE(?, ou_line), ou_under = COALESCE(?, ou_under),
-                                ou_open_over = COALESCE(?, ou_open_over), ou_open_line = COALESCE(?, ou_open_line), ou_open_under = COALESCE(?, ou_open_under),
-                                liji_ou_over = COALESCE(?, liji_ou_over), liji_ou_line = COALESCE(?, liji_ou_line), liji_ou_under = COALESCE(?, liji_ou_under),
-                                liji_ou_open_over = COALESCE(?, liji_ou_open_over), liji_ou_open_line = COALESCE(?, liji_ou_open_line), liji_ou_open_under = COALESCE(?, liji_ou_open_under),
-                                ms_ou_over = COALESCE(?, ms_ou_over), ms_ou_line = COALESCE(?, ms_ou_line), ms_ou_under = COALESCE(?, ms_ou_under),
-                                ms_ou_open_over = COALESCE(?, ms_ou_open_over), ms_ou_open_line = COALESCE(?, ms_ou_open_line), ms_ou_open_under = COALESCE(?, ms_ou_open_under)
+                                ah_handicap = CASE WHEN ah_handicap IS NOT NULL AND ah_handicap != 0 THEN ah_handicap ELSE ? END,
+                                ah_home_water = CASE WHEN ah_handicap IS NOT NULL AND ah_handicap != 0 THEN ah_home_water ELSE ? END,
+                                ah_away_water = CASE WHEN ah_handicap IS NOT NULL AND ah_handicap != 0 THEN ah_away_water ELSE ? END,
+                                ah_source = CASE WHEN ah_handicap IS NOT NULL AND ah_handicap != 0 THEN ah_source ELSE ? END,
+                                ah_open_handicap = CASE WHEN ah_open_handicap IS NOT NULL AND ah_open_handicap != 0 THEN ah_open_handicap ELSE ? END,
+                                ah_open_home_water = CASE WHEN ah_open_handicap IS NOT NULL AND ah_open_handicap != 0 THEN ah_open_home_water ELSE ? END,
+                                ah_open_away_water = CASE WHEN ah_open_handicap IS NOT NULL AND ah_open_handicap != 0 THEN ah_open_away_water ELSE ? END,
+                                liji_handicap = CASE WHEN liji_handicap IS NOT NULL AND liji_handicap != 0 THEN liji_handicap ELSE ? END,
+                                liji_home_water = CASE WHEN liji_handicap IS NOT NULL AND liji_handicap != 0 THEN liji_home_water ELSE ? END,
+                                liji_away_water = CASE WHEN liji_handicap IS NOT NULL AND liji_handicap != 0 THEN liji_away_water ELSE ? END,
+                                liji_open_handicap = CASE WHEN liji_open_handicap IS NOT NULL AND liji_open_handicap != 0 THEN liji_open_handicap ELSE ? END,
+                                liji_open_home_water = CASE WHEN liji_open_handicap IS NOT NULL AND liji_open_handicap != 0 THEN liji_open_home_water ELSE ? END,
+                                liji_open_away_water = CASE WHEN liji_open_handicap IS NOT NULL AND liji_open_handicap != 0 THEN liji_open_away_water ELSE ? END,
+                                ms_handicap = CASE WHEN ms_handicap IS NOT NULL AND ms_handicap != 0 THEN ms_handicap ELSE ? END,
+                                ms_home_water = CASE WHEN ms_handicap IS NOT NULL AND ms_handicap != 0 THEN ms_home_water ELSE ? END,
+                                ms_away_water = CASE WHEN ms_handicap IS NOT NULL AND ms_handicap != 0 THEN ms_away_water ELSE ? END,
+                                ms_open_handicap = CASE WHEN ms_open_handicap IS NOT NULL AND ms_open_handicap != 0 THEN ms_open_handicap ELSE ? END,
+                                ms_open_home_water = CASE WHEN ms_open_handicap IS NOT NULL AND ms_open_handicap != 0 THEN ms_open_home_water ELSE ? END,
+                                ms_open_away_water = CASE WHEN ms_open_handicap IS NOT NULL AND ms_open_handicap != 0 THEN ms_open_away_water ELSE ? END,
+                                ou_over = ?, ou_line = ?, ou_under = ?,
+                                ou_open_over = ?, ou_open_line = ?, ou_open_under = ?,
+                                liji_ou_over = ?, liji_ou_line = ?, liji_ou_under = ?,
+                                liji_ou_open_over = ?, liji_ou_open_line = ?, liji_ou_open_under = ?,
+                                ms_ou_over = ?, ms_ou_line = ?, ms_ou_under = ?,
+                                ms_ou_open_over = ?, ms_ou_open_line = ?, ms_ou_open_under = ?
                             WHERE id = ?
                         """, (ah_val, hw_val, aw_val, src_val,
                               ah_open_h, ah_open_hw, ah_open_aw,
-                              liji_h, liji_hw, liji_aw,
-                              liji_oh, liji_ohw, liji_oaw,
-                              ms_h, ms_hw, ms_aw,
-                              ms_oh, ms_ohw, ms_oaw,
-                              ou_o, ou_l, ou_u,
-                              ou_op_o, ou_op_l, ou_op_u,
-                              ou_liji_o, ou_liji_l, ou_liji_u,
-                              ou_liji_op_o, ou_liji_op_l, ou_liji_op_u,
-                              ou_ms_o, ou_ms_l, ou_ms_u,
-                              ou_ms_op_o, ou_ms_op_l, ou_ms_op_u,
+                              liji_close.get('handicap', 0) or 0, liji_close.get('home_w', 0) or 0, liji_close.get('away_w', 0) or 0,
+                              liji_open.get('handicap', 0) or 0, liji_open.get('home_w', 0) or 0, liji_open.get('away_w', 0) or 0,
+                              ms_close.get('handicap', 0) or 0, ms_close.get('home_w', 0) or 0, ms_close.get('away_w', 0) or 0,
+                              ms_open.get('handicap', 0) or 0, ms_open.get('home_w', 0) or 0, ms_open.get('away_w', 0) or 0,
+                              ou_close.get('over', 0) or 0, ou_close.get('line', 0) or 0, ou_close.get('under', 0) or 0,
+                              ou_open.get('over', 0) or 0, ou_open.get('line', 0) or 0, ou_open.get('under', 0) or 0,
+                              ou_liji_close.get('over', 0) or 0, ou_liji_close.get('line', 0) or 0, ou_liji_close.get('under', 0) or 0,
+                              ou_liji_open.get('over', 0) or 0, ou_liji_open.get('line', 0) or 0, ou_liji_open.get('under', 0) or 0,
+                              ou_ms_close.get('over', 0) or 0, ou_ms_close.get('line', 0) or 0, ou_ms_close.get('under', 0) or 0,
+                              ou_ms_open.get('over', 0) or 0, ou_ms_open.get('line', 0) or 0, ou_ms_open.get('under', 0) or 0,
                               rid))
                         cnt += cursor.rowcount
                     ah_updated += cnt
@@ -677,4 +607,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
