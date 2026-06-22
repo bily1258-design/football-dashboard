@@ -553,8 +553,28 @@ def team_match(a: str, b: str) -> bool:
     b = b.strip()
     if a == b:
         return True
+    # 别名表：oddsmagnet(om_only) ↔ 足彩网 译名差异
+    _ALIAS = {
+        # 挪甲
+        '摩斯': '莫斯', '阿萨纳': '奥萨尼', '贺特': '赫德',
+        '斯托曼': '斯特勒门', '康斯文格': '孔斯温格',
+        # 瑞典超甲
+        '奥斯达': '厄斯特什', '法尔肯堡': '法尔肯贝里',
+        '厄斯特松德': '厄斯特松', '北欧联FC': '阿西里斯卡',
+        # 冰岛超
+        '哈夫纳夫约杜尔': '哈夫纳夫', '瓦鲁尔': '瓦路尔',
+        '贝雷达比历克': '贝雷达比', 'KA阿克雷里': 'KA阿古雷',
+        # 巴西乙
+        '圣贝尔纳多': '圣贝纳多', '雷加塔斯巴西': '雷加塔斯',
+        # 世界杯
+        '沙特阿拉伯': '沙特',
+    }
+    a2 = _ALIAS.get(a, a)
+    b2 = _ALIAS.get(b, b)
+    if a2 == b2 or a2 == b or a == b2:
+        return True
     # 子串匹配
-    if a in b or b in a:
+    if a2 in b2 or b2 in a2:
         return True
     # 去除常见后缀
     for suffix in ['FC', 'SC', 'CF', 'CD', 'SV', 'IF', 'FK', 'BK', 'AC', 'AS', 'SS', 'SP', 'RJ', 'MG', 'PA', 'RS', 'GO', 'CE', 'BA', 'SE', 'EC', 'AA', 'FT', 'MT', 'PI', 'PB', 'PR', 'GP', 'AP', 'TP', 'BB', 'CB']:
