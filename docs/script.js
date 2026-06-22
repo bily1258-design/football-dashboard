@@ -138,13 +138,13 @@ function openAhModal(record) {
     return s;
   }
 
-  // HKJC
+  // HKJC（1X2已在顶部对比表显示，此处只显示亚盘+大小球）
   html += compactCompany('HKJC', 'ah-badge-hkjc',
-    record.hkjc, record.hkjc_ah, record.hkjc_ou);
+    null, record.hkjc_ah, record.hkjc_ou);
 
-  // Pinnacle
+  // Pinnacle（1X2已在顶部对比表显示，此处只显示亚盘+大小球）
   html += compactCompany('Pinnacle', 'ah-badge-pin',
-    record.pinnacle, record.pin_ah, record.pin_ou);
+    null, record.pin_ah, record.pin_ou);
 
   // 利记
   const liji = record.liji || {};
