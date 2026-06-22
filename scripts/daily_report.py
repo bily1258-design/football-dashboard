@@ -2804,8 +2804,6 @@ def save_to_database(results: List[dict], date_str: str, dry_run: bool = False):
                 expected_win REAL,
                 expected_draw REAL,
                 expected_loss REAL,
-                recommended TEXT,
-                recommended_kelly REAL,
                 home_ranking INTEGER,
                 away_ranking INTEGER,
                 home_lambda REAL,
