@@ -33,7 +33,8 @@ function chgCls(openV, closeV) {
 function openAhModal(record) {
   const modal = document.getElementById('ahModal');
   const title = document.getElementById('ahModalTitle');
-  title.textContent = `${record.home} vs ${record.away} — 赔率详情`;
+  const scoreStr = record.score ? `  ${record.score}` : '';
+  title.textContent = `${record.home} vs ${record.away}${scoreStr} — 赔率详情`;
   modal.style.display = 'flex';
 
   const pin = record.pinnacle || {};
