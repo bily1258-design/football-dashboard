@@ -519,7 +519,7 @@ def step_review(date_str: str):
     print("=" * 50)
 
     cmd = [sys.executable, os.path.join(SCRIPT_DIR, 'review.py'), '--date', date_str]
-    result = subprocess.run(cmd, cwd=REPO_DIR, capture_output=True, text=True, timeout=120)
+    result = subprocess.run(cmd, cwd=REPO_DIR, capture_output=True, text=True, timeout=300)
     if result.returncode == 0:
         print(f"✅ 复盘完成")
     else:
