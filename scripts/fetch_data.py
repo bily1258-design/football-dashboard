@@ -400,13 +400,13 @@ def step_push(date_str: str):
     # 先pull rebase再push
     pull = subprocess.run(
         ['git', 'pull', '--rebase', 'origin', 'main'],
-        cwd=REPO_DIR, capture_output=True, text=True, timeout=120
+        cwd=REPO_DIR, capture_output=True, text=True, timeout=180
     )
     if pull.returncode != 0:
         print(f"⚠️ pull失败: {pull.stderr[:200]}")
     push = subprocess.run(
         ['git', 'push', 'origin', 'main'],
-        cwd=REPO_DIR, capture_output=True, text=True, timeout=120
+        cwd=REPO_DIR, capture_output=True, text=True, timeout=180
     )
     if push.returncode == 0:
         print("✅ raw 数据已推送 → GA 将自动触发构建")
