@@ -667,9 +667,11 @@ def main():
     # Termux 模式：只抓raw + push（其余步骤由GA完成）
     if args.fetch_and_push:
         step_fetch(date_str)
+        step_backfill_results(date_str, db_path)  # 赛果回填（Termux有chromium可抓zgzcw）
+        step_push_db(db_path)  # 推送回填后的DB到Release
         step_push(date_str)
         
-        print("\n✅ Termux模式完成：raw数据已推送，GA将执行后续全流程")
+        print("\n✅ Termux模式完成：raw数据+赛果回填已推送，GA将执行后续全流程")
         return
 
     # 只抓取模式
