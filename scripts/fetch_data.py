@@ -626,30 +626,12 @@ def main():
 
     print(f"🎯 目标日期: {date_str}")
 
-    # Termux 模式：fetch → report → review → push
+    # Termux 模式：只抓raw + push（其余步骤由GA完成）
     if args.fetch_and_push:
         step_fetch(date_str)
-        step_predict(date_str, db_path)          # 先INSERT预测记录
-        step_fetch_pinnacle(date_str, db_path)   # 再UPDATE赔率
-        step_update_ah(date_str, db_path)        # 亚盘数据写入DB
-        step_update_db(db_path)
-        step_backfill_results(date_str, db_path) # 赛果回填（足彩网优先）
-        
-        if args.with_report:
-            step_prepare_odds(date_str)
-            step_daily_report(date_str, args.incremental)
-        
-        if args.with_review:
-            step_review(date_str)
-        
-        # 先上传DB到Release，再git push触发GA
-        # 确保GA下载Release时拿到的是含AH数据的最新DB
-        if not args.skip_db_push:
-            step_push_db(db_path)
-        
         step_push(date_str)
         
-        print("\n✅ Termux模式完成：数据已推送，GA将自动构建看板")
+        print("\n✅ Termux模式完成：raw数据已推送，GA将执行后续全流程")
         return
 
     # 只抓取模式
