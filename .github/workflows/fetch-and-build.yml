@@ -50,29 +50,59 @@ jobs:
             echo "⚠️ No DB available, build may be limited"
           fi
 
-      # 数据抓取已移至Termux本地执行：
-      # - GA的WAF拦截导致足彩网利记/明升/Pinnacle全部失败
-      # - api-football日限100次在GA经常用完
-      # - fetch失败的0值会覆盖DB中Termux填入的完整数据
-      # GA只负责：下载Release DB → build看板 → 部署
+      # ========== 数据抓取在Termux本地执行（WAF原因） ==========
+      # GA只负责：下载Release DB → 日报/复盘/对齐 → 构建看板 → 部署
 
-      - name: Run pipeline (align only)
+      - name: Recalculate final probabilities
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: |
+          if [ -f data/football.db ]; then
+            python3 scripts/recalc_final.py || echo "⚠️ recalc_final failed, continuing"
+          else
+            echo "⚠️ Skipping recalc (no DB)"
+          fi
+
+      - name: Generate daily report
         if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         run: |
           if [ -f data/football.db ]; then
             DATE=$(date +%Y-%m-%d)
-            python scripts/align_and_merge.py --all --db data/football.db
+            python3 scripts/daily_report.py --date "$DATE" --no-fundamental \
+              || echo "⚠️ daily_report failed, continuing with existing data"
           else
-            echo "⚠️ Skipping align (no DB)"
+            echo "⚠️ Skipping daily_report (no DB)"
           fi
+        timeout-minutes: 20
 
-      - name: Build Dashboard
-        if: ${{ false }}
+      - name: Run LGBM fusion + EV recalc
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         run: |
           if [ -f data/football.db ]; then
-            python scripts/build.py --db data/football.db --output .
+            python3 scripts/update_db_fusion.py || echo "⚠️ update_db_fusion failed, continuing"
+            python3 scripts/value_bet.py || echo "⚠️ value_bet failed, continuing"
           else
-            python scripts/build.py --output .
+            echo "⚠️ Skipping fusion/EV (no DB)"
+          fi
+        timeout-minutes: 10
+
+      - name: Run review
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: |
+          if [ -f data/football.db ]; then
+            DATE=$(date +%Y-%m-%d)
+            python3 scripts/review.py --date "$DATE" || echo "⚠️ review failed, continuing"
+          else
+            echo "⚠️ Skipping review (no DB)"
+          fi
+        timeout-minutes: 10
+
+      - name: Align and merge
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: |
+          if [ -f data/football.db ]; then
+            python3 scripts/align_and_merge.py --all --db data/football.db
+          else
+            echo "⚠️ Skipping align (no DB)"
           fi
 
       - name: Setup Pages
