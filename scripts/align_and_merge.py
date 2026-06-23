@@ -2,16 +2,15 @@
 """align_and_merge.py — 对齐合并 raw 数据 → processed
 
 读取：
-  data/raw/bsd/{date}.json        — 赛果
   data/raw/oddsmagnet/{date}.json — 赔率
-  football.db (可选)               — 预测数据
+  football.db (可选)               — 预测数据 + 赛果
 
 输出：
   data/processed/{date}.json — 合并后的结构化数据
 
 对齐策略：
   1. 以 DB 预测为主轴（有预测才有看板行）
-  2. BSD 赛果按队名模糊匹配回填
+  2. 赛果从 DB actual_outcome 读取（由 fetch_zgzcw_results.py --backfill 写入）
   3. OddsMagnet 赔率按队名匹配补充 Pinnacle/HKJC
 """
 
@@ -22,7 +21,6 @@ from collections import defaultdict
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 REPO_DIR = os.path.dirname(SCRIPT_DIR)
-RAW_BSD = os.path.join(REPO_DIR, "data", "raw", "bsd")
 RAW_OM = os.path.join(REPO_DIR, "data", "raw", "oddsmagnet")
 PROCESSED_DIR = os.path.join(REPO_DIR, "data", "processed")
 
@@ -32,15 +30,6 @@ DB_PATH = os.environ.get('FOOTBALL_DB_PATH',
 
 sys.path.insert(0, SCRIPT_DIR)
 from utils import team_match, normalize_team, calc_implied_prob, calc_ev, calc_kelly, parse_score
-
-
-def load_raw_bsd(date_str: str) -> Dict:
-    """加载BSD赛果"""
-    path = os.path.join(RAW_BSD, f"{date_str.replace('-','')}.json")
-    if not os.path.exists(path):
-        return {}
-    with open(path, 'r', encoding='utf-8') as f:
-        return json.load(f)
 
 
 def load_raw_oddsmagnet(date_str: str) -> Dict:
@@ -165,23 +154,6 @@ def load_db_predictions(db_path: str, date_str: str) -> List[Dict]:
     return rows
 
 
-def match_bsd_result(team_home: str, team_away: str, bsd_data: Dict) -> Optional[Dict]:
-    """在BSD赛果中查找匹配"""
-    if not bsd_data:
-        return None
-    # 先查竞彩
-    for r in bsd_data.get('jingcai', []):
-        if team_match(team_home, r['home']) and team_match(team_away, r['away']):
-            return {'score': r['score'], 'home_score': r.get('home_score'),
-                    'away_score': r.get('away_score'), 'source': 'jingcai'}
-    # 再查完场
-    for r in bsd_data.get('wanchang', []):
-        if team_match(team_home, r['home']) and team_match(team_away, r['away']):
-            return {'score': r['score'], 'home_score': r.get('home_score'),
-                    'away_score': r.get('away_score'), 'source': 'wanchang'}
-    return None
-
-
 def match_om_odds(team_home: str, team_away: str, om_data: Dict) -> Optional[Dict]:
     """在OddsMagnet赔率中查找匹配（兼容dict和list两种格式）"""
     if not om_data:
@@ -201,9 +173,6 @@ def match_om_odds(team_home: str, team_away: str, om_data: Dict) -> Optional[Dic
                     result[f'{src}_d'] = o.get('odds_d', 0)
                     result[f'{src}_l'] = o.get('odds_l', 0)
                     result[f'{src}_margin'] = o.get('margin', 0)
-                bsd = m.get('bsd', {})
-                if bsd:
-                    result['bsd'] = bsd
                 return result
     # 旧格式: matches是list [{home, away, odds_w, ...}]
     elif isinstance(matches, list):
@@ -213,19 +182,11 @@ def match_om_odds(team_home: str, team_away: str, om_data: Dict) -> Optional[Dic
     return None
 
 
-def merge_prediction(rec: Dict, bsd_result: Optional[Dict], om_match: Optional[Dict]) -> Dict:
-    """合并单条预测记录 + BSD赛果 + OM赔率"""
-    # 解析已有赛果
+def merge_prediction(rec: Dict, om_match: Optional[Dict]) -> Dict:
+    """合并单条预测记录 + OM赔率"""
+    # 解析已有赛果（由 fetch_zgzcw_results.py --backfill 写入 DB）
     existing_outcome = rec.get('actual_outcome', '') or ''
     result_label, score, hs, as_ = parse_score(existing_outcome)
-
-    # BSD赛果回填（仅当DB无赛果时）
-    if not result_label and bsd_result:
-        score = bsd_result['score']
-        hs = bsd_result.get('home_score')
-        as_ = bsd_result.get('away_score')
-        if hs is not None and as_ is not None:
-            result_label = '主胜' if hs > as_ else ('客胜' if hs < as_ else '平局')
 
     # 方向命中判定
     ev_dir = rec.get('best_direction_cn') or rec.get('prediction') or ''
@@ -404,33 +365,22 @@ def merge_prediction(rec: Dict, bsd_result: Optional[Dict], om_match: Optional[D
 
 
 def align_and_merge(date_str: str, db_path: str = None) -> Dict:
-    """对齐合并：DB + BSD + OM → processed"""
+    """对齐合并：DB + OM → processed"""
     if not db_path:
         db_path = DB_PATH
 
     print(f"🔗 对齐合并: {date_str}")
 
-    # 加载三源
-    bsd = load_raw_bsd(date_str)
+    # 加载数据源
     om = load_raw_oddsmagnet(date_str)
     predictions = load_db_predictions(db_path, date_str)
 
-    # 也加载次日BSD（补欧洲晚场）
-    next_date = (datetime.strptime(date_str, '%Y-%m-%d') + timedelta(days=1)).strftime('%Y-%m-%d')
-    bsd_next = load_raw_bsd(next_date)
-
     merged = []
     for rec in predictions:
-        # 匹配赛果
-        bsd_result = match_bsd_result(rec['home_team'], rec['away_team'], bsd)
-        if not bsd_result and bsd_next:
-            # 次日缓存补晚场
-            bsd_result = match_bsd_result(rec['home_team'], rec['away_team'], bsd_next)
-
         # 匹配赔率
         om_match = match_om_odds(rec['home_team'], rec['away_team'], om)
 
-        merged.append(merge_prediction(rec, bsd_result, om_match))
+        merged.append(merge_prediction(rec, om_match))
 
     # 统计
     with_result = sum(1 for r in merged if r['result'])
