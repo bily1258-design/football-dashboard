@@ -942,10 +942,12 @@ def fetch_all(date_str: str = None, companies: List[str] = None,
 
     # 统计 oyzs 各公司覆盖
     oyzs_stats = {'pinnacle': 0, 'hkjc': 0, 'liji': 0, 'mingsheng': 0, 'william': 0}
+    _STATS_KEY_MAP = {'pinnacle': 'pinnacle', 'hkjc': 'hkjc', '利记': 'liji', '明升': 'mingsheng', '威廉希尔': 'william'}
     for mk, m in oyzs_data.items():
-        for ck in oyzs_stats:
-            if ck in m.get('companies', {}):
-                oyzs_stats[ck] += 1
+        for ck_raw in m.get('companies', {}):
+            mapped = _STATS_KEY_MAP.get(ck_raw)
+            if mapped and mapped in oyzs_stats:
+                oyzs_stats[mapped] += 1
     print(f"  oyzs汇总: {len(oyzs_data)} 场 [Pin:{oyzs_stats['pinnacle']} HKJC:{oyzs_stats['hkjc']} 利记:{oyzs_stats['liji']} 明升:{oyzs_stats['mingsheng']} 威廉:{oyzs_stats['william']}]")
 
     # ====== 2. Betfair 等 (POST bjzs) ======
@@ -1130,11 +1132,15 @@ def fetch_all(date_str: str = None, companies: List[str] = None,
             if ms:
                 entry["ms_ah"] = ms.get("ah", {})
                 entry["ms_ou"] = ms.get("ou", {})
-            # 威廉希尔 AH + OU
+            # 威廉希尔 AH + OU + 1X2
             william = companies.get("威廉希尔")
             if william:
                 entry["william_ah"] = william.get("ah", {})
                 entry["william_ou"] = william.get("ou", {})
+                w1x2 = william.get("1x2", {})
+                w_close = w1x2.get("close", {})
+                w_open = w1x2.get("open", {})
+                entry["william_1x2"] = {"close": w_close, "open": w_open}
             oyzs_output[key] = entry
 
         oyzs_path = os.path.join(RAW_DIR, f"oyzs_{curr_day}.json")
