@@ -3070,6 +3070,9 @@ def save_to_database(results: List[dict], date_str: str, dry_run: bool = False):
                 'had_lambda_a': had_lambda_a,
                 'hhad_lambda_h': hhad_lambda_h,
                 'hhad_lambda_a': hhad_lambda_a,
+                # 同步到 home_lambda/away_lambda，供前端泊松弹窗使用
+                'home_lambda': had_lambda_h,
+                'away_lambda': had_lambda_a,
                 # qtx积分榜数据（LGBM新特征）
                 'home_points': r.get('home_points', 0),
                 'away_points': r.get('away_points', 0),
@@ -3251,6 +3254,7 @@ def save_to_database(results: List[dict], date_str: str, dry_run: bool = False):
                             hhad_handicap = :hhad_handicap,
                             had_lambda_h = :had_lambda_h, had_lambda_a = :had_lambda_a,
                             hhad_lambda_h = :hhad_lambda_h, hhad_lambda_a = :hhad_lambda_a,
+                            home_lambda = :home_lambda, away_lambda = :away_lambda,
                             home_points = :home_points, away_points = :away_points,
                             home_avg_goals = :home_avg_goals, away_avg_goals = :away_avg_goals,
                             home_avg_conceded = :home_avg_conceded, away_avg_conceded = :away_avg_conceded
@@ -3268,6 +3272,7 @@ def save_to_database(results: List[dict], date_str: str, dry_run: bool = False):
                             cold_risk, cold_signals, risk_warning,
                             odds_source, hhad_win, hhad_draw, hhad_loss, hhad_handicap,
                             had_lambda_h, had_lambda_a, hhad_lambda_h, hhad_lambda_a,
+                            home_lambda, away_lambda,
                             home_points, away_points, home_avg_goals, away_avg_goals,
                             home_avg_conceded, away_avg_conceded,
                             pinnacle_open_w, pinnacle_open_d, pinnacle_open_l,
@@ -3287,6 +3292,7 @@ def save_to_database(results: List[dict], date_str: str, dry_run: bool = False):
                             :cold_risk, :cold_signals, :risk_warning,
                             :odds_source, :hhad_win, :hhad_draw, :hhad_loss, :hhad_handicap,
                             :had_lambda_h, :had_lambda_a, :hhad_lambda_h, :hhad_lambda_a,
+                            :home_lambda, :away_lambda,
                             :home_points, :away_points, :home_avg_goals, :away_avg_goals,
                             :home_avg_conceded, :away_avg_conceded,
                             :pinnacle_open_w, :pinnacle_open_d, :pinnacle_open_l,
