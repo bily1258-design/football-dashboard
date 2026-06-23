@@ -11,7 +11,7 @@
   - prediction = max(final) 方向
 - INSERT 到 poisson_predictions 表（按 date+home+away 去重）
 
-依赖：raw/oddsmagnet/{date}.json + raw/bsd/{date}.json（可选，用于补 beidan）
+依赖：raw/oddsmagnet/{date}.json
 输出：DB 中新插入的 N 条预测记录
 
 用法：
