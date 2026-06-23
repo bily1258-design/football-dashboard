@@ -39,14 +39,17 @@ function openAhModal(record) {
 
   const pin = record.pinnacle || {};
   const hkjc = record.hkjc || {};
+  const william = record.william_1x2 || {};
 
-  // ── 1X2对比表（顶部3家一行）──
+  // ── 1X2对比表（顶部4家一行）──
   let html = '<table class="ah-odds-table">';
   html += '<tr><th class="ah-col-label">盘口</th><th>胜(主)</th><th>平</th><th>负(客)</th></tr>';
   html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-jc">竞彩</span></td>`;
   html += `<td>${record.odds.w || '-'}</td><td>${record.odds.d || '-'}</td><td>${record.odds.l || '-'}</td></tr>`;
   html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-pin">Pinnacle</span></td>`;
   html += `<td>${pin.w || '-'}</td><td>${pin.d || '-'}</td><td>${pin.l || '-'}</td></tr>`;
+  html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-will">威廉希尔</span></td>`;
+  html += `<td>${william.w || '-'}</td><td>${william.d || '-'}</td><td>${william.l || '-'}</td></tr>`;
   html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-hkjc">HKJC</span></td>`;
   html += `<td>${hkjc.w || '-'}</td><td>${hkjc.d || '-'}</td><td>${hkjc.l || '-'}</td></tr>`;
   html += '</table>';
@@ -183,6 +186,24 @@ function openAhModal(record) {
   } : null;
   if (msAhObj || msOuObj) {
     html += compactCompany('明升', 'ah-badge-ms', null, msAhObj, msOuObj);
+  }
+
+  // 威廉希尔
+  const williamAh = record.william_ah || {};
+  const williamAhClose = williamAh.close || williamAh.handicap ? williamAh : {};
+  const williamAhOpen = (williamAh.open) || {};
+  const williamOu = record.william_ou || {};
+  const williamAhObj = (williamAhClose.handicap !== null && williamAhClose.handicap !== undefined && williamAhClose.handicap !== 0) ||
+                       (williamAhOpen.handicap !== null && williamAhOpen.handicap !== undefined && williamAhOpen.handicap !== 0) ? {
+    handicap: williamAhClose.handicap || null, home_w: williamAhClose.home_w || null, away_w: williamAhClose.away_w || null,
+    open: williamAhOpen.handicap ? { handicap: williamAhOpen.handicap, home_w: williamAhOpen.home_w, away_w: williamAhOpen.away_w } : {}
+  } : null;
+  const williamOuObj = (williamOu.over || 0) > 0 ? {
+    line: williamOu.line || null, over: williamOu.over || null, under: williamOu.under || null,
+    open: {}
+  } : null;
+  if (williamAhObj || williamOuObj) {
+    html += compactCompany('威廉希尔', 'ah-badge-will', null, williamAhObj, williamOuObj);
   }
 
   // ===== HHAD让球 =====
@@ -416,7 +437,7 @@ function loadDate() {
     const evCls = v => v > 0 ? 'ev-pos' : 'ev-neg';
     const ah = r.ah || {};
     const hasAh = ah.handicap !== null && ah.handicap !== undefined && (ah.handicap !== 0 || ah.home_w !== 0 || ah.away_w !== 0);
-    // 亚盘列优先显示Pinnacle让球，其次利记，再次HKJC，最后fallback到ah
+    // 亚盘列优先显示Pinnacle让球，其次利记，再次威廉希尔，再次HKJC，最后fallback到ah
     const pinAh = r.pin_ah || {};
     const lijiAh = (r.liji || {}).close || {};
     let ahDisplayVal = '-';
@@ -428,14 +449,21 @@ function loadDate() {
       ahDisplayVal = handicapToChinese(lijiAh.handicap);
       ahClickable = true;
     } else {
-      const hkjcAh = (r.hkjc_ah || {}).close || {};
-      if (hkjcAh.handicap) {
-        ahDisplayVal = handicapToChinese(hkjcAh.handicap);
+      const williamAh = (r.william_ah || {});
+      const williamAhHc = williamAh.handicap;
+      if (williamAhHc !== null && williamAhHc !== undefined && williamAhHc !== 0) {
+        ahDisplayVal = handicapToChinese(williamAhHc);
         ahClickable = true;
-      } else if (hasAh) {
-        // fallback: 旧ah字段(来自百家平均等)
-        ahDisplayVal = handicapToChinese(ah.handicap);
-        ahClickable = true;
+      } else {
+        const hkjcAh = (r.hkjc_ah || {}).close || {};
+        if (hkjcAh.handicap) {
+          ahDisplayVal = handicapToChinese(hkjcAh.handicap);
+          ahClickable = true;
+        } else if (hasAh) {
+          // fallback: 旧ah字段(来自百家平均等)
+          ahDisplayVal = handicapToChinese(ah.handicap);
+          ahClickable = true;
+        }
       }
     }
     const ahCell = ahClickable
