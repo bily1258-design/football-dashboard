@@ -1,6 +1,6 @@
 {
   "date": "2026-06-23",
-  "fetch_time": "2026-06-23 10:26:20",
+  "fetch_time": "2026-06-23 14:23:23",
   "jingcai": [],
   "wanchang": [
     {
@@ -782,13 +782,424 @@
       "away_score": 2,
       "outcome": "主胜",
       "half_score": "1-0"
+    },
+    {
+      "source": "wanchang",
+      "league": "美乙2",
+      "round": "联赛",
+      "kickoff": "06-23 08:40",
+      "home": "丹顿迪亚波罗",
+      "away": "迈克坚尼卓柏卡布拉",
+      "score": "3-1",
+      "home_score": 3,
+      "away_score": 1,
+      "outcome": "主胜",
+      "half_score": "0-1"
+    },
+    {
+      "source": "wanchang",
+      "league": "美乙2",
+      "round": "联赛",
+      "kickoff": "06-23 09:00",
+      "home": "法拉提隆斯拉什",
+      "away": "竞技联",
+      "score": "1-2",
+      "home_score": 1,
+      "away_score": 2,
+      "outcome": "客胜",
+      "half_score": "1-1"
     }
   ],
-  "beidan": [],
+  "beidan": [
+    {
+      "source": "beidan",
+      "match_num": 1,
+      "league": "芬超",
+      "round": "第12轮",
+      "kickoff": "06-23 23:00",
+      "status": "未",
+      "home": "拉赫蒂",
+      "away": "TPS图尔库",
+      "handicap": 0,
+      "sp_values": [
+        1.99,
+        3.68,
+        4.42
+      ]
+    },
+    {
+      "source": "beidan",
+      "match_num": 2,
+      "league": "芬超",
+      "round": "第12轮",
+      "kickoff": "06-23 23:00",
+      "status": "未",
+      "home": "库普斯",
+      "away": "伊尔维斯",
+      "handicap": -1,
+      "sp_values": [
+        3.4,
+        3.33,
+        2.46
+      ]
+    },
+    {
+      "source": "beidan",
+      "match_num": 3,
+      "league": "芬超",
+      "round": "第12轮",
+      "kickoff": "06-23 23:00",
+      "status": "未",
+      "home": "瓦萨",
+      "away": "AC奥卢",
+      "handicap": 0,
+      "sp_values": [
+        3.22,
+        3.75,
+        2.35
+      ]
+    },
+    {
+      "source": "beidan",
+      "match_num": 4,
+      "league": "芬超",
+      "round": "第12轮",
+      "kickoff": "06-24 00:00",
+      "status": "未",
+      "home": "国际图尔库",
+      "away": "塞伊奈约基",
+      "handicap": -1,
+      "sp_values": [
+        1.92,
+        3.95,
+        4.37
+      ]
+    },
+    {
+      "source": "beidan",
+      "match_num": 5,
+      "league": "芬超",
+      "round": "第12轮",
+      "kickoff": "06-24 00:00",
+      "status": "未",
+      "home": "查路",
+      "away": "格尼斯坦",
+      "handicap": 0,
+      "sp_values": [
+        5.19,
+        3.43,
+        1.93
+      ]
+    },
+    {
+      "source": "beidan",
+      "match_num": 6,
+      "league": "世界杯",
+      "round": "第2轮",
+      "kickoff": "06-24 01:00",
+      "status": "未",
+      "home": "葡萄牙",
+      "away": "乌兹别克斯坦",
+      "handicap": -2,
+      "sp_values": [
+        1.87,
+        3.77,
+        4.92
+      ]
+    },
+    {
+      "source": "beidan",
+      "match_num": 7,
+      "league": "芬超",
+      "round": "第12轮",
+      "kickoff": "06-24 01:00",
+      "status": "未",
+      "home": "玛丽港",
+      "away": "赫尔辛基",
+      "handicap": 2,
+      "sp_values": [
+        2.34,
+        4.32,
+        2.92
+      ]
+    },
+    {
+      "source": "beidan",
+      "match_num": 8,
+      "league": "世界杯",
+      "round": "第2轮",
+      "kickoff": "06-24 04:00",
+      "status": "未",
+      "home": "英格兰",
+      "away": "加纳",
+      "handicap": -2,
+      "sp_values": [
+        2.12,
+        3.41,
+        4.23
+      ]
+    },
+    {
+      "source": "beidan",
+      "match_num": 9,
+      "league": "世界杯",
+      "round": "第2轮",
+      "kickoff": "06-24 07:00",
+      "status": "未",
+      "home": "巴拿马",
+      "away": "克罗地亚",
+      "handicap": 1,
+      "sp_values": [
+        5.37,
+        3.49,
+        1.89
+      ]
+    },
+    {
+      "source": "beidan",
+      "match_num": 10,
+      "league": "巴西乙",
+      "round": "第14轮",
+      "kickoff": "06-24 07:00",
+      "status": "未",
+      "home": "米内罗美洲",
+      "away": "克里西乌马",
+      "handicap": 0,
+      "sp_values": [
+        3.34,
+        2.93,
+        2.77
+      ]
+    },
+    {
+      "source": "beidan",
+      "match_num": 11,
+      "league": "世界杯",
+      "round": "第2轮",
+      "kickoff": "06-24 10:00",
+      "status": "未",
+      "home": "哥伦比亚",
+      "away": "刚果(金)",
+      "handicap": -1,
+      "sp_values": [
+        2.24,
+        3.11,
+        4.27
+      ]
+    },
+    {
+      "source": "beidan",
+      "match_num": 12,
+      "league": "世界杯",
+      "round": "第3轮",
+      "kickoff": "06-25 03:00",
+      "status": "未",
+      "home": "瑞士",
+      "away": "加拿大",
+      "handicap": 0,
+      "sp_values": [
+        1.79,
+        3.36,
+        6.83
+      ]
+    },
+    {
+      "source": "beidan",
+      "match_num": 13,
+      "league": "世界杯",
+      "round": "第3轮",
+      "kickoff": "06-25 03:00",
+      "status": "未",
+      "home": "波黑",
+      "away": "卡塔尔",
+      "handicap": -1,
+      "sp_values": [
+        2.04,
+        4.35,
+        3.55
+      ]
+    },
+    {
+      "source": "beidan",
+      "match_num": 14,
+      "league": "世界杯",
+      "round": "第3轮",
+      "kickoff": "06-25 06:00",
+      "status": "未",
+      "home": "苏格兰",
+      "away": "巴西",
+      "handicap": 1,
+      "sp_values": [
+        8.41,
+        6.91,
+        1.35
+      ]
+    },
+    {
+      "source": "beidan",
+      "match_num": 15,
+      "league": "世界杯",
+      "round": "第3轮",
+      "kickoff": "06-25 06:00",
+      "status": "未",
+      "home": "摩洛哥",
+      "away": "海地",
+      "handicap": -2,
+      "sp_values": [
+        1.98,
+        3.92,
+        4.15
+      ]
+    },
+    {
+      "source": "beidan",
+      "match_num": 16,
+      "league": "世界杯",
+      "round": "第3轮",
+      "kickoff": "06-25 09:00",
+      "status": "未",
+      "home": "捷克",
+      "away": "墨西哥",
+      "handicap": 0,
+      "sp_values": [
+        3.06,
+        4.69,
+        2.16
+      ]
+    },
+    {
+      "source": "beidan",
+      "match_num": 17,
+      "league": "世界杯",
+      "round": "第3轮",
+      "kickoff": "06-25 09:00",
+      "status": "未",
+      "home": "南非",
+      "away": "韩国",
+      "handicap": 1,
+      "sp_values": [
+        2.42,
+        4.15,
+        2.88
+      ]
+    },
+    {
+      "source": "beidan",
+      "match_num": 18,
+      "league": "冰岛超",
+      "round": "第12轮",
+      "kickoff": "06-26 03:15",
+      "status": "未",
+      "home": "贝雷达比历克",
+      "away": "维京古尔",
+      "handicap": 1,
+      "sp_values": [
+        1.77,
+        7.47,
+        3.3
+      ]
+    },
+    {
+      "source": "beidan",
+      "match_num": 19,
+      "league": "世界杯",
+      "round": "第3轮",
+      "kickoff": "06-26 04:00",
+      "status": "未",
+      "home": "库拉索",
+      "away": "科特迪瓦",
+      "handicap": 2,
+      "sp_values": [
+        3.4,
+        3.79,
+        2.25
+      ]
+    },
+    {
+      "source": "beidan",
+      "match_num": 20,
+      "league": "世界杯",
+      "round": "第3轮",
+      "kickoff": "06-26 04:00",
+      "status": "未",
+      "home": "厄瓜多尔",
+      "away": "德国",
+      "handicap": 1,
+      "sp_values": [
+        2.08,
+        7.46,
+        2.59
+      ]
+    },
+    {
+      "source": "beidan",
+      "match_num": 21,
+      "league": "世界杯",
+      "round": "第3轮",
+      "kickoff": "06-26 07:00",
+      "status": "未",
+      "home": "日本",
+      "away": "瑞典",
+      "handicap": 0,
+      "sp_values": [
+        1.37,
+        6.76,
+        8.01
+      ]
+    },
+    {
+      "source": "beidan",
+      "match_num": 22,
+      "league": "世界杯",
+      "round": "第3轮",
+      "kickoff": "06-26 07:00",
+      "status": "未",
+      "home": "突尼斯",
+      "away": "荷兰",
+      "handicap": 2,
+      "sp_values": [
+        4.54,
+        5.94,
+        1.63
+      ]
+    },
+    {
+      "source": "beidan",
+      "match_num": 23,
+      "league": "世界杯",
+      "round": "第3轮",
+      "kickoff": "06-26 10:00",
+      "status": "未",
+      "home": "土耳其",
+      "away": "美国",
+      "handicap": 0,
+      "sp_values": [
+        3.95,
+        7.76,
+        1.61
+      ]
+    },
+    {
+      "source": "beidan",
+      "match_num": 24,
+      "league": "世界杯",
+      "round": "第3轮",
+      "kickoff": "06-26 10:00",
+      "status": "未",
+      "home": "巴拉圭",
+      "away": "澳大利亚",
+      "handicap": 0,
+      "sp_values": [
+        1.98,
+        3.65,
+        4.5
+      ]
+    }
+  ],
   "summary": {
     "jingcai": 0,
-    "wanchang": 60,
-    "beidan": 0,
+    "wanchang": 62,
+    "beidan": 24,
     "beidan_with_result": 0
   }
 }
