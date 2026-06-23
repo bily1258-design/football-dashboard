@@ -93,6 +93,10 @@ def load_from_db(db_path: str, max_days=999) -> dict:
         ('hkjc_ou_line', 'REAL'), ('hkjc_ou_over', 'REAL'), ('hkjc_ou_under', 'REAL'),
         ('hkjc_ou_open_line', 'REAL'), ('hkjc_ou_open_over', 'REAL'), ('hkjc_ou_open_under', 'REAL'),
         ('hkjc_open_w', 'REAL'), ('hkjc_open_d', 'REAL'), ('hkjc_open_l', 'REAL'),
+        ('william_1x2_w', 'REAL'), ('william_1x2_d', 'REAL'), ('william_1x2_l', 'REAL'),
+        ('william_ah_handicap', 'REAL'), ('william_ah_home_water', 'REAL'), ('william_ah_away_water', 'REAL'),
+        ('william_ah_open_handicap', 'REAL'), ('william_ah_open_home_water', 'REAL'), ('william_ah_open_away_water', 'REAL'),
+        ('william_ou_over', 'REAL'), ('william_ou_line', 'REAL'), ('william_ou_under', 'REAL'),
     ]
     cur.execute("PRAGMA table_info(poisson_predictions)")
     existing = {row[1] for row in cur.fetchall()}
@@ -132,7 +136,11 @@ def load_from_db(db_path: str, max_days=999) -> dict:
         hkjc_ah_handicap, hkjc_ah_home_water, hkjc_ah_away_water, \
         hkjc_ah_open_handicap, hkjc_ah_open_home_water, hkjc_ah_open_away_water, \
         hkjc_ou_line, hkjc_ou_over, hkjc_ou_under, \
-        hkjc_ou_open_line, hkjc_ou_open_over, hkjc_ou_open_under \
+        hkjc_ou_open_line, hkjc_ou_open_over, hkjc_ou_open_under, \
+        william_1x2_w, william_1x2_d, william_1x2_l, \
+        william_ah_handicap, william_ah_home_water, william_ah_away_water, \
+        william_ah_open_handicap, william_ah_open_home_water, william_ah_open_away_water, \
+        william_ou_over, william_ou_line, william_ou_under \
         FROM poisson_predictions WHERE date >= ? ORDER BY date DESC, kickoff_time, id", (cutoff,))
     by_date = {}
     for r in cur.fetchall():
@@ -306,6 +314,26 @@ def load_from_db(db_path: str, max_days=999) -> dict:
                     'over': d.get('hkjc_ou_open_over', 0) or 0,
                     'under': d.get('hkjc_ou_open_under', 0) or 0,
                 },
+            },
+            'william_1x2': {
+                'w': d.get('william_1x2_w', 0) or 0,
+                'd': d.get('william_1x2_d', 0) or 0,
+                'l': d.get('william_1x2_l', 0) or 0,
+            },
+            'william_ah': {
+                'handicap': d.get('william_ah_handicap', None),
+                'home_w': d.get('william_ah_home_water', 0) or 0,
+                'away_w': d.get('william_ah_away_water', 0) or 0,
+                'open': {
+                    'handicap': d.get('william_ah_open_handicap', None),
+                    'home_w': d.get('william_ah_open_home_water', 0) or 0,
+                    'away_w': d.get('william_ah_open_away_water', 0) or 0,
+                },
+            },
+            'william_ou': {
+                'over': d.get('william_ou_over', 0) or 0,
+                'line': d.get('william_ou_line', None),
+                'under': d.get('william_ou_under', 0) or 0,
             },
         })
     conn.close()
