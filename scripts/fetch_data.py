@@ -431,19 +431,16 @@ def step_predict(date_str: str, db_path: str = None):
 
 
 def step_push(date_str: str):
-    """Step 1.5: git push raw 数据（Termux模式）"""
+    """Step 1.5: git push raw 数据（Termux模式）
+    
+    流程：先 stash → pull → stash pop → commit → push
+    避免 rebase 冲突（raw data 跟 GA commit 同时改同一文件时）
+    push 失败时 force-with-lease 兜底（raw data 每次重新生成，覆盖安全）
+    """
     print("\n" + "=" * 50)
     print("STEP 1.5: 推送 raw 数据到 GitHub")
     print("=" * 50)
 
-    subprocess.run(['git', 'add', '-A'], cwd=REPO_DIR)
-    result = subprocess.run(
-        ['git', 'commit', '-m', f'raw data {date_str}'],
-        cwd=REPO_DIR, capture_output=True, text=True
-    )
-    if 'nothing to commit' in result.stdout:
-        print("  无新数据，跳过推送")
-        return True
     # 清理 rebase 残留（防中途崩了留尾巴）
     repo_git = os.path.join(REPO_DIR, '.git')
     if os.path.isdir(os.path.join(repo_git, 'rebase-merge')) or os.path.isdir(os.path.join(repo_git, 'rebase-apply')):
@@ -459,40 +456,57 @@ def step_push(date_str: str):
                 os.remove(rebase_head)
             except OSError:
                 pass
-    
+
     # 使用 HTTPS+PAT 方式推送（SSH 在 Termux 不稳定）
     pat = os.environ.get('GITHUB_PAT', '')
     https_url = f'https://{pat}@github.com/bily1258-design/football-dashboard.git' if pat else ''
-    
-    # 先pull rebase再push
-    if https_url:
-        pull = subprocess.run(
-            ['git', 'pull', '--rebase', https_url, 'main'],
-            cwd=REPO_DIR, capture_output=True, text=True, timeout=180
-        )
-    else:
-        pull = subprocess.run(
-            ['git', 'pull', '--rebase', 'origin', 'main'],
-            cwd=REPO_DIR, capture_output=True, text=True, timeout=180
-        )
+    remote_url = https_url if https_url else 'origin'
+
+    # 先 stash 本地改动，pull 最新，再 stash pop → 避免跟 GA commit 冲突
+    subprocess.run(['git', 'stash', '--include-untracked'], cwd=REPO_DIR, capture_output=True)
+    pull = subprocess.run(
+        ['git', 'pull', remote_url, 'main'],
+        cwd=REPO_DIR, capture_output=True, text=True, timeout=180
+    )
     if pull.returncode != 0:
         print(f"⚠️ pull失败: {pull.stderr[:200]}")
-    
-    if https_url:
-        push = subprocess.run(
-            ['git', 'push', https_url, 'main'],
-            cwd=REPO_DIR, capture_output=True, text=True, timeout=180
-        )
-    else:
-        push = subprocess.run(
-            ['git', 'push', 'origin', 'main'],
-            cwd=REPO_DIR, capture_output=True, text=True, timeout=180
-        )
+    pop = subprocess.run(['git', 'stash', 'pop'], cwd=REPO_DIR, capture_output=True, text=True)
+    if pop.returncode != 0:
+        # stash pop 冲突时，用 ours 策略（raw data 本地版本优先）
+        print("⚠️ stash pop 冲突，用本地版本解决")
+        subprocess.run(['git', 'checkout', '--ours', '.'], cwd=REPO_DIR, capture_output=True)
+        subprocess.run(['git', 'add', '-A'], cwd=REPO_DIR)
+
+    subprocess.run(['git', 'add', '-A'], cwd=REPO_DIR)
+    result = subprocess.run(
+        ['git', 'commit', '-m', f'raw data {date_str}'],
+        cwd=REPO_DIR, capture_output=True, text=True
+    )
+    if 'nothing to commit' in result.stdout:
+        print("  无新数据，跳过推送")
+        return True
+
+    # 正常 push
+    push = subprocess.run(
+        ['git', 'push', remote_url, 'main'],
+        cwd=REPO_DIR, capture_output=True, text=True, timeout=180
+    )
     if push.returncode == 0:
         print("✅ raw 数据已推送 → GA 将自动触发构建")
         return True
+
+    # push 失败（non-fast-forward 等），force-with-lease 兜底
+    print(f"⚠️ 正常push失败: {push.stderr[:200]}")
+    print("  尝试 force-with-lease ...")
+    force_push = subprocess.run(
+        ['git', 'push', '--force-with-lease', remote_url, 'main'],
+        cwd=REPO_DIR, capture_output=True, text=True, timeout=180
+    )
+    if force_push.returncode == 0:
+        print("✅ raw 数据已推送(force-with-lease) → GA 将自动触发构建")
+        return True
     else:
-        print(f"❌ 推送失败: {push.stderr[:200]}")
+        print(f"❌ 推送失败: {force_push.stderr[:200]}")
         return False
 
 
