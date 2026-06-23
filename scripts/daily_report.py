@@ -1235,6 +1235,52 @@ def merge_odds_data(sporttery_data: dict, oddsmagnet_data: dict) -> dict:
     return merged
 
 
+def load_odds_from_db(date_str: str = None) -> dict:
+    """
+    从 DB 读取 HAD 赔率数据作为最终 fallback（GA 环境无 sporttery API 访问权限）
+    
+    返回格式与 sporttery API 兼容（仅 HAD，无 HHAD）：
+    {"主队 vs 客队": {"home": float, "draw": float, "away": float, "odds_source": str, ...}}
+    """
+    import sqlite3
+    
+    if not date_str:
+        date_str = datetime.now().strftime('%Y-%m-%d')
+    
+    db_path = os.path.join(DATA_BASE_DIR, "data/football.db")
+    if not os.path.exists(db_path):
+        log(f"⚠️ DB 不存在: {db_path}")
+        return {}
+    
+    try:
+        conn = sqlite3.connect(db_path)
+        cur = conn.execute(
+            '''SELECT home_team, away_team, odds_win, odds_draw, odds_loss, odds_source, league
+               FROM poisson_predictions WHERE date = ?''',
+            (date_str,)
+        )
+        odds_data = {}
+        for row in cur.fetchall():
+            home_team, away_team, h, d, a, src, league = row
+            key = f"{home_team} vs {away_team}"
+            entry = {
+                "home": h if h and h > 0 else None,
+                "draw": d if d and d > 0 else None,
+                "away": a if a and a > 0 else None,
+                "odds_source": src or "db",
+                "league": league or "",
+            }
+            if entry["home"] and entry["draw"] and entry["away"]:
+                odds_data[key] = entry
+        conn.close()
+        if odds_data:
+            log(f"✓ 从 DB 加载赔率: {len(odds_data)} 场比赛")
+        return odds_data
+    except Exception as e:
+        log(f"⚠️ 从 DB 加载赔率失败: {e}")
+        return {}
+
+
 def get_odds_data(prefer_api: bool = True) -> dict:
     """
     获取赔率数据的主入口函数
@@ -1243,6 +1289,7 @@ def get_odds_data(prefer_api: bool = True) -> dict:
     1. 优先从 sporttery API 获取赔率
     2. 然后从 oddsmagnet real_odds.json 读取赔率
     3. 合并两者，以 sporttery 为基础，oddsmagnet 补充缺失的比赛
+    4. 最终 fallback：从 DB 读取（GA 环境等无法访问 sporttery API 的场景）
     
     Args:
         prefer_api: 是否优先使用API获取（默认True）
@@ -1267,12 +1314,20 @@ def get_odds_data(prefer_api: bool = True) -> dict:
     if oddsmagnet_data:
         merged_data = merge_odds_data(sporttery_data, oddsmagnet_data)
         log(f"✓ 合并后共 {len(merged_data)} 场比赛")
-        return merged_data
+        result = merged_data
     else:
         # 无 oddsmagnet 数据，直接返回 sporttery 数据
         if sporttery_data:
             log(f"✓ 使用 sporttery 赔率: {len(sporttery_data)} 场比赛")
-        return sporttery_data
+        result = sporttery_data
+    
+    # 第四步：最终 fallback — 从 DB 读取（GA 环境等无 API/缓存场景）
+    if not result:
+        log("⚠️ API 和缓存均无赔率数据，从 DB fallback 加载...")
+        date_str = datetime.now().strftime('%Y-%m-%d')
+        result = load_odds_from_db(date_str)
+    
+    return result
 
 
 def match_odds_key(home_team: str, away_team: str, odds_data: dict) -> Optional[str]:
