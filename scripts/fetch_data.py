@@ -285,6 +285,14 @@ def step_update_ah(date_str: str, db_path: str = None):
                     ou_william_l = _ou_or_none(ou_william_close, 'line')
                     ou_william_u = _ou_or_none(ou_william_close, 'under')
 
+                    # 威廉希尔1X2欧赔数据
+                    william_1x2 = entry.get('william_1x2', {})
+                    william_1x2_close = william_1x2.get('close', {})
+                    william_1x2_open = william_1x2.get('open', {})
+                    w1x2_w = william_1x2_close.get('w') or None
+                    w1x2_d = william_1x2_close.get('d') or None
+                    w1x2_l = william_1x2_close.get('l') or None
+
                     cnt = 0
                     for rid in matched_ids:
                         cursor.execute("""
@@ -320,7 +328,8 @@ def step_update_ah(date_str: str, db_path: str = None):
                                 liji_ou_open_over = COALESCE(?, liji_ou_open_over), liji_ou_open_line = COALESCE(?, liji_ou_open_line), liji_ou_open_under = COALESCE(?, liji_ou_open_under),
                                 ms_ou_over = COALESCE(?, ms_ou_over), ms_ou_line = COALESCE(?, ms_ou_line), ms_ou_under = COALESCE(?, ms_ou_under),
                                 ms_ou_open_over = COALESCE(?, ms_ou_open_over), ms_ou_open_line = COALESCE(?, ms_ou_open_line), ms_ou_open_under = COALESCE(?, ms_ou_open_under),
-                                william_ou_over = COALESCE(?, william_ou_over), william_ou_line = COALESCE(?, william_ou_line), william_ou_under = COALESCE(?, william_ou_under)
+                                william_ou_over = COALESCE(?, william_ou_over), william_ou_line = COALESCE(?, william_ou_line), william_ou_under = COALESCE(?, william_ou_under),
+                                william_1x2_w = COALESCE(?, william_1x2_w), william_1x2_d = COALESCE(?, william_1x2_d), william_1x2_l = COALESCE(?, william_1x2_l)
                             WHERE id = ?
                         """, (ah_val, hw_val, aw_val, src_val,
                               ah_open_h, ah_open_hw, ah_open_aw,
@@ -337,6 +346,7 @@ def step_update_ah(date_str: str, db_path: str = None):
                               ou_ms_o, ou_ms_l, ou_ms_u,
                               ou_ms_op_o, ou_ms_op_l, ou_ms_op_u,
                               ou_william_o, ou_william_l, ou_william_u,
+                              w1x2_w, w1x2_d, w1x2_l,
                               rid))
                         cnt += cursor.rowcount
                     ah_updated += cnt
