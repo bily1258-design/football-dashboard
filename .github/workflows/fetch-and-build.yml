@@ -131,6 +131,7 @@ jobs:
         run: |
           if [ -f data/football.db ]; then
             python scripts/align_and_merge.py --all --db data/football.db || echo "⚠️ align failed, continuing"
+            python scripts/merge_and_build.py --db data/football.db || echo "⚠️ merge_and_build failed, continuing"
           else
             echo "⚠️ Skipping align (no DB)"
           fi
