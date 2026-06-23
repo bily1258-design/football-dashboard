@@ -122,7 +122,12 @@ def step_update_ah(date_str: str, db_path: str = None):
                        ('liji_ou_over', 'REAL'), ('liji_ou_line', 'REAL'), ('liji_ou_under', 'REAL'),
                        ('liji_ou_open_over', 'REAL'), ('liji_ou_open_line', 'REAL'), ('liji_ou_open_under', 'REAL'),
                        ('ms_ou_over', 'REAL'), ('ms_ou_line', 'REAL'), ('ms_ou_under', 'REAL'),
-                       ('ms_ou_open_over', 'REAL'), ('ms_ou_open_line', 'REAL'), ('ms_ou_open_under', 'REAL')]:
+                       ('ms_ou_open_over', 'REAL'), ('ms_ou_open_line', 'REAL'), ('ms_ou_open_under', 'REAL'),
+                       # 威廉希尔字段
+                       ('william_1x2_w', 'REAL'), ('william_1x2_d', 'REAL'), ('william_1x2_l', 'REAL'),
+                       ('william_ah_handicap', 'REAL'), ('william_ah_home_water', 'REAL'), ('william_ah_away_water', 'REAL'),
+                       ('william_ah_open_handicap', 'REAL'), ('william_ah_open_home_water', 'REAL'), ('william_ah_open_away_water', 'REAL'),
+                       ('william_ou_over', 'REAL'), ('william_ou_line', 'REAL'), ('william_ou_under', 'REAL')]:
         try:
             cursor.execute(f"ALTER TABLE poisson_predictions ADD COLUMN {col} {ctype}")
         except:
@@ -148,9 +153,10 @@ def step_update_ah(date_str: str, db_path: str = None):
             for key, entry in oyzs_data.items():
                 ah_home = entry.get('home', '')
                 ah_away = entry.get('away', '')
-                # 亚盘优先级: Pinnacle → 利记 → HKJC
+                # 亚盘优先级: Pinnacle → 利记 → 威廉希尔 → HKJC
                 pin_ah = entry.get('pin_ah', {})
                 liji_ah = entry.get('liji_ah', {})
+                william_ah = entry.get('william_ah', {})
                 hkjc_ah = entry.get('hkjc_ah', {})
                 
                 ah_close = {}
@@ -164,6 +170,10 @@ def step_update_ah(date_str: str, db_path: str = None):
                     ah_close = liji_ah.get('close', {})
                     ah_open_data = liji_ah.get('open', {})
                     ah_source = 'liji'
+                elif william_ah.get('close', {}).get('handicap') is not None and william_ah['close'].get('handicap', 0) != 0:
+                    ah_close = william_ah.get('close', {})
+                    ah_open_data = william_ah.get('open', {})
+                    ah_source = 'william'
                 elif hkjc_ah.get('close', {}).get('handicap') is not None and hkjc_ah['close'].get('handicap', 0) != 0:
                     ah_close = hkjc_ah.get('close', {})
                     ah_open_data = hkjc_ah.get('open', {})
@@ -227,6 +237,17 @@ def step_update_ah(date_str: str, db_path: str = None):
                     ms_ohw = _ah_or_none(ms_open, 'home_w')
                     ms_oaw = _ah_or_none(ms_open, 'away_w')
 
+                    # 威廉希尔数据
+                    william_data = entry.get('william_ah', {})
+                    william_close = william_data.get('close', {})
+                    william_open = william_data.get('open', {})
+                    william_h = _ah_or_none(william_close, 'handicap')
+                    william_hw = _ah_or_none(william_close, 'home_w')
+                    william_aw = _ah_or_none(william_close, 'away_w')
+                    william_oh = _ah_or_none(william_open, 'handicap')
+                    william_ohw = _ah_or_none(william_open, 'home_w')
+                    william_oaw = _ah_or_none(william_open, 'away_w')
+
                     # 大小球数据（OU 段 2026-06-21 改造：用 _ou_or_none helper 统一处理"没抓到 vs 真数据"，SQL 同步改 COALESCE 保留旧值）
                     # OU大小球优先级: Pinnacle → 利记
                     pin_ou = entry.get('pin_ou', {})
@@ -257,6 +278,13 @@ def step_update_ah(date_str: str, db_path: str = None):
                     ou_ms_op_l = _ou_or_none(ou_ms_open, 'line')
                     ou_ms_op_u = _ou_or_none(ou_ms_open, 'under')
 
+                    # 威廉希尔OU数据
+                    ou_william_close = entry.get('william_ou', {}).get('close', {})
+                    ou_william_open = entry.get('william_ou', {}).get('open', {})
+                    ou_william_o = _ou_or_none(ou_william_close, 'over')
+                    ou_william_l = _ou_or_none(ou_william_close, 'line')
+                    ou_william_u = _ou_or_none(ou_william_close, 'under')
+
                     cnt = 0
                     for rid in matched_ids:
                         cursor.execute("""
@@ -280,12 +308,19 @@ def step_update_ah(date_str: str, db_path: str = None):
                                 ms_open_handicap = COALESCE(?, ms_open_handicap),
                                 ms_open_home_water = COALESCE(?, ms_open_home_water),
                                 ms_open_away_water = COALESCE(?, ms_open_away_water),
+                                william_ah_handicap = COALESCE(?, william_ah_handicap),
+                                william_ah_home_water = COALESCE(?, william_ah_home_water),
+                                william_ah_away_water = COALESCE(?, william_ah_away_water),
+                                william_ah_open_handicap = COALESCE(?, william_ah_open_handicap),
+                                william_ah_open_home_water = COALESCE(?, william_ah_open_home_water),
+                                william_ah_open_away_water = COALESCE(?, william_ah_open_away_water),
                                 ou_over = COALESCE(?, ou_over), ou_line = COALESCE(?, ou_line), ou_under = COALESCE(?, ou_under),
                                 ou_open_over = COALESCE(?, ou_open_over), ou_open_line = COALESCE(?, ou_open_line), ou_open_under = COALESCE(?, ou_open_under),
                                 liji_ou_over = COALESCE(?, liji_ou_over), liji_ou_line = COALESCE(?, liji_ou_line), liji_ou_under = COALESCE(?, liji_ou_under),
                                 liji_ou_open_over = COALESCE(?, liji_ou_open_over), liji_ou_open_line = COALESCE(?, liji_ou_open_line), liji_ou_open_under = COALESCE(?, liji_ou_open_under),
                                 ms_ou_over = COALESCE(?, ms_ou_over), ms_ou_line = COALESCE(?, ms_ou_line), ms_ou_under = COALESCE(?, ms_ou_under),
-                                ms_ou_open_over = COALESCE(?, ms_ou_open_over), ms_ou_open_line = COALESCE(?, ms_ou_open_line), ms_ou_open_under = COALESCE(?, ms_ou_open_under)
+                                ms_ou_open_over = COALESCE(?, ms_ou_open_over), ms_ou_open_line = COALESCE(?, ms_ou_open_line), ms_ou_open_under = COALESCE(?, ms_ou_open_under),
+                                william_ou_over = COALESCE(?, william_ou_over), william_ou_line = COALESCE(?, william_ou_line), william_ou_under = COALESCE(?, william_ou_under)
                             WHERE id = ?
                         """, (ah_val, hw_val, aw_val, src_val,
                               ah_open_h, ah_open_hw, ah_open_aw,
@@ -293,12 +328,15 @@ def step_update_ah(date_str: str, db_path: str = None):
                               liji_oh, liji_ohw, liji_oaw,
                               ms_h, ms_hw, ms_aw,
                               ms_oh, ms_ohw, ms_oaw,
+                              william_h, william_hw, william_aw,
+                              william_oh, william_ohw, william_oaw,
                               ou_o, ou_l, ou_u,
                               ou_op_o, ou_op_l, ou_op_u,
                               ou_liji_o, ou_liji_l, ou_liji_u,
                               ou_liji_op_o, ou_liji_op_l, ou_liji_op_u,
                               ou_ms_o, ou_ms_l, ou_ms_u,
                               ou_ms_op_o, ou_ms_op_l, ou_ms_op_u,
+                              ou_william_o, ou_william_l, ou_william_u,
                               rid))
                         cnt += cursor.rowcount
                     ah_updated += cnt
