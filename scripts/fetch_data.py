@@ -459,17 +459,35 @@ def step_push(date_str: str):
                 os.remove(rebase_head)
             except OSError:
                 pass
+    
+    # 使用 HTTPS+PAT 方式推送（SSH 在 Termux 不稳定）
+    pat = os.environ.get('GITHUB_PAT', '')
+    https_url = f'https://{pat}@github.com/bily1258-design/football-dashboard.git' if pat else ''
+    
     # 先pull rebase再push
-    pull = subprocess.run(
-        ['git', 'pull', '--rebase', 'origin', 'main'],
-        cwd=REPO_DIR, capture_output=True, text=True, timeout=180
-    )
+    if https_url:
+        pull = subprocess.run(
+            ['git', 'pull', '--rebase', https_url, 'main'],
+            cwd=REPO_DIR, capture_output=True, text=True, timeout=180
+        )
+    else:
+        pull = subprocess.run(
+            ['git', 'pull', '--rebase', 'origin', 'main'],
+            cwd=REPO_DIR, capture_output=True, text=True, timeout=180
+        )
     if pull.returncode != 0:
         print(f"⚠️ pull失败: {pull.stderr[:200]}")
-    push = subprocess.run(
-        ['git', 'push', 'origin', 'main'],
-        cwd=REPO_DIR, capture_output=True, text=True, timeout=180
-    )
+    
+    if https_url:
+        push = subprocess.run(
+            ['git', 'push', https_url, 'main'],
+            cwd=REPO_DIR, capture_output=True, text=True, timeout=180
+        )
+    else:
+        push = subprocess.run(
+            ['git', 'push', 'origin', 'main'],
+            cwd=REPO_DIR, capture_output=True, text=True, timeout=180
+        )
     if push.returncode == 0:
         print("✅ raw 数据已推送 → GA 将自动触发构建")
         return True
