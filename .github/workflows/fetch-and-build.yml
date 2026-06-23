@@ -5,9 +5,6 @@ on:
     branches: [main]
     paths:
       - 'data/raw/**'
-      - 'docs/**'
-      - 'data/reports/**'
-      - 'data/processed/**'
   release:
     types: [published, edited]
   workflow_dispatch:
@@ -47,63 +44,107 @@ jobs:
           if [ -f data/football.db ]; then
             echo "✅ DB downloaded: $(du -h data/football.db | cut -f1)"
           else
-            echo "⚠️ No DB available, build may be limited"
+            echo "⚠️ No DB available, pipeline may be limited"
           fi
 
-      # ========== 数据抓取在Termux本地执行（WAF原因） ==========
-      # GA只负责：下载Release DB → 日报/复盘/对齐 → 构建看板 → 部署
+      # ===== GA全流程：Termux只抓raw+push，以下全部在GA跑 =====
 
-      - name: Recalculate final probabilities
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+      - name: Determine date
+        id: date
+        run: echo "date=$(date +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+
+      - name: STEP 1.4 - Generate predictions (OM → DB)
+        if: github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         run: |
           if [ -f data/football.db ]; then
-            python3 scripts/recalc_final.py || echo "⚠️ recalc_final failed, continuing"
+            python scripts/predict_from_odds.py --date ${{ steps.date.outputs.date }} --db data/football.db || echo "⚠️ predict failed, continuing"
           else
-            echo "⚠️ Skipping recalc (no DB)"
+            echo "⚠️ Skipping predict (no DB)"
           fi
 
-      - name: Generate daily report
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+      - name: STEP 1.2 - Pinnacle/HKJC odds → DB
+        if: github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         run: |
           if [ -f data/football.db ]; then
-            DATE=$(date +%Y-%m-%d)
-            python3 scripts/daily_report.py --date "$DATE" --no-fundamental \
-              || echo "⚠️ daily_report failed, continuing with existing data"
+            python scripts/fetch_pinnacle_odds.py --date ${{ steps.date.outputs.date }} || echo "⚠️ pinnacle odds failed, continuing"
           else
-            echo "⚠️ Skipping daily_report (no DB)"
+            echo "⚠️ Skipping pinnacle (no DB)"
           fi
-        timeout-minutes: 20
 
-      - name: Run LGBM fusion + EV recalc
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+      - name: STEP 1.25 - Asian handicap → DB
+        if: github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         run: |
           if [ -f data/football.db ]; then
-            python3 scripts/update_db_fusion.py || echo "⚠️ update_db_fusion failed, continuing"
-            python3 scripts/value_bet.py || echo "⚠️ value_bet failed, continuing"
+            python -c "
+          import sys; sys.path.insert(0, 'scripts')
+          from fetch_data import step_update_ah
+          step_update_ah('${{ steps.date.outputs.date }}', 'data/football.db')
+          " || echo "⚠️ AH update failed, continuing"
           else
-            echo "⚠️ Skipping fusion/EV (no DB)"
+            echo "⚠️ Skipping AH (no DB)"
           fi
-        timeout-minutes: 10
 
-      - name: Run review
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+      - name: STEP 1.3 - Fusion + EV + Kelly
+        if: github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         run: |
           if [ -f data/football.db ]; then
-            DATE=$(date +%Y-%m-%d)
-            python3 scripts/review.py --date "$DATE" || echo "⚠️ review failed, continuing"
+            python scripts/update_db_fusion.py --db data/football.db || echo "⚠️ fusion failed, continuing"
+            python scripts/value_bet.py --all --db data/football.db || echo "⚠️ EV failed, continuing"
+            python scripts/update_db_kelly.py --db data/football.db || echo "⚠️ kelly failed, continuing"
+          else
+            echo "⚠️ Skipping 3-chain (no DB)"
+          fi
+
+      - name: Backfill results from zgzcw
+        if: github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: |
+          if [ -f data/football.db ]; then
+            python -c "
+          import sys; sys.path.insert(0, 'scripts')
+          from fetch_data import step_backfill_results
+          step_backfill_results('${{ steps.date.outputs.date }}', 'data/football.db')
+          " || echo "⚠️ backfill failed, continuing"
+          else
+            echo "⚠️ Skipping backfill (no DB)"
+          fi
+
+      - name: Recalc final + Daily report
+        if: github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: |
+          if [ -f data/football.db ]; then
+            python scripts/recalc_final.py || echo "⚠️ recalc_final failed, continuing"
+            python scripts/daily_report.py --date ${{ steps.date.outputs.date }} || echo "⚠️ daily_report failed, continuing"
+          else
+            echo "⚠️ Skipping report (no DB)"
+          fi
+
+      - name: Review
+        if: github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: |
+          if [ -f data/football.db ]; then
+            python scripts/review.py --date ${{ steps.date.outputs.date }} || echo "⚠️ review failed, continuing"
           else
             echo "⚠️ Skipping review (no DB)"
           fi
-        timeout-minutes: 10
 
-      - name: Align and merge
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+      - name: Align + Build
         run: |
           if [ -f data/football.db ]; then
-            python3 scripts/align_and_merge.py --all --db data/football.db
+            python scripts/align_and_merge.py --all --db data/football.db || echo "⚠️ align failed, continuing"
           else
             echo "⚠️ Skipping align (no DB)"
           fi
+
+      - name: Push DB to Release
+        if: github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -f data/football.db ]; then
+            gh release upload db-latest data/football.db --clobber || echo "⚠️ DB push failed, continuing"
+          fi
+
+      # ===== Pages 部署 =====
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
@@ -140,6 +181,3 @@ jobs:
           git diff --cached --quiet && echo "No changes to commit" && exit 0
           git commit -m "auto: build $(date +%Y-%m-%d)"
           git push origin main
-
-      # DB push已移除：GA不抓数据，只读Release DB来build。
-      # 只由Termux本地push DB到Release。
