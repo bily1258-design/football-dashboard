@@ -24,22 +24,18 @@ sys.path.insert(0, SCRIPT_DIR)
 
 
 def step_fetch(date_str: str):
-    """Step 1: 抓取 raw 数据"""
+    """Step 1: 抓取 raw 数据（赔率+亚盘，赛果回填已移至step_backfill_results走足彩网）"""
     print("\n" + "=" * 50)
     print(f"STEP 1: 抓取 raw 数据 — {date_str}")
     print("=" * 50)
 
-    from fetch_bsd import fetch_all as fetch_bsd
     from odds_api import fetch_all as fetch_om
 
-    bsd = fetch_bsd(date_str)
     om = fetch_om(date_str)
 
-    bsd_summary = bsd.get('summary', {})
     om_summary = om.get('summary', {})
-    print(f"\n📊 BSD: 竞彩{bsd_summary.get('jingcai',0)} 完场{bsd_summary.get('wanchang',0)} 北单{bsd_summary.get('beidan',0)}")
     print(f"📊 OM:  平均{om_summary.get('avg_count',0)} Pinnacle{om_summary.get('pinnacle_count',0)} HKJC{om_summary.get('hkjc_count',0)}")
-    return bsd, om
+    return om
 
 def step_fetch_pinnacle(date_str: str, db_path: str = None):
     print("\n" + "=" * 50)
