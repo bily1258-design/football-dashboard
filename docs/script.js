@@ -87,17 +87,11 @@ function openAhModal(record) {
     const hasOpenAh = (oAh.handicap !== null && oAh.handicap !== undefined && oAh.handicap !== 0);
     const hasOpenOu = (oOu.line || 0) > 0;
 
-    // 格式化单元格（初→即时，带颜色）
+    // 格式化单元格（即时行直接显示当前值）
     function fmt(openV, closeV, hasOpen) {
-      if (!hasOpen) return (closeV != null && closeV !== 0) ? closeV : '-';
-      const ov = (openV != null && openV !== 0) ? openV : null;
-      const cv = (closeV != null && closeV !== 0) ? closeV : null;
-      if (!ov && !cv) return '-';
-      if (!ov) return `<span>${cv}</span>`;
-      if (!cv) return `<span>${ov}</span>`;
-      if (ov == cv) return `<span>${cv}</span>`;
-      const cls = chgCls(ov, cv);
-      return `<span class="ah-old">${ov}</span>→<span class="${cls}">${cv}</span>`;
+      if (closeV != null && closeV !== 0) return closeV;
+      if (openV != null && openV !== 0) return openV;
+      return '-';
     }
 
     // 初盘行
