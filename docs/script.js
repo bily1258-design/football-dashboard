@@ -256,12 +256,12 @@ function weightedSort(scores, league, alpha) {
 
 // ─── 模态框 ───
 function openPoissonModal(record) {
-  const hl = record.home_lambda, al = record.away_lambda;
-  if (!hl || !al || (hl <= 0 && al <= 0)) return;
+  const hl = record.home_lambda || 0, al = record.away_lambda || 0;
+  if (hl <= 0 && al <= 0) return;
 
   const modal = document.getElementById('poissonModal');
   const title = document.getElementById('modalTitle');
-  title.textContent = `${record.home} vs ${record.away} — 比分概率分布 (λ=${hl}/${al})`;
+  title.textContent = `${record.home} vs ${record.away} — 比分概率分布 (λ=${hl.toFixed(2)}/${al.toFixed(2)})`;
   modal.style.display = 'flex';
 
   const alphaSlider = document.getElementById('alphaSlider');
@@ -416,7 +416,7 @@ function loadDate() {
     const evCls = v => v > 0 ? 'ev-pos' : 'ev-neg';
     const ah = r.ah || {};
     const hasAh = ah.handicap !== null && ah.handicap !== undefined && (ah.handicap !== 0 || ah.home_w !== 0 || ah.away_w !== 0);
-    // 亚盘列优先显示Pinnacle让球，其次利记，再次HKJC
+    // 亚盘列优先显示Pinnacle让球，其次利记，再次HKJC，最后fallback到ah
     const pinAh = r.pin_ah || {};
     const lijiAh = (r.liji || {}).close || {};
     let ahDisplayVal = '-';
@@ -432,6 +432,10 @@ function loadDate() {
       if (hkjcAh.handicap) {
         ahDisplayVal = handicapToChinese(hkjcAh.handicap);
         ahClickable = true;
+      } else if (hasAh) {
+        // fallback: 旧ah字段(来自百家平均等)
+        ahDisplayVal = handicapToChinese(ah.handicap);
+        ahClickable = true;
       }
     }
     const ahCell = ahClickable
@@ -445,8 +449,8 @@ function loadDate() {
     const probPct = (r.prediction_prob * 100).toFixed(1) + '%';
     const probLabel = r.prob_direction ? `${r.prob_direction} ${probPct}` : probPct;
     const probDirClass = r.prob_direction === '主胜' ? 'hit' : (r.prob_direction === '客胜' ? 'miss' : 'draw');
-    const hasLambda = r.home_lambda > 0 || r.away_lambda > 0;
-    const poissonCell = hasLambda
+    const hasPoisson = r.poisson && (r.poisson.w > 0 || r.poisson.d > 0 || r.poisson.l > 0);
+    const poissonCell = hasPoisson
       ? `<td class="poisson-clickable" data-date="${sel}" data-idx="${i}">${poissonStr}</td>`
       : `<td>${poissonStr}</td>`;
 
