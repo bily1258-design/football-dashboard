@@ -80,7 +80,11 @@ def load_db_predictions(db_path: str, date_str: str) -> List[Dict]:
             liji_ou_over, liji_ou_line, liji_ou_under,
             liji_ou_open_over, liji_ou_open_line, liji_ou_open_under,
             ms_ou_over, ms_ou_line, ms_ou_under,
-            ms_ou_open_over, ms_ou_open_line, ms_ou_open_under
+            ms_ou_open_over, ms_ou_open_line, ms_ou_open_under,
+            william_1x2_w, william_1x2_d, william_1x2_l,
+            william_ah_handicap, william_ah_home_water, william_ah_away_water,
+            william_ah_open_handicap, william_ah_open_home_water, william_ah_open_away_water,
+            william_ou_over, william_ou_line, william_ou_under
         FROM poisson_predictions
         WHERE date = ? OR (kickoff_time >= ? AND kickoff_time <= ?)
         ORDER BY kickoff_time, id
@@ -360,6 +364,26 @@ def merge_prediction(rec: Dict, om_match: Optional[Dict]) -> Dict:
                 'line': rec.get('ms_ou_open_line', None),
                 'under': rec.get('ms_ou_open_under', 0) or 0,
             },
+        },
+        'william_1x2': {
+            'w': rec.get('william_1x2_w', 0) or 0,
+            'd': rec.get('william_1x2_d', 0) or 0,
+            'l': rec.get('william_1x2_l', 0) or 0,
+        },
+        'william_ah': {
+            'handicap': rec.get('william_ah_handicap', None),
+            'home_w': rec.get('william_ah_home_water', 0) or 0,
+            'away_w': rec.get('william_ah_away_water', 0) or 0,
+            'open': {
+                'handicap': rec.get('william_ah_open_handicap', None),
+                'home_w': rec.get('william_ah_open_home_water', 0) or 0,
+                'away_w': rec.get('william_ah_open_away_water', 0) or 0,
+            },
+        },
+        'william_ou': {
+            'over': rec.get('william_ou_over', 0) or 0,
+            'line': rec.get('william_ou_line', None),
+            'under': rec.get('william_ou_under', 0) or 0,
         },
     }
 
