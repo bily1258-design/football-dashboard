@@ -58,7 +58,7 @@ OYZS_COMPANY_MAP = {
     "136": "HKJC",
     "3": "SB",
     "7": "澳门",
-    "9": "威",
+    "9": "威廉希尔",
     "10": "易",
     "13": "Interwetten",
     "16": "盈",
@@ -492,7 +492,7 @@ def fetch_oyzs(date_str: str, company_ids: List[str] = None,
     }
     """
     if company_ids is None:
-        company_ids = ['22', '15', '6', '136']
+        company_ids = ['22', '15', '6', '136', '9']
 
     session = requests.Session()
     session.headers.update({
@@ -941,12 +941,12 @@ def fetch_all(date_str: str = None, companies: List[str] = None,
             print(f"    oyzs北单 {label}: {len(oyzs_bd)} 场")
 
     # 统计 oyzs 各公司覆盖
-    oyzs_stats = {'pinnacle': 0, 'hkjc': 0, 'liji': 0, 'mingsheng': 0}
+    oyzs_stats = {'pinnacle': 0, 'hkjc': 0, 'liji': 0, 'mingsheng': 0, 'william': 0}
     for mk, m in oyzs_data.items():
         for ck in oyzs_stats:
             if ck in m.get('companies', {}):
                 oyzs_stats[ck] += 1
-    print(f"  oyzs汇总: {len(oyzs_data)} 场 [Pin:{oyzs_stats['pinnacle']} HKJC:{oyzs_stats['hkjc']} 利记:{oyzs_stats['liji']} 明升:{oyzs_stats['mingsheng']}]")
+    print(f"  oyzs汇总: {len(oyzs_data)} 场 [Pin:{oyzs_stats['pinnacle']} HKJC:{oyzs_stats['hkjc']} 利记:{oyzs_stats['liji']} 明升:{oyzs_stats['mingsheng']} 威廉:{oyzs_stats['william']}]")
 
     # ====== 2. Betfair 等 (POST bjzs) ======
     company_data = {}
@@ -986,7 +986,7 @@ def fetch_all(date_str: str = None, companies: List[str] = None,
     # 5.1 已合并到oyzs处理中（Pinnacle/利记/HKJC亚盘）
 
     # 5.1 合并 oyzs 数据（Pinnacle/HKJC/利记/明升 的 1X2+AH+OU）
-    oyzs_merged_counts = {'pinnacle': 0, 'hkjc': 0, 'liji': 0, 'mingsheng': 0}
+    oyzs_merged_counts = {'pinnacle': 0, 'hkjc': 0, 'liji': 0, 'mingsheng': 0, 'william': 0}
 
     for key, oyzs_match in oyzs_data.items():
         target = merged.get(key)
@@ -1075,6 +1075,28 @@ def fetch_all(date_str: str = None, companies: List[str] = None,
             target["ms_ou"] = ms.get("ou", {})
             oyzs_merged_counts['mingsheng'] += 1
 
+        # --- 威廉希尔 ---
+        if "威廉希尔" in companies:
+            william = companies["威廉希尔"]
+            c1x2 = william.get("1x2", {})
+            close = c1x2.get("close", {})
+            open_odds = c1x2.get("open", {})
+            cw, cd, cl = close.get("w", 0), close.get("d", 0), close.get("l", 0)
+            if cw > 0 and cl > 0:
+                target["odds"]["威廉希尔"] = {
+                    "source": "威廉希尔",
+                    "odds_w": cw, "odds_d": cd, "odds_l": cl,
+                    "open_w": open_odds.get("w", 0),
+                    "open_d": open_odds.get("d", 0),
+                    "open_l": open_odds.get("l", 0),
+                    "margin": margin(cw, cd, cl),
+                    "implied_prob": dict(zip(["w","d","l"], _calc_implied(cw, cd, cl))),
+                }
+            # 威廉希尔 AH + OU
+            target["william_ah"] = william.get("ah", {})
+            target["william_ou"] = william.get("ou", {})
+            oyzs_merged_counts['william'] += 1
+
     counts_str = ' | '.join(f"{k}:{v}" for k, v in oyzs_merged_counts.items())
     print(f"  oyzs匹配: {counts_str}")
 
@@ -1108,6 +1130,11 @@ def fetch_all(date_str: str = None, companies: List[str] = None,
             if ms:
                 entry["ms_ah"] = ms.get("ah", {})
                 entry["ms_ou"] = ms.get("ou", {})
+            # 威廉希尔 AH + OU
+            william = companies.get("威廉希尔")
+            if william:
+                entry["william_ah"] = william.get("ah", {})
+                entry["william_ou"] = william.get("ou", {})
             oyzs_output[key] = entry
 
         oyzs_path = os.path.join(RAW_DIR, f"oyzs_{curr_day}.json")
