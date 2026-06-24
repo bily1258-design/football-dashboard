@@ -467,7 +467,7 @@ function loadDate() {
     const finalStr = `${r.final_prob.w}/${r.final_prob.d}/${r.final_prob.l}`;
     const evStr = `<span class="${evCls(evW)}">${evW.toFixed(2)}</span>/<span class="${evCls(evD)}">${evD.toFixed(2)}</span>/<span class="${evCls(evL)}">${evL.toFixed(2)}</span>`;
     const kellyStr = `${r.kelly.w}/${r.kelly.d}/${r.kelly.l}`;
-    const kickoff = r.kickoff ? r.kickoff.substring(11, 16) : '';
+    const kickoff = (!r.kickoff || r.kickoff === '待定') ? '-' : r.kickoff.substring(11, 16);
     const probPct = (r.prediction_prob * 100).toFixed(1) + '%';
     const probLabel = r.prob_direction ? `${r.prob_direction} ${probPct}` : probPct;
     const probDirClass = r.prob_direction === '主胜' ? 'hit' : (r.prob_direction === '客胜' ? 'miss' : 'draw');
@@ -478,7 +478,7 @@ function loadDate() {
 
     html += `<tr>
 <td>${i + 1} ${srcBadge}</td>
-<td>${r.league}</td>
+<td>${r.source === 'beidan' ? '北单' : '竞彩'}${r.league}</td>
 <td>${kickoff}</td>
 <td>${r.home}</td>${ahCell}<td>${r.away}</td>
 <td class="${dirClass}">${r.ev_direction || '-'}</td>
