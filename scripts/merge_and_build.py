@@ -601,7 +601,7 @@ def main():
                 print(f'📌 DB补充{len(missing)}天缺失数据: {sorted(missing.keys())}')
             # DB中同日期记录数更多时也更新（processed可能缺新插入的场次）
             # 同时用DB的新字段（pin_ah/ou等）补充processed旧记录
-            _NEW_KEYS = {'pin_ah', 'pin_ou', 'ou', 'liji_ou', 'ms_ou', 'hkjc_ah', 'hkjc_ou'}
+            _NEW_KEYS = {'pin_ah', 'pin_ou', 'ou', 'liji_ou', 'ms_ou', 'hkjc_ah', 'hkjc_ou', 'william_1x2', 'william_ah', 'william_ou'}
             # ah/liji/ms字段：processed为空或handicap=0时，用DB非零值覆盖
             _AH_KEYS = {'ah', 'liji', 'ms'}
             # hkjc 1X2初盘同步
