@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""predict_from_odds.py — 从 OM 赔率反推泊松预测，INSERT 到 DB
+"""predict_from_odds.py — 从 OM 赔率反推泊松预测，UPSERT 到 DB
 
 职责：
 - 读 data/raw/oddsmagnet/{date}.json
@@ -10,7 +10,7 @@
   - 用泊松分布算 P(主胜/平/客胜)
   - final = 0.7×poisson + 0.3×implied
   - prediction = max(final) 方向
-- INSERT 到 poisson_predictions 表（按 date+home+away 去重）
+- UPSERT 到 poisson_predictions 表（按 date+home+away 唯一约束）
 
 依赖：raw/oddsmagnet/{date}.json
 输出：DB 中新插入的 N 条预测记录
@@ -345,7 +345,7 @@ def build_predictions(om_matches, fetch_date):
 
 
 def insert_predictions(rows, db_path):
-    """INSERT 到 poisson_predictions（A1: 入库前清掉 om_only 旧记录 → 治本去重）"""
+    """UPSERT 到 poisson_predictions（按 date+home+away 唯一约束，COALESCE 保留旧好数据）"""
     if not rows:
         return 0, 0
     conn = sqlite3.connect(db_path)
@@ -357,75 +357,186 @@ def insert_predictions(rows, db_path):
         except:
             pass
     
-    # A1: 清掉 om_only 旧记录
-    dates_to_clean = sorted({r["date"] for r in rows})
-    if dates_to_clean:
-        placeholders = ",".join("?" * len(dates_to_clean))
-        cur.execute(
-            f"DELETE FROM poisson_predictions WHERE date IN ({placeholders}) AND source = 'om_only'",
-            dates_to_clean
-        )
-        print(f"  [A1] 清掉 om_only 旧记录: {cur.rowcount} 条 (date: {', '.join(dates_to_clean)})")
+    # 创建唯一索引（幂等，已存在则跳过）
+    cur.execute("""
+        CREATE UNIQUE INDEX IF NOT EXISTS idx_pred_uq
+        ON poisson_predictions(date, home_team, away_team)
+    """)
     
-    # 清掉脏数据（日期格式不正确的记录，如 "2026-2026-"）
+    # 清掉脏数据（日期格式不正确的记录）
     cur.execute("SELECT DISTINCT date FROM poisson_predictions WHERE date NOT GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]'")
     bad_dates = [r[0] for r in cur.fetchall()]
     if bad_dates:
         placeholders = ",".join("?" * len(bad_dates))
         cur.execute(f"DELETE FROM poisson_predictions WHERE date IN ({placeholders})", bad_dates)
-        print(f"  [A1] 清掉脏日期记录: {cur.rowcount} 条 (dates: {bad_dates[:3]}...)")
+        print(f"  [清理] 脏日期记录: {cur.rowcount} 条 (dates: {bad_dates[:3]}...)")
     
+    # 清理已有重复记录：同(date, home, away)保留id最小的（最早写入的数据最完整）
+    cur.execute("""
+        DELETE FROM poisson_predictions
+        WHERE id NOT IN (
+            SELECT MIN(id) FROM poisson_predictions
+            GROUP BY date, home_team, away_team
+        )
+    """)
+    if cur.rowcount:
+        print(f"  [去重] 清理重复记录: {cur.rowcount} 条")
+    
+    # UPSERT: INSERT OR REPLACE，用 COALESCE 保留旧值
+    # 规则：kickoff 新值非"待定"/"00:00"才覆盖；william/pinnacle/avg 新值非0/None才覆盖
+    def _ko(new_val):
+        """kickoff: 新值有效则覆盖，否则保留旧值"""
+        if new_val and new_val not in ('待定', '00:00', ''):
+            return new_val
+        return None  # COALESCE 会取旧值
+    
+    def _num(new_val):
+        """数值字段: 新值非0非None则覆盖"""
+        if new_val is not None and new_val != 0:
+            return new_val
+        return None
+    
+    upserted = 0
     inserted = 0
-    skipped = 0
     for r in rows:
+        # 先查旧记录
         cur.execute("""
-            SELECT id FROM poisson_predictions
+            SELECT kickoff_time, william_1x2_w, william_1x2_d, william_1x2_l,
+                   william_ah_handicap, william_ah_home_water, william_ah_away_water,
+                   william_ou_over, william_ou_line, william_ou_under,
+                   pinnacle_close_w, pinnacle_close_d, pinnacle_close_l,
+                   avg_odds_close_w, avg_odds_close_d, avg_odds_close_l,
+                   pin_ah_handicap, pin_ah_home_water, pin_ah_away_water,
+                   pin_ou_line, pin_ou_over, pin_ou_under
+            FROM poisson_predictions
             WHERE date = ? AND home_team = ? AND away_team = ?
         """, (r['date'], r['home_team'], r['away_team']))
-        if cur.fetchone():
-            skipped += 1
-            continue
-        cur.execute("""
-            INSERT INTO poisson_predictions (
-                date, kickoff_time, league, home_team, away_team,
-                prediction, prediction_prob,
-                odds_win, odds_draw, odds_loss,
-                poisson_win, poisson_draw, poisson_loss,
-                final_win, final_draw, final_loss,
-                implied_prob_w, implied_prob_d, implied_prob_l,
-                home_lambda, away_lambda,
-                pinnacle_close_w, pinnacle_close_d, pinnacle_close_l,
-                pinnacle_margin,
-                hkjc_close_w, hkjc_close_d, hkjc_close_l,
-                avg_odds_close_w, avg_odds_close_d, avg_odds_close_l,
-                avg_margin,
-                source, odds_source,
-                ah_handicap, ah_home_water, ah_away_water, ah_source
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (
-            r['date'], r['kickoff_time'], r['league'], r['home_team'], r['away_team'],
-            r['prediction'], r['prediction_prob'],
-            r['odds_win'], r['odds_draw'], r['odds_loss'],
-            r['poisson_win'], r['poisson_draw'], r['poisson_loss'],
-            r['final_win'], r['final_draw'], r['final_loss'],
-            r['implied_prob_w'], r['implied_prob_d'], r['implied_prob_l'],
-            r['home_lambda'], r['away_lambda'],
-            r['pinnacle_close_w'], r['pinnacle_close_d'], r['pinnacle_close_l'],
-            r['pinnacle_margin'],
-            r['hkjc_close_w'], r['hkjc_close_d'], r['hkjc_close_l'],
-            r['avg_odds_close_w'], r['avg_odds_close_d'], r['avg_odds_close_l'],
-            r['avg_margin'],
-            r['source'], r['odds_source'],
-            r['ah_handicap'], r['ah_home_water'], r['ah_away_water'], r['ah_source']
-        ))
-        inserted += 1
+        old = cur.fetchone()
+        
+        if old:
+            # 有旧记录：DELETE + INSERT（带 COALESCE 逻辑在 Python 侧合并）
+            old_ko = old[0]
+            # kickoff: 新值有效覆盖，否则保留旧值
+            new_ko = _ko(r['kickoff_time'])
+            final_ko = new_ko if new_ko else old_ko
+            
+            # 数值字段合并
+            def _merge(new_val, old_val):
+                nv = _num(new_val)
+                return nv if nv is not None else old_val
+            
+            final_william_w = _merge(r.get('william_1x2_w'), old[1])
+            final_william_d = _merge(r.get('william_1x2_d'), old[2])
+            final_william_l = _merge(r.get('william_1x2_l'), old[3])
+            final_william_ah_h = _merge(r.get('william_ah_handicap'), old[4])
+            final_william_ah_hw = _merge(r.get('william_ah_home_water'), old[5])
+            final_william_ah_aw = _merge(r.get('william_ah_away_water'), old[6])
+            final_william_ou_o = _merge(r.get('william_ou_over'), old[7])
+            final_william_ou_l = _merge(r.get('william_ou_line'), old[8])
+            final_william_ou_u = _merge(r.get('william_ou_under'), old[9])
+            final_pin_w = _merge(r['pinnacle_close_w'], old[10])
+            final_pin_d = _merge(r['pinnacle_close_d'], old[11])
+            final_pin_l = _merge(r['pinnacle_close_l'], old[12])
+            final_avg_w = _merge(r['avg_odds_close_w'], old[13])
+            final_avg_d = _merge(r['avg_odds_close_d'], old[14])
+            final_avg_l = _merge(r['avg_odds_close_l'], old[15])
+            final_pin_ah_h = _merge(r.get('pin_ah_handicap'), old[16])
+            final_pin_ah_hw = _merge(r.get('pin_ah_home_water'), old[17])
+            final_pin_ah_aw = _merge(r.get('pin_ah_away_water'), old[18])
+            final_pin_ou_l = _merge(r.get('pin_ou_line'), old[19])
+            final_pin_ou_o = _merge(r.get('pin_ou_over'), old[20])
+            final_pin_ou_u = _merge(r.get('pin_ou_under'), old[21])
+            
+            # 删除旧记录后插入合并后的记录
+            cur.execute("DELETE FROM poisson_predictions WHERE date = ? AND home_team = ? AND away_team = ?",
+                        (r['date'], r['home_team'], r['away_team']))
+            cur.execute("""
+                INSERT INTO poisson_predictions (
+                    date, kickoff_time, league, home_team, away_team,
+                    prediction, prediction_prob,
+                    odds_win, odds_draw, odds_loss,
+                    poisson_win, poisson_draw, poisson_loss,
+                    final_win, final_draw, final_loss,
+                    implied_prob_w, implied_prob_d, implied_prob_l,
+                    home_lambda, away_lambda,
+                    pinnacle_close_w, pinnacle_close_d, pinnacle_close_l,
+                    pinnacle_margin,
+                    hkjc_close_w, hkjc_close_d, hkjc_close_l,
+                    avg_odds_close_w, avg_odds_close_d, avg_odds_close_l,
+                    avg_margin,
+                    source, odds_source,
+                    ah_handicap, ah_home_water, ah_away_water, ah_source,
+                    william_1x2_w, william_1x2_d, william_1x2_l,
+                    william_ah_handicap, william_ah_home_water, william_ah_away_water,
+                    william_ou_over, william_ou_line, william_ou_under,
+                    pin_ah_handicap, pin_ah_home_water, pin_ah_away_water,
+                    pin_ou_line, pin_ou_over, pin_ou_under
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                r['date'], final_ko, r['league'], r['home_team'], r['away_team'],
+                r['prediction'], r['prediction_prob'],
+                r['odds_win'], r['odds_draw'], r['odds_loss'],
+                r['poisson_win'], r['poisson_draw'], r['poisson_loss'],
+                r['final_win'], r['final_draw'], r['final_loss'],
+                r['implied_prob_w'], r['implied_prob_d'], r['implied_prob_l'],
+                r['home_lambda'], r['away_lambda'],
+                final_pin_w, final_pin_d, final_pin_l,
+                r['pinnacle_margin'],
+                r['hkjc_close_w'], r['hkjc_close_d'], r['hkjc_close_l'],
+                final_avg_w, final_avg_d, final_avg_l,
+                r['avg_margin'],
+                r['source'], r['odds_source'],
+                r['ah_handicap'], r['ah_home_water'], r['ah_away_water'], r['ah_source'],
+                final_william_w, final_william_d, final_william_l,
+                final_william_ah_h, final_william_ah_hw, final_william_ah_aw,
+                final_william_ou_o, final_william_ou_l, final_william_ou_u,
+                final_pin_ah_h, final_pin_ah_hw, final_pin_ah_aw,
+                final_pin_ou_l, final_pin_ou_o, final_pin_ou_u,
+            ))
+            upserted += 1
+        else:
+            # 无旧记录：直接INSERT
+            cur.execute("""
+                INSERT INTO poisson_predictions (
+                    date, kickoff_time, league, home_team, away_team,
+                    prediction, prediction_prob,
+                    odds_win, odds_draw, odds_loss,
+                    poisson_win, poisson_draw, poisson_loss,
+                    final_win, final_draw, final_loss,
+                    implied_prob_w, implied_prob_d, implied_prob_l,
+                    home_lambda, away_lambda,
+                    pinnacle_close_w, pinnacle_close_d, pinnacle_close_l,
+                    pinnacle_margin,
+                    hkjc_close_w, hkjc_close_d, hkjc_close_l,
+                    avg_odds_close_w, avg_odds_close_d, avg_odds_close_l,
+                    avg_margin,
+                    source, odds_source,
+                    ah_handicap, ah_home_water, ah_away_water, ah_source
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                r['date'], r['kickoff_time'], r['league'], r['home_team'], r['away_team'],
+                r['prediction'], r['prediction_prob'],
+                r['odds_win'], r['odds_draw'], r['odds_loss'],
+                r['poisson_win'], r['poisson_draw'], r['poisson_loss'],
+                r['final_win'], r['final_draw'], r['final_loss'],
+                r['implied_prob_w'], r['implied_prob_d'], r['implied_prob_l'],
+                r['home_lambda'], r['away_lambda'],
+                r['pinnacle_close_w'], r['pinnacle_close_d'], r['pinnacle_close_l'],
+                r['pinnacle_margin'],
+                r['hkjc_close_w'], r['hkjc_close_d'], r['hkjc_close_l'],
+                r['avg_odds_close_w'], r['avg_odds_close_d'], r['avg_odds_close_l'],
+                r['avg_margin'],
+                r['source'], r['odds_source'],
+                r['ah_handicap'], r['ah_home_water'], r['ah_away_water'], r['ah_source']
+            ))
+            inserted += 1
     conn.commit()
     conn.close()
-    return inserted, skipped
+    return inserted, upserted
 
 
 def main():
-    parser = argparse.ArgumentParser(description='从 OM 赔率生成泊松预测，INSERT 到 DB')
+    parser = argparse.ArgumentParser(description='从 OM 赔率生成泊松预测，UPSERT 到 DB')
     parser.add_argument('--date', type=str, required=True, help='日期 YYYY-MM-DD')
     parser.add_argument('--db', type=str, default=None, help='数据库路径（默认 data/football.db）')
     args = parser.parse_args()
@@ -480,9 +591,9 @@ def main():
                 filled += 1
         print(f'🎯 AH匹配: {filled}/{len(rows)} 场带AH数据入库')
 
-    inserted, skipped = insert_predictions(rows, db_path)
+    inserted, upserted = insert_predictions(rows, db_path)
     print(f'✅ 新增: {inserted} 场')
-    print(f'⏭️ 跳过（已存在）: {skipped} 场')
+    print(f'🔄 更新（UPSERT）: {upserted} 场')
 
     return 0
 
