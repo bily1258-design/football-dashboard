@@ -130,13 +130,23 @@ def parse_kickoff_date(kickoff_str, fetch_date):
 
 
 def load_om_matches(date_str):
-    """读 OM raw 数据"""
-    path = os.path.join(RAW_OM, f'{date_str.replace("-", "")}.json')
-    if not os.path.exists(path):
-        return {}
-    with open(path, 'r', encoding='utf-8') as f:
-        data = json.load(f)
-    return data.get('matches', {})
+    """读 OM raw 数据（检查3天窗口：前一天/当天/后一天，合并去重）"""
+    merged = {}
+    dt = datetime.strptime(date_str, '%Y-%m-%d')
+    for offset in [-1, 0, 1]:
+        d = (dt + timedelta(days=offset)).strftime('%Y%m%d')
+        path = os.path.join(RAW_OM, f'{d}.json')
+        if not os.path.exists(path):
+            continue
+        try:
+            with open(path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            for k, v in data.get('matches', {}).items():
+                if k not in merged:
+                    merged[k] = v
+        except Exception as e:
+            print(f'  WARN 读 {path} 失败: {e}')
+    return merged
 
 
 def extract_pinnacle_odds(odds_dict):
