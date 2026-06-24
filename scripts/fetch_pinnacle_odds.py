@@ -1104,7 +1104,16 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=True):
             ah_hkjc_all = {}
             om_fallback = {}
         else:
-            return results
+            # fallback成功 → 从results构建match_list，继续走oyzs+merge流程
+            # （不能直接return，否则跳过oyzs数据和merge步骤）
+            match_list = results  # fallback results 已是match list格式
+            pin_all = {}
+            bf_all = {}
+            sb_all = {}
+            hkjc_all = {}
+            ah_avg_all = {}
+            ah_hkjc_all = {}
+            om_fallback = {}
     else:
             # Step 1: 百家平均赔率（GET方式）- 当天+前一天
         match_list = fetch_match_list(date_str)
@@ -1513,6 +1522,19 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=True):
         # 利记/明升 亚盘 (from oyzs)
         m['liji_ah'] = liji_oyzs.get('ah', {})
         m['ms_ah'] = ms_oyzs.get('ah', {})
+
+        # 威廉希尔 1X2 + AH + OU (from oyzs)
+        william_oyzs = oyzs_companies.get('william') or oyzs_companies.get('威廉希尔') or {}
+        william_1x2 = william_oyzs.get('1x2', {})
+        william_1x2_open = william_1x2.get('open', {})
+        william_1x2_close = william_1x2.get('close', {})
+        m['william_1x2_open'] = william_1x2_open
+        m['william_1x2_close'] = william_1x2_close
+        m['william_ah'] = william_oyzs.get('ah', {})
+        m['william_ou'] = william_oyzs.get('ou', {})
+        if william_1x2_close.get('w', 0) > 0:
+            print(f"  威廉初盘: {william_1x2_open.get('w',0):.2f}/{william_1x2_open.get('d',0):.2f}/{william_1x2_open.get('l',0):.2f}")
+            print(f"  威廉终盘: {william_1x2_close['w']:.2f}/{william_1x2_close['d']:.2f}/{william_1x2_close['l']:.2f}")
 
         # 计算去抽水概率（基于主市场参照）
         pin_open = m.get('pinnacle_open', {})
@@ -1962,6 +1984,14 @@ def save_to_db(matches, db_path, date_str=None):
         liji_ah_data = m.get('liji_ah', {})
         ms_ah_data = m.get('ms_ah', {})
 
+        # 威廉希尔 1X2 (from oyzs)
+        william_1x2_open = m.get('william_1x2_open', {})
+        william_1x2_close = m.get('william_1x2_close', {})
+        # 用close写入william_1x2_w/d/l（与fetch_data.py一致）
+        w1x2_w = william_1x2_close.get('w') or None
+        w1x2_d = william_1x2_close.get('d') or None
+        w1x2_l = william_1x2_close.get('l') or None
+
         # 提取大小球即时/初盘数据
         liji_ou_close = ou_liji_m.get('close', {})
         liji_ou_open = ou_liji_m.get('open', {})
@@ -2088,7 +2118,8 @@ def save_to_db(matches, db_path, date_str=None):
                 liji_ou_over = COALESCE(?, liji_ou_over), liji_ou_line = COALESCE(?, liji_ou_line), liji_ou_under = COALESCE(?, liji_ou_under),
                 liji_ou_open_over = COALESCE(?, liji_ou_open_over), liji_ou_open_line = COALESCE(?, liji_ou_open_line), liji_ou_open_under = COALESCE(?, liji_ou_open_under),
                 ms_ou_over = COALESCE(?, ms_ou_over), ms_ou_line = COALESCE(?, ms_ou_line), ms_ou_under = COALESCE(?, ms_ou_under),
-                ms_ou_open_over = COALESCE(?, ms_ou_open_over), ms_ou_open_line = COALESCE(?, ms_ou_open_line), ms_ou_open_under = COALESCE(?, ms_ou_open_under)
+                ms_ou_open_over = COALESCE(?, ms_ou_open_over), ms_ou_open_line = COALESCE(?, ms_ou_open_line), ms_ou_open_under = COALESCE(?, ms_ou_open_under),
+                william_1x2_w = COALESCE(?, william_1x2_w), william_1x2_d = COALESCE(?, william_1x2_d), william_1x2_l = COALESCE(?, william_1x2_l)
             WHERE id = ?
         """, (
             pin_open.get('w', 0), pin_open.get('d', 0), pin_open.get('l', 0),
@@ -2118,6 +2149,7 @@ def save_to_db(matches, db_path, date_str=None):
             liji_ou_open_o, liji_ou_open_l, liji_ou_open_u,
             ms_ou_close_o, ms_ou_close_l, ms_ou_close_u,
             ms_ou_open_o, ms_ou_open_l, ms_ou_open_u,
+            w1x2_w, w1x2_d, w1x2_l,
             record_id
         ))
         updated += 1
