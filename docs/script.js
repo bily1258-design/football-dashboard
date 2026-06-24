@@ -3,6 +3,7 @@
 const DATA_URL = 'data/results.json';
 const WEEKDAY_CN = ['周日','周一','周二','周三','周四','周五','周六'];
 let allData = null;
+let currentSource = 'all';
 
 // ─── 盘口中文转换 ───
 function handicapToChinese(h) {
@@ -419,6 +420,8 @@ function loadDate() {
     const hasResult = !!r.result;
     if (hasResult && !showResulted) return;
     if (!hasResult && !showPending) return;
+    // 按来源过滤
+    if (currentSource !== 'all' && r.source !== currentSource) return;
 
     const dirClass = r.ev_hit ? 'hit' : (hasResult ? 'miss' : 'pending');
     const resultDisplay = hasResult
@@ -558,6 +561,16 @@ function bindEvents() {
   document.getElementById('dateSelect').addEventListener('change', loadDate);
   document.getElementById('showResulted').addEventListener('change', loadDate);
   document.getElementById('showPending').addEventListener('change', loadDate);
+
+  // 来源筛选按钮
+  document.querySelectorAll('.source-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.source-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentSource = btn.dataset.source;
+      loadDate();
+    });
+  });
 
   // 泊松列点击：事件委托
   document.getElementById('matchBody').addEventListener('click', (e) => {

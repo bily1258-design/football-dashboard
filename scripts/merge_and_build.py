@@ -41,31 +41,53 @@ def load_from_processed(max_days=999) -> dict:
             data = json.load(f)
         d = data.get('date', f"{date_key[:4]}-{date_key[4:6]}-{date_key[6:8]}")
         records = data.get('records', [])
-        # 竞彩窗口调整：凌晨00:00-11:59的比赛归到前一天
-        adjusted = []
+        # 按开赛时间实际日期归日（不用竞彩窗口偏移，窗口仅用于抓数据）
         for rec in records:
-            kickoff = rec.get('kickoff', '')
-            if kickoff:
-                try:
-                    kt = datetime.strptime(kickoff, '%Y-%m-%d %H:%M')
-                    if kt.hour < 12 or (kt.hour == 12 and kt.minute < 6):
-                        prev_day = (kt - timedelta(days=1)).strftime('%Y-%m-%d')
-                        rec = dict(rec)  # 浅拷贝，不修改原数据
-                        rec['date'] = prev_day
-                        d_new = prev_day
-                    else:
-                        d_new = rec.get('date', d)
-                except:
-                    d_new = rec.get('date', d)
-            else:
-                d_new = rec.get('date', d)
-            adjusted.append((d_new, rec))
-        # 重新按调整后的日期分组
-        for d_new, rec in adjusted:
+            d_new = rec.get('date', d)
             if d_new not in by_date:
                 by_date[d_new] = []
             by_date[d_new].append(rec)
     return by_date
+
+
+def _merge_missing(kept, discarded):
+    """将 discarded 中有而 kept 中缺失的数据合并到 kept"""
+    # 补kickoff
+    ko = kept.get('kickoff', '')
+    if not ko or ko == '待定':
+        dko = discarded.get('kickoff', '')
+        if dko and dko != '待定':
+            kept['kickoff'] = dko
+    # 补william_1x2
+    w1 = kept.get('william_1x2', {})
+    if not w1 or (w1.get('w', 0) == 0 and w1.get('d', 0) == 0 and w1.get('l', 0) == 0):
+        dw1 = discarded.get('william_1x2', {})
+        if dw1 and (dw1.get('w', 0) > 0 or dw1.get('d', 0) > 0 or dw1.get('l', 0) > 0):
+            kept['william_1x2'] = dw1
+    # 补william_ah
+    wah = kept.get('william_ah', {})
+    if not wah or (wah.get('handicap') is None or wah.get('handicap') == 0):
+        dwah = discarded.get('william_ah', {})
+        if dwah and dwah.get('handicap') is not None and dwah.get('handicap') != 0:
+            kept['william_ah'] = dwah
+    # 补william_ou
+    wou = kept.get('william_ou', {})
+    if not wou or (wou.get('over', 0) == 0):
+        dwou = discarded.get('william_ou', {})
+        if dwou and dwou.get('over', 0) > 0:
+            kept['william_ou'] = dwou
+    # 补pin_ah
+    pah = kept.get('pin_ah', {})
+    if not pah or (pah.get('handicap') is None or pah.get('handicap') == 0):
+        dpah = discarded.get('pin_ah', {})
+        if dpah and dpah.get('handicap') is not None and dpah.get('handicap') != 0:
+            kept['pin_ah'] = dpah
+    # 补pin_ou
+    pou = kept.get('pin_ou', {})
+    if not pou or (pou.get('line') is None or pou.get('line') == 0):
+        dpou = discarded.get('pin_ou', {})
+        if dpou and dpou.get('line') is not None and dpou.get('line') != 0:
+            kept['pin_ou'] = dpou
 
 
 def load_from_db(db_path: str, max_days=999) -> dict:
@@ -146,17 +168,7 @@ def load_from_db(db_path: str, max_days=999) -> dict:
     for r in cur.fetchall():
         d = dict(r)
         date = d['date']
-        # 竞彩窗口：凌晨00:00-11:59的比赛归到前一天
-        kickoff = d.get('kickoff_time', '')
-        if kickoff:
-            try:
-                kt = datetime.strptime(kickoff, '%Y-%m-%d %H:%M')
-                if kt.hour < 12 or (kt.hour == 12 and kt.minute < 6):
-                    prev_day = (kt - timedelta(days=1)).strftime('%Y-%m-%d')
-                    date = prev_day
-                    d['date'] = prev_day
-            except:
-                pass
+        # 按实际开赛日期归日（不用竞彩窗口偏移，窗口仅用于抓数据）
         if date not in by_date:
             by_date[date] = []
         # 简化序列化
@@ -198,7 +210,7 @@ def load_from_db(db_path: str, max_days=999) -> dict:
             },
             'risk_level': d.get('risk_level','') or '', 'stars': stars,
             'confidence_index': round(ci,2), 'reference_score': d.get('reference_score','') or '',
-            'cold_risk': d.get('cold_risk','') or '', 'source': d.get('source','jingcai'),
+            'cold_risk': d.get('cold_risk','') or '', 'source': 'beidan' if d.get('source') == 'om_only' else (d.get('source') or 'jingcai'),
             'odds_source': d.get('odds_source','had'),
             'home_lambda': round(d.get('home_lambda',0) or 0,3),
             'away_lambda': round(d.get('away_lambda',0) or 0,3),
@@ -338,11 +350,13 @@ def load_from_db(db_path: str, max_days=999) -> dict:
         })
     conn.close()
 
-    # A3去重+补AH：同 (canonical_home, canonical_away) 只保留一条，同 source 取 id 更大
-    # 保留记录 AH 为空时从同 key 其他记录补
+    # A3去重+补AH+补kickoff/william：同 (canonical_home, canonical_away) 只保留一条
+    # 保留记录缺少字段时从被丢弃的同 key 记录补
     total_dedup = 0
     total_ah_fixed = 0
     total_alias_hits = 0
+    total_kickoff_fixed = 0
+    total_william_fixed = 0
     for date in list(by_date.keys()):
         records = by_date[date]
         if len(records) <= 1:
@@ -364,9 +378,10 @@ def load_from_db(db_path: str, max_days=999) -> dict:
                     seen[key] = r
                 if r['home'] != prev['home'] or r['away'] != prev['away']:
                     total_alias_hits += 1
-        # 补AH
+        # 补AH + 补kickoff/william
         ah_fixed = 0
         for key, kept in seen.items():
+            # 补AH
             ah = kept.get('ah', {})
             if not ah or ah.get('handicap') is None or ah.get('handicap') == 0:
                 for r in reversed(groups[key]):
@@ -375,12 +390,48 @@ def load_from_db(db_path: str, max_days=999) -> dict:
                         kept['ah'] = rah
                         ah_fixed += 1
                         break
+            # 补kickoff：保留记录kickoff为"待定"或空时，从同key其他记录补
+            ko = kept.get('kickoff', '')
+            if not ko or ko == '待定':
+                for r in reversed(groups[key]):
+                    rko = r.get('kickoff', '')
+                    if rko and rko != '待定':
+                        kept['kickoff'] = rko
+                        total_kickoff_fixed += 1
+                        break
+            # 补william_1x2：保留记录william全0时，从同key其他记录补
+            w1 = kept.get('william_1x2', {})
+            if not w1 or (w1.get('w', 0) == 0 and w1.get('d', 0) == 0 and w1.get('l', 0) == 0):
+                for r in reversed(groups[key]):
+                    rw = r.get('william_1x2', {})
+                    if rw and (rw.get('w', 0) > 0 or rw.get('d', 0) > 0 or rw.get('l', 0) > 0):
+                        kept['william_1x2'] = rw
+                        total_william_fixed += 1
+                        break
+            # 补william_ah
+            wah = kept.get('william_ah', {})
+            if not wah or (wah.get('handicap') is None or wah.get('handicap') == 0):
+                for r in reversed(groups[key]):
+                    rwah = r.get('william_ah', {})
+                    if rwah and rwah.get('handicap') is not None and rwah.get('handicap') != 0:
+                        kept['william_ah'] = rwah
+                        total_william_fixed += 1
+                        break
+            # 补william_ou
+            wou = kept.get('william_ou', {})
+            if not wou or (wou.get('over', 0) == 0):
+                for r in reversed(groups[key]):
+                    rwou = r.get('william_ou', {})
+                    if rwou and rwou.get('over', 0) > 0:
+                        kept['william_ou'] = rwou
+                        total_william_fixed += 1
+                        break
         if len(seen) < len(records):
             by_date[date] = list(seen.values())
             total_dedup += len(records) - len(seen)
             total_ah_fixed += ah_fixed
-    if total_dedup or total_ah_fixed or total_alias_hits:
-        print(f"  [merge] 去重 {total_dedup} 条, 补AH {total_ah_fixed} 条, 别名匹配 {total_alias_hits} 条")
+    if total_dedup or total_ah_fixed or total_alias_hits or total_kickoff_fixed or total_william_fixed:
+        print(f"  [merge] 去重 {total_dedup} 条, 补AH {total_ah_fixed} 条, 补kickoff {total_kickoff_fixed} 条, 补william {total_william_fixed} 条, 别名匹配 {total_alias_hits} 条")
 
     return by_date
 
@@ -502,6 +553,11 @@ def generate_index_html(by_date, daily_stats, summary, league_score_freq=None, o
 <div class="controls">
 <label>日期：</label>
 <select id="dateSelect"></select>
+<div class="source-tabs">
+<button class="source-tab active" data-source="all">全部</button>
+<button class="source-tab" data-source="jingcai">竞彩足球</button>
+<button class="source-tab" data-source="beidan">北京单场</button>
+</div>
 <label><input type="checkbox" id="showResulted" checked> 已开奖</label>
 <label><input type="checkbox" id="showPending" checked> 待开奖</label>
 <button id="btnExcel" onclick="downloadExcel()" style="margin-left:auto;padding:4px 12px;background:#238636;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:13px">📥 下载Excel</button>
@@ -668,7 +724,7 @@ def main():
     if not by_date:
         print('[ERROR] 无数据'); sys.exit(1)
 
-    # 最终去重：竞彩窗口调整后，同一天内同(canonical_home,canonical_away)可能重复
+    # 最终去重：同一天内同(canonical_home,canonical_away)可能重复
     total_final_dedup = 0
     total_final_alias = 0
     for d_key in list(by_date.keys()):
@@ -682,16 +738,21 @@ def main():
                 prev = seen[key]
                 # 竞彩优先，id更大优先
                 if r.get('source') == 'jingcai' and prev.get('source') != 'jingcai':
+                    # 丢弃prev前补数据
+                    _merge_missing(prev, r)
                     seen[key] = r
                 elif r.get('id', 0) > prev.get('id', 0):
+                    _merge_missing(r, prev)
                     seen[key] = r
+                else:
+                    _merge_missing(prev, r)
                 if r.get('home','') != prev.get('home','') or r.get('away','') != prev.get('away',''):
                     total_final_alias += 1
         if len(seen) < len(records):
             by_date[d_key] = list(seen.values())
             total_final_dedup += len(records) - len(seen)
     if total_final_dedup:
-        print(f'📌 最终去重 {total_final_dedup} 条（竞彩窗口调整后跨源重复）')
+        print(f'📌 最终去重 {total_final_dedup} 条（跨源重复）')
     if total_final_alias:
         print(f'📌 别名归一化匹配 {total_final_alias} 条（跨源队名不一致）')
 
@@ -710,21 +771,21 @@ def main():
                 curr_kickoff = r.get('kickoff', '')
                 # 如果当前版本有真实 kickoff，之前的是"待定"或空，替换
                 if curr_kickoff and curr_kickoff != '待定' and (not prev_kickoff or prev_kickoff == '待定'):
-                    # 从之前日期中删除
+                    # 从之前日期中删除，但先补数据
+                    _merge_missing(r, prev_rec)
                     by_date[prev_date] = [x for x in by_date[prev_date] if x is not prev_rec]
                     all_matches[mk] = (d_key, r)
                     cross_date_dedup += 1
                     cross_date_kickoff_fixed += 1
                     kept.append(r)
                 elif prev_kickoff and prev_kickoff != '待定' and (not curr_kickoff or curr_kickoff == '待定'):
-                    # 之前的有真实 kickoff，当前的是"待定" → 补上 kickoff 信息后丢弃当前
-                    r['kickoff'] = prev_kickoff
+                    # 之前的有真实 kickoff，当前的是"待定" → 补数据后丢弃当前
+                    _merge_missing(prev_rec, r)
                     cross_date_dedup += 1
-                    # 不 append → 丢弃
                 else:
-                    # 两个都有真实 kickoff 或都无 → 保留日期更早的
+                    # 两个都有真实 kickoff 或都无 → 保留日期更早的，补数据
+                    _merge_missing(prev_rec, r)
                     cross_date_dedup += 1
-                    # 不 append → 丢弃当前
             else:
                 all_matches[mk] = (d_key, r)
                 kept.append(r)
