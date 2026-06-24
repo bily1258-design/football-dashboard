@@ -498,6 +498,21 @@ def align_all(db_path: str = None, max_days: int = 999) -> Dict:
         print(f"[ERROR] DB not found: {db_path}")
         return {}
 
+    # 先清理DB重复 + 创建唯一索引，保证数据干净
+    cleanup_db_duplicates(db_path)
+    conn = sqlite3.connect(db_path)
+    cur = conn.cursor()
+    cur.execute("""
+        CREATE UNIQUE INDEX IF NOT EXISTS idx_pred_uq
+        ON poisson_predictions(date, home_team, away_team)
+    """)
+    # om_only→beidan 映射（DB层面修正）
+    cur.execute("UPDATE poisson_predictions SET source='beidan' WHERE source='om_only'")
+    if cur.rowcount:
+        print(f"  [映射] om_only→beidan: {cur.rowcount} 条")
+    conn.commit()
+    conn.close()
+
     # 获取所有有数据的日期
     conn = sqlite3.connect(db_path)
     cur = conn.cursor()
