@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'data/raw/**'
+      - 'docs/**'
   release:
     types: [published, edited]
   workflow_dispatch:
