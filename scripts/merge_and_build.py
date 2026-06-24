@@ -44,6 +44,9 @@ def load_from_processed(max_days=999) -> dict:
         # 按开赛时间实际日期归日（不用竞彩窗口偏移，窗口仅用于抓数据）
         for rec in records:
             d_new = rec.get('date', d)
+            # source映射：om_only → beidan
+            if rec.get('source') == 'om_only':
+                rec['source'] = 'beidan'
             if d_new not in by_date:
                 by_date[d_new] = []
             by_date[d_new].append(rec)
@@ -815,3 +818,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
