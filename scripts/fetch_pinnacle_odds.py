@@ -1366,11 +1366,9 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=True):
             print(f"[INFO] oddsmagnet补充{om_added}场缺失场次")
             # 重新计数
             pin_count = sum(1 for r in results if r.get('odds_source') == 'Pinnacle')
-            sb_count = sum(1 for r in results if r.get('odds_source') == 'SB')
-            avg_count = sum(1 for r in results if r.get('odds_source') == '百家平均')
             none_count = sum(1 for r in results if r.get('odds_source') == '无')
-    
-    print(f"[INFO] 平博: {pin_count}场, SB: {sb_count}场, 百家平均: {avg_count}场, 无赔率: {none_count}场")
+
+    print(f"[INFO] Pinnacle: {pin_count}场, 无数据: {none_count}场")
     
     # 保存缓存文件
     cache_dir = os.path.join(DATA_BASE_DIR, "data", "cache")
@@ -1383,9 +1381,7 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=True):
         'summary': {
             'total': len(results),
             'pinnacle': pin_count,
-            'sb': sb_count,
-            'avg': avg_count,
-            'none': none_count,
+                        'none': none_count,
         },
         'matches': results
     }
