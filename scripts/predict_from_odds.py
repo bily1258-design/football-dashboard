@@ -4,7 +4,8 @@
 职责：
 - 读 data/raw/oddsmagnet/{date}.json
 - 对每场比赛：
-  - 用 OM 百家平均 implied(去抽水) 作为市场预期
+  - 优先用 OM 百家平均 implied(去抽水) 作为市场预期
+  - avg 为空时，从 Pinnacle 赔率反推隐含概率（1/odds，去抽水归一化）
   - 用 implied 反推实力差距 → 估算 λ_home/λ_away
   - 用泊松分布算 P(主胜/平/客胜)
   - final = 0.7×poisson + 0.3×implied
@@ -164,19 +165,90 @@ def extract_pinnacle_odds(odds_dict):
     }
 
 
+def implied_from_odds(odds_w, odds_d, odds_l):
+    """从欧赔反推隐含概率（去抽水归一化）"""
+    if not odds_w or not odds_d or not odds_l:
+        return None, None, None
+    if odds_w <= 0 or odds_d <= 0 or odds_l <= 0:
+        return None, None, None
+    raw_w = 1.0 / odds_w
+    raw_d = 1.0 / odds_d
+    raw_l = 1.0 / odds_l
+    total = raw_w + raw_d + raw_l
+    return raw_w / total, raw_d / total, raw_l / total
+
+
 def build_predictions(om_matches, fetch_date):
-    """从 OM matches 生成 INSERT 行"""
+    """从 OM matches 生成 INSERT 行
+    
+    优先级：
+    1. avg.implied_prob（百家平均隐含概率，去抽水）
+    2. pinnacle 赔率反推隐含概率
+    3. hkjc 赔率反推隐含概率
+    """
     rows = []
+    n_avg = 0
+    n_pin = 0
+    n_hkjc = 0
+    n_skip = 0
+    
     for key, m in om_matches.items():
         info = m.get('info', {})
         odds = m.get('odds', {})
         avg = odds.get('avg', {}) or {}
         imp = avg.get('implied_prob', {}) or {}
 
-        if not imp.get('w') or not imp.get('d') or not imp.get('l'):
+        p_w, p_d, p_l = None, None, None
+        odds_source = 'avg'
+        odds_w_used = avg.get('odds_w', 0) or 0
+        odds_d_used = avg.get('odds_d', 0) or 0
+        odds_l_used = avg.get('odds_l', 0) or 0
+        margin_used = avg.get('margin', 0) or 0
+
+        # 优先级1: avg implied_prob
+        if imp.get('w') and imp.get('d') and imp.get('l'):
+            p_w, p_d, p_l = imp['w'], imp['d'], imp['l']
+            odds_source = 'avg'
+            odds_w_used = avg.get('odds_w', 0) or 0
+            odds_d_used = avg.get('odds_d', 0) or 0
+            odds_l_used = avg.get('odds_l', 0) or 0
+            margin_used = avg.get('margin', 0) or 0
+            n_avg += 1
+        else:
+            # 优先级2: pinnacle 赔率反推
+            ext = extract_pinnacle_odds(odds)
+            if ext['pinnacle_w'] and ext['pinnacle_d'] and ext['pinnacle_l']:
+                p_w, p_d, p_l = implied_from_odds(
+                    ext['pinnacle_w'], ext['pinnacle_d'], ext['pinnacle_l'])
+                if p_w is not None:
+                    odds_source = 'pinnacle'
+                    odds_w_used = ext['pinnacle_w']
+                    odds_d_used = ext['pinnacle_d']
+                    odds_l_used = ext['pinnacle_l']
+                    margin_used = ext['pinnacle_margin']
+                    n_pin += 1
+                else:
+                    ext = None  # fall through to hkjc
+            if p_w is None:
+                # 优先级3: hkjc 赔率反推
+                hkjc = odds.get('hkjc', {}) or {}
+                hkjc_w = hkjc.get('odds_w', 0) or 0
+                hkjc_d = hkjc.get('odds_d', 0) or 0
+                hkjc_l = hkjc.get('odds_l', 0) or 0
+                if hkjc_w and hkjc_d and hkjc_l:
+                    p_w, p_d, p_l = implied_from_odds(hkjc_w, hkjc_d, hkjc_l)
+                    if p_w is not None:
+                        odds_source = 'hkjc'
+                        odds_w_used = hkjc_w
+                        odds_d_used = hkjc_d
+                        odds_l_used = hkjc_l
+                        margin_used = 0
+                        n_hkjc += 1
+
+        if p_w is None:
+            n_skip += 1
             continue
 
-        p_w, p_d, p_l = imp['w'], imp['d'], imp['l']
         # 归一
         s = p_w + p_d + p_l
         p_w, p_d, p_l = p_w/s, p_d/s, p_l/s
@@ -218,9 +290,9 @@ def build_predictions(om_matches, fetch_date):
             'away_team': info.get('away', ''),
             'prediction': prediction,
             'prediction_prob': round(pred_prob, 3),
-            'odds_win': avg.get('odds_w', 0) or 0,
-            'odds_draw': avg.get('odds_d', 0) or 0,
-            'odds_loss': avg.get('odds_l', 0) or 0,
+            'odds_win': odds_w_used,
+            'odds_draw': odds_d_used,
+            'odds_loss': odds_l_used,
             'poisson_win': round(p_pois_w, 3),
             'poisson_draw': round(p_pois_d, 3),
             'poisson_loss': round(p_pois_l, 3),
@@ -239,18 +311,21 @@ def build_predictions(om_matches, fetch_date):
             'hkjc_close_w': ext['hkjc_w'],
             'hkjc_close_d': ext['hkjc_d'],
             'hkjc_close_l': ext['hkjc_l'],
-            'avg_odds_close_w': avg.get('odds_w', 0) or 0,
-            'avg_odds_close_d': avg.get('odds_d', 0) or 0,
-            'avg_odds_close_l': avg.get('odds_l', 0) or 0,
-            'avg_margin': avg.get('margin', 0) or 0,
+            'avg_odds_close_w': odds_w_used if odds_source == 'avg' else (avg.get('odds_w', 0) or 0),
+            'avg_odds_close_d': odds_d_used if odds_source == 'avg' else (avg.get('odds_d', 0) or 0),
+            'avg_odds_close_l': odds_l_used if odds_source == 'avg' else (avg.get('odds_l', 0) or 0),
+            'avg_margin': margin_used if odds_source == 'avg' else (avg.get('margin', 0) or 0),
             'source': 'om_only',
-            'odds_source': 'avg',
+            'odds_source': odds_source,
             # 亚盘让球盘（OM数据通常无亚盘，后续由fetch_pinnacle_odds补充）
             'ah_handicap': 0,
             'ah_home_water': 0,
             'ah_away_water': 0,
             'ah_source': '',
         })
+    
+    if n_pin or n_hkjc or n_skip:
+        print(f'  📊 赔率源: avg={n_avg} pinnacle={n_pin} hkjc={n_hkjc} skip={n_skip}')
     return rows
 
 
