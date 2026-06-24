@@ -530,24 +530,22 @@ def align_all(db_path: str = None, max_days: int = 999) -> Dict:
 
 
 def cleanup_db_duplicates(db_path: str, dry_run: bool = False) -> Dict:
-    """清理 DB 里 (date, home_team, away_team, kickoff_time) 重复的行
+    """清理 DB 里 (date, home_team, away_team) 重复的行
 
-    设计目的：daily_report.py 写入时未做 DB 层去重（match_id 可能 NULL，
-    INSERT OR REPLACE 又因没 UNIQUE 约束 = 普通 INSERT），会产生重复行。
-    本函数作为"事后清理层"，复用 A3 的去重键 (home, away, kickoff)，
-    合并到保留行，删除多余。
+    设计目的：predict_from_odds.py 多次运行时 INSERT 而非 UPSERT，
+    导致同天同队名出现多条记录（kickoff_time 可能不同：一条有效一条"待定"）。
+    本函数按 (date, home_team, away_team) 去重，合并到保留行，删除多余。
 
-    保留优先级：jingcai > beidan > om_only；同 source 取 id 最大（最新 exec_time）
+    保留优先级：kickoff有效 > 待定；同 kickoff 取 id 最小（最早写入数据最完整）
     字段补全：保留行缺失字段从被删行取第一个非空非0值
-    不动的字段：id, date, exec_time, home_team, away_team, kickoff_time, source
+    不动的字段：id, date, home_team, away_team
 
     参数：
         db_path: DB 路径
         dry_run: True 时只报告，不真删
     返回：{'groups': 重复组数, 'deleted': 删除行数, 'fields_merged': 补全字段数, 'match_id_filled': match_id 补全数}
     """
-    SOURCE_PRIORITY = {'jingcai': 0, 'beidan': 1, 'om_only': 2}
-    SKIP_FIELDS = {'id', 'date', 'exec_time', 'home_team', 'away_team', 'kickoff_time', 'source'}
+    SKIP_FIELDS = {'id', 'date', 'home_team', 'away_team'}
 
     if not os.path.exists(db_path):
         print(f"[ERROR] DB not found: {db_path}")
@@ -557,11 +555,11 @@ def cleanup_db_duplicates(db_path: str, dry_run: bool = False) -> Dict:
     conn.row_factory = sqlite3.Row
     cur = conn.cursor()
 
-    # 1. 找重复组
+    # 1. 找重复组 — 按 (date, home_team, away_team) 不含 kickoff_time
     cur.execute("""
-        SELECT date, home_team, away_team, kickoff_time, COUNT(*) cnt
+        SELECT date, home_team, away_team, COUNT(*) cnt
         FROM poisson_predictions
-        GROUP BY date, home_team, away_team, kickoff_time
+        GROUP BY date, home_team, away_team
         HAVING cnt > 1
         ORDER BY date, home_team
     """)
@@ -578,13 +576,17 @@ def cleanup_db_duplicates(db_path: str, dry_run: bool = False) -> Dict:
         # 2. 取这组所有行
         cur.execute("""
             SELECT * FROM poisson_predictions
-            WHERE date=? AND home_team=? AND away_team=? AND kickoff_time=?
+            WHERE date=? AND home_team=? AND away_team=?
             ORDER BY id ASC
-        """, (g['date'], g['home_team'], g['away_team'], g['kickoff_time']))
+        """, (g['date'], g['home_team'], g['away_team']))
         rows = [dict(r) for r in cur.fetchall()]
 
-        # 3. 排序选保留行
-        rows.sort(key=lambda r: (SOURCE_PRIORITY.get(r['source'], 99), -r['id']))
+        # 3. 排序选保留行：kickoff有效优先，然后id最小（数据最完整）
+        def _sort_key(r):
+            ko = r.get('kickoff_time', '')
+            ko_valid = 0 if (ko and ko not in ('待定', '00:00', '')) else 1
+            return (ko_valid, r['id'])
+        rows.sort(key=_sort_key)
         kept = dict(rows[0])
         others = rows[1:]
 
