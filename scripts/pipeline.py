@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
-"""pipeline.py — 预测+融合+EV+Kelly+去重+对齐+推送 全链路入口
+"""pipeline.py — 预测+赔率回填+融合+EV+Kelly+去重+对齐+推送 全链路入口
 
 步骤顺序硬编码，从根本上杜绝 yml 排列出错：
-  1. predict_from_odds   — OM赔率 → 泊松预测 INSERT DB
-  2. calc_lambda         — 补算 lambda（对 jingcai 等无 lambda 的记录）
-  3. update_db_fusion    — LGBM融合概率填充
-  4. value_bet --all     — EV 重算
-  5. update_db_kelly     — Kelly 重算
-  6. align_and_merge --cleanup-db  — 去重复
-  7. align_and_merge --all         — 对齐合并 → processed/
-  8. push_db             — DB 推 Release
+  1. predict_from_odds    — OM赔率 → 泊松预测 INSERT DB
+  2. fetch_pinnacle_odds  — Pinnacle/HKJC/威廉初终盘 UPDATE DB
+  3. calc_lambda          — 补算 lambda（对 jingcai 等无 lambda 的记录）
+  4. update_db_fusion     — LGBM融合概率填充
+  5. value_bet --all      — EV 重算
+  6. update_db_kelly      — Kelly 重算
+  7. align_and_merge --cleanup-db  — 去重复
+  8. align_and_merge --all         — 对齐合并 → processed/
+  9. push_db              — DB 推 Release
 
 用法：
   python scripts/pipeline.py --date 2026-06-18 --db data/football.db
@@ -47,7 +48,7 @@ def run(cmd, label, required=True):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="预测+融合+EV+Kelly 全链路")
+    parser = argparse.ArgumentParser(description="预测+赔率回填+融合+EV+Kelly 全链路")
     parser.add_argument("--date", required=True, help="目标日期 YYYY-MM-DD")
     parser.add_argument("--db", required=True, help="数据库路径")
     parser.add_argument("--skip-push", action="store_true",
@@ -63,52 +64,58 @@ def main():
     if not args.skip_predict:
         run([sys.executable, os.path.join(SCRIPT_DIR, "predict_from_odds.py"),
              "--date", date, "--db", db],
-            label="1/8 predict_from_odds",
+            label="1/9 predict_from_odds",
             required=False)
     else:
         print("⏭️ 跳过 predict (--skip-predict)")
 
-    # 2. 补算 lambda（对 jingcai 等无 lambda 的记录用赔率反推）
+    # 2. Pinnacle/HKJC/威廉初终盘回填（UPDATE已有记录，补william/HKJC等）
+    run([sys.executable, os.path.join(SCRIPT_DIR, "fetch_pinnacle_odds.py"),
+         "--date", date],
+        label="2/9 fetch_pinnacle_odds",
+        required=False)
+
+    # 3. 补算 lambda（对 jingcai 等无 lambda 的记录用赔率反推）
     run([sys.executable, os.path.join(SCRIPT_DIR, "calc_lambda.py"),
          "--db", db, "--date", date],
-        label="2/8 calc_lambda",
+        label="3/9 calc_lambda",
         required=False)
 
-    # 3. LGBM 融合概率
+    # 4. LGBM 融合概率
     run([sys.executable, os.path.join(SCRIPT_DIR, "update_db_fusion.py"),
          "--db", db],
-        label="3/8 update_db_fusion",
+        label="4/9 update_db_fusion",
         required=False)
 
-    # 4. EV 重算
+    # 5. EV 重算
     run([sys.executable, os.path.join(SCRIPT_DIR, "value_bet.py"),
          "--all", "--db", db],
-        label="4/8 value_bet (EV)",
+        label="5/9 value_bet (EV)",
         required=False)
 
-    # 5. Kelly 重算
+    # 6. Kelly 重算
     run([sys.executable, os.path.join(SCRIPT_DIR, "update_db_kelly.py"),
          "--db", db],
-        label="5/8 update_db_kelly",
+        label="6/9 update_db_kelly",
         required=False)
 
-    # 6. DB 去重
+    # 7. DB 去重
     run([sys.executable, os.path.join(SCRIPT_DIR, "align_and_merge.py"),
          "--cleanup-db", "--db", db],
-        label="6/8 cleanup_db_duplicates",
+        label="7/9 cleanup_db_duplicates",
         required=False)
 
-    # 7. 对齐合并 → processed/
+    # 8. 对齐合并 → processed/
     run([sys.executable, os.path.join(SCRIPT_DIR, "align_and_merge.py"),
          "--all", "--db", db],
-        label="7/8 align_and_merge",
+        label="8/9 align_and_merge",
         required=True)
 
-    # 8. 推送 DB 到 Release
+    # 9. 推送 DB 到 Release
     if not args.skip_push:
         run([sys.executable, os.path.join(SCRIPT_DIR, "push_db.py"),
              "--db", db],
-            label="8/8 push_db",
+            label="9/9 push_db",
             required=False)
     else:
         print("⏭️ 跳过 push_db (--skip-push)")
