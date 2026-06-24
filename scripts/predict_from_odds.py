@@ -357,12 +357,6 @@ def insert_predictions(rows, db_path):
         except:
             pass
     
-    # 创建唯一索引（幂等，已存在则跳过）
-    cur.execute("""
-        CREATE UNIQUE INDEX IF NOT EXISTS idx_pred_uq
-        ON poisson_predictions(date, home_team, away_team)
-    """)
-    
     # 清掉脏数据（日期格式不正确的记录）
     cur.execute("SELECT DISTINCT date FROM poisson_predictions WHERE date NOT GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]'")
     bad_dates = [r[0] for r in cur.fetchall()]
@@ -381,6 +375,12 @@ def insert_predictions(rows, db_path):
     """)
     if cur.rowcount:
         print(f"  [去重] 清理重复记录: {cur.rowcount} 条")
+    
+    # 创建唯一索引（清理重复后才能成功）
+    cur.execute("""
+        CREATE UNIQUE INDEX IF NOT EXISTS idx_pred_uq
+        ON poisson_predictions(date, home_team, away_team)
+    """)
     
     # UPSERT: INSERT OR REPLACE，用 COALESCE 保留旧值
     # 规则：kickoff 新值非"待定"/"00:00"才覆盖；william/pinnacle/avg 新值非0/None才覆盖
@@ -471,7 +471,7 @@ def insert_predictions(rows, db_path):
                     william_ou_over, william_ou_line, william_ou_under,
                     pin_ah_handicap, pin_ah_home_water, pin_ah_away_water,
                     pin_ou_line, pin_ou_over, pin_ou_under
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 r['date'], final_ko, r['league'], r['home_team'], r['away_team'],
                 r['prediction'], r['prediction_prob'],
