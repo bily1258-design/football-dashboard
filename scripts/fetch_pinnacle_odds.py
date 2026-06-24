@@ -990,20 +990,17 @@ def parse_detail_page(html):
 def fetch_pinnacle_odds(date_str=None, include_beidan=True):
     """主函数：获取指定日期的赔率数据
 
-    【北单(include_beidan)默认开启】（2026-06-20 改造）：
-    - 实测公司ID 106 = 真Pinnacle，type=bd 页面返回 1X2欧赔（非让球盘）
-    - 6-21/6-22缺Pinnacle的3场（西乙+巴乙）全在北单页面里，开启后能直接补齐
-    - 公司ID 22 = 假Pinnacle（已废弃），所有 type 都返回空/WAF
-    - 北单返回的是真HAD 1X2欧赔（d<2.0 检测同样适用），不是HHAD让球盘
-
-    数据源优先级：
-    1. SB公司赔率（POST company=3，抽水5-8%）→ 作为pinnacle字段（主市场参照）
-    2. 百家平均赔率（GET默认页面）→ 作为avg_odds字段
-    3. 详情页平博数据（如果可访问）→ 覆盖pinnacle字段
+    【纯oyzs数据源】（2026-06-24 改造）：
+    - 所有赔率数据（Pinnacle/HKJC/William/Liji/Mingsheng 的 1X2+AH+OU）全部从 oyzs_ajax 获取
+    - oyzs走odds.zgzcw.com域名，不受plzx.zgzcw.com的CloudWAF影响
+    - 已废弃所有plzx POST请求（Pinnacle company=106, Betfair company=56, 百家平均AH）
+    - 已废弃百家平均GET请求（看板不需要）
+    - match_list从oddsmagnet缓存获取（含赛程信息+kickoff）
+    - oddsmagnet仅作为兜底（oyzs无Pinnacle 1X2时补充）
 
     Args:
         date_str: 日期字符串，格式 YYYY-MM-DD，默认今天
-        include_beidan: 是否同时抓取北单(type=bd)的Pinnacle/Betfair等公司赔率（默认True）
+        include_beidan: 是否同时抓北单oyzs数据（默认True）
 
     Returns:
         list[dict]: 每场比赛的赔率数据
@@ -1013,303 +1010,169 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=True):
     
     print(f"[INFO] 抓取赔率数据: {date_str}")
     
-    # 同时抓取前一天的数据（覆盖次日00:00-11:59的凌晨比赛）
     prev_day = (datetime.strptime(date_str, '%Y-%m-%d') - timedelta(days=1)).strftime('%Y-%m-%d')
     next_day = (datetime.strptime(date_str, '%Y-%m-%d') + timedelta(days=1)).strftime('%Y-%m-%d')
     
-    # Step 0: 检测zgzcw.com是否可用（WAF检测）
-    zgzcw_available = False
-    try:
-        import requests as req
-        test_resp = req.get(BASE_URL_LIST, headers=HEADERS, timeout=10)
-        if test_resp.status_code == 200 and 'CloudWAF' not in test_resp.text and '华为云' not in test_resp.text:
-            zgzcw_available = True
-        else:
-            print(f"[WARN] zgzcw.com WAF拦截(status={test_resp.status_code})，启用oddsmagnet fallback")
-    except Exception as e:
-        print(f"[WARN] zgzcw.com不可达: {e}，启用oddsmagnet fallback")
-    
-    if not zgzcw_available:
-        # WAF拦截 → 直接从oddsmagnet缓存读取赔率
-        results = load_oddsmagnet_fallback(date_str)
-        if results:
-            # 保存缓存文件（格式与正常流程一致）
-            cache_dir = os.path.join(DATA_BASE_DIR, "data", "cache")
-            os.makedirs(cache_dir, exist_ok=True)
-            now_str = datetime.now().strftime('%H%M')
-            cache_path = os.path.join(cache_dir, f"pinnacle_odds_{date_str.replace('-','')}_{now_str}.json")
-            cache_data = {
-                'date': date_str,
-                'fetch_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                'source': 'oddsmagnet_fallback',
-                'summary': {
-                    'total': len(results),
-                    'pinnacle': sum(1 for r in results if r.get('odds_source') == 'Pinnacle'),
-                    'avg': sum(1 for r in results if r.get('odds_source') == '百家平均'),
-                },
-                'matches': results
-            }
-            with open(cache_path, 'w', encoding='utf-8') as f:
-                json.dump(cache_data, f, ensure_ascii=False, indent=2, default=str)
-            print(f"[INFO] 缓存已保存: {cache_path}")
-        if not results:
-            # oddsmagnet fallback也失败 → 从odds_api.py输出加载match_list
-            print("[INFO] oddsmagnet fallback失败，从odds_api.py缓存加载match_list")
-            match_list = []
-            for om_date in [prev_day, date_str, next_day]:
-                om_file = os.path.join(DATA_BASE_DIR, "data", "raw", "oddsmagnet", f"{om_date.replace('-', '')}.json")
-                if os.path.exists(om_file):
-                    try:
-                        with open(om_file, 'r', encoding='utf-8') as f:
-                            om_data = json.load(f)
-                        om_matches = om_data.get('matches', {})
-                        if isinstance(om_matches, dict):
-                            for key, m in om_matches.items():
-                                info = m.get('info', {})
-                                odds_data = m.get('odds', {})
-                                avg_o = odds_data.get('avg', {})
-                                pin_o = odds_data.get('pinnacle', {})
-                                match_list.append({
-                                    'match_id': f"{info.get('home', '')}_{info.get('away', '')}",
-                                    'number': info.get('number', ''),
-                                    'league': info.get('league', ''),
-                                    'kickoff': info.get('kickoff', ''),
-                                    'home': info.get('home', ''),
-                                    'away': info.get('away', ''),
-                                    'date': om_data.get('date', om_date),
-                                    'odds_source': '百家平均',
-                                    'avg_open': {'w': avg_o.get('odds_w', 0), 'd': avg_o.get('odds_d', 0), 'l': avg_o.get('odds_l', 0)},
-                                    'avg_close': {'w': avg_o.get('odds_w', 0), 'd': avg_o.get('odds_d', 0), 'l': avg_o.get('odds_l', 0)},
-                                    'avg_movement': {'w': 'stable', 'd': 'stable', 'l': 'stable'},
-                                    'pinnacle_open': {'w': pin_o.get('odds_w', 0), 'd': pin_o.get('odds_d', 0), 'l': pin_o.get('odds_l', 0)},
-                                    'pinnacle_close': {'w': pin_o.get('odds_w', 0), 'd': pin_o.get('odds_d', 0), 'l': pin_o.get('odds_l', 0)},
-                                    'pinnacle_movement': {'w': 'stable', 'd': 'stable', 'l': 'stable'},
-                                    'pinnacle_margin': pin_o.get('margin', 0),
-                                })
-                            print(f"[INFO] 从{os.path.basename(om_file)}加载{len(om_matches)}场")
-                    except Exception as e:
-                        print(f"[WARN] 加载{os.path.basename(om_file)}失败: {e}")
-            
-            if not match_list:
-                print("[WARN] 无法获取任何赔率数据")
-                return []
-            
-            print(f"[INFO] 从odds_api.py缓存加载match_list: {len(match_list)}场")
-            # WAF拦截，跳过zgzcw.com POST请求，直接设置空结果
-            pin_all = {}
-            bf_all = {}
-            sb_all = {}
-            hkjc_all = {}
-            ah_avg_all = {}
-            ah_hkjc_all = {}
-            om_fallback = {}
-        else:
-            # fallback成功 → 从results构建match_list，继续走oyzs+merge流程
-            # （不能直接return，否则跳过oyzs数据和merge步骤）
-            match_list = results  # fallback results 已是match list格式
-            pin_all = {}
-            bf_all = {}
-            sb_all = {}
-            hkjc_all = {}
-            ah_avg_all = {}
-            ah_hkjc_all = {}
-            om_fallback = {}
-    else:
-            # Step 1: 百家平均赔率（GET方式）- 当天+前一天
-        match_list = fetch_match_list(date_str)
-        match_list_prev = fetch_match_list(prev_day)
-        match_list_next = fetch_match_list(next_day)
-        print(f"[INFO] 竞彩百家平均: 当天{len(match_list)}场, 前天{len(match_list_prev)}场, 次日{len(match_list_next)}场")
-        match_list = match_list_prev + match_list + match_list_next  # 48小时范围
-    
-        if include_beidan:
-            match_list_bd = fetch_match_list(date_str, page_type='bd')
-            match_list_bd_prev = fetch_match_list(prev_day, page_type='bd')
-            match_list_bd_next = fetch_match_list(next_day, page_type='bd')
-            print(f"[INFO] 北单百家平均: 当天{len(match_list_bd)}场, 前天{len(match_list_bd_prev)}场, 次日{len(match_list_bd_next)}场")
-            match_list_bd = match_list_bd_prev + match_list_bd + match_list_bd_next
-            # 去重合并：按match_id去重
-            existing_ids = {m.get('match_id','') for m in match_list}
-            for m in match_list_bd:
-                mid = m.get('match_id','')
-                if mid and mid not in existing_ids:
-                    match_list.append(m)
-                    existing_ids.add(mid)
-            print(f"[INFO] 去重合并后总计 {len(match_list)} 场比赛")
-    
-        # Step 2: 平博赔率（POST方式，aid=106=真Pinnacle）- 当天+前一天（最高优先级）
-        # 2026-06-20 WAF加固：单次会话多次POST会被HuaweiCloudWAF拦，间隔从3s→6s
-        pin_jc = fetch_company_odds(date_str, page_type='jc', company='106')
-        time.sleep(6)
-        pin_jc_prev = fetch_company_odds(prev_day, page_type='jc', company='106')
-        time.sleep(6)
-        pin_jc_next = fetch_company_odds(next_day, page_type='jc', company='106')
-        time.sleep(6)
-        pin_bd = fetch_company_odds(date_str, page_type='bd', company='106') if include_beidan else {}
-        time.sleep(6)
-        pin_bd_prev = fetch_company_odds(prev_day, page_type='bd', company='106') if include_beidan else {}
-        time.sleep(6)
-        pin_bd_next = fetch_company_odds(next_day, page_type='bd', company='106') if include_beidan else {}
-        pin_all = {**pin_jc_prev, **pin_bd_prev, **pin_jc, **pin_bd, **pin_jc_next, **pin_bd_next}  # match_id -> pin_odds
-        print(f"[INFO] Pinnacle赔率: {len(pin_all)} 场 (前天jc{len(pin_jc_prev)}/bd{len(pin_bd_prev)}, 当天jc{len(pin_jc)}/bd{len(pin_bd)}, 次日jc{len(pin_jc_next)}/bd{len(pin_bd_next)})")
-
-        # Step 3: 必发赔率（POST方式，aid=56=Betfair）- 当天+前一天（辅助参考）
-        bf_jc = fetch_company_odds(date_str, page_type='jc', company='56')
-        time.sleep(6)
-        bf_jc_prev = fetch_company_odds(prev_day, page_type='jc', company='56')
-        time.sleep(6)
-        bf_jc_next = fetch_company_odds(next_day, page_type='jc', company='56')
-        time.sleep(6)
-        bf_bd = fetch_company_odds(date_str, page_type='bd', company='56') if include_beidan else {}
-        time.sleep(6)
-        bf_bd_prev = fetch_company_odds(prev_day, page_type='bd', company='56') if include_beidan else {}
-        time.sleep(6)
-        bf_bd_next = fetch_company_odds(next_day, page_type='bd', company='56') if include_beidan else {}
-        bf_all = {**bf_jc_prev, **bf_bd_prev, **bf_jc, **bf_bd, **bf_jc_next, **bf_bd_next}
-        print(f"[INFO] Betfair赔率: {len(bf_all)} 场")
-    
-        # Step 4/5: SB和HKJC已由oyzs_ajax三合一接口接管，不再单独POST抓取
-        sb_all = {}
-        hkjc_all = {}
-    
-        # Step 5.8: 亚盘让球盘（POST companyType=y）— 仅百家平均，HKJC已取消
-        # 2026-06-20 WAF加固：间隔从3s→6s
-        ah_avg_jc = fetch_asian_handicap(date_str, page_type='jc', company='0')
-        time.sleep(6)
-        ah_avg_jc_prev = fetch_asian_handicap(prev_day, page_type='jc', company='0')
-        time.sleep(6)
-        ah_avg_jc_next = fetch_asian_handicap(next_day, page_type='jc', company='0')
-        # ah_hkjc_jc = fetch_asian_handicap(date_str, page_type='jc', company='136')  # 已取消
-        # time.sleep(3)
-        # ah_hkjc_jc_prev = fetch_asian_handicap(prev_day, page_type='jc', company='136')  # 已取消
-        # time.sleep(3)
-        ah_avg_all = {**ah_avg_jc_prev, **ah_avg_jc, **ah_avg_jc_next}
-        ah_hkjc_all = {}  # HKJC亚盘已由oyzs_ajax接管
-    
-    # Step 5.5: 加载oddsmagnet缓存补充POST失败的赔源
-    om_fallback = {}
-    missing_sources = []
-    if len(pin_all) == 0: missing_sources.append('Pinnacle')
-    if len(bf_all) == 0: missing_sources.append('Betfair')
-    if len(sb_all) == 0: missing_sources.append('SB')
-    if len(hkjc_all) == 0: missing_sources.append('HKJC')
-    
-    if missing_sources:
-        print(f"[INFO] POST失败赔源，尝试oddsmagnet补充: {', '.join(missing_sources)}")
-        om_cache_path = os.path.join(DATA_BASE_DIR, "data", "cache", "real_odds.json")
-        if os.path.exists(om_cache_path):
+    # Step 1: 从oddsmagnet缓存获取match_list（赛程+kickoff+基础赔率）
+    match_list = []
+    for om_date in [prev_day, date_str, next_day]:
+        om_file = os.path.join(DATA_BASE_DIR, "data", "raw", "oddsmagnet", f"{om_date.replace('-', '')}.json")
+        if os.path.exists(om_file):
             try:
-                with open(om_cache_path, 'r', encoding='utf-8') as f:
+                with open(om_file, 'r', encoding='utf-8') as f:
                     om_data = json.load(f)
-                if isinstance(om_data, dict):
-                    for key, item in om_data.items():
-                        match_date = item.get('matchDate', '')
-                        if date_str and match_date != date_str and match_date != prev_day and match_date != next_day:
-                            continue
-                        parts = key.split(' vs ')
-                        if len(parts) != 2: continue
-                        om_fallback[f"{parts[0].strip()}_{parts[1].strip()}"] = item
-                    print(f"[INFO] oddsmagnet fallback: {len(om_fallback)} 场")
+                om_matches = om_data.get('matches', {})
+                if isinstance(om_matches, dict):
+                    for key, m in om_matches.items():
+                        info = m.get('info', {})
+                        odds_data = m.get('odds', {})
+                        avg_o = odds_data.get('avg', {})
+                        pin_o = odds_data.get('pinnacle', {})
+                        match_list.append({
+                            'match_id': f"{info.get('home', '')}_{info.get('away', '')}",
+                            'number': info.get('number', ''),
+                            'league': info.get('league', ''),
+                            'kickoff': info.get('kickoff', ''),
+                            'home': info.get('home', ''),
+                            'away': info.get('away', ''),
+                            'date': om_data.get('date', om_date),
+                            'pinnacle_margin': pin_o.get('margin', 0),
+                        })
+                    print(f"[INFO] 从{os.path.basename(om_file)}加载{len(om_matches)}场")
             except Exception as e:
-                print(f"[WARN] oddsmagnet fallback加载失败: {e}")
-
-    # Step 5.9: 从 oyzs_ajax 获取 Pinnacle/HKJC/利记/明升 的 1X2+AH+OU 三合一数据
-    # Pinnacle 在 oyzs 的公司ID是 22（不是 bjzs 的 106）
+                print(f"[WARN] 加载{os.path.basename(om_file)}失败: {e}")
+    
+    if not match_list:
+        print("[WARN] 无法获取任何赛程数据")
+        return []
+    print(f"[INFO] match_list: {len(match_list)}场")
+    
+    # Step 2: 从 oyzs_ajax 获取所有赔率（Pinnacle/HKJC/William/Liji/Mingsheng 三合一）
+    # oyzs走odds.zgzcw.com域名，不受plzx CloudWAF影响
     oyzs_data = {}  # key -> {home, away, companies: {pinnacle: {...}, hkjc: {...}, ...}}
-    if len(match_list) > 0:
-        try:
-            sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-            from odds_api import fetch_oyzs
-            for d, label in [(prev_day, "前一天"), (date_str.replace('-',''), "当天"), (next_day, "次日")]:
-                oyzs = fetch_oyzs(d)
-                time.sleep(6)
+    try:
+        from odds_api import fetch_oyzs
+        for d in [prev_day, date_str, next_day]:
+            oyzs = fetch_oyzs(d)
+            if oyzs:
                 for key, v in oyzs.items():
                     if key not in oyzs_data:
                         oyzs_data[key] = v
-                if include_beidan:
-                    oyzs_bd = fetch_oyzs(d, page_type='bd')
-                    time.sleep(6)
+            if include_beidan:
+                oyzs_bd = fetch_oyzs(d, page_type='bd')
+                if oyzs_bd:
                     for key, v in oyzs_bd.items():
                         if key not in oyzs_data:
                             oyzs_data[key] = v
-            oyzs_stats = {'pinnacle': 0, 'hkjc': 0, 'liji': 0, 'mingsheng': 0}
-            for mk, mv in oyzs_data.items():
-                for ck in oyzs_stats:
-                    if ck in mv.get('companies', {}):
-                        oyzs_stats[ck] += 1
-            print(f"[INFO] oyzs数据: {len(oyzs_data)} 场 [Pin:{oyzs_stats['pinnacle']} HKJC:{oyzs_stats['hkjc']} 利记:{oyzs_stats['liji']} 明升:{oyzs_stats['mingsheng']}]")
-        except Exception as e:
-            print(f"[WARN] oyzs获取失败: {e}")
-
-    # Step 5.9b: 从 oyzs_json 缓存读取（fallback，odds_api.py 已保存）
+        oyzs_stats = {'pinnacle': 0, 'hkjc': 0, 'liji': 0, 'mingsheng': 0, 'william': 0}
+        for mk, mv in oyzs_data.items():
+            for ck in oyzs_stats:
+                if mv.get('companies', {}).get(ck):
+                    oyzs_stats[ck] += 1
+        print(f"[INFO] oyzs数据: {len(oyzs_data)}场 [Pin:{oyzs_stats['pinnacle']} HKJC:{oyzs_stats['hkjc']} William:{oyzs_stats['william']} 利记:{oyzs_stats['liji']} 明升:{oyzs_stats['mingsheng']}]")
+    except Exception as e:
+        print(f"[WARN] oyzs获取失败: {e}")
+    
+    # Step 2b: oyzs缓存fallback
     if not oyzs_data:
         oyzs_cache_path = os.path.join(DATA_BASE_DIR, "data", "raw", "oddsmagnet", f"oyzs_{date_str.replace('-','')}.json")
         if os.path.exists(oyzs_cache_path):
             try:
                 with open(oyzs_cache_path, 'r', encoding='utf-8') as f:
                     oyzs_raw = json.load(f)
-                # 转换为 fetch_oyzs 返回的格式
                 for key, entry in oyzs_raw.items():
-                    companies = {}
                     if entry.get('pin_ah') or entry.get('pin_ou'):
-                        companies['pinnacle'] = {'ah': entry.get('pin_ah', {}), 'ou': entry.get('pin_ou', {})}
-                    if entry.get('hkjc_ah') or entry.get('hkjc_ou'):
-                        companies['hkjc'] = {'ah': entry.get('hkjc_ah', {}), 'ou': entry.get('hkjc_ou', {})}
-                    liji = entry.get('liji_ah') or entry.get('liji_ou')
-                    if liji:
-                        companies['liji'] = {'ah': entry.get('liji_ah', {}), 'ou': entry.get('liji_ou', {})}
-                    ms = entry.get('ms_ah') or entry.get('ms_ou')
-                    if ms:
-                        companies['mingsheng'] = {'ah': entry.get('ms_ah', {}), 'ou': entry.get('ms_ou', {})}
-                    if companies:
+                        companies = {}
+                        if entry.get('pin_ah') or entry.get('pin_ou') or entry.get('pin_1x2'):
+                            companies['pinnacle'] = {
+                                '1x2': entry.get('pin_1x2', {}),
+                                'ah': entry.get('pin_ah', {}),
+                                'ou': entry.get('pin_ou', {}),
+                            }
+                        if entry.get('hkjc_1x2') or entry.get('hkjc_ah') or entry.get('hkjc_ou'):
+                            companies['hkjc'] = {
+                                '1x2': entry.get('hkjc_1x2', {}),
+                                'ah': entry.get('hkjc_ah', {}),
+                                'ou': entry.get('hkjc_ou', {}),
+                            }
                         oyzs_data[key] = {'home': entry.get('home', ''), 'away': entry.get('away', ''), 'companies': companies}
-                print(f"[INFO] oyzs缓存: {len(oyzs_data)} 场")
+                print(f"[INFO] oyzs缓存: {len(oyzs_data)}场")
             except Exception as e:
                 print(f"[WARN] oyzs缓存读取失败: {e}")
+    
+    # Step 3: oddsmagnet兜底数据（oyzs无Pinnacle 1X2时补充）
+    om_fallback = {}
+    om_cache_path = os.path.join(DATA_BASE_DIR, "data", "cache", "real_odds.json")
+    if os.path.exists(om_cache_path):
+        try:
+            with open(om_cache_path, 'r', encoding='utf-8') as f:
+                om_data = json.load(f)
+            if isinstance(om_data, dict):
+                for key, item in om_data.items():
+                    match_date = item.get('matchDate', '')
+                    if date_str and match_date != date_str and match_date != prev_day and match_date != next_day:
+                        continue
+                    parts = key.split(' vs ')
+                    if len(parts) != 2: continue
+                    om_fallback[f"{parts[0]}_{parts[1]}"] = item
+            print(f"[INFO] oddsmagnet兜底: {len(om_fallback)}场")
+        except Exception as e:
+            print(f"[WARN] oddsmagnet兜底加载失败: {e}")
 
-    # Step 6: 合并数据，赔率优先级：平博 > 百家平均 (SB已取消)
+    # Step 4: 合并数据
     results = []
     for i, m in enumerate(match_list):
         match_id = m.get('match_id', '')
         home = m.get('home', '?')
         away = m.get('away', '?')
-        print(f"[INFO] [{i+1}/{len(match_list)}] {home} vs {away} (id={match_id})")
+        print(f"[INFO] [{i+1}/{len(match_list)}] {home} vs {away}")
         
-        # 查找oddsmagnet fallback数据（按队名匹配）
+        # 查找oddsmagnet兜底数据
         om_key = f"{home}_{away}"
         om_item = om_fallback.get(om_key, {})
-        # 也尝试模糊匹配
         if not om_item:
             for fk, fv in om_fallback.items():
                 if home in fk and away in fk:
                     om_item = fv
                     break
-        
-        # 百家平均赔率（列表页GET获取）
-        avg_open = m.get('avg_open', {})
-        avg_close = m.get('avg_close', {})
-        avg_movement = m.get('avg_movement', {})
-        
-        # oddsmagnet补充百家平均（GET失败时）
-        if avg_open.get('w', 0) == 0 and om_item:
-            avg_w = om_item.get('home', 0) or 0
-            avg_d = om_item.get('draw', 0) or 0
-            avg_l = om_item.get('away', 0) or 0
-            if avg_w > 0:
-                avg_open = {'w': avg_w, 'd': avg_d, 'l': avg_l}
-                avg_close = {'w': avg_w, 'd': avg_d, 'l': avg_l}
-                avg_movement = {'w': 'stable', 'd': 'stable', 'l': 'stable'}
-        
-        if avg_open.get('w', 0) > 0:
-            print(f"  百家初盘: {avg_open['w']:.2f}/{avg_open['d']:.2f}/{avg_open['l']:.2f}")
-            print(f"  百家最新: {avg_close['w']:.2f}/{avg_close['d']:.2f}/{avg_close['l']:.2f}")
-        
-        # 平博赔率（POST获取，最高优先级）
-        pin_data = pin_all.get(match_id, {})
-        pinnacle_open = pin_data.get('open', {})
-        pinnacle_close = pin_data.get('close', {})
-        pinnacle_movement = pin_data.get('movement', {})
-        
+
+        # oyzs数据匹配
+        oyzs_key = f"{home}_{away}"
+        oyzs_match = oyzs_data.get(oyzs_key, {})
+        if not oyzs_match:
+            for fk, fv in oyzs_data.items():
+                if home in fk and away in fk:
+                    oyzs_match = fv
+                    break
+        oyzs_companies = oyzs_match.get('companies', {})
+
+        # === Pinnacle 1X2 (from oyzs) ===
+        pin_oyzs = oyzs_companies.get('pinnacle', {})
+        pin_1x2_oyzs = pin_oyzs.get('1x2', {})
+        pin_1x2_open_oyzs = pin_1x2_oyzs.get('open', {})
+        pin_1x2_close_oyzs = pin_1x2_oyzs.get('close', {})
+
+        pinnacle_open = {}
+        pinnacle_close = {}
+        pinnacle_movement = {}
+
+        if pin_1x2_open_oyzs.get('w', 0) > 0:
+            pinnacle_open = {'w': pin_1x2_open_oyzs['w'], 'd': pin_1x2_open_oyzs.get('d', 0), 'l': pin_1x2_open_oyzs.get('l', 0)}
+        if pin_1x2_close_oyzs.get('w', 0) > 0:
+            pinnacle_close = {'w': pin_1x2_close_oyzs['w'], 'd': pin_1x2_close_oyzs.get('d', 0), 'l': pin_1x2_close_oyzs.get('l', 0)}
+            pinnacle_movement = {'w': 'stable', 'd': 'stable', 'l': 'stable'}
+
+        # oddsmagnet兜底
+        if pinnacle_open.get('w', 0) == 0 and om_item:
+            pin_ow = om_item.get('pinnacle_open_w', 0) or 0
+            pin_od = om_item.get('pinnacle_open_d', 0) or 0
+            pin_ol = om_item.get('pinnacle_open_l', 0) or 0
+            if pin_ow > 0:
+                pinnacle_open = {'w': pin_ow, 'd': pin_od, 'l': pin_ol}
+                pinnacle_close = {'w': pin_ow, 'd': pin_od, 'l': pin_ol}
+                pinnacle_movement = {'w': 'stable', 'd': 'stable', 'l': 'stable'}
+                print(f"  Pinnacle(OM兜底): {pin_ow:.2f}/{pin_od:.2f}/{pin_ol:.2f}")
+
         # HHAD让球盘检测
         if pinnacle_close.get('d', 0) > 0 and pinnacle_close.get('d', 0) < 2.0:
             print(f"  [WARN] Pinnacle疑似让球盘(d={pinnacle_close['d']:.2f}<2.0)，已丢弃")
@@ -1319,175 +1182,22 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=True):
         if pinnacle_open.get('d', 0) > 0 and pinnacle_open.get('d', 0) < 2.0:
             pinnacle_open = {}
 
-        # 异常赔率过滤：单个值>30且其他值<10 → 脏数据
-        for pin_label, pin_dict in [('open', pinnacle_open), ('close', pinnacle_close)]:
-            vals = [pin_dict.get('w', 0), pin_dict.get('d', 0), pin_dict.get('l', 0)]
-            nonzero_vals = [v for v in vals if v > 0]
-            if nonzero_vals and max(nonzero_vals) > 30 and sum(1 for v in nonzero_vals if v < 10) >= 2:
-                print(f"  [WARN] Pinnacle {pin_label} 异常赔率 {vals}，已丢弃")
-                if pin_label == 'open':
-                    pinnacle_open = {}
-                else:
-                    pinnacle_close = {}
-        
-        # oddsmagnet补充Pinnacle（POST失败时）
-        if pinnacle_open.get('w', 0) == 0 and om_item:
-            pin_ow = om_item.get('pinnacle_open_w', 0) or 0
-            pin_od = om_item.get('pinnacle_open_d', 0) or 0
-            pin_ol = om_item.get('pinnacle_open_l', 0) or 0
-            if pin_ow > 0:
-                pinnacle_open = {'w': pin_ow, 'd': pin_od, 'l': pin_ol}
-                pinnacle_close = {'w': pin_ow, 'd': pin_od, 'l': pin_ol}
-                pinnacle_movement = {'w': 'stable', 'd': 'stable', 'l': 'stable'}
-                print(f"  Pinnacle(oddsmagnet): {pin_ow:.2f}/{pin_od:.2f}/{pin_ol:.2f}")
-        
-        if pinnacle_open.get('w', 0) > 0 and not om_item.get('pinnacle_open_w'):
+        if pinnacle_open.get('w', 0) > 0:
             print(f"  Pinnacle初盘: {pinnacle_open['w']:.2f}/{pinnacle_open['d']:.2f}/{pinnacle_open['l']:.2f}")
             print(f"  Pinnacle最新: {pinnacle_close['w']:.2f}/{pinnacle_close['d']:.2f}/{pinnacle_close['l']:.2f}")
-        
-        # 必发赔率（POST获取，辅助参考）
-        bf_data = bf_all.get(match_id, {})
-        betfair_open = bf_data.get('open', {})
-        betfair_close = bf_data.get('close', {})
-        
-        # HHAD让球盘检测
-        if betfair_close.get('d', 0) > 0 and betfair_close.get('d', 0) < 2.0:
-            print(f"  [WARN] Betfair疑似让球盘(d={betfair_close['d']:.2f}<2.0)，已丢弃")
-            betfair_open = {}
-            betfair_close = {}
-        
-        # oddsmagnet补充Betfair
-        if betfair_open.get('w', 0) == 0 and om_item:
-            bf_ow = om_item.get('betfair_open_w', 0) or 0
-            bf_od = om_item.get('betfair_open_d', 0) or 0
-            bf_ol = om_item.get('betfair_open_l', 0) or 0
-            if bf_ow > 0:
-                betfair_open = {'w': bf_ow, 'd': bf_od, 'l': bf_ol}
-                betfair_close = {'w': bf_ow, 'd': bf_od, 'l': bf_ol}
-                print(f"  Betfair(oddsmagnet): {bf_ow:.2f}/{bf_od:.2f}/{bf_ol:.2f}")
-        
-        if betfair_open.get('w', 0) > 0:
-            print(f"  Betfair初盘: {betfair_open['w']:.2f}/{betfair_open['d']:.2f}/{betfair_open['l']:.2f}")
-            print(f"  Betfair最新: {betfair_close['w']:.2f}/{betfair_close['d']:.2f}/{betfair_close['l']:.2f}")
-        
-        # SB公司赔率（POST获取，次优先级）
-        sb_data = sb_all.get(match_id, {})
-        sb_open = sb_data.get('open', {})
-        sb_close = sb_data.get('close', {})
-        sb_movement = sb_data.get('movement', {})
-        
-        # HHAD让球盘检测
-        if sb_close.get('d', 0) > 0 and sb_close.get('d', 0) < 2.0:
-            print(f"  [WARN] SB疑似让球盘(d={sb_close['d']:.2f}<2.0)，已丢弃")
-            sb_open = {}
-            sb_close = {}
-            sb_movement = {}
-        
-        if sb_open.get('w', 0) > 0:
-            print(f"  SB初盘: {sb_open['w']:.2f}/{sb_open['d']:.2f}/{sb_open['l']:.2f}")
-            print(f"  SB最新: {sb_close['w']:.2f}/{sb_close['d']:.2f}/{sb_close['l']:.2f}")
-        
-        # 确定主市场参照（pinnacle字段）：优先 平博 > 百家平均 (SB已取消)
+
+        # === 确定主市场参照 ===
         if pinnacle_open.get('w', 0) > 0:
             m['pinnacle_open'] = pinnacle_open
             m['pinnacle_close'] = pinnacle_close
             m['pinnacle_movement'] = pinnacle_movement
             odds_source = 'Pinnacle'
-        elif avg_open.get('w', 0) > 0:
-            m['pinnacle_open'] = avg_open
-            m['pinnacle_close'] = avg_close
-            m['pinnacle_movement'] = avg_movement
-            odds_source = '百家平均'
         else:
             odds_source = '无'
-        
-        # 百家平均赔率单独保存到avg_odds字段
-        m['avg_odds_open'] = avg_open
-        m['avg_odds_close'] = avg_close
-        
-        # 必发赔率单独保存到betfair字段
-        m['betfair_open'] = betfair_open
-        m['betfair_close'] = betfair_close
-        
-        # 香港马会赔率 — 从 oyzs_data 获取
-        oyzs_key = f"{home}_{away}"
-        oyzs_match = oyzs_data.get(oyzs_key, {})
-        if not oyzs_match:
-            # 模糊匹配
-            for fk, fv in oyzs_data.items():
-                if home in fk and away in fk:
-                    oyzs_match = fv
-                    break
 
-        oyzs_companies = oyzs_match.get('companies', {})
-
-        # HKJC 1X2 + AH + OU (from oyzs)
-        hkjc_oyzs = oyzs_companies.get('hkjc', {})
-        hkjc_1x2 = hkjc_oyzs.get('1x2', {})
-        hkjc_open = hkjc_1x2.get('open', {})
-        hkjc_close = hkjc_1x2.get('close', {})
-
-        # HHAD让球盘检测
-        if hkjc_close.get('d', 0) > 0 and hkjc_close.get('d', 0) < 2.0:
-            print(f"  [WARN] HKJC疑似让球盘(d={hkjc_close['d']:.2f}<2.0)，已丢弃")
-            hkjc_open = {}
-            hkjc_close = {}
-
-        m['hkjc_open'] = hkjc_open
-        m['hkjc_close'] = hkjc_close
-
-        if hkjc_open.get('w', 0) > 0:
-            print(f"  HKJC初盘: {hkjc_open['w']:.2f}/{hkjc_open['d']:.2f}/{hkjc_open['l']:.2f}")
-            print(f"  HKJC最新: {hkjc_close['w']:.2f}/{hkjc_close['d']:.2f}/{hkjc_close['l']:.2f}")
-
-        # HKJC AH + OU (from oyzs)
-        hkjc_ah_data = hkjc_oyzs.get('ah', {})
-        hkjc_ou_data = hkjc_oyzs.get('ou', {})
-        m['ah_hkjc_open'] = hkjc_ah_data.get('open', {})
-        m['ah_hkjc_close'] = hkjc_ah_data.get('close', {})
-        m['hkjc_ou'] = hkjc_ou_data
-
-        if hkjc_ah_data.get('close', {}).get('handicap', 0) != 0:
-            ah_c = hkjc_ah_data['close']
-            print(f"  亚盘(HKJC): 盘口{ah_c['handicap']} 主水{ah_c.get('home_w',0):.2f} 客水{ah_c.get('away_w',0):.2f}")
-
-        if hkjc_ou_data.get('close', {}).get('line', 0) != 0:
-            ou_c = hkjc_ou_data['close']
-            print(f"  大小球(HKJC): {ou_c.get('over',0):.2f}/{ou_c.get('line',0)}/{ou_c.get('under',0):.2f}")
-
-        # Pinnacle亚盘+大小球 (from oyzs)
-        pin_oyzs = oyzs_companies.get('pinnacle', {})
+        # === Pinnacle AH + OU (from oyzs) ===
         pin_ah_oyzs = pin_oyzs.get('ah', {})
         pin_ou_oyzs = pin_oyzs.get('ou', {})
-
-        # Pinnacle 1X2 (from oyzs) — 补充POST失败时的空缺
-        pin_1x2_oyzs = pin_oyzs.get('1x2', {})
-        pin_1x2_close_oyzs = pin_1x2_oyzs.get('close', {})
-        pin_1x2_open_oyzs = pin_1x2_oyzs.get('open', {})
-        if (pin_1x2_close_oyzs.get('w', 0) > 0 and pin_1x2_close_oyzs.get('l', 0) > 0):
-            # oyzs有Pinnacle 1X2数据，如果POST无数据或POST数据=竞彩(即oddsmagnet备份)，用oyzs覆盖
-            pin_open_w = pinnacle_open.get('w', 0)
-            pin_close_w = pinnacle_close.get('w', 0)
-            jc_w = m.get('odds_win', 0) or m.get('jc_w', 0) or 0
-            need_oyzs_1x2 = False
-            if pin_open_w == 0 or pin_close_w == 0:
-                need_oyzs_1x2 = True
-            elif jc_w > 0 and abs(pin_open_w - jc_w) < 0.01:
-                # POST数据=竞彩(oddsmagnet备份)，用oyzs真实数据覆盖
-                need_oyzs_1x2 = True
-            if need_oyzs_1x2:
-                ow = pin_1x2_open_oyzs.get('w', 0)
-                od_val = pin_1x2_open_oyzs.get('d', 0)
-                ol = pin_1x2_open_oyzs.get('l', 0)
-                cw = pin_1x2_close_oyzs.get('w', 0)
-                cd_val = pin_1x2_close_oyzs.get('d', 0)
-                cl = pin_1x2_close_oyzs.get('l', 0)
-                if ow > 0:
-                    pinnacle_open = {'w': ow, 'd': od_val, 'l': ol}
-                if cw > 0:
-                    pinnacle_close = {'w': cw, 'd': cd_val, 'l': cl}
-                    pinnacle_movement = {'w': 'stable', 'd': 'stable', 'l': 'stable'}
-                print(f"  Pinnacle 1X2(oyzs补充): open {ow:.2f}/{od_val:.2f}/{ol:.2f} close {cw:.2f}/{cd_val:.2f}/{cl:.2f}")
 
         if pin_ah_oyzs.get('close', {}).get('handicap', 0) != 0:
             ah_c = pin_ah_oyzs['close']
@@ -1512,18 +1222,38 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=True):
             ou_c = pin_ou_oyzs['close']
             print(f"  大小球(Pin): {ou_c.get('over',0):.2f}/{ou_c.get('line',0)}/{ou_c.get('under',0):.2f}")
 
-        # 利记/明升 大小球 (from oyzs)
-        liji_oyzs = oyzs_companies.get('liji') or oyzs_companies.get('利记') or {}
-        ms_oyzs = oyzs_companies.get('mingsheng') or oyzs_companies.get('明升') or oyzs_companies.get('sb') or {}
+        # === HKJC 1X2 + AH + OU (from oyzs) ===
+        hkjc_oyzs = oyzs_companies.get('hkjc', {})
+        hkjc_1x2 = hkjc_oyzs.get('1x2', {})
+        hkjc_open = hkjc_1x2.get('open', {})
+        hkjc_close = hkjc_1x2.get('close', {})
 
-        m['ou_liji'] = liji_oyzs.get('ou', {})
-        m['ou_ms'] = ms_oyzs.get('ou', {})
+        if hkjc_close.get('d', 0) > 0 and hkjc_close.get('d', 0) < 2.0:
+            print(f"  [WARN] HKJC疑似让球盘(d={hkjc_close['d']:.2f}<2.0)，已丢弃")
+            hkjc_open = {}
+            hkjc_close = {}
 
-        # 利记/明升 亚盘 (from oyzs)
-        m['liji_ah'] = liji_oyzs.get('ah', {})
-        m['ms_ah'] = ms_oyzs.get('ah', {})
+        m['hkjc_open'] = hkjc_open
+        m['hkjc_close'] = hkjc_close
 
-        # 威廉希尔 1X2 + AH + OU (from oyzs)
+        if hkjc_open.get('w', 0) > 0:
+            print(f"  HKJC初盘: {hkjc_open['w']:.2f}/{hkjc_open['d']:.2f}/{hkjc_open['l']:.2f}")
+            print(f"  HKJC最新: {hkjc_close['w']:.2f}/{hkjc_close['d']:.2f}/{hkjc_close['l']:.2f}")
+
+        hkjc_ah_data = hkjc_oyzs.get('ah', {})
+        hkjc_ou_data = hkjc_oyzs.get('ou', {})
+        m['ah_hkjc_open'] = hkjc_ah_data.get('open', {})
+        m['ah_hkjc_close'] = hkjc_ah_data.get('close', {})
+        m['hkjc_ou'] = hkjc_ou_data
+
+        if hkjc_ah_data.get('close', {}).get('handicap', 0) != 0:
+            ah_c = hkjc_ah_data['close']
+            print(f"  亚盘(HKJC): 盘口{ah_c['handicap']} 主水{ah_c.get('home_w',0):.2f} 客水{ah_c.get('away_w',0):.2f}")
+        if hkjc_ou_data.get('close', {}).get('line', 0) != 0:
+            ou_c = hkjc_ou_data['close']
+            print(f"  大小球(HKJC): {ou_c.get('over',0):.2f}/{ou_c.get('line',0)}/{ou_c.get('under',0):.2f}")
+
+        # === William 1X2 + AH + OU (from oyzs) ===
         william_oyzs = oyzs_companies.get('william') or oyzs_companies.get('威廉希尔') or {}
         william_1x2 = william_oyzs.get('1x2', {})
         william_1x2_open = william_1x2.get('open', {})
@@ -1536,12 +1266,22 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=True):
             print(f"  威廉初盘: {william_1x2_open.get('w',0):.2f}/{william_1x2_open.get('d',0):.2f}/{william_1x2_open.get('l',0):.2f}")
             print(f"  威廉终盘: {william_1x2_close['w']:.2f}/{william_1x2_close['d']:.2f}/{william_1x2_close['l']:.2f}")
 
-        # 计算去抽水概率（基于主市场参照）
+        # === 利记/明升 (from oyzs) ===
+        liji_oyzs = oyzs_companies.get('liji') or oyzs_companies.get('利记') or {}
+        ms_oyzs = oyzs_companies.get('mingsheng') or oyzs_companies.get('明升') or oyzs_companies.get('sb') or {}
+        m['ou_liji'] = liji_oyzs.get('ou', {})
+        m['ou_ms'] = ms_oyzs.get('ou', {})
+        m['liji_ah'] = liji_oyzs.get('ah', {})
+        m['ms_ah'] = ms_oyzs.get('ah', {})
+
+        if ms_oyzs.get('ah', {}).get('close', {}).get('handicap', 0) != 0:
+            ah_c = ms_oyzs['ah']['close']
+            print(f"  亚盘(明升): 盘口{ah_c['handicap']} 主水{ah_c.get('home_w',0):.2f} 客水{ah_c.get('away_w',0):.2f}")
+
+        # === 计算去抽水概率 ===
         pin_open = m.get('pinnacle_open', {})
         if pin_open.get('w', 0) > 0:
-            implied, margin = calc_implied_prob(
-                pin_open['w'], pin_open['d'], pin_open['l']
-            )
+            implied, margin = calc_implied_prob(pin_open['w'], pin_open['d'], pin_open['l'])
             m['implied_prob'] = implied
             m['pinnacle_margin'] = margin
             print(f"  市场参照: {odds_source} | 抽水: {margin:.2%} | 隐含概率: {implied['w']:.1%}/{implied['d']:.1%}/{implied['l']:.1%}")
@@ -1554,10 +1294,9 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=True):
     
     print(f"\n[INFO] 完成，共 {len(results)} 场")
     pin_count = sum(1 for r in results if r.get('odds_source') == 'Pinnacle')
-    sb_count = sum(1 for r in results if r.get('odds_source') == 'SB')
-    avg_count = sum(1 for r in results if r.get('odds_source') == '百家平均')
     none_count = sum(1 for r in results if r.get('odds_source') == '无')
-    
+    print(f"[INFO] Pinnacle: {pin_count}场, 无数据: {none_count}场")
+
     # Step 7: 补充oddsmagnet中不在match_list里的场次
     if om_fallback:
         existing_teams = set()
