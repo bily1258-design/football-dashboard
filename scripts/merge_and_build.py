@@ -695,6 +695,43 @@ def main():
     if total_final_alias:
         print(f'📌 别名归一化匹配 {total_final_alias} 条（跨源队名不一致）')
 
+    # 跨日期去重：同一场比赛可能因 source 不同（jingcai vs om_only）出现在两个日期
+    # 优先保留有真实 kickoff 的版本，删掉 kickoff="待定" 的版本
+    cross_date_dedup = 0
+    cross_date_kickoff_fixed = 0
+    all_matches = {}  # (canonical_home, canonical_away) → (date, record)
+    for d_key in sorted(by_date.keys()):
+        kept = []
+        for r in by_date[d_key]:
+            mk = _match_key(r.get('home', ''), r.get('away', ''))
+            if mk in all_matches:
+                prev_date, prev_rec = all_matches[mk]
+                prev_kickoff = prev_rec.get('kickoff', '')
+                curr_kickoff = r.get('kickoff', '')
+                # 如果当前版本有真实 kickoff，之前的是"待定"或空，替换
+                if curr_kickoff and curr_kickoff != '待定' and (not prev_kickoff or prev_kickoff == '待定'):
+                    # 从之前日期中删除
+                    by_date[prev_date] = [x for x in by_date[prev_date] if x is not prev_rec]
+                    all_matches[mk] = (d_key, r)
+                    cross_date_dedup += 1
+                    cross_date_kickoff_fixed += 1
+                    kept.append(r)
+                elif prev_kickoff and prev_kickoff != '待定' and (not curr_kickoff or curr_kickoff == '待定'):
+                    # 之前的有真实 kickoff，当前的是"待定" → 补上 kickoff 信息后丢弃当前
+                    r['kickoff'] = prev_kickoff
+                    cross_date_dedup += 1
+                    # 不 append → 丢弃
+                else:
+                    # 两个都有真实 kickoff 或都无 → 保留日期更早的
+                    cross_date_dedup += 1
+                    # 不 append → 丢弃当前
+            else:
+                all_matches[mk] = (d_key, r)
+                kept.append(r)
+        by_date[d_key] = kept
+    if cross_date_dedup:
+        print(f'📌 跨日期去重 {cross_date_dedup} 条（kickoff补全 {cross_date_kickoff_fixed} 条）')
+
     daily_stats = build_daily_stats(by_date)
     summary = build_summary(daily_stats)
 
