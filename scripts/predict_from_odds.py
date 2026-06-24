@@ -26,6 +26,7 @@ import json
 import math
 import sqlite3
 import argparse
+import re
 from datetime import datetime, timedelta
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -97,17 +98,8 @@ def poisson_match_probs(lam_h, lam_a, max_goals=10):
 
 
 def estimate_lambdas(imp_w, imp_d, imp_l):
-    """从 implied 反推 λ_home / λ_away
-
-    思路：
-    - implied_share_h = imp_w / (imp_w + imp_l)  # 主队在主客之争中的"市场实力份额"
-    - 实力调整 = SKILL_FACTOR * (implied_share_h - 0.5)
-    - 期望主客总进球 = BASE_TOTAL_GOALS
-    - 主场加成 = HOME_ADV
-    - λ_home = BASE/2 + HOME_ADV + 实力调整
-    - λ_away = BASE/2 - HOME_ADV - 实力调整
-    """
-    base = BASE_TOTAL_GOALS / 2  # 1.2
+    """从 implied 反推 λ_home / λ_away"""
+    base = BASE_TOTAL_GOALS / 2
     denom = max(imp_w + imp_l, 0.01)
     share_h = imp_w / denom
     skill_adj = SKILL_FACTOR * (share_h - 0.5)
@@ -119,15 +111,39 @@ def estimate_lambdas(imp_w, imp_d, imp_l):
 
 
 def parse_kickoff_date(kickoff_str, fetch_date):
-    """'06-06 00:30' → '2026-06-06'，用抓取日补年份"""
-    year = fetch_date[:4]
-    if not kickoff_str or len(kickoff_str) < 5:
+    """解析 kickoff 日期时间
+    
+    支持格式：
+    - '2026-06-24 10:00:00' → ('2026-06-24', '10:00')
+    - '2026-06-24 10:00'   → ('2026-06-24', '10:00')
+    - '06-24 10:00'        → ('2026-06-24', '10:00')
+    - '待定'               → (fetch_date, '00:00')
+    """
+    if not kickoff_str or kickoff_str == '待定' or len(kickoff_str) < 5:
         return fetch_date, '00:00'
-    mmdd = kickoff_str[:5]
-    time_str = kickoff_str[6:].strip() if len(kickoff_str) > 6 else '00:00'
-    if not time_str or ':' not in time_str:
-        time_str = '00:00'
-    return f'{year}-{mmdd}', time_str
+    
+    # 格式1: 完整日期时间 'YYYY-MM-DD HH:MM(:SS)'
+    m = re.match(r'(\d{4}-\d{2}-\d{2})\s+(\d{1,2}:\d{2})', kickoff_str)
+    if m:
+        return m.group(1), m.group(2)
+    
+    # 格式2: 短日期 'MM-DD HH:MM'
+    m = re.match(r'(\d{2}-\d{2})\s+(\d{1,2}:\d{2})', kickoff_str)
+    if m:
+        year = fetch_date[:4]
+        return f'{year}-{m.group(1)}', m.group(2)
+    
+    # 格式3: 只有日期 'YYYY-MM-DD' 或 'MM-DD'
+    m = re.match(r'(\d{4}-\d{2}-\d{2})', kickoff_str)
+    if m:
+        return m.group(1), '00:00'
+    
+    m = re.match(r'(\d{2}-\d{2})', kickoff_str)
+    if m:
+        year = fetch_date[:4]
+        return f'{year}-{m.group(1)}', '00:00'
+    
+    return fetch_date, '00:00'
 
 
 def load_om_matches(date_str):
@@ -317,7 +333,6 @@ def build_predictions(om_matches, fetch_date):
             'avg_margin': margin_used if odds_source == 'avg' else (avg.get('margin', 0) or 0),
             'source': 'om_only',
             'odds_source': odds_source,
-            # 亚盘让球盘（OM数据通常无亚盘，后续由fetch_pinnacle_odds补充）
             'ah_handicap': 0,
             'ah_home_water': 0,
             'ah_away_water': 0,
@@ -336,14 +351,13 @@ def insert_predictions(rows, db_path):
     conn = sqlite3.connect(db_path)
     cur = conn.cursor()
     
-    # 确保亚盘字段存在
     for col, ctype in [('ah_handicap', 'REAL'), ('ah_home_water', 'REAL'), ('ah_away_water', 'REAL'), ('ah_source', 'TEXT')]:
         try:
             cur.execute(f"ALTER TABLE poisson_predictions ADD COLUMN {col} {ctype}")
         except:
-            pass  # 列已存在
+            pass
     
-    # A1: 入库前先清掉当天 om_only 旧记录（防止 OM 重跑入库造成 om_only 自身重复）
+    # A1: 清掉 om_only 旧记录
     dates_to_clean = sorted({r["date"] for r in rows})
     if dates_to_clean:
         placeholders = ",".join("?" * len(dates_to_clean))
@@ -352,6 +366,15 @@ def insert_predictions(rows, db_path):
             dates_to_clean
         )
         print(f"  [A1] 清掉 om_only 旧记录: {cur.rowcount} 条 (date: {', '.join(dates_to_clean)})")
+    
+    # 清掉脏数据（日期格式不正确的记录，如 "2026-2026-"）
+    cur.execute("SELECT DISTINCT date FROM poisson_predictions WHERE date NOT GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]'")
+    bad_dates = [r[0] for r in cur.fetchall()]
+    if bad_dates:
+        placeholders = ",".join("?" * len(bad_dates))
+        cur.execute(f"DELETE FROM poisson_predictions WHERE date IN ({placeholders})", bad_dates)
+        print(f"  [A1] 清掉脏日期记录: {cur.rowcount} 条 (dates: {bad_dates[:3]}...)")
+    
     inserted = 0
     skipped = 0
     for r in rows:
@@ -415,18 +438,15 @@ def main():
     print(f'📊 预测日期: {args.date}')
     print(f'💾 DB: {db_path}')
 
-    # 1) 读 OM
     matches = load_om_matches(args.date)
     print(f'📥 OM matches: {len(matches)} 场')
     if not matches:
         print('⚠️ 无 OM 数据，跳过')
         return 0
 
-    # 2) 生成预测
     rows = build_predictions(matches, args.date)
     print(f'🧮 生成预测: {len(rows)} 场')
 
-    # 2.5) 读AH文件，按队名相似度匹配填到新行（学HKJC/平博，INSERT时就带AH）
     ah_index = load_ah_for_date(args.date)
     if ah_index:
         filled = 0
@@ -446,7 +466,6 @@ def main():
                 aw = close.get('away_w', 0)
                 if h == 0 and hw == 0 and aw == 0:
                     continue
-                # 正向+反向相似度
                 sim_fwd = (name_sim(ah_home, home) + name_sim(ah_away, away)) / 2
                 sim_rev = (name_sim(ah_home, away) + name_sim(ah_away, home)) / 2
                 sim = max(sim_fwd, sim_rev)
@@ -461,7 +480,6 @@ def main():
                 filled += 1
         print(f'🎯 AH匹配: {filled}/{len(rows)} 场带AH数据入库')
 
-    # 3) INSERT
     inserted, skipped = insert_predictions(rows, db_path)
     print(f'✅ 新增: {inserted} 场')
     print(f'⏭️ 跳过（已存在）: {skipped} 场')
