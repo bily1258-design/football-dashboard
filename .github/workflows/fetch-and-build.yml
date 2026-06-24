@@ -49,37 +49,50 @@ jobs:
 
       # ===== GA全流程：Termux只抓raw+push，以下全部在GA跑 =====
 
-      - name: Determine date
+      - name: Determine dates (3-day window)
         id: date
-        run: echo "date=$(date +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+        run: |
+          echo "date=$(date +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+          echo "prev=$(date -d '-1 day' +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+          echo "next=$(date -d '+1 day' +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+          echo "3-day window: ${{ steps.date.outputs.prev }} / ${{ steps.date.outputs.date }} / ${{ steps.date.outputs.next }}"
 
-      - name: STEP 1.4 - Generate predictions (OM → DB)
+      - name: STEP 1.4 - Generate predictions (OM → DB, 3 days)
         if: github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         run: |
           if [ -f data/football.db ]; then
-            python scripts/predict_from_odds.py --date ${{ steps.date.outputs.date }} --db data/football.db || echo "⚠️ predict failed, continuing"
+            for d in ${{ steps.date.outputs.prev }} ${{ steps.date.outputs.date }} ${{ steps.date.outputs.next }}; do
+              echo "  predict $d"
+              python scripts/predict_from_odds.py --date $d --db data/football.db || echo "⚠️ predict $d failed, continuing"
+            done
           else
             echo "⚠️ Skipping predict (no DB)"
           fi
 
-      - name: STEP 1.2 - Pinnacle/HKJC odds → DB
+      - name: STEP 1.2 - Pinnacle/HKJC odds → DB (3 days)
         if: github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         run: |
           if [ -f data/football.db ]; then
-            python scripts/fetch_pinnacle_odds.py --date ${{ steps.date.outputs.date }} || echo "⚠️ pinnacle odds failed, continuing"
+            for d in ${{ steps.date.outputs.prev }} ${{ steps.date.outputs.date }} ${{ steps.date.outputs.next }}; do
+              echo "  pinnacle $d"
+              python scripts/fetch_pinnacle_odds.py --date $d || echo "⚠️ pinnacle $d failed, continuing"
+            done
           else
             echo "⚠️ Skipping pinnacle (no DB)"
           fi
 
-      - name: STEP 1.25 - Asian handicap → DB
+      - name: STEP 1.25 - Asian handicap → DB (3 days)
         if: github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         run: |
           if [ -f data/football.db ]; then
-            python -c "
+            for d in ${{ steps.date.outputs.prev }} ${{ steps.date.outputs.date }} ${{ steps.date.outputs.next }}; do
+              echo "  AH $d"
+              python -c "
           import sys; sys.path.insert(0, 'scripts')
           from fetch_data import step_update_ah
-          step_update_ah('${{ steps.date.outputs.date }}', 'data/football.db')
-          " || echo "⚠️ AH update failed, continuing"
+          step_update_ah('$d', 'data/football.db')
+          " || echo "⚠️ AH $d failed, continuing"
+            done
           else
             echo "⚠️ Skipping AH (no DB)"
           fi
