@@ -93,10 +93,10 @@ def load_db_predictions(db_path: str, date_str: str) -> List[Dict]:
     conn.close()
 
     # A3: 去重 — 同 (home, away) 只保留一条，优先 jingcai > om_only，同 source 取 id 更大
-    # 去重后如果保留记录的AH为空，从同key的其他记录中补AH数据
+    # 去重后补充被丢弃记录中的有效数据（kickoff/william/AH等）
     if len(rows) > 1:
         seen = {}
-        # 先收集每个key的所有记录，用于去重后补AH
+        # 先收集每个key的所有记录，用于去重后补数据
         groups = {}
         for r in rows:
             key = (r['home_team'], r['away_team'])
@@ -109,18 +109,71 @@ def load_db_predictions(db_path: str, date_str: str) -> List[Dict]:
                     seen[key] = r
                 elif r['source'] == prev['source'] and r['id'] > prev['id']:
                     seen[key] = r
-        # 去重后补AH：保留记录AH为空时，从同key其他记录取最新非空AH
+        # 去重后补数据：保留记录缺失字段从同key其他记录取最新有效值
         ah_fixed = 0
+        kickoff_fixed = 0
+        william_fixed = 0
         for key, kept in seen.items():
-            if kept.get('ah_handicap') is None or kept.get('ah_handicap') == 0:
-                for r in reversed(groups[key]):  # 从新到旧找有AH的
+            for r in reversed(groups[key]):  # 从新到旧找有效数据
+                if r is kept:
+                    continue
+                # 补kickoff_time
+                ko = kept.get('kickoff_time', '') or ''
+                if not ko or ko == '待定':
+                    rko = r.get('kickoff_time', '') or ''
+                    if rko and rko != '待定':
+                        kept['kickoff_time'] = rko
+                        kickoff_fixed += 1
+                # 补william 1x2
+                if not kept.get('william_1x2_w') or kept.get('william_1x2_w') == 0:
+                    if r.get('william_1x2_w') and r['william_1x2_w'] != 0:
+                        kept['william_1x2_w'] = r['william_1x2_w']
+                        kept['william_1x2_d'] = r.get('william_1x2_d', 0)
+                        kept['william_1x2_l'] = r.get('william_1x2_l', 0)
+                        william_fixed += 1
+                # 补william AH
+                if kept.get('william_ah_handicap') is None or kept.get('william_ah_handicap') == 0:
+                    if r.get('william_ah_handicap') is not None and r.get('william_ah_handicap') != 0:
+                        kept['william_ah_handicap'] = r['william_ah_handicap']
+                        kept['william_ah_home_water'] = r.get('william_ah_home_water', 0)
+                        kept['william_ah_away_water'] = r.get('william_ah_away_water', 0)
+                        kept['william_ah_open_handicap'] = r.get('william_ah_open_handicap')
+                        kept['william_ah_open_home_water'] = r.get('william_ah_open_home_water', 0)
+                        kept['william_ah_open_away_water'] = r.get('william_ah_open_away_water', 0)
+                        william_fixed += 1
+                # 补william OU
+                if not kept.get('william_ou_over') or kept.get('william_ou_over') == 0:
+                    if r.get('william_ou_over') and r['william_ou_over'] != 0:
+                        kept['william_ou_over'] = r['william_ou_over']
+                        kept['william_ou_line'] = r.get('william_ou_line', 0)
+                        kept['william_ou_under'] = r.get('william_ou_under', 0)
+                        william_fixed += 1
+                # 补AH
+                if kept.get('ah_handicap') is None or kept.get('ah_handicap') == 0:
                     if r.get('ah_handicap') is not None and r.get('ah_handicap') != 0:
                         kept['ah_handicap'] = r['ah_handicap']
                         kept['ah_home_water'] = r.get('ah_home_water', 0)
                         kept['ah_away_water'] = r.get('ah_away_water', 0)
                         kept['ah_source'] = r.get('ah_source', '')
                         ah_fixed += 1
-                        break
+                # 补Pinnacle AH
+                if kept.get('pin_ah_handicap') is None or kept.get('pin_ah_handicap') == 0:
+                    if r.get('pin_ah_handicap') is not None and r.get('pin_ah_handicap') != 0:
+                        kept['pin_ah_handicap'] = r['pin_ah_handicap']
+                        kept['pin_ah_home_water'] = r.get('pin_ah_home_water', 0)
+                        kept['pin_ah_away_water'] = r.get('pin_ah_away_water', 0)
+                        kept['pin_ah_open_handicap'] = r.get('pin_ah_open_handicap')
+                        kept['pin_ah_open_home_water'] = r.get('pin_ah_open_home_water', 0)
+                        kept['pin_ah_open_away_water'] = r.get('pin_ah_open_away_water', 0)
+                # 补Pinnacle OU
+                if kept.get('pin_ou_line') is None or kept.get('pin_ou_line') == 0:
+                    if r.get('pin_ou_line') is not None and r.get('pin_ou_line') != 0:
+                        kept['pin_ou_line'] = r['pin_ou_line']
+                        kept['pin_ou_over'] = r.get('pin_ou_over', 0)
+                        kept['pin_ou_under'] = r.get('pin_ou_under', 0)
+                        kept['pin_ou_open_line'] = r.get('pin_ou_open_line')
+                        kept['pin_ou_open_over'] = r.get('pin_ou_open_over', 0)
+                        kept['pin_ou_open_under'] = r.get('pin_ou_open_under', 0)
 
         # A3.5: 跨key去重 — 不同译名变体（如"沙特"vs"沙特阿拉伯"）也合并
         keys = list(seen.keys())
@@ -150,9 +203,13 @@ def load_db_predictions(db_path: str, date_str: str) -> List[Dict]:
         cross_dedup = len(merged_into)
 
         if len(seen) != len(rows):
+            extras = []
+            if ah_fixed: extras.append(f"补AH {ah_fixed}")
+            if kickoff_fixed: extras.append(f"补kickoff {kickoff_fixed}")
+            if william_fixed: extras.append(f"补william {william_fixed}")
+            if cross_dedup: extras.append(f"跨key合并 {cross_dedup}")
             print(f"  [A3] {date_str}: 去重 {len(rows)} -> {len(seen)} 条" +
-                  (f", 补AH {ah_fixed} 条" if ah_fixed else "") +
-                  (f", 跨key合并 {cross_dedup} 条" if cross_dedup else ""))
+                  (f", " + ", ".join(extras) if extras else ""))
         rows = list(seen.values())
 
     return rows
@@ -284,7 +341,7 @@ def merge_prediction(rec: Dict, om_match: Optional[Dict]) -> Dict:
         'confidence_index': round(ci, 2),
         'reference_score': rec.get('reference_score', '') or '',
         'cold_risk': rec.get('cold_risk', '') or '',
-        'source': rec.get('source', 'jingcai'),
+        'source': 'beidan' if rec.get('source') == 'om_only' else (rec.get('source') or 'jingcai'),
         'odds_source': rec.get('odds_source', 'had'),
         'home_lambda': round(rec.get('home_lambda', 0) or 0, 3),
         'away_lambda': round(rec.get('away_lambda', 0) or 0, 3),
