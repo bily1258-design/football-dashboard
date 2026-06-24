@@ -1047,7 +1047,7 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=True):
                     'pinnacle': sum(1 for r in results if r.get('odds_source') == 'Pinnacle'),
                     'avg': sum(1 for r in results if r.get('odds_source') == '百家平均'),
                 },
-                'matches': {f"{r.get('home','')}_{r.get('away','')}": r for r in results}
+                'matches': results
             }
             with open(cache_path, 'w', encoding='utf-8') as f:
                 json.dump(cache_data, f, ensure_ascii=False, indent=2, default=str)
@@ -2301,9 +2301,8 @@ def load_odds_cache(date_str, latest=True):
         for cf in cache_files:
             with open(cf, 'r', encoding='utf-8') as f:
                 data = json.load(f)
-            # 2026-06-21 修复：跳过 OM fallback 的 cache（schema 不兼容 save_to_db，写 dict 格式 + info/odds 嵌套结构）
-            if data.get('source') == 'oddsmagnet_fallback':
-                continue
+            # 2026-06-24 修复：fallback cache 现在也用 list 格式存 matches，不再跳过
+            # （之前 fallback 存 dict 格式导致 save_to_db 不兼容，已修正为 list）
             pin_count = data.get('summary', {}).get('pinnacle', 0)
             total_count = data.get('summary', {}).get('total', 0)
             if pin_count > best_pin or (pin_count == best_pin and total_count > (best_data.get('summary',{}).get('total',0) if best_data else 0)):
@@ -2345,6 +2344,9 @@ def apply_odds_to_db(db_path, date_str=None, cache_path=None):
             print(f"[WARN] 未找到 {date_str} 的赔率缓存")
             return 0
         matches = cache_data.get('matches', [])
+        # 兼容旧 fallback 缓存（matches 为 dict 格式）
+        if isinstance(matches, dict):
+            matches = list(matches.values())
         print(f"[INFO] 使用缓存: {cache_data.get('_cache_file', '?')} (拉取时间: {cache_data.get('fetch_time', '?')})")
     else:
         print("[ERROR] 必须指定 date_str 或 cache_path")
