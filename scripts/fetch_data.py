@@ -133,7 +133,7 @@ def step_update_ah(date_str: str, db_path: str = None):
         except:
             pass
     
-    for date_tag in [date_str, prev_day]:
+    for date_tag in [prev_day, date_str, next_day]:
         oyzs_path = os.path.join(REPO_DIR, "data", "raw", "oddsmagnet", f"oyzs_{date_tag.replace('-', '')}.json")
         if not os.path.exists(oyzs_path):
             continue
