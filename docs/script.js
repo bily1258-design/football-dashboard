@@ -213,15 +213,13 @@ function openAhModal(record) {
 
 
 
-  // ===== 竞彩 vs Pinnacle 分歧对比（窗口底部） =====
-  const pinDiff = ((pin.open && pin.open.w > 0) ? pin.open : pin);
-  if (record.odds.w > 0 && pinDiff.w > 0 && (pinDiff.w !== record.odds.w || pinDiff.d !== record.odds.d)) {
-    const dW = ((pinDiff.w - record.odds.w) / record.odds.w * 100).toFixed(1);
-    const dD = ((pinDiff.d - record.odds.d) / record.odds.d * 100).toFixed(1);
-    const dL = ((pinDiff.l - record.odds.l) / record.odds.l * 100).toFixed(1);
+  // ===== Pinnacle vs 竞彩 分歧对比（窗口底部，用即时盘） =====
+  if (record.odds.w > 0 && pin.w > 0 && (pin.w !== record.odds.w || pin.d !== record.odds.d)) {
+    const dW = ((pin.w - record.odds.w) / record.odds.w * 100).toFixed(1);
+    const dD = ((pin.d - record.odds.d) / record.odds.d * 100).toFixed(1);
+    const dL = ((pin.l - record.odds.l) / record.odds.l * 100).toFixed(1);
     const warn = Math.abs(parseFloat(dW)) > 8 || Math.abs(parseFloat(dD)) > 8 || Math.abs(parseFloat(dL)) > 8;
-    const diffLabel = (pin.open && pin.open.w > 0) ? 'Pinnacle初盘 vs 竞彩' : 'Pinnacle vs 竞彩';
-    html += `<div class="ah-section-title">${diffLabel} 分歧</div>`;
+    html += '<div class="ah-section-title">Pinnacle vs 竞彩 分歧</div>';
     html += `<div class="ah-diff ${warn ? 'ah-diff-warn' : ''}">`;
     html += `胜 <span class="${parseFloat(dW) > 0 ? 'ev-pos' : 'ev-neg'}">${dW}%</span> | `;
     html += `平 <span class="${parseFloat(dD) > 0 ? 'ev-pos' : 'ev-neg'}">${dD}%</span> | `;
