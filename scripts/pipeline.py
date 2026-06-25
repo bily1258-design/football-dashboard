@@ -11,9 +11,10 @@
   7. align_and_merge --cleanup-db  — 去重复
   8. align_and_merge --all         — 对齐合并 → processed/
   9. review               — 赛果回填 + 命中分析（填充 actual_outcome）
- 10. merge_and_build --db — 构建 docs/ (results.json + index.html)
- 11. git push docs/       — 推 docs/ 到仓库（触发 GA 部署）
- 12. push_db              — DB 推 Release
+ 10. recalibrate_db       — 联赛分层参数 + isotonic校准 + 信心分层
+ 11. merge_and_build --db — 构建 docs/ (results.json + index.html)
+ 12. git push docs/       — 推 docs/ 到仓库（触发 GA 部署）
+ 13. push_db              — DB 推 Release
 
 用法：
   python scripts/pipeline.py --date 2026-06-18 --db data/football.db
@@ -53,7 +54,7 @@ def run(cmd, label, required=True):
 def git_push_docs(date, repo_dir):
     """推 docs/ 到 GitHub，触发 GA 部署"""
     print(f"\n{'='*60}")
-    print(f"▶ [11/12 git push docs/]")
+    print(f"▶ [12/13 git push docs/]")
     print(f"{'='*60}")
 
     token = os.environ.get('GITHUB_TOKEN', '')
@@ -169,10 +170,16 @@ def main():
     else:
         print("⏭️ 跳过 review (--skip-review)")
 
-    # 10. 构建 docs/
+    # 10. 重新校准 (联赛参数+isotonic+信心分层)
+    run([sys.executable, os.path.join(SCRIPT_DIR, "recalibrate_db.py"),
+         "--db", db],
+        label="10/13 recalibrate_db (校准)",
+        required=False)
+
+    # 11. 构建 docs/
     run([sys.executable, os.path.join(SCRIPT_DIR, "merge_and_build.py"),
          "--db", db],
-        label="10/12 merge_and_build (docs/)",
+        label="11/13 merge_and_build (docs/)",
         required=False)
 
     # 11. git push docs/ → 触发 GA 部署
@@ -186,7 +193,7 @@ def main():
     if not args.skip_push:
         run([sys.executable, os.path.join(SCRIPT_DIR, "push_db.py"),
              "--db", db],
-            label="12/12 push_db",
+            label="13/13 push_db",
             required=False)
     else:
         print("⏭️ 跳过 push_db (--skip-push)")

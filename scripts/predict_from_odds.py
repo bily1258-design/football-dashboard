@@ -64,13 +64,62 @@ def load_ah_for_date(date_str: str) -> list:
             print(f'  WARN 读 {path} 失败: {e}')
     return results
 
-# === 算法常量（基于历史 DB 5/15~6/5 数据反推）===
+# === 算法常量（默认值，可被 calibration_params.json 覆盖）===
 BASE_TOTAL_GOALS = 2.4    # 联赛平均总进球（主+客）
 HOME_ADV = 0.15            # 主场加成（λ_home 多 0.15）
 SKILL_FACTOR = 0.6         # 实力调整系数
 POISSON_WEIGHT = 0.5 # final = 0.5*poisson + 0.5*implied
 IMPLIED_WEIGHT = 0.5
 LAMBDA_MIN, LAMBDA_MAX = 0.3, 4.0
+
+# === 校准参数 ===
+CALIB_PATH = os.path.join(REPO_DIR, "data", "calibration_params.json")
+_league_params = {}   # league → params dict
+_global_params = {}   # fallback params
+_calib_map = []       # isotonic regression calibration curve
+
+def load_calibration():
+    """加载校准参数（联赛分层+isotonic回归），文件不存在时静默跳过"""
+    global _league_params, _global_params, _calib_map
+    if not os.path.exists(CALIB_PATH):
+        return
+    try:
+        with open(CALIB_PATH, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        _league_params = data.get('league_params', {})
+        _global_params = data.get('global_params', {})
+        _calib_map = data.get('global_calibration', [])
+    except Exception as e:
+        print(f'  WARN: 加载校准参数失败: {e}')
+
+def get_league_params(league):
+    """获取联赛特定参数，无则返回默认"""
+    if league in _league_params:
+        return _league_params[league]
+    return {'base_total_goals': BASE_TOTAL_GOALS, 'home_adv': HOME_ADV,
+            'skill_factor': SKILL_FACTOR, 'poisson_weight': POISSON_WEIGHT,
+            'implied_weight': IMPLIED_WEIGHT}
+
+def calibrate_prob(prob):
+    """用isotonic回归校准概率输出"""
+    if not _calib_map:
+        return prob
+    for i in range(len(_calib_map) - 1):
+        lo_p, lo_a = _calib_map[i]
+        hi_p, hi_a = _calib_map[i+1]
+        if lo_p <= prob <= hi_p:
+            t = (prob - lo_p) / max(hi_p - lo_p, 1e-9)
+            return lo_a + t * (hi_a - lo_a)
+    if prob < _calib_map[0][0]:
+        return _calib_map[0][1]
+    return _calib_map[-1][1]
+
+def confidence_tier(prob):
+    """根据校准后概率划分信心等级"""
+    if prob >= 0.55: return 'high'
+    elif prob >= 0.50: return 'medium'
+    elif prob >= 0.45: return 'low'
+    return 'very_low'
 
 
 def poisson_pmf(lam, k):
@@ -97,14 +146,17 @@ def poisson_match_probs(lam_h, lam_a, max_goals=10):
     return p_w, p_d, p_l
 
 
-def estimate_lambdas(imp_w, imp_d, imp_l):
-    """从 implied 反推 λ_home / λ_away"""
-    base = BASE_TOTAL_GOALS / 2
+def estimate_lambdas(imp_w, imp_d, imp_l, league=None):
+    """从 implied 反推 λ_home / λ_away，支持联赛分层参数"""
+    lp = get_league_params(league) if league else None
+    base_goals = lp['base_total_goals'] / 2 if lp else BASE_TOTAL_GOALS / 2
+    home_adv = lp['home_adv'] if lp else HOME_ADV
+    skill = lp['skill_factor'] if lp else SKILL_FACTOR
     denom = max(imp_w + imp_l, 0.01)
     share_h = imp_w / denom
-    skill_adj = SKILL_FACTOR * (share_h - 0.5)
-    lam_h = base + HOME_ADV + skill_adj
-    lam_a = base - HOME_ADV - skill_adj
+    skill_adj = skill * (share_h - 0.5)
+    lam_h = base_goals + home_adv + skill_adj
+    lam_a = base_goals - home_adv - skill_adj
     lam_h = max(LAMBDA_MIN, min(LAMBDA_MAX, lam_h))
     lam_a = max(LAMBDA_MIN, min(LAMBDA_MAX, lam_a))
     return round(lam_h, 3), round(lam_a, 3)
@@ -269,18 +321,24 @@ def build_predictions(om_matches, fetch_date):
         s = p_w + p_d + p_l
         p_w, p_d, p_l = p_w/s, p_d/s, p_l/s
 
-        # 算 λ + 泊松
-        lam_h, lam_a = estimate_lambdas(p_w, p_d, p_l)
+        # 联赛名（用于分层参数）
+        league_name = info.get('league', '') or ''
+
+        # 算 λ + 泊松（联赛分层参数）
+        lp = get_league_params(league_name)
+        pw = lp.get('poisson_weight', POISSON_WEIGHT)
+        iw = lp.get('implied_weight', IMPLIED_WEIGHT)
+        lam_h, lam_a = estimate_lambdas(p_w, p_d, p_l, league_name)
         p_pois_w, p_pois_d, p_pois_l = poisson_match_probs(lam_h, lam_a)
 
-        # final
-        f_w = POISSON_WEIGHT * p_pois_w + IMPLIED_WEIGHT * p_w
-        f_d = POISSON_WEIGHT * p_pois_d + IMPLIED_WEIGHT * p_d
-        f_l = POISSON_WEIGHT * p_pois_l + IMPLIED_WEIGHT * p_l
+        # final（联赛权重）
+        f_w = pw * p_pois_w + iw * p_w
+        f_d = pw * p_pois_d + iw * p_d
+        f_l = pw * p_pois_l + iw * p_l
         s2 = f_w + f_d + f_l
         f_w, f_d, f_l = f_w/s2, f_d/s2, f_l/s2
 
-        # prediction
+        # prediction（概率最高方向）
         if f_w >= f_d and f_w >= f_l:
             prediction = '主胜'
             pred_prob = f_w
@@ -290,6 +348,14 @@ def build_predictions(om_matches, fetch_date):
         else:
             prediction = '平局'
             pred_prob = f_d
+
+        # 校准概率 + 信心等级
+        cal_prob = calibrate_prob(pred_prob)
+        cal_tier = confidence_tier(cal_prob)
+
+        # EV方向 = 概率最高方向（用于命中率统计）
+        # 价值方向 = 模型概率 vs 市场隐含概率差值最大的方向（用于投注价值）
+        best_direction_cn = prediction
 
         # 解析 kickoff 实际日期
         kickoff = info.get('kickoff', '')
@@ -331,6 +397,9 @@ def build_predictions(om_matches, fetch_date):
             'avg_odds_close_d': odds_d_used if odds_source == 'avg' else (avg.get('odds_d', 0) or 0),
             'avg_odds_close_l': odds_l_used if odds_source == 'avg' else (avg.get('odds_l', 0) or 0),
             'avg_margin': margin_used if odds_source == 'avg' else (avg.get('margin', 0) or 0),
+            'confidence_tier': cal_tier,
+            'calibrated_prob': round(cal_prob, 3),
+            'best_direction_cn': best_direction_cn,
             'source': 'om_only',
             'odds_source': odds_source,
             'ah_handicap': 0,
@@ -351,7 +420,8 @@ def insert_predictions(rows, db_path):
     conn = sqlite3.connect(db_path)
     cur = conn.cursor()
     
-    for col, ctype in [('ah_handicap', 'REAL'), ('ah_home_water', 'REAL'), ('ah_away_water', 'REAL'), ('ah_source', 'TEXT')]:
+    for col, ctype in [('ah_handicap', 'REAL'), ('ah_home_water', 'REAL'), ('ah_away_water', 'REAL'), ('ah_source', 'TEXT'),
+                         ('confidence_tier', 'TEXT'), ('calibrated_prob', 'REAL'), ('best_direction_cn', 'TEXT')]:
         try:
             cur.execute(f"ALTER TABLE poisson_predictions ADD COLUMN {col} {ctype}")
         except:
@@ -470,8 +540,9 @@ def insert_predictions(rows, db_path):
                     william_ah_handicap, william_ah_home_water, william_ah_away_water,
                     william_ou_over, william_ou_line, william_ou_under,
                     pin_ah_handicap, pin_ah_home_water, pin_ah_away_water,
-                    pin_ou_line, pin_ou_over, pin_ou_under
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    pin_ou_line, pin_ou_over, pin_ou_under,
+                    confidence_tier, calibrated_prob, best_direction_cn
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 r['date'], final_ko, r['league'], r['home_team'], r['away_team'],
                 r['prediction'], r['prediction_prob'],
@@ -492,6 +563,7 @@ def insert_predictions(rows, db_path):
                 final_william_ou_o, final_william_ou_l, final_william_ou_u,
                 final_pin_ah_h, final_pin_ah_hw, final_pin_ah_aw,
                 final_pin_ou_l, final_pin_ou_o, final_pin_ou_u,
+                r.get('confidence_tier', ''), r.get('calibrated_prob', 0), r.get('best_direction_cn', ''),
             ))
             upserted += 1
         else:
@@ -511,8 +583,9 @@ def insert_predictions(rows, db_path):
                     avg_odds_close_w, avg_odds_close_d, avg_odds_close_l,
                     avg_margin,
                     source, odds_source,
-                    ah_handicap, ah_home_water, ah_away_water, ah_source
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ah_handicap, ah_home_water, ah_away_water, ah_source,
+                    confidence_tier, calibrated_prob, best_direction_cn
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 r['date'], r['kickoff_time'], r['league'], r['home_team'], r['away_team'],
                 r['prediction'], r['prediction_prob'],
@@ -527,7 +600,8 @@ def insert_predictions(rows, db_path):
                 r['avg_odds_close_w'], r['avg_odds_close_d'], r['avg_odds_close_l'],
                 r['avg_margin'],
                 r['source'], r['odds_source'],
-                r['ah_handicap'], r['ah_home_water'], r['ah_away_water'], r['ah_source']
+                r['ah_handicap'], r['ah_home_water'], r['ah_away_water'], r['ah_source'],
+                r.get('confidence_tier', ''), r.get('calibrated_prob', 0), r.get('best_direction_cn', '')
             ))
             inserted += 1
     conn.commit()
@@ -546,7 +620,9 @@ def main():
         print(f'[ERROR] DB 不存在: {db_path}')
         return 1
 
-    print(f'📊 预测日期: {args.date}')
+    load_calibration()
+    if _league_params:
+        print(f'🔧 校准参数: {len(_league_params)} 个联赛, isotonic={len(_calib_map)} 点')
     print(f'💾 DB: {db_path}')
 
     matches = load_om_matches(args.date)

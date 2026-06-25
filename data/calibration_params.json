@@ -1,0 +1,302 @@
+{
+  "global_params": {
+    "base_total_goals": 2.4,
+    "home_adv": 0.15,
+    "skill_factor": 0.6,
+    "poisson_weight": 0.5,
+    "implied_weight": 0.5
+  },
+  "league_params": {
+    "世界杯": {
+      "base_total_goals": 2.97,
+      "home_adv": 0.257,
+      "skill_factor": 0.3,
+      "poisson_weight": 0.2,
+      "implied_weight": 0.8,
+      "hit_rate": 0.6571,
+      "sample_size": 35
+    },
+    "土超": {
+      "base_total_goals": 2.86,
+      "home_adv": 0.188,
+      "skill_factor": 0.3,
+      "poisson_weight": 0.2,
+      "implied_weight": 0.8,
+      "hit_rate": 0.5831,
+      "sample_size": 722
+    },
+    "巴西乙": {
+      "base_total_goals": 2.42,
+      "home_adv": -0.081,
+      "skill_factor": 0.3,
+      "poisson_weight": 0.2,
+      "implied_weight": 0.8,
+      "hit_rate": 0.3784,
+      "sample_size": 37
+    },
+    "希腊超": {
+      "base_total_goals": 2.71,
+      "home_adv": 0.091,
+      "skill_factor": 0.3,
+      "poisson_weight": 0.2,
+      "implied_weight": 0.8,
+      "hit_rate": 0.5447,
+      "sample_size": 481
+    },
+    "德乙": {
+      "base_total_goals": 3.05,
+      "home_adv": 0.122,
+      "skill_factor": 0.6,
+      "poisson_weight": 0.4,
+      "implied_weight": 0.6,
+      "hit_rate": 0.4821,
+      "sample_size": 614
+    },
+    "德甲": {
+      "base_total_goals": 3.18,
+      "home_adv": 0.082,
+      "skill_factor": 0.3,
+      "poisson_weight": 0.2,
+      "implied_weight": 0.8,
+      "hit_rate": 0.5393,
+      "sample_size": 623
+    },
+    "意乙": {
+      "base_total_goals": 2.48,
+      "home_adv": 0.099,
+      "skill_factor": 0.5,
+      "poisson_weight": 0.8,
+      "implied_weight": 0.2,
+      "hit_rate": 0.4446,
+      "sample_size": 767
+    },
+    "意甲": {
+      "base_total_goals": 2.59,
+      "home_adv": 0.103,
+      "skill_factor": 0.3,
+      "poisson_weight": 0.2,
+      "implied_weight": 0.8,
+      "hit_rate": 0.5457,
+      "sample_size": 777
+    },
+    "挪甲": {
+      "base_total_goals": 3.62,
+      "home_adv": 0.4,
+      "skill_factor": 0.3,
+      "poisson_weight": 0.8,
+      "implied_weight": 0.2,
+      "hit_rate": 0.55,
+      "sample_size": 40
+    },
+    "挪超": {
+      "base_total_goals": 3.23,
+      "home_adv": 0.355,
+      "skill_factor": 0.3,
+      "poisson_weight": 0.6,
+      "implied_weight": 0.4,
+      "hit_rate": 0.6129,
+      "sample_size": 31
+    },
+    "比甲": {
+      "base_total_goals": 2.78,
+      "home_adv": 0.155,
+      "skill_factor": 0.5,
+      "poisson_weight": 0.3,
+      "implied_weight": 0.7,
+      "hit_rate": 0.5344,
+      "sample_size": 640
+    },
+    "法乙": {
+      "base_total_goals": 2.51,
+      "home_adv": 0.147,
+      "skill_factor": 0.4,
+      "poisson_weight": 0.7,
+      "implied_weight": 0.3,
+      "hit_rate": 0.4876,
+      "sample_size": 687
+    },
+    "法甲": {
+      "base_total_goals": 2.84,
+      "home_adv": 0.093,
+      "skill_factor": 0.3,
+      "poisson_weight": 0.2,
+      "implied_weight": 0.8,
+      "hit_rate": 0.5345,
+      "sample_size": 623
+    },
+    "英乙": {
+      "base_total_goals": 2.74,
+      "home_adv": 0.132,
+      "skill_factor": 0.3,
+      "poisson_weight": 0.4,
+      "implied_weight": 0.6,
+      "hit_rate": 0.4679,
+      "sample_size": 1107
+    },
+    "英冠": {
+      "base_total_goals": 2.56,
+      "home_adv": 0.163,
+      "skill_factor": 0.7,
+      "poisson_weight": 0.4,
+      "implied_weight": 0.6,
+      "hit_rate": 0.4923,
+      "sample_size": 1105
+    },
+    "英甲": {
+      "base_total_goals": 2.59,
+      "home_adv": 0.098,
+      "skill_factor": 0.7,
+      "poisson_weight": 0.2,
+      "implied_weight": 0.8,
+      "hit_rate": 0.5014,
+      "sample_size": 1105
+    },
+    "英超": {
+      "base_total_goals": 3.1,
+      "home_adv": 0.105,
+      "skill_factor": 0.5,
+      "poisson_weight": 0.2,
+      "implied_weight": 0.8,
+      "hit_rate": 0.5758,
+      "sample_size": 778
+    },
+    "英非联": {
+      "base_total_goals": 2.82,
+      "home_adv": 0.114,
+      "skill_factor": 0.6,
+      "poisson_weight": 0.5,
+      "implied_weight": 0.5,
+      "hit_rate": 0.4592,
+      "sample_size": 1104
+    },
+    "荷甲": {
+      "base_total_goals": 3.11,
+      "home_adv": 0.138,
+      "skill_factor": 0.4,
+      "poisson_weight": 0.2,
+      "implied_weight": 0.8,
+      "hit_rate": 0.5707,
+      "sample_size": 615
+    },
+    "葡超": {
+      "base_total_goals": 2.7,
+      "home_adv": 0.116,
+      "skill_factor": 0.3,
+      "poisson_weight": 0.2,
+      "implied_weight": 0.8,
+      "hit_rate": 0.5714,
+      "sample_size": 623
+    },
+    "西乙": {
+      "base_total_goals": 2.4,
+      "home_adv": 0.21,
+      "skill_factor": 0.5,
+      "poisson_weight": 0.5,
+      "implied_weight": 0.5,
+      "hit_rate": 0.4873,
+      "sample_size": 948
+    },
+    "西甲": {
+      "base_total_goals": 2.64,
+      "home_adv": 0.164,
+      "skill_factor": 0.7,
+      "poisson_weight": 0.4,
+      "implied_weight": 0.6,
+      "hit_rate": 0.5525,
+      "sample_size": 791
+    },
+    "解放者杯": {
+      "base_total_goals": 2.63,
+      "home_adv": 0.233,
+      "skill_factor": 0.3,
+      "poisson_weight": 0.4,
+      "implied_weight": 0.6,
+      "hit_rate": 0.6,
+      "sample_size": 30
+    }
+  },
+  "global_calibration": [
+    [
+      0.36,
+      0.318
+    ],
+    [
+      0.377,
+      0.375
+    ],
+    [
+      0.394,
+      0.381
+    ],
+    [
+      0.394,
+      0.381
+    ],
+    [
+      0.409,
+      0.396
+    ],
+    [
+      0.421,
+      0.42
+    ],
+    [
+      0.438,
+      0.442
+    ],
+    [
+      0.438,
+      0.442
+    ],
+    [
+      0.461,
+      0.465
+    ],
+    [
+      0.471,
+      0.46
+    ],
+    [
+      0.471,
+      0.46
+    ],
+    [
+      0.494,
+      0.467
+    ],
+    [
+      0.509,
+      0.524
+    ],
+    [
+      0.525,
+      0.538
+    ],
+    [
+      0.543,
+      0.561
+    ],
+    [
+      0.575,
+      0.598
+    ],
+    [
+      0.575,
+      0.598
+    ],
+    [
+      0.619,
+      0.648
+    ],
+    [
+      0.663,
+      0.716
+    ],
+    [
+      0.738,
+      0.816
+    ]
+  ],
+  "generated_at": "2026-06-25T18:53:55.697110",
+  "sample_size": 14675
+}

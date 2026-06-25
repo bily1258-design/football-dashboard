@@ -134,7 +134,7 @@ def load_from_db(db_path: str, max_days=999) -> dict:
         prediction, prediction_prob, odds_win, odds_draw, odds_loss, \
         poisson_win, poisson_draw, poisson_loss, final_win, final_draw, final_loss, \
         fusion_win, fusion_draw, fusion_loss, actual_outcome, risk_level, \
-        confidence_index, reference_score, best_direction_cn, source, \
+        confidence_index, reference_score, best_direction_cn, confidence_tier, calibrated_prob, source, \
         ev_win, ev_draw, ev_loss, kelly_win, kelly_draw, kelly_loss, \
         pinnacle_open_w, pinnacle_open_d, pinnacle_open_l, \
         pinnacle_close_w, pinnacle_close_d, pinnacle_close_l, \
@@ -215,6 +215,8 @@ def load_from_db(db_path: str, max_days=999) -> dict:
             'confidence_index': round(ci,2), 'reference_score': d.get('reference_score','') or '',
             'cold_risk': d.get('cold_risk','') or '', 'source': 'beidan' if d.get('source') == 'om_only' else (d.get('source') or 'jingcai'),
             'odds_source': d.get('odds_source','had'),
+            'confidence_tier': d.get('confidence_tier', '') or '',
+            'calibrated_prob': round(d.get('calibrated_prob', 0) or 0, 3),
             'home_lambda': round(d.get('home_lambda',0) or 0,3),
             'away_lambda': round(d.get('away_lambda',0) or 0,3),
             'home_ranking': d.get('home_ranking',0) or 0,
@@ -445,6 +447,19 @@ def build_daily_stats(by_date):
         n = sum(1 for r in records if r.get('result'))
         ev = sum(1 for r in records if r.get('ev_hit'))
         pb = sum(1 for r in records if r.get('prob_hit'))
+        # 信心分层统计
+        tier_stats = {}
+        for tier in ['high', 'medium', 'low', 'very_low']:
+            tier_recs = [r for r in records if r.get('confidence_tier') == tier and r.get('result')]
+            tn = len(tier_recs)
+            tev = sum(1 for r in tier_recs if r.get('ev_hit'))
+            tpb = sum(1 for r in tier_recs if r.get('prob_hit'))
+            tier_stats[tier] = {
+                'total': tn,
+                'ev_hits': tev, 'prob_hits': tpb,
+                'ev_rate': round(tev/tn*100, 1) if tn else 0,
+                'prob_rate': round(tpb/tn*100, 1) if tn else 0,
+            }
         stats[date] = {
             'total': len(records), 'with_result': n,
             'ev_hits': ev, 'prob_hits': pb,
@@ -452,20 +467,38 @@ def build_daily_stats(by_date):
             'ev_rate': round(ev/n*100, 1) if n else 0,
             'prob_rate': round(pb/n*100, 1) if n else 0,
             'any_rate': round(sum(1 for r in records if r.get('ev_hit') or r.get('prob_hit'))/n*100, 1) if n else 0,
+            'tiers': tier_stats,
         }
     return stats
 
 
 def build_summary(daily_stats):
     tn = tev = tpb = tany = 0
+    # 信心分层汇总
+    tier_totals = {t: {'total': 0, 'ev_hits': 0, 'prob_hits': 0} for t in ['high', 'medium', 'low', 'very_low']}
     for s in daily_stats.values():
         tn += s['with_result']; tev += s['ev_hits']; tpb += s['prob_hits']; tany += s['any_hits']
+        if 'tiers' in s:
+            for t in tier_totals:
+                tier_totals[t]['total'] += s.get('tiers', {}).get(t, {}).get('total', 0)
+                tier_totals[t]['ev_hits'] += s.get('tiers', {}).get(t, {}).get('ev_hits', 0)
+                tier_totals[t]['prob_hits'] += s.get('tiers', {}).get(t, {}).get('prob_hits', 0)
+    tier_summary = {}
+    for t, v in tier_totals.items():
+        n = v['total']
+        tier_summary[t] = {
+            'total': n,
+            'ev_hits': v['ev_hits'], 'prob_hits': v['prob_hits'],
+            'ev_rate': round(v['ev_hits']/n*100, 1) if n else 0,
+            'prob_rate': round(v['prob_hits']/n*100, 1) if n else 0,
+        }
     return {
         'total_matches': tn, 'ev_hits': tev, 'prob_hits': tpb, 'any_hits': tany,
         'ev_rate': round(tev/tn*100, 1) if tn else 0,
         'prob_rate': round(tpb/tn*100, 1) if tn else 0,
         'any_rate': round(tany/tn*100, 1) if tn else 0,
         'days': len(daily_stats),
+        'tiers': tier_summary,
         'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M'),
     }
 
@@ -524,6 +557,16 @@ def generate_index_html(by_date, daily_stats, summary, league_score_freq=None, o
     default_date = today if today in by_date else (dates[0] if dates else '')
     league_freq_json = json.dumps(league_score_freq or {}, ensure_ascii=False)
 
+    # 计算信心分层统计卡片
+    tiers = summary.get('tiers', {})
+    rec_total = tiers.get('high', {}).get('total', 0) + tiers.get('medium', {}).get('total', 0)
+    rec_ev = tiers.get('high', {}).get('ev_hits', 0) + tiers.get('medium', {}).get('ev_hits', 0)
+    rec_prob = tiers.get('high', {}).get('prob_hits', 0) + tiers.get('medium', {}).get('prob_hits', 0)
+    rec_ev_rate = round(rec_ev/rec_total*100, 1) if rec_total else 0
+    rec_prob_rate = round(rec_prob/rec_total*100, 1) if rec_total else 0
+    h_tier = tiers.get('high', {})
+    m_tier = tiers.get('medium', {})
+
     html = f'''<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -544,6 +587,12 @@ def generate_index_html(by_date, daily_stats, summary, league_score_freq=None, o
 <div class="card"><div class="label">概率最高命中率</div><div class="value" style="color:{'#4caf50' if summary['prob_rate']>=60 else '#f44336' if summary['prob_rate']<45 else '#ff9800'}">{summary['prob_rate']}%</div><div class="label">{summary['prob_hits']}/{summary['total_matches']}</div></div>
 <div class="card"><div class="label">任一命中</div><div class="value blue">{summary['any_rate']}%</div><div class="label">{summary['any_hits']}/{summary['total_matches']}</div></div>
 <div class="card"><div class="label">总天数</div><div class="value blue">{summary['days']}</div></div>
+</div>
+<div class="summary-cards" style="margin-top:8px">
+<div class="card" style="border-color:#4caf50"><div class="label">⭐ 推荐命中率(EV)</div><div class="value" style="color:{'#4caf50' if rec_ev_rate>=60 else '#ff9800'}">{rec_ev_rate}%</div><div class="label">{rec_ev}/{rec_total} (高+中信心)</div></div>
+<div class="card" style="border-color:#4caf50"><div class="label">⭐ 推荐命中率(概率)</div><div class="value" style="color:{'#4caf50' if rec_prob_rate>=60 else '#ff9800'}">{rec_prob_rate}%</div><div class="label">{rec_prob}/{rec_total} (高+中信心)</div></div>
+<div class="card"><div class="label">🔴 高信心命中率</div><div class="value" style="color:{'#4caf50' if h_tier.get('ev_rate',0)>=60 else '#ff9800'}">{h_tier.get('ev_rate',0)}%</div><div class="label">{h_tier.get('ev_hits',0)}/{h_tier.get('total',0)}</div></div>
+<div class="card"><div class="label">🟡 中信心命中率</div><div class="value" style="color:{'#4caf50' if m_tier.get('ev_rate',0)>=55 else '#ff9800'}">{m_tier.get('ev_rate',0)}%</div><div class="label">{m_tier.get('ev_hits',0)}/{m_tier.get('total',0)}</div></div>
 </div>
 
 <div class="tabs">

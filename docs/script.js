@@ -430,6 +430,10 @@ function loadDate() {
     const srcBadge = r.source === 'beidan'
       ? '<span class="badge badge-bd">北单</span>'
       : '<span class="badge badge-jc">竞彩</span>';
+    const tierColors = {high:'#4caf50', medium:'#ff9800', low:'#8b949e', very_low:'#484f58'};
+    const tierLabels = {high:'高', medium:'中', low:'低', very_low:'低'};
+    const tier = r.confidence_tier || 'very_low';
+    const tierBadge = `<span style="display:inline-block;padding:1px 5px;border-radius:3px;font-size:10px;color:#fff;background:${tierColors[tier]||'#484f58'};margin-left:3px">${tierLabels[tier]||'低'}</span>`;
     const evW = r.ev.w, evD = r.ev.d, evL = r.ev.l;
     const evCls = v => v > 0 ? 'ev-pos' : 'ev-neg';
     const ah = r.ah || {};
@@ -480,7 +484,7 @@ function loadDate() {
       : `<td>${poissonStr}</td>`;
 
     html += `<tr>
-<td>${i + 1} ${srcBadge}</td>
+<td>${i + 1} ${srcBadge}${tierBadge}</td>
 <td>${r.source === 'beidan' ? '北单' : '竞彩'}${r.league}</td>
 <td>${kickoff}</td>
 <td>${r.home}</td>${ahCell}<td>${r.away}</td>
