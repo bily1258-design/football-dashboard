@@ -208,8 +208,7 @@ def load_from_db(db_path: str, max_days=999) -> dict:
             'ev': {'w': round(d.get('ev_win',0) or 0,4), 'd': round(d.get('ev_draw',0) or 0,4), 'l': round(d.get('ev_loss',0) or 0,4)},
             'kelly': {'w': round(d.get('kelly_win',0) or 0,4), 'd': round(d.get('kelly_draw',0) or 0,4), 'l': round(d.get('kelly_loss',0) or 0,4)},
             'pinnacle': {
-                # Pinnacle close=足彩网竞彩赔率(96.7%相同), 改用open初盘作为主显示
-                'w': d.get('pinnacle_open_w',0) or 0, 'd': d.get('pinnacle_open_d',0) or 0, 'l': d.get('pinnacle_open_l',0) or 0,
+                'w': d.get('pinnacle_close_w',0) or 0, 'd': d.get('pinnacle_close_d',0) or 0, 'l': d.get('pinnacle_close_l',0) or 0,
                 'open': {'w': d.get('pinnacle_open_w',0) or 0, 'd': d.get('pinnacle_open_d',0) or 0, 'l': d.get('pinnacle_open_l',0) or 0},
             },
             'hkjc': {
@@ -856,20 +855,7 @@ def main():
     if cross_date_dedup:
         print(f'📌 跨日期去重 {cross_date_dedup} 条（kickoff补全 {cross_date_kickoff_fixed} 条）')
 
-    # Pinnacle close=足彩网竞彩赔率(96.7%相同), 统一替换为主行=open初盘
-    n_pin_fixed = 0
-    for d_key, records in by_date.items():
-        for r in records:
-            pin = r.get('pinnacle')
-            if isinstance(pin, dict):
-                pin_open = pin.get('open', {})
-                if isinstance(pin_open, dict) and (pin_open.get('w') or 0) > 0:
-                    # open有数据时用open替换主行
-                    if pin.get('w') != pin_open.get('w') or pin.get('d') != pin_open.get('d') or pin.get('l') != pin_open.get('l'):
-                        r['pinnacle'] = dict(pin, w=pin_open['w'], d=pin_open['d'], l=pin_open['l'])
-                        n_pin_fixed += 1
-    if n_pin_fixed:
-        print(f'📌 Pinnacle主行替换为open初盘: {n_pin_fixed}条')
+
 
     daily_stats = build_daily_stats(by_date)
     summary = build_summary(daily_stats)
