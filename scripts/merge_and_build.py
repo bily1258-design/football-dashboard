@@ -179,7 +179,11 @@ def load_from_db(db_path: str, max_days=999) -> dict:
         m = re.search(r'(\d+-\d+)', outcome)
         score = m.group(1) if m else ''
         result = '主胜' if '主胜' in outcome else ('客胜' if '客胜' in outcome else ('平局' if '平局' in outcome else ''))
-        ev_dir = d.get('best_direction_cn') or d.get('prediction') or ''
+        # EV方向: 从ev_win/ev_draw/ev_loss计算（不再用best_direction_cn，否则与概率方向重叠）
+        ew = d.get('ev_win', 0) or 0
+        ed = d.get('ev_draw', 0) or 0
+        el = d.get('ev_loss', 0) or 0
+        ev_dir = '主胜' if ew >= ed and ew >= el else ('客胜' if el >= ew and el >= ed else '平局')
         ev_hit = (ev_dir == result) if result else False
         fw = d.get('final_win', 0) or 0
         fd = d.get('final_draw', 0) or 0
@@ -204,7 +208,8 @@ def load_from_db(db_path: str, max_days=999) -> dict:
             'ev': {'w': round(d.get('ev_win',0) or 0,4), 'd': round(d.get('ev_draw',0) or 0,4), 'l': round(d.get('ev_loss',0) or 0,4)},
             'kelly': {'w': round(d.get('kelly_win',0) or 0,4), 'd': round(d.get('kelly_draw',0) or 0,4), 'l': round(d.get('kelly_loss',0) or 0,4)},
             'pinnacle': {
-                'w': d.get('pinnacle_close_w',0) or 0, 'd': d.get('pinnacle_close_d',0) or 0, 'l': d.get('pinnacle_close_l',0) or 0,
+                # Pinnacle close=足彩网竞彩赔率(96.7%相同), 改用open初盘作为主显示
+                'w': d.get('pinnacle_open_w',0) or 0, 'd': d.get('pinnacle_open_d',0) or 0, 'l': d.get('pinnacle_open_l',0) or 0,
                 'open': {'w': d.get('pinnacle_open_w',0) or 0, 'd': d.get('pinnacle_open_d',0) or 0, 'l': d.get('pinnacle_open_l',0) or 0},
             },
             'hkjc': {

@@ -47,7 +47,7 @@ function openAhModal(record) {
   html += '<tr><th class="ah-col-label">盘口</th><th>胜(主)</th><th>平</th><th>负(客)</th></tr>';
   html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-jc">竞彩</span></td>`;
   html += `<td>${record.odds.w || '-'}</td><td>${record.odds.d || '-'}</td><td>${record.odds.l || '-'}</td></tr>`;
-  html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-pin">Pinnacle</span></td>`;
+  html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-pin">Pinnacle初盘</span></td>`;
   html += `<td>${pin.w || '-'}</td><td>${pin.d || '-'}</td><td>${pin.l || '-'}</td></tr>`;
   html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-will">威廉希尔</span></td>`;
   html += `<td>${william.w || '-'}</td><td>${william.d || '-'}</td><td>${william.l || '-'}</td></tr>`;
@@ -211,13 +211,13 @@ function openAhModal(record) {
     html += '</table>';
   }
 
-  // ===== Pinnacle vs 竞彩 分歧 =====
+  // ===== Pinnacle初盘 vs 竞彩 分歧 =====
   if (record.odds.w > 0 && pin.w > 0) {
     const diffW = ((pin.w - record.odds.w) / record.odds.w * 100).toFixed(1);
     const diffD = ((pin.d - record.odds.d) / record.odds.d * 100).toFixed(1);
     const diffL = ((pin.l - record.odds.l) / record.odds.l * 100).toFixed(1);
     const warn = Math.abs(parseFloat(diffW)) > 8 || Math.abs(parseFloat(diffD)) > 8 || Math.abs(parseFloat(diffL)) > 8;
-    html += '<div class="ah-section-title">Pinnacle vs 竞彩 分歧</div>';
+    html += '<div class="ah-section-title">Pinnacle初盘 vs 竞彩 分歧</div>';
     html += `<div class="ah-diff ${warn ? 'ah-diff-warn' : ''}">`;
     html += `胜 <span class="${parseFloat(diffW) > 0 ? 'ev-pos' : 'ev-neg'}">${diffW}%</span> | `;
     html += `平 <span class="${parseFloat(diffD) > 0 ? 'ev-pos' : 'ev-neg'}">${diffD}%</span> | `;
@@ -627,7 +627,7 @@ function downloadExcel() {
   const headers = ['编号','联赛','开赛时间','主队','亚盘盘口','亚盘主水','亚盘客水','亚盘来源','客队','来源','推荐方向','概率推荐','赛果','比分',
     '胜赔','平赔','负赔','泊松W','泊松D','泊松L','综合W','综合D','综合L',
     'EV_W','EV_D','EV_L','凯利W','凯利D','凯利L',
-    'Pinnacle_W','Pinnacle_D','Pinnacle_L','HKJC_W','HKJC_D','HKJC_L',
+    'Pinnacle初_W','Pinnacle初_D','Pinnacle初_L','HKJC_W','HKJC_D','HKJC_L',
     'HHAD盘口','HHAD胜','HHAD平','HHAD负',
     'Pinnacle_AH_让球','Pinnacle_AH_主水','Pinnacle_AH_客水',
     'Pinnacle_OU_盘口','Pinnacle_OU_大球','Pinnacle_OU_小球',
