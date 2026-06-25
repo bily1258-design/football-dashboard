@@ -560,7 +560,12 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="统一足球复盘")
     parser.add_argument('--date', help='复盘日期 YYYY-MM-DD，默认今天')
+    parser.add_argument('--db', help='数据库路径（覆盖默认DB_PATH）')
     args = parser.parse_args()
+
+    # 覆盖DB_PATH（pipeline传入时）
+    if args.db:
+        DB_PATH = args.db
 
     print("=" * 50)
     print("预刷新500.com赛果...")
