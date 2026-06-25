@@ -47,8 +47,14 @@ function openAhModal(record) {
   html += '<tr><th class="ah-col-label">盘口</th><th>胜(主)</th><th>平</th><th>负(客)</th></tr>';
   html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-jc">竞彩</span></td>`;
   html += `<td>${record.odds.w || '-'}</td><td>${record.odds.d || '-'}</td><td>${record.odds.l || '-'}</td></tr>`;
-  html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-pin">Pinnacle</span></td>`;
+  // Pinnacle即时盘(close) + 初盘(open)
+  html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-pin">Pinnacle即时</span></td>`;
   html += `<td>${pin.w || '-'}</td><td>${pin.d || '-'}</td><td>${pin.l || '-'}</td></tr>`;
+  const pinOpen = pin.open || {};
+  if ((pinOpen.w || 0) > 0) {
+    html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-pin" style="opacity:0.7">Pinnacle初盘</span></td>`;
+    html += `<td>${pinOpen.w || '-'}</td><td>${pinOpen.d || '-'}</td><td>${pinOpen.l || '-'}</td></tr>`;
+  }
   html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-will">威廉希尔</span></td>`;
   html += `<td>${william.w || '-'}</td><td>${william.d || '-'}</td><td>${william.l || '-'}</td></tr>`;
   html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-hkjc">HKJC</span></td>`;
@@ -212,12 +218,15 @@ function openAhModal(record) {
   }
 
   // ===== Pinnacle vs 竞彩 分歧 =====
-  if (record.odds.w > 0 && pin.w > 0) {
-    const diffW = ((pin.w - record.odds.w) / record.odds.w * 100).toFixed(1);
-    const diffD = ((pin.d - record.odds.d) / record.odds.d * 100).toFixed(1);
-    const diffL = ((pin.l - record.odds.l) / record.odds.l * 100).toFixed(1);
+  // 用open(初盘)做对比(close对beidan来源=竞彩,比较无意义)
+  const pinDiff = ((pin.open && pin.open.w > 0) ? pin.open : pin);
+  if (record.odds.w > 0 && pinDiff.w > 0) {
+    const diffW = ((pinDiff.w - record.odds.w) / record.odds.w * 100).toFixed(1);
+    const diffD = ((pinDiff.d - record.odds.d) / record.odds.d * 100).toFixed(1);
+    const diffL = ((pinDiff.l - record.odds.l) / record.odds.l * 100).toFixed(1);
     const warn = Math.abs(parseFloat(diffW)) > 8 || Math.abs(parseFloat(diffD)) > 8 || Math.abs(parseFloat(diffL)) > 8;
-    html += '<div class="ah-section-title">Pinnacle vs 竞彩 分歧</div>';
+    const diffLabel = (pin.open && pin.open.w > 0) ? 'Pinnacle初盘 vs 竞彩' : 'Pinnacle vs 竞彩';
+    html += `<div class="ah-section-title">${diffLabel} 分歧</div>`;
     html += `<div class="ah-diff ${warn ? 'ah-diff-warn' : ''}">`;
     html += `胜 <span class="${parseFloat(diffW) > 0 ? 'ev-pos' : 'ev-neg'}">${diffW}%</span> | `;
     html += `平 <span class="${parseFloat(diffD) > 0 ? 'ev-pos' : 'ev-neg'}">${diffD}%</span> | `;
@@ -627,7 +636,7 @@ function downloadExcel() {
   const headers = ['编号','联赛','开赛时间','主队','亚盘盘口','亚盘主水','亚盘客水','亚盘来源','客队','来源','推荐方向','概率推荐','赛果','比分',
     '胜赔','平赔','负赔','泊松W','泊松D','泊松L','综合W','综合D','综合L',
     'EV_W','EV_D','EV_L','凯利W','凯利D','凯利L',
-    'Pinnacle_W','Pinnacle_D','Pinnacle_L','HKJC_W','HKJC_D','HKJC_L',
+    'Pinnacle即时_W','Pinnacle即时_D','Pinnacle即时_L','Pinnacle初_W','Pinnacle初_D','Pinnacle初_L','HKJC_W','HKJC_D','HKJC_L',
     'HHAD盘口','HHAD胜','HHAD平','HHAD负',
     'Pinnacle_AH_让球','Pinnacle_AH_主水','Pinnacle_AH_客水',
     'Pinnacle_OU_盘口','Pinnacle_OU_大球','Pinnacle_OU_小球',
@@ -652,6 +661,7 @@ function downloadExcel() {
       r.ev.w, r.ev.d, r.ev.l,
       r.kelly.w, r.kelly.d, r.kelly.l,
       r.pinnacle.w, r.pinnacle.d, r.pinnacle.l,
+      (r.pinnacle.open && r.pinnacle.open.w) || 0, (r.pinnacle.open && r.pinnacle.open.d) || 0, (r.pinnacle.open && r.pinnacle.open.l) || 0,
       r.hkjc.w, r.hkjc.d, r.hkjc.l,
       r.hhad ? r.hhad.handicap : '', r.hhad ? r.hhad.w : 0, r.hhad ? r.hhad.d : 0, r.hhad ? r.hhad.l : 0,
       r.pin_ah ? r.pin_ah.handicap : '', r.pin_ah ? r.pin_ah.home_w : 0, r.pin_ah ? r.pin_ah.away_w : 0,
