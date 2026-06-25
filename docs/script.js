@@ -47,14 +47,7 @@ function openAhModal(record) {
   html += '<tr><th class="ah-col-label">盘口</th><th>胜(主)</th><th>平</th><th>负(客)</th></tr>';
   html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-jc">竞彩</span></td>`;
   html += `<td>${record.odds.w || '-'}</td><td>${record.odds.d || '-'}</td><td>${record.odds.l || '-'}</td></tr>`;
-  // Pinnacle即时盘(close) + 初盘(open)
-  html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-pin">Pinnacle即时</span></td>`;
-  html += `<td>${pin.w || '-'}</td><td>${pin.d || '-'}</td><td>${pin.l || '-'}</td></tr>`;
-  const pinOpen = pin.open || {};
-  if ((pinOpen.w || 0) > 0) {
-    html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-pin" style="opacity:0.7">Pinnacle初盘</span></td>`;
-    html += `<td>${pinOpen.w || '-'}</td><td>${pinOpen.d || '-'}</td><td>${pinOpen.l || '-'}</td></tr>`;
-  }
+  // Pinnacle 1X2移到下方compactCompany统一排版
   html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-will">威廉希尔</span></td>`;
   html += `<td>${william.w || '-'}</td><td>${william.d || '-'}</td><td>${william.l || '-'}</td></tr>`;
   html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-hkjc">HKJC</span></td>`;
@@ -147,9 +140,9 @@ function openAhModal(record) {
   html += compactCompany('HKJC', 'ah-badge-hkjc',
     null, record.hkjc_ah, record.hkjc_ou);
 
-  // Pinnacle（1X2已在顶部对比表显示，此处只显示亚盘+大小球）
+  // Pinnacle（1X2+亚盘+大小球统一紧凑两行表，与HKJC/利记排版一致）
   html += compactCompany('Pinnacle', 'ah-badge-pin',
-    null, record.pin_ah, record.pin_ou);
+    pin, record.pin_ah, record.pin_ou);
 
   // 利记
   const liji = record.liji || {};
