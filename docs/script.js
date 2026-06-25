@@ -47,11 +47,12 @@ function openAhModal(record) {
   html += '<tr><th class="ah-col-label">盘口</th><th>胜(主)</th><th>平</th><th>负(客)</th></tr>';
   html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-jc">竞彩</span></td>`;
   html += `<td>${record.odds.w || '-'}</td><td>${record.odds.d || '-'}</td><td>${record.odds.l || '-'}</td></tr>`;
-  // Pinnacle 1X2移到下方compactCompany统一排版
-  html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-will">威廉希尔</span></td>`;
-  html += `<td>${william.w || '-'}</td><td>${william.d || '-'}</td><td>${william.l || '-'}</td></tr>`;
+  html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-pin">Pinnacle</span></td>`;
+  html += `<td>${pin.w || '-'}</td><td>${pin.d || '-'}</td><td>${pin.l || '-'}</td></tr>`;
   html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-hkjc">HKJC</span></td>`;
   html += `<td>${hkjc.w || '-'}</td><td>${hkjc.d || '-'}</td><td>${hkjc.l || '-'}</td></tr>`;
+  html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-will">威廉希尔</span></td>`;
+  html += `<td>${william.w || '-'}</td><td>${william.d || '-'}</td><td>${william.l || '-'}</td></tr>`;
   html += '</table>';
 
   // ── 各公司紧凑两行表 ──
@@ -140,9 +141,9 @@ function openAhModal(record) {
   html += compactCompany('HKJC', 'ah-badge-hkjc',
     null, record.hkjc_ah, record.hkjc_ou);
 
-  // Pinnacle（1X2+亚盘+大小球统一紧凑两行表，与HKJC/利记排版一致）
+  // Pinnacle（1X2已在顶部对比表显示，此处只显示亚盘+大小球）
   html += compactCompany('Pinnacle', 'ah-badge-pin',
-    pin, record.pin_ah, record.pin_ou);
+    null, record.pin_ah, record.pin_ou);
 
   // 利记
   const liji = record.liji || {};
@@ -210,20 +211,21 @@ function openAhModal(record) {
     html += '</table>';
   }
 
-  // ===== Pinnacle vs 竞彩 分歧 =====
-  // 用open(初盘)做对比(close对beidan来源=竞彩,比较无意义)
+
+
+  // ===== 竞彩 vs Pinnacle 分歧对比（窗口底部） =====
   const pinDiff = ((pin.open && pin.open.w > 0) ? pin.open : pin);
-  if (record.odds.w > 0 && pinDiff.w > 0) {
-    const diffW = ((pinDiff.w - record.odds.w) / record.odds.w * 100).toFixed(1);
-    const diffD = ((pinDiff.d - record.odds.d) / record.odds.d * 100).toFixed(1);
-    const diffL = ((pinDiff.l - record.odds.l) / record.odds.l * 100).toFixed(1);
-    const warn = Math.abs(parseFloat(diffW)) > 8 || Math.abs(parseFloat(diffD)) > 8 || Math.abs(parseFloat(diffL)) > 8;
+  if (record.odds.w > 0 && pinDiff.w > 0 && (pinDiff.w !== record.odds.w || pinDiff.d !== record.odds.d)) {
+    const dW = ((pinDiff.w - record.odds.w) / record.odds.w * 100).toFixed(1);
+    const dD = ((pinDiff.d - record.odds.d) / record.odds.d * 100).toFixed(1);
+    const dL = ((pinDiff.l - record.odds.l) / record.odds.l * 100).toFixed(1);
+    const warn = Math.abs(parseFloat(dW)) > 8 || Math.abs(parseFloat(dD)) > 8 || Math.abs(parseFloat(dL)) > 8;
     const diffLabel = (pin.open && pin.open.w > 0) ? 'Pinnacle初盘 vs 竞彩' : 'Pinnacle vs 竞彩';
     html += `<div class="ah-section-title">${diffLabel} 分歧</div>`;
     html += `<div class="ah-diff ${warn ? 'ah-diff-warn' : ''}">`;
-    html += `胜 <span class="${parseFloat(diffW) > 0 ? 'ev-pos' : 'ev-neg'}">${diffW}%</span> | `;
-    html += `平 <span class="${parseFloat(diffD) > 0 ? 'ev-pos' : 'ev-neg'}">${diffD}%</span> | `;
-    html += `负 <span class="${parseFloat(diffL) > 0 ? 'ev-pos' : 'ev-neg'}">${diffL}%</span>`;
+    html += `胜 <span class="${parseFloat(dW) > 0 ? 'ev-pos' : 'ev-neg'}">${dW}%</span> | `;
+    html += `平 <span class="${parseFloat(dD) > 0 ? 'ev-pos' : 'ev-neg'}">${dD}%</span> | `;
+    html += `负 <span class="${parseFloat(dL) > 0 ? 'ev-pos' : 'ev-neg'}">${dL}%</span>`;
     if (warn) html += ' <span class="ah-warn-tag">⚠ 分歧大</span>';
     html += '</div>';
   }
