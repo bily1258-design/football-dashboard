@@ -739,6 +739,12 @@ def main():
                                     if (k not in proc_rec or not isinstance(proc_rec.get(k), dict)) and k in db_rec and isinstance(db_rec.get(k), dict):
                                         proc_rec[k] = db_rec[k]
                                         n_merged += 1
+                                # 用DB的赛果回填processed空值（review后actual_outcome已更新）
+                                _RESULT_KEYS = ('score', 'result', 'ev_hit', 'prob_hit', 'ev_direction', 'prob_direction')
+                                for k in _RESULT_KEYS:
+                                    if not proc_rec.get(k) and db_rec.get(k):
+                                        proc_rec[k] = db_rec[k]
+                                        n_merged += 1
                                 # 补充ah/liji/ms：processed为空/非dict或handicap=0时用DB覆盖
                                 for k in _AH_KEYS:
                                     p_val = proc_rec.get(k)
