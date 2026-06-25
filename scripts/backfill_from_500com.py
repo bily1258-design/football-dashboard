@@ -7,6 +7,7 @@ backfill_from_500com.py — 从500.com完场页批量回填历史赛果 v3
   python scripts/backfill_from_500com.py --db data/football.db
   python scripts/backfill_from_500com.py --db data/football.db --date 2026-06-23
   python scripts/backfill_from_500com.py --db data/football.db --last 7
+  python scripts/backfill_from_500com.py --db data/football.db --date-from 2026-06-01 --date-to 2026-06-30
   python scripts/backfill_from_500com.py --db data/football.db --dry-run
 """
 
@@ -295,6 +296,8 @@ def main():
     parser = argparse.ArgumentParser(description="批量回填历史赛果（500.com完场页）")
     parser.add_argument('--db', required=True, help='数据库路径')
     parser.add_argument('--date', help='指定日期 YYYY-MM-DD')
+    parser.add_argument('--date-from', help='起始日期 YYYY-MM-DD')
+    parser.add_argument('--date-to', help='结束日期 YYYY-MM-DD')
     parser.add_argument('--last', type=int, help='只回填最近N天')
     parser.add_argument('--dry-run', action='store_true', help='只显示不写入')
     parser.add_argument('--verbose', '-v', action='store_true', help='显示每条匹配详情')
@@ -302,6 +305,15 @@ def main():
 
     if args.date:
         dates = [args.date]
+    elif args.date_from or args.date_to:
+        from datetime import timedelta
+        start = datetime.strptime(args.date_from or '2020-01-01', '%Y-%m-%d')
+        end = datetime.strptime(args.date_to or datetime.now().strftime('%Y-%m-%d'), '%Y-%m-%d')
+        dates = []
+        cur = start
+        while cur <= end:
+            dates.append(cur.strftime('%Y-%m-%d'))
+            cur += timedelta(days=1)
     else:
         dates = get_unfilled_dates(args.db, args.last)
     
