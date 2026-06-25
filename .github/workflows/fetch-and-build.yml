@@ -49,8 +49,11 @@ jobs:
           fi
 
       # ===== GA只做build+deploy，数据抓取全部在Termux本地完成 =====
+      # push触发(来自Termux pipeline)时docs/已最新，跳过rebuild
+      # 只有schedule/workflow_dispatch才需要从DB rebuild
 
-      - name: Align + Build
+      - name: Align + Build (schedule/dispatch only)
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         run: |
           if [ -f data/football.db ]; then
             python scripts/align_and_merge.py --all --db data/football.db || echo "⚠️ align failed, continuing"
@@ -96,12 +99,3 @@ jobs:
       - name: Deploy to Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
-      - name: Commit processed data
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/processed/ data/reports/ data/raw/ 2>/dev/null || true
-          git diff --cached --quiet && echo "No changes to commit" && exit 0
-          git commit -m "auto: build $(date +%Y-%m-%d)"
-          git push origin main
