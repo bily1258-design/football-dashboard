@@ -1518,6 +1518,77 @@ def save_to_db(matches, db_path, date_str=None):
             return None
         return d.get(k)
 
+    # 兼容 oddsmagnet/oyzs 缓存格式：将嵌套的 {open:{...}, close:{...}} 转为扁平结构
+    # fetch_pinnacle_odds() 正常执行时会产出扁平格式，但 --fetch-only 保存的缓存
+    # 和 odds_api.py 保存的 oyzs 缓存保留了原始嵌套格式
+    def _flatten_oyzs_match(m):
+        """将 oddsmagnet/oyzs 格式的 match dict 转为 save_to_db 期望的扁平格式"""
+        # 检测是否是 oddsmagnet 格式（有 info + odds 顶层键）
+        if 'info' in m and 'odds' in m:
+            info = m.get('info', {})
+            odds = m.get('odds', {})
+            pin_odds = odds.get('pinnacle', {})
+            avg_odds = odds.get('avg', {})
+            hkjc_odds = odds.get('hkjc', {})
+
+            m['home'] = m.get('home') or info.get('home', '')
+            m['away'] = m.get('away') or info.get('away', '')
+            m['kickoff'] = m.get('kickoff') or info.get('kickoff', '')
+            m['league'] = m.get('league') or info.get('league', '')
+
+            if pin_odds.get('odds_w', 0) > 0:
+                m['pinnacle_open'] = {'w': pin_odds.get('open_w', 0), 'd': pin_odds.get('open_d', 0), 'l': pin_odds.get('open_l', 0)}
+                m['pinnacle_close'] = {'w': pin_odds.get('odds_w', 0), 'd': pin_odds.get('odds_d', 0), 'l': pin_odds.get('odds_l', 0)}
+                m['pinnacle_margin'] = pin_odds.get('margin', 0)
+                m['implied_prob'] = {'w': pin_odds.get('implied_prob_w', 0), 'd': pin_odds.get('implied_prob_d', 0), 'l': pin_odds.get('implied_prob_l', 0)}
+                m['odds_source'] = 'Pinnacle'
+
+            if avg_odds.get('odds_w', 0) > 0:
+                m['avg_odds_open'] = {'w': avg_odds.get('open_w', 0), 'd': avg_odds.get('open_d', 0), 'l': avg_odds.get('open_l', 0)}
+                m['avg_odds_close'] = {'w': avg_odds.get('odds_w', 0), 'd': avg_odds.get('odds_d', 0), 'l': avg_odds.get('odds_l', 0)}
+
+            if hkjc_odds.get('odds_w', 0) > 0:
+                m['hkjc_open'] = {'w': hkjc_odds.get('open_w', 0), 'd': hkjc_odds.get('open_d', 0), 'l': hkjc_odds.get('open_l', 0)}
+                m['hkjc_close'] = {'w': hkjc_odds.get('odds_w', 0), 'd': hkjc_odds.get('odds_d', 0), 'l': hkjc_odds.get('odds_l', 0)}
+
+            will_odds = odds.get('william', odds.get('威廉希尔', {}))
+            if will_odds.get('odds_w', 0) > 0:
+                m['william_1x2_open'] = {'w': will_odds.get('open_w', 0), 'd': will_odds.get('open_d', 0), 'l': will_odds.get('open_l', 0)}
+                m['william_1x2_close'] = {'w': will_odds.get('odds_w', 0), 'd': will_odds.get('odds_d', 0), 'l': will_odds.get('odds_l', 0)}
+
+        # 检测 AH 字段是否为 {open:{...}, close:{...}} 嵌套格式并展平
+        # pin_ah: save_to_db 用 m.get('pin_ah', {}) 取值，期望扁平 {handicap, home_odd, away_odd}
+        pin_ah_val = m.get('pin_ah')
+        if isinstance(pin_ah_val, dict) and 'close' in pin_ah_val and 'open' in pin_ah_val:
+            close = pin_ah_val['close']
+            opn = pin_ah_val['open']
+            hc = close.get('handicap', 0)
+            if hc != 0:
+                m['pin_ah'] = {'handicap': hc, 'home_odd': close.get('home_w', 0), 'away_odd': close.get('away_w', 0)}
+                m['pin_ah_open'] = {'handicap': opn.get('handicap', 0), 'home_odd': opn.get('home_w', 0), 'away_odd': opn.get('away_w', 0)}
+
+        # hkjc_ah: save_to_db 用 m.get('ah_hkjc_close', {}) 和 m.get('ah_hkjc_open', {})
+        hkjc_ah_val = m.get('hkjc_ah')
+        if isinstance(hkjc_ah_val, dict) and 'close' in hkjc_ah_val and 'open' in hkjc_ah_val:
+            m['ah_hkjc_close'] = hkjc_ah_val['close']
+            m['ah_hkjc_open'] = hkjc_ah_val['open']
+
+        # liji_ah, ms_ah, william_ah 保持嵌套格式，save_to_db 用 .get('close', {}) 取值
+
+        # 缓存key到save_to_db期望key的映射
+        key_map = {
+            'liji_ou': 'ou_liji',
+            'ms_ou': 'ou_ms',
+            'hkjc_ou': 'hkjc_ou',  # same
+        }
+        for src_key, dst_key in key_map.items():
+            if src_key in m and dst_key not in m:
+                m[dst_key] = m[src_key]
+
+        return m
+
+    matches = [_flatten_oyzs_match(m) for m in matches]
+
     # 确保目录存在
     os.makedirs(os.path.dirname(db_path) if os.path.dirname(db_path) else '.', exist_ok=True)
     
@@ -2048,11 +2119,11 @@ def load_odds_cache(date_str, latest=True):
     cache_dir = os.path.join(DATA_BASE_DIR, "data", "cache")
     date_tag = date_str.replace('-', '')
     
-    # 查找所有匹配的缓存文件
+    # 查找所有匹配的缓存文件（兼容带_HHMM后缀和不带后缀的文件名）
     cache_files = []
     if os.path.exists(cache_dir):
         for f in os.listdir(cache_dir):
-            if f.startswith(f"pinnacle_odds_{date_tag}_") and f.endswith(".json"):
+            if f.startswith(f"pinnacle_odds_{date_tag}") and f.endswith(".json"):
                 cache_files.append(os.path.join(cache_dir, f))
     
     if not cache_files:
