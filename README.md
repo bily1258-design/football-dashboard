@@ -59,35 +59,39 @@ python scripts/pipeline.py --date 2026-06-27 --db data/football.db --skip-predic
 ```
 football-dashboard/
 ├── scripts/
-│   ├── pipeline.py            # 13步全链路入口（日常主力）
-│   ├── odds_api.py            # 足彩网赔率抓取（百家平均+oyzs三合一）
-│   ├── fetch_pinnacle_odds.py # Pinnacle/HKJC/威廉数据处理+入库
-│   ├── predict_from_odds.py   # 泊松预测（含联赛分层+isotonic校准+信心分层）
-│   ├── calc_lambda.py         # λ补算
-│   ├── update_db_fusion.py    # LGBM融合概率
-│   ├── value_bet.py           # EV价值投注（tanh软压缩）
-│   ├── update_db_kelly.py     # 凯利指数
-│   ├── align_and_merge.py     # 对齐合并+DB去重
-│   ├── review.py              # 复盘（赛果回填+命中分析）
-│   ├── recalibrate_db.py      # 批量校准（联赛分层+isotonic+信心分层）
-│   ├── calibrate_model.py     # 校准参数生成
-│   ├── merge_and_build.py     # 看板数据合并+HTML/JSON构建
-│   ├── push_db.py             # DB推送+赛果回填
-│   ├── daily_report.py        # 日报生成
-│   ├── backfill_from_500com.py        # 500.com历史赛果回填
+│   ├── pipeline.py                 # 13步全链路入口（日常主力）
+│   ├── odds_api.py                 # 足彩网赔率抓取（百家平均+oyzs三合一）
+│   ├── fetch_pinnacle_odds.py      # Pinnacle/HKJC/威廉数据处理+入库
+│   ├── predict_from_odds.py        # 泊松预测（含联赛分层+isotonic校准+信心分层）
+│   ├── calc_lambda.py              # λ补算
+│   ├── update_db_fusion.py         # LGBM融合概率
+│   ├── value_bet.py                # EV价值投注（tanh软压缩）
+│   ├── update_db_kelly.py          # 凯利指数
+│   ├── align_and_merge.py          # 对齐合并+DB去重
+│   ├── review.py                   # 复盘（赛果回填+命中分析）
+│   ├── recalibrate_db.py           # 批量校准（联赛分层+isotonic+信心分层）
+│   ├── calibrate_model.py          # 校准参数生成
+│   ├── merge_and_build.py          # 看板数据合并+HTML/JSON构建
+│   ├── push_db.py                  # DB推送+赛果回填
+│   ├── daily_report.py             # 日报生成
+│   ├── backfill_from_500com.py     # 500.com历史赛果回填
 │   ├── backfill_from_footballdata.py  # football-data.org历史数据回填
-│   ├── team_aliases.py        # 队名别名归一化
-│   └── ...                    # 其他辅助脚本
+│   ├── fundamental_analysis.py     # 基本面分析（daily_report依赖）
+│   ├── fusion_predict.py           # 融合预测（update_db_fusion依赖）
+│   ├── fetch_zgzcw_results.py      # 足彩网赛果抓取（review依赖）
+│   ├── fetch_standings_qtx.py      # 球天下积分榜抓取
+│   ├── oddsmagnet_to_realodds.py   # OM赔率格式转换
+│   ├── team_aliases.py             # 队名别名归一化
+│   ├── tools.py                    # 搜索工具（fundamental_analysis依赖）
+│   └── utils.py                    # 工具函数（align_and_merge依赖）
 ├── data/
-│   ├── raw/oddsmagnet/        # 原始赔率数据（足彩网JSON，云端抓取推仓库）
-│   ├── processed/             # 处理后数据（JSON/天）
-│   ├── cache/                 # 缓存
-│   ├── reports/               # 日报输出
-│   ├── calibration_params.json # 校准参数（23联赛+isotonic曲线）
-│   └── football.db            # SQLite数据库（不提交git，推Release）
-├── docs/                      # GitHub Pages 输出
+│   ├── raw/oddsmagnet/             # 原始赔率数据（足彩网JSON，云端抓取推仓库）
+│   ├── cache/                      # 缓存
+│   ├── calibration_params.json     # 校准参数（23联赛+isotonic曲线）
+│   └── football.db                 # SQLite数据库（不提交git，推Release）
+├── docs/                           # GitHub Pages 输出
 ├── .github/workflows/
-│   └── fetch-and-build.yml    # GA 自动构建（只build+deploy）
+│   └── fetch-and-build.yml         # GA 自动构建（只build+deploy）
 └── README.md
 ```
 
@@ -129,7 +133,7 @@ football-dashboard/
 | 百家平均亚盘 | POST company=0 | companyType=y |
 | Pinnacle/HKJC/利记/明升/威廉 1X2+AH+OU | **oyzs_ajax 三合一** | odds.zgzcw.com，含初盘+即时盘 |
 | Betfair | POST company=56 | companyType=b |
-| 赛果 | 500.com | fetch_500com_results.py |
+| 赛果 | 500.com | backfill_from_500com.py |
 | 积分榜 | 球天下 data.qtx.com | fetch_standings_qtx.py |
 
 > **oyzs_ajax 三合一接口**：`odds.zgzcw.com/odds/oyzs_ajax.action` 一次请求返回 Pinnacle(22)/HKJC(136)/利记(15)/明升(6)/威廉希尔(5) 的1X2欧赔+亚盘+大小球（含初盘open+即时盘close），替代之前的散装POST。
@@ -202,6 +206,7 @@ https://bily1258-design.github.io/football-dashboard/
 ## 变更记录
 
 ### 2026-06-26
+- **清理废弃文件**：删除9个废弃脚本+3个bak+26个bsd数据+空目录，减90780行
 - **pipeline替代fetch_data**：13步全闭环，含recalibrate_db
 - **cron改用pipeline.py**：Termux不再直接抓数据，改为git pull + pipeline
 - **云端定时抓数据**：每天10:00/16:00从足彩网抓raw数据推仓库
