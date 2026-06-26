@@ -20,6 +20,7 @@
   python scripts/pipeline.py --date 2026-06-18 --db data/football.db
   python scripts/pipeline.py --date 2026-06-18 --db data/football.db --skip-push
   python scripts/pipeline.py --date 2026-06-18 --db data/football.db --skip-review
+  python scripts/pipeline.py --date 2026-06-18 --db data/football.db --pinnacle-from-cache
   python scripts/pipeline.py --date 2026-06-18 --db data/football.db --verbose   # 显示子脚本完整输出
 """
 
@@ -31,7 +32,7 @@ from datetime import datetime
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# 步骤定义: (label, script, extra_args, required)
+# 步骤定义: (label, script, extra_args, required, skip_key)
 STEPS = [
     ("1  泊松预测",      "predict_from_odds.py",   ["--date", "{date}", "--db", "{db}"], False, "skip_predict"),
     ("2  Pinnacle赔率",  "fetch_pinnacle_odds.py", ["--date", "{date}"],                  False, None),
@@ -106,9 +107,11 @@ def main():
     parser = argparse.ArgumentParser(description="预测+赔率回填+融合+EV+Kelly+复盘+构建 全链路")
     parser.add_argument("--date", required=True, help="目标日期 YYYY-MM-DD")
     parser.add_argument("--db", required=True, help="数据库路径")
-    parser.add_argument("--skip-push", action="store_true", help="跳过推送（本地测试用）")
+    parser.add_argument("--skip-push", action="store_true", help="跳过推送（本地测试用 / GA用）")
     parser.add_argument("--skip-predict", action="store_true", help="跳过 predict（已有预测时）")
     parser.add_argument("--skip-review", action="store_true", help="跳过 review（当日无赛果时）")
+    parser.add_argument("--pinnacle-from-cache", action="store_true",
+                        help="Pinnacle从缓存写入DB（GA环境用，不抓网络）")
     parser.add_argument("-v", "--verbose", action="store_true", help="显示子脚本完整输出")
     args = parser.parse_args()
 
@@ -139,8 +142,13 @@ def main():
             print(f"  {result}  {label}")
             continue
 
+        # 特殊处理: Pinnacle从缓存写入（GA环境）
+        actual_args = list(extra_args)
+        if label.startswith("2") and args.pinnacle_from_cache:
+            actual_args = ["--apply", "{date}", "--db", "{db}"]
+
         # 构建命令
-        fmt_args = [a.format(date=date, db=db) for a in extra_args]
+        fmt_args = [a.format(date=date, db=db) for a in actual_args]
         cmd = [sys.executable, os.path.join(SCRIPT_DIR, script)] + fmt_args
 
         print(f"  ⏳  {label}...", end="", flush=True)
