@@ -5,13 +5,15 @@ on:
     branches: [main]
     paths:
       - 'data/raw/**'
-      - 'docs/**'
-  release:
-    types: [published, edited]
   workflow_dispatch:
+    inputs:
+      date:
+        description: 'Target date (YYYY-MM-DD), default today'
+        required: false
+        type: string
   schedule:
-    - cron: '0 5 * * *'
-    - cron: '0 11 * * *'
+    - cron: '0 5 * * *'   # 13:00 Beijing
+    - cron: '0 11 * * *'  # 19:00 Beijing
 
 permissions:
   contents: write
@@ -32,6 +34,15 @@ jobs:
       - name: Install dependencies
         run: pip install --quiet -r requirements.txt
 
+      - name: Determine target date
+        id: date
+        run: |
+          if [ -n "${{ github.event.inputs.date }}" ]; then
+            echo "date=${{ github.event.inputs.date }}" >> $GITHUB_OUTPUT
+          else
+            echo "date=$(date +%Y-%m-%d)" >> $GITHUB_OUTPUT
+          fi
+
       - name: Download DB from Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -48,22 +59,15 @@ jobs:
             echo "⚠️ No DB available, pipeline may be limited"
           fi
 
-      # ===== GA只做build+deploy，数据抓取全部在Termux本地完成 =====
-      # push触发(来自Termux pipeline)时docs/已最新，跳过rebuild
-      # 只有schedule/workflow_dispatch才需要从DB rebuild
-
-      - name: Align + Build (schedule/dispatch only)
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+      - name: Run pipeline
         run: |
           if [ -f data/football.db ]; then
-            python scripts/align_and_merge.py --all --db data/football.db || echo "⚠️ align failed, continuing"
-            python scripts/merge_and_build.py --db data/football.db || echo "⚠️ merge_and_build failed, continuing"
+            python scripts/pipeline.py --date ${{ steps.date.outputs.date }} --db data/football.db --skip-push
           else
-            echo "⚠️ Skipping align (no DB)"
+            echo "⚠️ No DB, skipping pipeline"
           fi
 
       - name: Push DB to Release
-        if: github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
