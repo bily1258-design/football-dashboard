@@ -5,7 +5,7 @@
 ### 日常一条命令（Termux）
 
 ```bash
-cd ~/football-dashboard && git pull && GITHUB_TOKEN=$GITHUB_TOKEN python scripts/pipeline.py --date $(date +%Y-%m-%d) --db data/football.db
+cd ~/football-dashboard && git pull && python scripts/pipeline.py --date $(date +%Y-%m-%d) --db data/football.db
 ```
 
 流程：git pull（拉云端抓好的raw数据）→ 13步pipeline → 看板构建+推送
@@ -43,13 +43,13 @@ python scripts/pipeline.py --date 2026-06-27 --db data/football.db --skip-predic
 
 ```bash
 # ① 12:00 football-dashboard pipeline
-0 12 * * * cd ~/football-dashboard && git pull --rebase origin main 2>/dev/null && GITHUB_TOKEN=$GITHUB_TOKEN python scripts/pipeline.py --date $(date +\%Y-\%m-\%d) --db data/football.db >> logs/cron_12.log 2>&1
+0 12 * * * cd ~/football-dashboard && git pull --rebase origin main 2>/dev/null && python scripts/pipeline.py --date $(date +\%Y-\%m-\%d) --db data/football.db >> logs/cron_12.log 2>&1
 
 # ② 12:15 football-odds-api 刷新
 15 12 * * * cd ~/football-odds-api && git pull 2>/dev/null; curl -s localhost:5000/pinbo_refresh
 
 # ③ 18:00 football-dashboard pipeline
-0 18 * * * cd ~/football-dashboard && git pull --rebase origin main 2>/dev/null && GITHUB_TOKEN=$GITHUB_TOKEN python scripts/pipeline.py --date $(date +\%Y-\%m-\%d) --db data/football.db >> logs/cron_18.log 2>&1
+0 18 * * * cd ~/football-dashboard && git pull --rebase origin main 2>/dev/null && python scripts/pipeline.py --date $(date +\%Y-\%m-\%d) --db data/football.db >> logs/cron_18.log 2>&1
 ```
 
 > 云端10:00/16:00自动抓raw数据推仓库，Termux的12:00/18:00 pipeline只需pull即可拿到数据。
