@@ -20,6 +20,7 @@
   python scripts/pipeline.py --date 2026-06-18 --db data/football.db
   python scripts/pipeline.py --date 2026-06-18 --db data/football.db --skip-push
   python scripts/pipeline.py --date 2026-06-18 --db data/football.db --skip-review
+  python scripts/pipeline.py --date 2026-06-18 --db data/football.db --verbose   # 显示子脚本完整输出
 """
 
 import subprocess
@@ -30,177 +31,133 @@ from datetime import datetime
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
+# 步骤定义: (label, script, extra_args, required)
+STEPS = [
+    ("1  泊松预测",      "predict_from_odds.py",   ["--date", "{date}", "--db", "{db}"], False, "skip_predict"),
+    ("2  Pinnacle赔率",  "fetch_pinnacle_odds.py", ["--date", "{date}"],                  False, None),
+    ("3  λ补算",         "calc_lambda.py",          ["--db", "{db}", "--date", "{date}"],   False, None),
+    ("4  LGBM融合",      "update_db_fusion.py",    ["--db", "{db}"],                       False, None),
+    ("5  EV重算",        "value_bet.py",            ["--all", "--db", "{db}"],              False, None),
+    ("6  Kelly重算",     "update_db_kelly.py",     ["--db", "{db}"],                       False, None),
+    ("7  DB去重",        "align_and_merge.py",      ["--cleanup-db", "--db", "{db}"],       False, None),
+    ("8  对齐合并",      "align_and_merge.py",      ["--all", "--db", "{db}"],              True,  None),
+    ("9  复盘",          "review.py",               ["--date", "{date}", "--db", "{db}"],   False, "skip_review"),
+    ("10 校准",          "recalibrate_db.py",       ["--db", "{db}"],                       False, None),
+    ("11 构建",          "merge_and_build.py",      ["--db", "{db}"],                       False, None),
+    ("12 推送docs",      None,                       None,                                  False, "skip_push"),  # 特殊处理
+    ("13 推送DB",        "push_db.py",              ["--db", "{db}"],                       False, "skip_push"),
+]
 
-def run(cmd, label, required=True):
-    """运行子脚本"""
-    print(f"\n{'='*60}")
-    print(f"▶ [{label}]")
-    print(f"  cmd: {' '.join(cmd)}")
-    print(f"{'='*60}")
+
+def run(cmd, label, required=True, verbose=False):
+    """运行子脚本，默认静默，失败时显示尾部输出"""
     repo_dir = os.path.dirname(SCRIPT_DIR)
-    result = subprocess.run(cmd, cwd=repo_dir)
+    if verbose:
+        result = subprocess.run(cmd, cwd=repo_dir)
+    else:
+        result = subprocess.run(cmd, cwd=repo_dir, capture_output=True, text=True)
+
     if result.returncode != 0:
+        if not verbose and result.stderr:
+            # 失败时显示尾部输出帮助排查
+            tail = result.stderr.strip().split('\n')
+            for line in tail[-10:]:
+                print(f"    {line}")
         msg = f"⚠️ {label} failed (exit={result.returncode})"
         if required:
             print(f"❌ {msg} — 终止流程")
             sys.exit(result.returncode)
         else:
             print(f"{msg} — 继续下一步")
-    else:
-        print(f"✅ {label} done")
-    return result.returncode
+        return result.returncode
+    return 0
 
 
-def git_push_docs(date, repo_dir):
+def git_push_docs(date, repo_dir, verbose=False):
     """推 docs/ 到 GitHub，触发 GA 部署"""
-    print(f"\n{'='*60}")
-    print(f"▶ [12/13 git push docs/]")
-    print(f"{'='*60}")
-
     token = os.environ.get('GITHUB_TOKEN', '')
 
-    # git add docs/
     subprocess.run(['git', 'add', 'docs/'], cwd=repo_dir, capture_output=True)
-
-    # 检查是否有变化
     r = subprocess.run(['git', 'diff', '--cached', '--quiet'], cwd=repo_dir, capture_output=True)
     if r.returncode == 0:
-        print("⏭️ docs/ 无变化，跳过push")
-        return 0
+        return "⏭️"
 
-    # 有变化 → commit
     cr = subprocess.run(
         ['git', 'commit', '-m', f'docs: update {date}'],
         cwd=repo_dir, capture_output=True, text=True
     )
     if cr.returncode != 0:
-        print(f"⚠️ git commit failed: {cr.stderr.strip()}")
-        return cr.returncode
+        return f"❌ commit failed: {cr.stderr.strip()[:80]}"
 
-    # push — 优先用 token，否则走已有 credential
     if token:
         push_url = f'https://{token}@github.com/bily1258-design/football-dashboard.git'
-        pr = subprocess.run(
-            ['git', 'push', push_url, 'HEAD:main'],
-            cwd=repo_dir, capture_output=True, text=True
-        )
+        pr = subprocess.run(['git', 'push', push_url, 'HEAD:main'],
+                            cwd=repo_dir, capture_output=True, text=True)
     else:
         pr = subprocess.run(['git', 'push'], cwd=repo_dir, capture_output=True, text=True)
 
     if pr.returncode != 0:
-        print(f"❌ git push failed: {pr.stderr.strip()}")
-        return pr.returncode
+        return f"❌ push failed: {pr.stderr.strip()[:80]}"
 
-    print("✅ docs/ pushed to GitHub → GA will deploy")
-    return 0
+    return "✅"
 
 
 def main():
     parser = argparse.ArgumentParser(description="预测+赔率回填+融合+EV+Kelly+复盘+构建 全链路")
     parser.add_argument("--date", required=True, help="目标日期 YYYY-MM-DD")
     parser.add_argument("--db", required=True, help="数据库路径")
-    parser.add_argument("--skip-push", action="store_true",
-                        help="跳过 push_db（本地测试用）")
-    parser.add_argument("--skip-predict", action="store_true",
-                        help="跳过 predict（已有预测时）")
-    parser.add_argument("--skip-review", action="store_true",
-                        help="跳过 review（当日无赛果时）")
+    parser.add_argument("--skip-push", action="store_true", help="跳过推送（本地测试用）")
+    parser.add_argument("--skip-predict", action="store_true", help="跳过 predict（已有预测时）")
+    parser.add_argument("--skip-review", action="store_true", help="跳过 review（当日无赛果时）")
+    parser.add_argument("-v", "--verbose", action="store_true", help="显示子脚本完整输出")
     args = parser.parse_args()
 
     date = args.date
     db = args.db
+    verbose = args.verbose
 
-    # 1. 泊松预测
-    if not args.skip_predict:
-        run([sys.executable, os.path.join(SCRIPT_DIR, "predict_from_odds.py"),
-             "--date", date, "--db", db],
-            label="1/12 predict_from_odds",
-            required=False)
+    skip_flags = {
+        "skip_predict": args.skip_predict,
+        "skip_review": args.skip_review,
+        "skip_push": args.skip_push,
+    }
+
+    print(f"🚀 pipeline {date} {'(verbose)' if verbose else ''}")
+    print(f"─" * 40)
+
+    failed = []
+    for label, script, extra_args, required, skip_key in STEPS:
+        # 检查是否跳过
+        if skip_key and skip_flags.get(skip_key):
+            print(f"  ⏭️  {label}")
+            continue
+
+        # 特殊处理: git push docs
+        if script is None and label == "12 推送docs":
+            repo_dir = os.path.dirname(SCRIPT_DIR)
+            result = git_push_docs(date, repo_dir, verbose)
+            print(f"  {result}  {label}")
+            continue
+
+        # 构建命令
+        fmt_args = [a.format(date=date, db=db) for a in extra_args]
+        cmd = [sys.executable, os.path.join(SCRIPT_DIR, script)] + fmt_args
+
+        print(f"  ⏳  {label}...", end="", flush=True)
+        rc = run(cmd, label, required=required, verbose=verbose)
+        if rc == 0:
+            print(f"\r  ✅  {label}")
+        else:
+            print(f"\r  ❌  {label}")
+            if required:
+                break
+            failed.append(label)
+
+    print(f"─" * 40)
+    if failed:
+        print(f"🎉 pipeline 完成: {date} (失败: {', '.join(failed)})")
     else:
-        print("⏭️ 跳过 predict (--skip-predict)")
-
-    # 2. Pinnacle/HKJC/威廉初终盘回填
-    run([sys.executable, os.path.join(SCRIPT_DIR, "fetch_pinnacle_odds.py"),
-         "--date", date],
-        label="2/12 fetch_pinnacle_odds",
-        required=False)
-
-    # 3. 补算 lambda
-    run([sys.executable, os.path.join(SCRIPT_DIR, "calc_lambda.py"),
-         "--db", db, "--date", date],
-        label="3/12 calc_lambda",
-        required=False)
-
-    # 4. LGBM 融合概率
-    run([sys.executable, os.path.join(SCRIPT_DIR, "update_db_fusion.py"),
-         "--db", db],
-        label="4/12 update_db_fusion",
-        required=False)
-
-    # 5. EV 重算
-    run([sys.executable, os.path.join(SCRIPT_DIR, "value_bet.py"),
-         "--all", "--db", db],
-        label="5/12 value_bet (EV)",
-        required=False)
-
-    # 6. Kelly 重算
-    run([sys.executable, os.path.join(SCRIPT_DIR, "update_db_kelly.py"),
-         "--db", db],
-        label="6/12 update_db_kelly",
-        required=False)
-
-    # 7. DB 去重
-    run([sys.executable, os.path.join(SCRIPT_DIR, "align_and_merge.py"),
-         "--cleanup-db", "--db", db],
-        label="7/12 cleanup_db_duplicates",
-        required=False)
-
-    # 8. 对齐合并 → processed/
-    run([sys.executable, os.path.join(SCRIPT_DIR, "align_and_merge.py"),
-         "--all", "--db", db],
-        label="8/12 align_and_merge",
-        required=True)
-
-    # 9. 赛果回填 + 命中分析
-    if not args.skip_review:
-        run([sys.executable, os.path.join(SCRIPT_DIR, "review.py"),
-             "--date", date, "--db", db],
-            label="9/12 review (赛果回填)",
-            required=False)
-    else:
-        print("⏭️ 跳过 review (--skip-review)")
-
-    # 10. 重新校准 (联赛参数+isotonic+信心分层)
-    run([sys.executable, os.path.join(SCRIPT_DIR, "recalibrate_db.py"),
-         "--db", db],
-        label="10/13 recalibrate_db (校准)",
-        required=False)
-
-    # 11. 构建 docs/
-    run([sys.executable, os.path.join(SCRIPT_DIR, "merge_and_build.py"),
-         "--db", db],
-        label="11/13 merge_and_build (docs/)",
-        required=False)
-
-    # 11. git push docs/ → 触发 GA 部署
-    repo_dir = os.path.dirname(SCRIPT_DIR)
-    if not args.skip_push:
-        git_push_docs(date, repo_dir)
-    else:
-        print("⏭️ 跳过 git push docs/ (--skip-push)")
-
-    # 12. 推送 DB 到 Release
-    if not args.skip_push:
-        run([sys.executable, os.path.join(SCRIPT_DIR, "push_db.py"),
-             "--db", db],
-            label="13/13 push_db",
-            required=False)
-    else:
-        print("⏭️ 跳过 push_db (--skip-push)")
-
-    print(f"\n{'='*60}")
-    print(f"🎉 pipeline 完成: {date}")
-    print(f"{'='*60}")
+        print(f"🎉 pipeline 完成: {date}")
 
 
 if __name__ == "__main__":
