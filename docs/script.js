@@ -228,6 +228,21 @@ function openAhModal(record) {
     html += '</div>';
   }
 
+  // ===== Pinnacle vs HKJC 分歧对比（用即时盘） =====
+  if (hkjc.w > 0 && pin.w > 0 && (pin.w !== hkjc.w || pin.d !== hkjc.d)) {
+    const hW = ((pin.w - hkjc.w) / hkjc.w * 100).toFixed(1);
+    const hD = ((pin.d - hkjc.d) / hkjc.d * 100).toFixed(1);
+    const hL = ((pin.l - hkjc.l) / hkjc.l * 100).toFixed(1);
+    const hwarn = Math.abs(parseFloat(hW)) > 8 || Math.abs(parseFloat(hD)) > 8 || Math.abs(parseFloat(hL)) > 8;
+    html += '<div class="ah-section-title">Pinnacle vs HKJC 分歧</div>';
+    html += `<div class="ah-diff ${hwarn ? 'ah-diff-warn' : ''}">`;
+    html += `胜 <span class="${parseFloat(hW) > 0 ? 'ev-pos' : 'ev-neg'}">${hW}%</span> | `;
+    html += `平 <span class="${parseFloat(hD) > 0 ? 'ev-pos' : 'ev-neg'}">${hD}%</span> | `;
+    html += `负 <span class="${parseFloat(hL) > 0 ? 'ev-pos' : 'ev-neg'}">${hL}%</span>`;
+    if (hwarn) html += ' <span class="ah-warn-tag">⚠ 分歧大</span>';
+    html += '</div>';
+  }
+
   document.getElementById('ahModalContent').innerHTML = html;
 }
 
