@@ -231,27 +231,57 @@ def backfill_from_500com(target_date: str) -> int:
 
 
 def backfill_from_zgzcw_cache(target_date: str) -> int:
-    """从足彩网缓存文件读取赛果回填DB（无需网络，GA环境适用）"""
+    """从足彩网缓存文件读取赛果回填DB（无需网络，GA环境适用）
+    读取500com格式缓存+zgzcw原始缓存，覆盖前后1天解决日期偏移
+    """
     import json as _json
-    base = target_date.replace('-', '')
     all_results = []
-    for page_type in ['jz', 'bd']:
-        cache_file = os.path.join(CACHE_DIR, f"zgzcw_{page_type}_{base}.json")
-        if not os.path.exists(cache_file):
-            continue
-        with open(cache_file, 'r', encoding='utf-8') as f:
-            data = _json.loads(f.read())
-        for r in data.get('results', []):
-            score = r.get('score', '')
-            outcome = r.get('outcome', '')
-            if score and not re.search(r'\d+-\d+', outcome):
-                outcome = f"{outcome} {score}"
-            all_results.append({
-                'home': r.get('home', ''),
-                'away': r.get('away', ''),
-                'score': score,
-                'outcome': outcome,
-            })
+    
+    # 1. 读取500com格式缓存（由fetch_results_cache.py生成，已含3天数据）
+    for offset in [-1, 0, 1]:
+        d = (datetime.strptime(target_date, '%Y-%m-%d') + timedelta(days=offset)).strftime('%Y-%m-%d')
+        base = d.replace('-', '')
+        cache_file = os.path.join(CACHE_DIR, f"500com_results_{base}.json")
+        if os.path.exists(cache_file):
+            with open(cache_file, 'r', encoding='utf-8') as f:
+                data = _json.loads(f.read())
+            for r in data.get('jingcai', []):
+                all_results.append({
+                    'home': r.get('home', ''),
+                    'away': r.get('away', ''),
+                    'score': r.get('score', ''),
+                    'outcome': r.get('outcome', '') + ' ' + r.get('score', '') if r.get('score') else r.get('outcome', ''),
+                })
+            for r in data.get('wanchang', []):
+                all_results.append({
+                    'home': r.get('home', ''),
+                    'away': r.get('away', ''),
+                    'score': r.get('score', ''),
+                    'outcome': r.get('outcome', '') + ' ' + r.get('score', '') if r.get('score') else r.get('outcome', ''),
+                })
+    
+    # 2. 读取zgzcw原始缓存（补充）
+    for offset in [-1, 0, 1]:
+        d = (datetime.strptime(target_date, '%Y-%m-%d') + timedelta(days=offset)).strftime('%Y-%m-%d')
+        base = d.replace('-', '')
+        for page_type in ['jz', 'bd']:
+            cache_file = os.path.join(CACHE_DIR, f"zgzcw_{page_type}_{base}.json")
+            if not os.path.exists(cache_file):
+                continue
+            with open(cache_file, 'r', encoding='utf-8') as f:
+                data = _json.loads(f.read())
+            for r in data.get('results', []):
+                score = r.get('score', '')
+                outcome = r.get('outcome', '')
+                if score and not re.search(r'\d+-\d+', outcome):
+                    outcome = f"{outcome} {score}"
+                all_results.append({
+                    'home': r.get('home', ''),
+                    'away': r.get('away', ''),
+                    'score': score,
+                    'outcome': outcome,
+                })
+    
     if not all_results:
         print(f"  足彩网缓存无赛果数据")
         return 0
