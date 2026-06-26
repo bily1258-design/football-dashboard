@@ -402,7 +402,7 @@ def record_adjustment(logs: List[str]) -> None:
 
 # ========== 统一复盘核心 ==========
 
-def run_review(target_date: str = None) -> str:
+def run_review(target_date: str = None, skip_fetch: bool = False) -> str:
     """
     执行统一复盘
     target_date: 复盘日期 YYYY-MM-DD，默认查目标日期全天赛果
