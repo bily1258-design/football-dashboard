@@ -28,7 +28,7 @@ cd ~/football-dashboard && git pull && python scripts/pipeline.py --date $(date 
 | 10 | `recalibrate_db.py` | 联赛分层 + isotonic校准 + 信心分层 |
 | 11 | `merge_and_build.py --db` | 构建 docs/（results.json + index.html） |
 | 12 | git push docs/ | 推docs/到仓库（触发GA部署） |
-| 13 | `push_db.py` | DB推Release |
+| 13 | `push_db.py` | DB推Release + 旧赛果合并 |
 
 ### 常用参数
 
@@ -72,10 +72,10 @@ football-dashboard/
 │   ├── recalibrate_db.py           # 批量校准（联赛分层+isotonic+信心分层）
 │   ├── calibrate_model.py          # 校准参数生成
 │   ├── merge_and_build.py          # 看板数据合并+HTML/JSON构建
-│   ├── push_db.py                  # DB推送+赛果回填
+│   ├── push_db.py                  # DB推送到Release + 旧赛果合并防丢
 │   ├── daily_report.py             # 日报生成
-│   ├── backfill_from_500com.py     # 500.com历史赛果回填
-│   ├── backfill_from_footballdata.py  # football-data.org历史数据回填
+│   ├── backfill_from_500com.py     # 500.com批量补缺赛果(比分+胜负)
+│   ├── backfill_from_footballdata.py  # football-data.org历史赔率(校准建模用)
 │   ├── fundamental_analysis.py     # 基本面分析（daily_report依赖）
 │   ├── fusion_predict.py           # 融合预测（update_db_fusion依赖）
 │   ├── fetch_zgzcw_results.py      # 足彩网赛果抓取（review依赖）
@@ -182,9 +182,17 @@ Pinnacle 单值 > 30 且其他值 < 10 的记录判定为异常，整条丢弃�
 - **EV方向**：从ev_win/ev_draw/ev_loss最大值计算（独立于概率方向）
 - Pinnacle 1X2 为唯一有效欧赔源（company=106）
 
-### DB赛果回填
+### DB赛果合并
 
-`push_db.py` 推送前自动从Release旧DB回填 `actual_outcome` 和 `deviation_analysis`，防止赛果丢失。
+`push_db.py` 推送前自动从Release旧DB合并 `actual_outcome` 和 `deviation_analysis`，防止新推送覆盖丢失已有赛果。
+
+### 历史赛果补缺
+
+`backfill_from_500com.py` 从500.com完场页批量抓取缺失的比分和胜负结果，填充DB中 `actual_outcome` 为空的记录。
+
+### 历史赔率回填
+
+`backfill_from_footballdata.py` 从football-data.org抓取2赛季历史赔率数据（13944条），用于 `calibrate_model.py` 训练校准参数。
 
 ## DB结构
 
