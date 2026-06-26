@@ -28,6 +28,8 @@ SECRET.md
 # 忽略大文件和生成数据
 data/processed/*.json
 data/cache/*.json
+!data/cache/zgzcw_*.json
+!data/cache/pinnacle_odds_*.json
 data/reports/*.csv
 data/reports/*.xlsx
 data/shared_state/

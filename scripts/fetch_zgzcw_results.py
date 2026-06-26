@@ -262,34 +262,30 @@ def fetch_results(date_str: str, page_type: str = PAGE_JZ) -> List[Dict]:
     type_name = '竞彩' if page_type == PAGE_JZ else '北单'
     print(f'📥 足彩网{type_name}赛果: {date_str}')
     
+    results = []
     html = fetch_page(date_str, page_type)
     if not html:
-        # 检查是否被WAF拦截
         if '访问被拦截' in str(html) or '418' in str(html):
             print('  ⚠️ WAF拦截，尝试浏览器方案...')
-            return fetch_with_browser(date_str, page_type)
-        return []
-    
-    # 检查WAF
-    if '访问被拦截' in html or '攻击行为' in html:
+            results = fetch_with_browser(date_str, page_type)
+    elif '访问被拦截' in html or '攻击行为' in html:
         print('  ⚠️ WAF拦截，尝试浏览器方案...')
-        return fetch_with_browser(date_str, page_type)
+        results = fetch_with_browser(date_str, page_type)
+    else:
+        results = parse_jz_results(html)
+        if not results:
+            print(f'  ⚠️ urllib解析0场（可能JS未渲染），尝试浏览器...')
+            results = fetch_with_browser(date_str, page_type)
+        else:
+            print(f'  ✅ {type_name}完场: {len(results)} 场')
     
-    results = parse_jz_results(html)
-    
-    # urllib拿到JS骨架(0场)→Playwright兜底渲染
-    if not results:
-        print(f'  ⚠️ urllib解析0场（可能JS未渲染），尝试浏览器...')
-        return fetch_with_browser(date_str, page_type)
-    
-    print(f'  ✅ {type_name}完场: {len(results)} 场')
-    
-    # 保存缓存
-    os.makedirs(CACHE_DIR, exist_ok=True)
-    cache_file = os.path.join(CACHE_DIR, f'zgzcw_{page_type}_{date_str.replace("-", "")}.json')
-    with open(cache_file, 'w', encoding='utf-8') as f:
-        json.dump({'date': date_str, 'results': results, 'fetch_time': datetime.now().isoformat()},
-                  f, ensure_ascii=False, indent=2)
+    # 保存缓存（urllib和browser分支统一）
+    if results:
+        os.makedirs(CACHE_DIR, exist_ok=True)
+        cache_file = os.path.join(CACHE_DIR, f'zgzcw_{page_type}_{date_str.replace("-", "")}.json')
+        with open(cache_file, 'w', encoding='utf-8') as f:
+            json.dump({'date': date_str, 'results': results, 'fetch_time': datetime.now().isoformat()},
+                      f, ensure_ascii=False, indent=2)
     
     return results
 

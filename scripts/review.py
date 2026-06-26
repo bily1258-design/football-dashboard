@@ -230,6 +230,35 @@ def backfill_from_500com(target_date: str) -> int:
     return _backfill_results(all_results)
 
 
+def backfill_from_zgzcw_cache(target_date: str) -> int:
+    """从足彩网缓存文件读取赛果回填DB（无需网络，GA环境适用）"""
+    import json as _json
+    base = target_date.replace('-', '')
+    all_results = []
+    for page_type in ['jz', 'bd']:
+        cache_file = os.path.join(CACHE_DIR, f"zgzcw_{page_type}_{base}.json")
+        if not os.path.exists(cache_file):
+            continue
+        with open(cache_file, 'r', encoding='utf-8') as f:
+            data = _json.loads(f.read())
+        for r in data.get('results', []):
+            score = r.get('score', '')
+            outcome = r.get('outcome', '')
+            if score and not re.search(r'\d+-\d+', outcome):
+                outcome = f"{outcome} {score}"
+            all_results.append({
+                'home': r.get('home', ''),
+                'away': r.get('away', ''),
+                'score': score,
+                'outcome': outcome,
+            })
+    if not all_results:
+        print(f"  足彩网缓存无赛果数据")
+        return 0
+    print(f"  足彩网缓存: {len(all_results)} 条赛果")
+    return _backfill_results(all_results)
+
+
 def _backfill_results(results: List[Dict]) -> int:
     """用赛果列表回填数据库"""
     conn = sqlite3.connect(DB_PATH)
@@ -384,10 +413,15 @@ def run_review(target_date: str = None) -> str:
     print(f"\n{'='*50}")
     print(f"统一复盘: {target_date}")
 
-    # 0. 优先从足彩网回填赛果（队名同源），不足再用500.com
+    # 0. 赛果回填
     if skip_fetch:
-        print("⏭️ 跳过赛果回填 (skip_fetch)")
+        # GA环境：不抓网络，从缓存文件读
+        print("回填赛果（从缓存）...")
+        cache_count = backfill_from_zgzcw_cache(target_date)
+        if cache_count == 0:
+            backfill_from_500com(target_date)
     else:
+        # 本地环境：从网络抓
         print("回填赛果...")
         zgzcw_count = backfill_from_zgzcw(target_date)
         if zgzcw_count == 0:
