@@ -42,7 +42,7 @@ STEPS = [
     ("6  Kelly重算",     "update_db_kelly.py",     ["--db", "{db}"],                       False, None),
     ("7  DB去重",        "align_and_merge.py",      ["--cleanup-db", "--db", "{db}"],       False, None),
     ("8  对齐合并",      "align_and_merge.py",      ["--all", "--db", "{db}"],              True,  None),
-    ("9  复盘",          "review.py",               ["--date", "{date}", "--db", "{db}"],   False, "skip_review"),
+    ("9  复盘",          "review.py",               ["--date", "{date}", "--db", "{db}"],   False, "skip_review"),  # --skip-fetch在main里动态追加
     ("10 校准",          "recalibrate_db.py",       ["--db", "{db}"],                       False, None),
     ("11 构建",          "merge_and_build.py",      ["--db", "{db}"],                       False, None),
     ("12 推送docs",      None,                       None,                                  False, "skip_push"),  # 特殊处理
@@ -112,6 +112,8 @@ def main():
     parser.add_argument("--skip-review", action="store_true", help="跳过 review（当日无赛果时）")
     parser.add_argument("--pinnacle-from-cache", action="store_true",
                         help="Pinnacle从缓存写入DB（GA环境用，不抓网络）")
+    parser.add_argument("--skip-fetch", action="store_true",
+                        help="跳过赛果抓取（DB已有赛果时用，如GA环境）")
     parser.add_argument("-v", "--verbose", action="store_true", help="显示子脚本完整输出")
     args = parser.parse_args()
 
@@ -123,6 +125,7 @@ def main():
         "skip_predict": args.skip_predict,
         "skip_review": args.skip_review,
         "skip_push": args.skip_push,
+        "skip_fetch": args.skip_fetch,
     }
 
     print(f"🚀 pipeline {date} {'(verbose)' if verbose else ''}")
@@ -150,6 +153,10 @@ def main():
         # 构建命令
         fmt_args = [a.format(date=date, db=db) for a in actual_args]
         cmd = [sys.executable, os.path.join(SCRIPT_DIR, script)] + fmt_args
+
+        # review步骤：--skip-fetch时跳过网络抓取
+        if label.startswith("9") and args.skip_fetch:
+            cmd.append("--skip-fetch")
 
         print(f"  ⏳  {label}...", end="", flush=True)
         rc = run(cmd, label, required=required, verbose=verbose)

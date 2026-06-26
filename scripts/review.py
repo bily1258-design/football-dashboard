@@ -385,10 +385,13 @@ def run_review(target_date: str = None) -> str:
     print(f"统一复盘: {target_date}")
 
     # 0. 优先从足彩网回填赛果（队名同源），不足再用500.com
-    print("回填赛果...")
-    zgzcw_count = backfill_from_zgzcw(target_date)
-    if zgzcw_count == 0:
-        backfill_from_500com(target_date)
+    if skip_fetch:
+        print("⏭️ 跳过赛果回填 (skip_fetch)")
+    else:
+        print("回填赛果...")
+        zgzcw_count = backfill_from_zgzcw(target_date)
+        if zgzcw_count == 0:
+            backfill_from_500com(target_date)
 
     # 1. 查目标日期全天有赛果的记录（固定日历日，不用相对24小时）
     date_start = f"{target_date} 00:00"
@@ -561,23 +564,27 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="统一足球复盘")
     parser.add_argument('--date', help='复盘日期 YYYY-MM-DD，默认今天')
     parser.add_argument('--db', help='数据库路径（覆盖默认DB_PATH）')
+    parser.add_argument('--skip-fetch', action='store_true', help='跳过赛果抓取（DB已有赛果时用，如GA环境）')
     args = parser.parse_args()
 
     # 覆盖DB_PATH（pipeline传入时）
     if args.db:
         DB_PATH = args.db
 
-    print("=" * 50)
-    print("预刷新500.com赛果...")
-    try:
-        import fetch_500com_results as f5
-        f5.fetch_all_results()
-        print("✅ 500.com赛果已刷新")
-    except Exception as e:
-        print(f"⚠️ 刷新失败: {e}")
+    if not args.skip_fetch:
+        print("=" * 50)
+        print("预刷新500.com赛果...")
+        try:
+            import fetch_500com_results as f5
+            f5.fetch_all_results()
+            print("✅ 500.com赛果已刷新")
+        except Exception as e:
+            print(f"⚠️ 刷新失败: {e}")
+    else:
+        print("⏭️ 跳过赛果抓取 (--skip-fetch)")
 
     target = args.date or datetime.now().strftime("%Y-%m-%d")
-    report = run_review(target)
+    report = run_review(target, skip_fetch=args.skip_fetch)
     print(f"\n完成: {target}")
     print(report[:500])
 
