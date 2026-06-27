@@ -8,7 +8,9 @@
 """
 
 import os, sys, json, sqlite3, re, math, argparse
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+
+BEIJING_TZ = timezone(timedelta(hours=8))
 from collections import defaultdict
 
 from team_aliases import canonical as _canonical, match_key as _match_key
@@ -503,7 +505,7 @@ def build_summary(daily_stats):
         'any_rate': round(tany/tn*100, 1) if tn else 0,
         'days': len(daily_stats),
         'tiers': tier_summary,
-        'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M'),
+        'last_updated': datetime.now(BEIJING_TZ).strftime('%Y-%m-%d %H:%M'),
     }
 
 
