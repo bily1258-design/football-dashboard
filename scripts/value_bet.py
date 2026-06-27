@@ -106,6 +106,8 @@ def calculate_value_bet(match_data):
         'ev_win': 0.0, 'ev_draw': 0.0, 'ev_loss': 0.0,
         'ev_value': 0.0,
         'ev_win_raw': 0.0, 'ev_draw_raw': 0.0, 'ev_loss_raw': 0.0,
+        'odds_ev_win': 0.0, 'odds_ev_draw': 0.0, 'odds_ev_loss': 0.0,
+        'odds_ev_dir': '', 'ev_signal': '',
         'best_direction': 'win',
         'best_direction_cn': '主胜',
         'implied_prob_w': 0, 'implied_prob_d': 0, 'implied_prob_l': 0,
@@ -322,12 +324,32 @@ def calculate_value_bet(match_data):
     ev_win_compressed = _tanh_compress(ev_win)
     ev_draw_compressed = _tanh_compress(ev_draw)
     ev_loss_compressed = _tanh_compress(ev_loss)
-    
+
+    # ===== 7b. 赔率优势法EV（竞彩赔率 × Pinnacle隐含概率 - 1） =====
+    # 传统价值投注法：竞彩赔率是否高于Pinnacle公平赔率
+    # 有赔率优势 → 实际投注可获利；无赔率优势 → 不存在价值
+    odds_ev_win = had_w * implied['w'] - 1 if had_w > 0 and implied['w'] > 0 else -1
+    odds_ev_draw = had_d * implied['d'] - 1 if had_d > 0 and implied['d'] > 0 else -1
+    odds_ev_loss = had_l * implied['l'] - 1 if had_l > 0 and implied['l'] > 0 else -1
+
+    # 赔率优势方向：有正EV的方向中取最大
+    odds_evs = {'win': odds_ev_win, 'draw': odds_ev_draw, 'loss': odds_ev_loss}
+    positive_odds_dirs = {k: v for k, v in odds_evs.items() if v > 0}
+    if positive_odds_dirs:
+        odds_ev_dir = max(positive_odds_dirs, key=positive_odds_dirs.get)
+    else:
+        odds_ev_dir = None  # 无赔率优势
+
     # ===== 8. 推荐方向 =====
-    # 推荐方向逻辑：
-    # 1. 模型偏差场次（|EV|>30%或数据质量异常）→ 用概率最高方向（EV不可信）
-    # 2. 降级场次（无平博赔率，竞彩27%抽水）→ EV最低即冷门方向
-    # 3. 正常场次 → EV最高方向（平博抽水低，EV可信）
+    # 推荐方向逻辑（v2: 赔率优势 ∩ 概率优势）：
+    # 核心原则：竞彩投注价值 = 竞彩赔率 > Pinnacle公平赔率（赔率优势法）
+    # 概率优势法(模型vs市场分歧)作为辅助验证，不单独驱动方向
+    # 
+    # 1. 赔率优势方向 = 概率优势方向 → 双重确认（高可信）
+    # 2. 赔率优势方向 ≠ 概率优势方向 → 优先赔率优势（实际投注价值），标注"模型分歧"
+    # 3. 无赔率优势(所有odds_ev<0) → 无真实价值，降级用概率方向，标注"无赔率优势"
+    # 4. 模型偏差(|EV|>30%) → 概率方向，赔率优势仍做参考
+    # 5. 降级(无平博赔率) → 概率EV最低即冷门方向
     
     evs = {'win': ev_win_compressed, 'draw': ev_draw_compressed, 'loss': ev_loss_compressed}
     evs_raw = {'win': ev_win, 'draw': ev_draw, 'loss': ev_loss}
@@ -335,18 +357,38 @@ def calculate_value_bet(match_data):
     probs = {'win': fusion_w, 'draw': fusion_d, 'loss': fusion_l}
     
     is_degraded_odds = not has_pin_close and not has_pin_open
+    # 概率优势方向（压缩后最高EV方向）
+    prob_ev_dir = max(evs, key=evs.get)
+    
+    # 决策
+    ev_signal = ''  # 记录决策信号
     
     if is_model_biased:
-        # 模型偏差：EV不可信，直接用概率最高方向
-        best_dir = max(probs, key=probs.get)
+        # 模型偏差：概率优势EV不可信
+        if odds_ev_dir:
+            best_dir = odds_ev_dir
+            ev_signal = '赔率优势(模型偏差)'
+        else:
+            best_dir = max(probs, key=probs.get)
+            ev_signal = '概率方向(模型偏差+无赔率优势)'
         cold_signals_parts = list(quality_signals)  # 预初始化
-        cold_signals_parts.append('EV不可信(模型偏差)→概率推荐')
     elif is_degraded_odds:
-        # 降级：用压缩后EV选冷门方向
+        # 降级：无平博赔率，用压缩后EV选冷门方向
         best_dir = min(evs, key=evs.get)
+        ev_signal = '降级冷门(无平博)'
+    elif odds_ev_dir and odds_ev_dir == prob_ev_dir:
+        # 双重确认：赔率优势和概率优势方向一致
+        best_dir = odds_ev_dir
+        ev_signal = '双重确认'
+    elif odds_ev_dir:
+        # 分歧：赔率优势 ≠ 概率优势，优先赔率优势（实际投注价值）
+        best_dir = odds_ev_dir
+        ev_signal = '赔率优先(模型分歧)'
     else:
-        # 正常：用压缩后EV选最高方向（保留区分度）
-        best_dir = max(evs, key=evs.get)
+        # 无赔率优势：所有方向竞彩赔率都低于Pinnacle公平赔率，不存在价值投注
+        # 降级到概率优势方向，但标注无真实价值
+        best_dir = prob_ev_dir
+        ev_signal = '无赔率优势(概率方向)'
     
     # ===== 9. 生成信号说明 =====
     
@@ -364,16 +406,20 @@ def calculate_value_bet(match_data):
         if max_diff > 0.15:
             cold_signals_parts.append(f"模型市场分歧{max_diff:.0%}")
     
-    # 推荐方向的概率优势说明
+    # 推荐方向的信号说明
     best_ev = evs[best_dir]
-    if is_model_biased:
-        cold_signals_parts.append(f"模型偏差(概率推荐)")
-    elif is_degraded_odds:
-        cold_signals_parts.append(f"降级冷门(无平博)")
-    elif best_ev > 0.10:
-        cold_signals_parts.append(f"模型高估{best_ev:.0%}")
-    elif best_ev > 0:
-        cold_signals_parts.append(f"模型微估{best_ev:.0%}")
+    # 添加EV决策信号
+    if ev_signal:
+        cold_signals_parts.append(ev_signal)
+    # 赔率优势信息
+    if odds_ev_dir:
+        best_odds_ev = odds_evs[odds_ev_dir]
+        cold_signals_parts.append(f"赔率优势{dir_cn[odds_ev_dir]}{best_odds_ev:.0%}")
+    else:
+        cold_signals_parts.append("无赔率优势")
+    # 概率优势量级
+    if not is_model_biased and not is_degraded_odds and best_ev > 0:
+        cold_signals_parts.append(f"概率优势{best_ev:.0%}")
     
     return {
         'ev_win': round(ev_win_compressed, 4),
@@ -383,8 +429,14 @@ def calculate_value_bet(match_data):
         'ev_win_raw': round(ev_win, 4),
         'ev_draw_raw': round(ev_draw, 4),
         'ev_loss_raw': round(ev_loss, 4),
+        # 赔率优势法EV（竞彩赔率 × Pinnacle隐含概率 - 1）
+        'odds_ev_win': round(odds_ev_win, 4),
+        'odds_ev_draw': round(odds_ev_draw, 4),
+        'odds_ev_loss': round(odds_ev_loss, 4),
+        'odds_ev_dir': odds_ev_dir or '',
         'best_direction': best_dir,
         'best_direction_cn': dir_cn[best_dir],
+        'ev_signal': ev_signal,
         'implied_prob_w': implied['w'],
         'implied_prob_d': implied['d'],
         'implied_prob_l': implied['l'],
@@ -426,13 +478,17 @@ def batch_calculate(db_path, date_str=None):
                 ev_value = ?, best_direction = ?, best_direction_cn = ?,
                 implied_prob_w = ?, implied_prob_d = ?, implied_prob_l = ?,
                 avg_margin = ?, cold_signals = ?,
-                ev_win_raw = ?, ev_draw_raw = ?, ev_loss_raw = ?
+                ev_win_raw = ?, ev_draw_raw = ?, ev_loss_raw = ?,
+                odds_ev_win = ?, odds_ev_draw = ?, odds_ev_loss = ?,
+                odds_ev_dir = ?, ev_signal = ?
             WHERE id = ?
         """, (result['ev_win'], result['ev_draw'], result['ev_loss'],
               result['ev_value'], result['best_direction'], result['best_direction_cn'],
               result['implied_prob_w'], result['implied_prob_d'], result['implied_prob_l'],
               result['avg_margin'], result['cold_signals'],
               result['ev_win_raw'], result['ev_draw_raw'], result['ev_loss_raw'],
+              result['odds_ev_win'], result['odds_ev_draw'], result['odds_ev_loss'],
+              result['odds_ev_dir'], result['ev_signal'],
               row['id']))
         updated += 1
     
@@ -465,13 +521,17 @@ def recalculate_all(db_path):
                 ev_value = ?, best_direction = ?, best_direction_cn = ?,
                 implied_prob_w = ?, implied_prob_d = ?, implied_prob_l = ?,
                 avg_margin = ?, cold_signals = ?,
-                ev_win_raw = ?, ev_draw_raw = ?, ev_loss_raw = ?
+                ev_win_raw = ?, ev_draw_raw = ?, ev_loss_raw = ?,
+                odds_ev_win = ?, odds_ev_draw = ?, odds_ev_loss = ?,
+                odds_ev_dir = ?, ev_signal = ?
             WHERE id = ?
         """, (result['ev_win'], result['ev_draw'], result['ev_loss'],
               result['ev_value'], result['best_direction'], result['best_direction_cn'],
               result['implied_prob_w'], result['implied_prob_d'], result['implied_prob_l'],
               result['avg_margin'], result['cold_signals'],
               result['ev_win_raw'], result['ev_draw_raw'], result['ev_loss_raw'],
+              result['odds_ev_win'], result['odds_ev_draw'], result['odds_ev_loss'],
+              result['odds_ev_dir'], result['ev_signal'],
               row['id']))
         updated += 1
     

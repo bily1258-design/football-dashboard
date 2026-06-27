@@ -138,6 +138,7 @@ def load_from_db(db_path: str, max_days=999) -> dict:
         fusion_win, fusion_draw, fusion_loss, actual_outcome, risk_level, \
         confidence_index, reference_score, best_direction_cn, confidence_tier, calibrated_prob, source, \
         ev_win, ev_draw, ev_loss, kelly_win, kelly_draw, kelly_loss, \
+        odds_ev_win, odds_ev_draw, odds_ev_loss, odds_ev_dir, ev_signal, \
         pinnacle_open_w, pinnacle_open_d, pinnacle_open_l, \
         pinnacle_close_w, pinnacle_close_d, pinnacle_close_l, \
         hkjc_close_w, hkjc_close_d, hkjc_close_l, cold_risk, odds_source, \
@@ -181,11 +182,8 @@ def load_from_db(db_path: str, max_days=999) -> dict:
         m = re.search(r'(\d+-\d+)', outcome)
         score = m.group(1) if m else ''
         result = '主胜' if '主胜' in outcome else ('客胜' if '客胜' in outcome else ('平局' if '平局' in outcome else ''))
-        # EV方向: 从ev_win/ev_draw/ev_loss计算（不再用best_direction_cn，否则与概率方向重叠）
-        ew = d.get('ev_win', 0) or 0
-        ed = d.get('ev_draw', 0) or 0
-        el = d.get('ev_loss', 0) or 0
-        ev_dir = '主胜' if ew >= ed and ew >= el else ('客胜' if el >= ew and el >= ed else '平局')
+        # EV方向: 直接用DB的best_direction_cn（由value_bet.py计算，已考虑赔率优势∩概率优势）
+        ev_dir = d.get('best_direction_cn', '') or '主胜'
         ev_hit = (ev_dir == result) if result else False
         fw = d.get('final_win', 0) or 0
         fd = d.get('final_draw', 0) or 0
@@ -208,6 +206,8 @@ def load_from_db(db_path: str, max_days=999) -> dict:
             'prob_direction': prob_dir, 'prob_hit': prob_hit,
             'fusion_direction': '主胜' if (d.get('fusion_win',0) or 0) >= (d.get('fusion_draw',0) or 0) and (d.get('fusion_win',0) or 0) >= (d.get('fusion_loss',0) or 0) else '客胜' if (d.get('fusion_loss',0) or 0) >= (d.get('fusion_win',0) or 0) else '平局',
             'ev': {'w': round(d.get('ev_win',0) or 0,4), 'd': round(d.get('ev_draw',0) or 0,4), 'l': round(d.get('ev_loss',0) or 0,4)},
+            'odds_ev': {'w': round(d.get('odds_ev_win',0) or 0,4), 'd': round(d.get('odds_ev_draw',0) or 0,4), 'l': round(d.get('odds_ev_loss',0) or 0,4)},
+            'ev_signal': d.get('ev_signal', '') or '',
             'kelly': {'w': round(d.get('kelly_win',0) or 0,4), 'd': round(d.get('kelly_draw',0) or 0,4), 'l': round(d.get('kelly_loss',0) or 0,4)},
             'pinnacle': {
                 'w': d.get('pinnacle_close_w',0) or 0, 'd': d.get('pinnacle_close_d',0) or 0, 'l': d.get('pinnacle_close_l',0) or 0,
