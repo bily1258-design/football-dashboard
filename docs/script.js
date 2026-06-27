@@ -65,8 +65,8 @@ function openAhModal(record) {
     const oOu = (dOu && dOu.open) || {}, cOu = dOu || {};
 
     const has1x2 = (c1.w || 0) > 0 || (o1.w || 0) > 0;
-    const hasAh = (cAh.handicap !== null && cAh.handicap !== undefined && cAh.handicap !== 0) ||
-                  (oAh.handicap !== null && oAh.handicap !== undefined && oAh.handicap !== 0);
+    const hasAh = (cAh.handicap !== null && cAh.handicap !== undefined) ||
+                  (oAh.handicap !== null && oAh.handicap !== undefined);
     const hasOu = (cOu.line || 0) > 0 || (oOu.line || 0) > 0;
     if (!has1x2 && !hasAh && !hasOu) return '';
 
@@ -85,7 +85,7 @@ function openAhModal(record) {
 
     // 有无初盘
     const hasOpen1x2 = (o1.w || 0) > 0;
-    const hasOpenAh = (oAh.handicap !== null && oAh.handicap !== undefined && oAh.handicap !== 0);
+    const hasOpenAh = (oAh.handicap !== null && oAh.handicap !== undefined);
     const hasOpenOu = (oOu.line || 0) > 0;
 
     // 格式化单元格（即时行直接显示当前值）
@@ -120,7 +120,7 @@ function openAhModal(record) {
     s += '<tr><td class="ah-col-label">即</td>';
     if (showAh) {
       s += `<td>${fmt(oAh.home_w, cAh.home_w, hasOpenAh)}</td>`;
-      s += `<td>${fmt(oAh.handicap, cAh.handicap, hasOpenAh)}</td>`;
+      s += `<td>${handicapToChinese(cAh.handicap !== null && cAh.handicap !== undefined ? cAh.handicap : oAh.handicap)}</td>`;
       s += `<td>${fmt(oAh.away_w, cAh.away_w, hasOpenAh)}</td>`;
     }
     if (show1x2) {
@@ -151,9 +151,9 @@ function openAhModal(record) {
   const lijiOpen = liji.open || {};
   const lijiOu = record.liji_ou || {};
   const lijiOuOpen = lijiOu.open || {};
-  const lijiAhObj = lijiClose.handicap || lijiOpen.handicap ? {
-    handicap: lijiClose.handicap || null, home_w: lijiClose.home_w || null, away_w: lijiClose.away_w || null,
-    open: lijiOpen.handicap ? { handicap: lijiOpen.handicap, home_w: lijiOpen.home_w, away_w: lijiOpen.away_w } : {}
+  const lijiAhObj = (lijiClose.handicap !== null && lijiClose.handicap !== undefined) || (lijiOpen.handicap !== null && lijiOpen.handicap !== undefined) ? {
+    handicap: lijiClose.handicap !== null && lijiClose.handicap !== undefined ? lijiClose.handicap : null, home_w: lijiClose.home_w || null, away_w: lijiClose.away_w || null,
+    open: (lijiOpen.handicap !== null && lijiOpen.handicap !== undefined) ? { handicap: lijiOpen.handicap, home_w: lijiOpen.home_w, away_w: lijiOpen.away_w } : {}
   } : null;
   const lijiOuObj = (lijiOu.over || 0) > 0 || (lijiOuOpen.over || 0) > 0 ? {
     line: lijiOu.line || null, over: lijiOu.over || null, under: lijiOu.under || null,
@@ -171,9 +171,9 @@ function openAhModal(record) {
   const msOpen = ms.open || {};
   const msOu = record.ms_ou || {};
   const msOuOpen = msOu.open || {};
-  const msAhObj = msClose.handicap || msOpen.handicap ? {
-    handicap: msClose.handicap || null, home_w: msClose.home_w || null, away_w: msClose.away_w || null,
-    open: msOpen.handicap ? { handicap: msOpen.handicap, home_w: msOpen.home_w, away_w: msOpen.away_w } : {}
+  const msAhObj = (msClose.handicap !== null && msClose.handicap !== undefined) || (msOpen.handicap !== null && msOpen.handicap !== undefined) ? {
+    handicap: msClose.handicap !== null && msClose.handicap !== undefined ? msClose.handicap : null, home_w: msClose.home_w || null, away_w: msClose.away_w || null,
+    open: (msOpen.handicap !== null && msOpen.handicap !== undefined) ? { handicap: msOpen.handicap, home_w: msOpen.home_w, away_w: msOpen.away_w } : {}
   } : null;
   const msOuObj = (msOu.over || 0) > 0 || (msOuOpen.over || 0) > 0 ? {
     line: msOu.line || null, over: msOu.over || null, under: msOu.under || null,
@@ -185,13 +185,13 @@ function openAhModal(record) {
 
   // 威廉希尔
   const williamAh = record.william_ah || {};
-  const williamAhClose = williamAh.close || williamAh.handicap ? williamAh : {};
+  const williamAhClose = (williamAh.close || (williamAh.handicap !== null && williamAh.handicap !== undefined)) ? williamAh : {};
   const williamAhOpen = (williamAh.open) || {};
   const williamOu = record.william_ou || {};
-  const williamAhObj = (williamAhClose.handicap !== null && williamAhClose.handicap !== undefined && williamAhClose.handicap !== 0) ||
-                       (williamAhOpen.handicap !== null && williamAhOpen.handicap !== undefined && williamAhOpen.handicap !== 0) ? {
-    handicap: williamAhClose.handicap || null, home_w: williamAhClose.home_w || null, away_w: williamAhClose.away_w || null,
-    open: williamAhOpen.handicap ? { handicap: williamAhOpen.handicap, home_w: williamAhOpen.home_w, away_w: williamAhOpen.away_w } : {}
+  const williamAhObj = (williamAhClose.handicap !== null && williamAhClose.handicap !== undefined) ||
+                       (williamAhOpen.handicap !== null && williamAhOpen.handicap !== undefined) ? {
+    handicap: williamAhClose.handicap !== null && williamAhClose.handicap !== undefined ? williamAhClose.handicap : null, home_w: williamAhClose.home_w || null, away_w: williamAhClose.away_w || null,
+    open: (williamAhOpen.handicap !== null && williamAhOpen.handicap !== undefined) ? { handicap: williamAhOpen.handicap, home_w: williamAhOpen.home_w, away_w: williamAhOpen.away_w } : {}
   } : null;
   const williamOuObj = (williamOu.over || 0) > 0 ? {
     line: williamOu.line || null, over: williamOu.over || null, under: williamOu.under || null,
@@ -453,33 +453,27 @@ function loadDate() {
     const tierBadge = `<span style="display:inline-block;padding:1px 5px;border-radius:3px;font-size:10px;color:#fff;background:${tierColors[tier]||'#484f58'};margin-left:3px">${tierLabels[tier]||'低'}</span>`;
     const evW = r.ev.w, evD = r.ev.d, evL = r.ev.l;
     const evCls = v => v > 0 ? 'ev-pos' : 'ev-neg';
-    const ah = r.ah || {};
-    const hasAh = ah.handicap !== null && ah.handicap !== undefined && (ah.handicap !== 0 || ah.home_w !== 0 || ah.away_w !== 0);
-    // 亚盘列优先显示Pinnacle让球，其次利记，再次威廉希尔，再次HKJC，最后fallback到ah
+    // 亚盘列优先显示Pinnacle让球，其次利记，再次威廉希尔，再次HKJC
     const pinAh = r.pin_ah || {};
     const lijiAh = (r.liji || {}).close || {};
     let ahDisplayVal = '-';
     let ahClickable = false;
-    if (pinAh.handicap !== null && pinAh.handicap !== undefined && pinAh.handicap !== 0) {
+    if (pinAh.handicap !== null && pinAh.handicap !== undefined) {
       ahDisplayVal = handicapToChinese(pinAh.handicap);
       ahClickable = true;
-    } else if (lijiAh.handicap) {
+    } else if (lijiAh.handicap !== null && lijiAh.handicap !== undefined) {
       ahDisplayVal = handicapToChinese(lijiAh.handicap);
       ahClickable = true;
     } else {
       const williamAh = (r.william_ah || {});
       const williamAhHc = williamAh.handicap;
-      if (williamAhHc !== null && williamAhHc !== undefined && williamAhHc !== 0) {
+      if (williamAhHc !== null && williamAhHc !== undefined) {
         ahDisplayVal = handicapToChinese(williamAhHc);
         ahClickable = true;
       } else {
         const hkjcAh = (r.hkjc_ah || {}).close || {};
-        if (hkjcAh.handicap) {
+        if (hkjcAh.handicap !== null && hkjcAh.handicap !== undefined) {
           ahDisplayVal = handicapToChinese(hkjcAh.handicap);
-          ahClickable = true;
-        } else if (hasAh) {
-          // fallback: 旧ah字段(来自百家平均等)
-          ahDisplayVal = handicapToChinese(ah.handicap);
           ahClickable = true;
         }
       }
