@@ -325,30 +325,32 @@ def calculate_value_bet(match_data):
     ev_draw_compressed = _tanh_compress(ev_draw)
     ev_loss_compressed = _tanh_compress(ev_loss)
 
-    # ===== 7b. 赔率优势法EV（竞彩赔率 × Pinnacle隐含概率 - 1） =====
-    # 传统价值投注法：竞彩赔率是否高于Pinnacle公平赔率
-    # 有赔率优势 → 实际投注可获利；无赔率优势 → 不存在价值
-    odds_ev_win = had_w * implied['w'] - 1 if had_w > 0 and implied['w'] > 0 else -1
-    odds_ev_draw = had_d * implied['d'] - 1 if had_d > 0 and implied['d'] > 0 else -1
-    odds_ev_loss = had_l * implied['l'] - 1 if had_l > 0 and implied['l'] > 0 else -1
-
-    # 赔率优势方向：有正EV的方向中取最大
-    odds_evs = {'win': odds_ev_win, 'draw': odds_ev_draw, 'loss': odds_ev_loss}
-    positive_odds_dirs = {k: v for k, v in odds_evs.items() if v > 0}
-    if positive_odds_dirs:
-        odds_ev_dir = max(positive_odds_dirs, key=positive_odds_dirs.get)
+    # ===== 7b. 市场方向（Pinnacle收盘隐含概率最高方向） =====
+    # Pinnacle收盘是最sharp的市场定价，其隐含概率方向代表市场共识
+    # 与模型概率方向取交集：两者一致→双重确认，不一致→优先市场
+    # 注：原"赔率优势法"(竞彩赔率×Pinnacle概率-1)因竞彩赔率实为Pinnacle初盘，
+    # 测的是初盘vs收盘偏差，信号弱且覆盖率低，已弃用
+    if implied['w'] > 0 and implied['d'] > 0 and implied['l'] > 0:
+        odds_ev_dir = max({'win': implied['w'], 'draw': implied['d'], 'loss': implied['l']},
+                          key=lambda k: {'win': implied['w'], 'draw': implied['d'], 'loss': implied['l']}[k])
     else:
-        odds_ev_dir = None  # 无赔率优势
+        odds_ev_dir = None  # 无Pinnacle数据
+
+    # 保留赔率优势EV字段兼容性（用Pinnacle隐含概率差表示市场倾向强度）
+    odds_ev_win = implied['w'] - 1/3 if implied['w'] > 0 else -1
+    odds_ev_draw = implied['d'] - 1/3 if implied['d'] > 0 else -1
+    odds_ev_loss = implied['l'] - 1/3 if implied['l'] > 0 else -1
+    odds_evs = {'win': odds_ev_win, 'draw': odds_ev_draw, 'loss': odds_ev_loss}
 
     # ===== 8. 推荐方向 =====
-    # 推荐方向逻辑（v2: 赔率优势 ∩ 概率优势）：
-    # 核心原则：竞彩投注价值 = 竞彩赔率 > Pinnacle公平赔率（赔率优势法）
-    # 概率优势法(模型vs市场分歧)作为辅助验证，不单独驱动方向
+    # 推荐方向逻辑（v3: 市场方向 ∩ 模型概率方向）：
+    # 核心原则：Pinnacle收盘是最sharp市场，隐含概率方向=市场共识
+    # 模型概率方向=模型预测，两者取交集
     # 
-    # 1. 赔率优势方向 = 概率优势方向 → 双重确认（高可信）
-    # 2. 赔率优势方向 ≠ 概率优势方向 → 优先赔率优势（实际投注价值），标注"模型分歧"
-    # 3. 无赔率优势(所有odds_ev<0) → 无真实价值，降级用概率方向，标注"无赔率优势"
-    # 4. 模型偏差(|EV|>30%) → 概率方向，赔率优势仍做参考
+    # 1. 市场方向 = 模型方向 → 双重确认（高可信）
+    # 2. 市场方向 ≠ 模型方向 → 优先市场方向（Pinnacle更可靠），标注"模型分歧"
+    # 3. 无Pinnacle数据 → 降级用概率方向，标注"无市场数据"
+    # 4. 模型偏差(|EV|>30%) → 市场方向仍做参考
     # 5. 降级(无平博赔率) → 概率EV最低即冷门方向
     
     evs = {'win': ev_win_compressed, 'draw': ev_draw_compressed, 'loss': ev_loss_compressed}
@@ -364,31 +366,30 @@ def calculate_value_bet(match_data):
     ev_signal = ''  # 记录决策信号
     
     if is_model_biased:
-        # 模型偏差：概率优势EV不可信
+        # 模型偏差：概率优势EV不可信，用市场方向
         if odds_ev_dir:
             best_dir = odds_ev_dir
-            ev_signal = '赔率优势(模型偏差)'
+            ev_signal = '市场方向(模型偏差)'
         else:
             best_dir = max(probs, key=probs.get)
-            ev_signal = '概率方向(模型偏差+无赔率优势)'
+            ev_signal = '概率方向(模型偏差+无市场)'
         cold_signals_parts = list(quality_signals)  # 预初始化
     elif is_degraded_odds:
         # 降级：无平博赔率，用压缩后EV选冷门方向
         best_dir = min(evs, key=evs.get)
         ev_signal = '降级冷门(无平博)'
     elif odds_ev_dir and odds_ev_dir == prob_ev_dir:
-        # 双重确认：赔率优势和概率优势方向一致
+        # 双重确认：市场方向和模型方向一致
         best_dir = odds_ev_dir
         ev_signal = '双重确认'
     elif odds_ev_dir:
-        # 分歧：赔率优势 ≠ 概率优势，优先赔率优势（实际投注价值）
+        # 分歧：市场方向 ≠ 模型方向，优先市场方向（Pinnacle更可靠）
         best_dir = odds_ev_dir
-        ev_signal = '赔率优先(模型分歧)'
+        ev_signal = '市场优先(模型分歧)'
     else:
-        # 无赔率优势：所有方向竞彩赔率都低于Pinnacle公平赔率，不存在价值投注
-        # 降级到概率优势方向，但标注无真实价值
+        # 无Pinnacle数据：降级到模型概率方向
         best_dir = prob_ev_dir
-        ev_signal = '无赔率优势(概率方向)'
+        ev_signal = '无市场数据(概率方向)'
     
     # ===== 9. 生成信号说明 =====
     
@@ -411,12 +412,11 @@ def calculate_value_bet(match_data):
     # 添加EV决策信号
     if ev_signal:
         cold_signals_parts.append(ev_signal)
-    # 赔率优势信息
+    # 市场方向信息
     if odds_ev_dir:
-        best_odds_ev = odds_evs[odds_ev_dir]
-        cold_signals_parts.append(f"赔率优势{dir_cn[odds_ev_dir]}{best_odds_ev:.0%}")
+        cold_signals_parts.append(f"市场{dir_cn[odds_ev_dir]}")
     else:
-        cold_signals_parts.append("无赔率优势")
+        cold_signals_parts.append("无市场数据")
     # 概率优势量级
     if not is_model_biased and not is_degraded_odds and best_ev > 0:
         cold_signals_parts.append(f"概率优势{best_ev:.0%}")
