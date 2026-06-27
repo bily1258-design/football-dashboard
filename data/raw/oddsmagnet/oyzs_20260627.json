@@ -1,278 +1,4 @@
 {
-  "埃及_伊朗": {
-    "home": "埃及",
-    "away": "伊朗",
-    "match_id": "4460958",
-    "pin_ah": {
-      "open": {
-        "home_w": 0.88,
-        "handicap": -0.25,
-        "away_w": 0.92
-      },
-      "close": {
-        "home_w": 1.22,
-        "handicap": -0.25,
-        "away_w": 0.75
-      }
-    },
-    "pin_ou": {
-      "open": {
-        "over": 0.92,
-        "line": 2.0,
-        "under": 0.87
-      },
-      "close": {
-        "over": 0.88,
-        "line": 1.75,
-        "under": 1.03
-      }
-    },
-    "hkjc_ah": {
-      "open": {
-        "home_w": 0.6,
-        "handicap": 0.0,
-        "away_w": 1.26
-      },
-      "close": {
-        "home_w": 1.04,
-        "handicap": -0.25,
-        "away_w": 0.77
-      }
-    },
-    "hkjc_ou": {
-      "open": {
-        "over": 0.95,
-        "line": 2.25,
-        "under": 0.75
-      },
-      "close": {
-        "over": 0.67,
-        "line": 1.75,
-        "under": 1.07
-      }
-    },
-    "liji_ah": {
-      "open": {
-        "home_w": 0.94,
-        "handicap": -0.25,
-        "away_w": 0.9
-      },
-      "close": {
-        "home_w": 1.19,
-        "handicap": -0.25,
-        "away_w": 0.78
-      }
-    },
-    "liji_ou": {
-      "open": {
-        "over": 1.07,
-        "line": 2.25,
-        "under": 0.75
-      },
-      "close": {
-        "over": 0.87,
-        "line": 1.75,
-        "under": 1.05
-      }
-    },
-    "ms_ah": {
-      "open": {
-        "home_w": 0.99,
-        "handicap": -0.25,
-        "away_w": 0.85
-      },
-      "close": {
-        "home_w": 1.19,
-        "handicap": -0.25,
-        "away_w": 0.78
-      }
-    },
-    "ms_ou": {
-      "open": {
-        "over": 1.07,
-        "line": 2.25,
-        "under": 0.75
-      },
-      "close": {
-        "over": 0.87,
-        "line": 1.75,
-        "under": 1.05
-      }
-    },
-    "william_ah": {
-      "open": {
-        "home_w": 0.81,
-        "handicap": -0.25,
-        "away_w": 0.8
-      },
-      "close": {
-        "home_w": 0.68,
-        "handicap": 0.0,
-        "away_w": 0.92
-      }
-    },
-    "william_ou": {
-      "open": {
-        "over": 0.5,
-        "line": 1.5,
-        "under": 1.45
-      },
-      "close": {
-        "over": 0.6,
-        "line": 1.5,
-        "under": 1.25
-      }
-    },
-    "william_1x2": {
-      "close": {
-        "w": 2.63,
-        "d": 2.63,
-        "l": 3.1
-      },
-      "open": {
-        "w": 2.25,
-        "d": 2.9,
-        "l": 3.5
-      }
-    }
-  },
-  "新西兰_比利时": {
-    "home": "新西兰",
-    "away": "比利时",
-    "match_id": "4460922",
-    "pin_ah": {
-      "open": {
-        "home_w": 0.98,
-        "handicap": 1.5,
-        "away_w": 0.83
-      },
-      "close": {
-        "home_w": 1.0,
-        "handicap": 2.25,
-        "away_w": 0.91
-      }
-    },
-    "pin_ou": {
-      "open": {
-        "over": 0.81,
-        "line": 2.75,
-        "under": 0.99
-      },
-      "close": {
-        "over": 0.87,
-        "line": 3.75,
-        "under": 1.02
-      }
-    },
-    "hkjc_ah": {
-      "open": {
-        "home_w": 1.08,
-        "handicap": 1.75,
-        "away_w": 0.71
-      },
-      "close": {
-        "home_w": 0.97,
-        "handicap": 2.25,
-        "away_w": 0.83
-      }
-    },
-    "hkjc_ou": {
-      "open": {
-        "over": 0.67,
-        "line": 2.75,
-        "under": 1.07
-      },
-      "close": {
-        "over": 0.71,
-        "line": 3.75,
-        "under": 1.01
-      }
-    },
-    "liji_ah": {
-      "open": {
-        "home_w": 1.13,
-        "handicap": 1.75,
-        "away_w": 0.72
-      },
-      "close": {
-        "home_w": 1.0,
-        "handicap": 2.25,
-        "away_w": 0.94
-      }
-    },
-    "liji_ou": {
-      "open": {
-        "over": 0.99,
-        "line": 3.0,
-        "under": 0.83
-      },
-      "close": {
-        "over": 0.87,
-        "line": 3.75,
-        "under": 1.05
-      }
-    },
-    "ms_ah": {
-      "open": {
-        "home_w": 1.05,
-        "handicap": 1.75,
-        "away_w": 0.79
-      },
-      "close": {
-        "home_w": 1.0,
-        "handicap": 2.25,
-        "away_w": 0.94
-      }
-    },
-    "ms_ou": {
-      "open": {
-        "over": 1.02,
-        "line": 3.0,
-        "under": 0.8
-      },
-      "close": {
-        "over": 0.88,
-        "line": 3.75,
-        "under": 1.04
-      }
-    },
-    "william_ah": {
-      "open": {
-        "home_w": 0.8,
-        "handicap": 1.5,
-        "away_w": 0.91
-      },
-      "close": {
-        "home_w": 0.75,
-        "handicap": 2.25,
-        "away_w": 0.89
-      }
-    },
-    "william_ou": {
-      "open": {
-        "over": 0.62,
-        "line": 2.5,
-        "under": 1.15
-      },
-      "close": {
-        "over": 0.7,
-        "line": 3.5,
-        "under": 1.05
-      }
-    },
-    "william_1x2": {
-      "close": {
-        "w": 12.0,
-        "d": 7.0,
-        "l": 1.18
-      },
-      "open": {
-        "w": 10.0,
-        "d": 5.5,
-        "l": 1.25
-      }
-    }
-  },
   "挪威_法国": {
     "home": "挪威",
     "away": "法国",
@@ -818,6 +544,280 @@
         "w": 5.0,
         "d": 3.75,
         "l": 1.62
+      }
+    }
+  },
+  "埃及_伊朗": {
+    "home": "埃及",
+    "away": "伊朗",
+    "match_id": "4460958",
+    "pin_ah": {
+      "open": {
+        "home_w": 0.88,
+        "handicap": -0.25,
+        "away_w": 0.92
+      },
+      "close": {
+        "home_w": 0.75,
+        "handicap": 0.0,
+        "away_w": 1.17
+      }
+    },
+    "pin_ou": {
+      "open": {
+        "over": 0.92,
+        "line": 2.0,
+        "under": 0.87
+      },
+      "close": {
+        "over": 0.78,
+        "line": 1.75,
+        "under": 1.09
+      }
+    },
+    "hkjc_ah": {
+      "open": {
+        "home_w": 0.6,
+        "handicap": 0.0,
+        "away_w": 1.26
+      },
+      "close": {
+        "home_w": 1.06,
+        "handicap": -0.25,
+        "away_w": 0.76
+      }
+    },
+    "hkjc_ou": {
+      "open": {
+        "over": 0.95,
+        "line": 2.25,
+        "under": 0.75
+      },
+      "close": {
+        "over": 0.79,
+        "line": 1.75,
+        "under": 0.91
+      }
+    },
+    "liji_ah": {
+      "open": {
+        "home_w": 0.94,
+        "handicap": -0.25,
+        "away_w": 0.9
+      },
+      "close": {
+        "home_w": 1.23,
+        "handicap": -0.25,
+        "away_w": 0.75
+      }
+    },
+    "liji_ou": {
+      "open": {
+        "over": 1.07,
+        "line": 2.25,
+        "under": 0.75
+      },
+      "close": {
+        "over": 0.8,
+        "line": 1.75,
+        "under": 1.13
+      }
+    },
+    "ms_ah": {
+      "open": {
+        "home_w": 0.99,
+        "handicap": -0.25,
+        "away_w": 0.85
+      },
+      "close": {
+        "home_w": 1.19,
+        "handicap": -0.25,
+        "away_w": 0.78
+      }
+    },
+    "ms_ou": {
+      "open": {
+        "over": 1.07,
+        "line": 2.25,
+        "under": 0.75
+      },
+      "close": {
+        "over": 0.8,
+        "line": 1.75,
+        "under": 1.13
+      }
+    },
+    "william_ah": {
+      "open": {
+        "home_w": 0.81,
+        "handicap": -0.25,
+        "away_w": 0.8
+      },
+      "close": {
+        "home_w": 0.67,
+        "handicap": 0.0,
+        "away_w": 1.02
+      }
+    },
+    "william_ou": {
+      "open": {
+        "over": 0.5,
+        "line": 1.5,
+        "under": 1.45
+      },
+      "close": {
+        "over": 0.57,
+        "line": 1.5,
+        "under": 1.3
+      }
+    },
+    "william_1x2": {
+      "close": {
+        "w": 2.5,
+        "d": 2.7,
+        "l": 3.1
+      },
+      "open": {
+        "w": 2.25,
+        "d": 2.9,
+        "l": 3.5
+      }
+    }
+  },
+  "新西兰_比利时": {
+    "home": "新西兰",
+    "away": "比利时",
+    "match_id": "4460922",
+    "pin_ah": {
+      "open": {
+        "home_w": 0.98,
+        "handicap": 1.5,
+        "away_w": 0.83
+      },
+      "close": {
+        "home_w": 0.85,
+        "handicap": 2.5,
+        "away_w": 1.06
+      }
+    },
+    "pin_ou": {
+      "open": {
+        "over": 0.81,
+        "line": 2.75,
+        "under": 0.99
+      },
+      "close": {
+        "over": 1.02,
+        "line": 4.0,
+        "under": 0.87
+      }
+    },
+    "hkjc_ah": {
+      "open": {
+        "home_w": 1.08,
+        "handicap": 1.75,
+        "away_w": 0.71
+      },
+      "close": {
+        "home_w": 0.98,
+        "handicap": 2.25,
+        "away_w": 0.82
+      }
+    },
+    "hkjc_ou": {
+      "open": {
+        "over": 0.67,
+        "line": 2.75,
+        "under": 1.07
+      },
+      "close": {
+        "over": 0.77,
+        "line": 3.75,
+        "under": 0.93
+      }
+    },
+    "liji_ah": {
+      "open": {
+        "home_w": 1.13,
+        "handicap": 1.75,
+        "away_w": 0.72
+      },
+      "close": {
+        "home_w": 0.86,
+        "handicap": 2.5,
+        "away_w": 1.08
+      }
+    },
+    "liji_ou": {
+      "open": {
+        "over": 0.99,
+        "line": 3.0,
+        "under": 0.83
+      },
+      "close": {
+        "over": 1.11,
+        "line": 4.0,
+        "under": 0.82
+      }
+    },
+    "ms_ah": {
+      "open": {
+        "home_w": 1.05,
+        "handicap": 1.75,
+        "away_w": 0.79
+      },
+      "close": {
+        "home_w": 0.88,
+        "handicap": 2.5,
+        "away_w": 1.04
+      }
+    },
+    "ms_ou": {
+      "open": {
+        "over": 1.02,
+        "line": 3.0,
+        "under": 0.8
+      },
+      "close": {
+        "over": 1.08,
+        "line": 4.0,
+        "under": 0.82
+      }
+    },
+    "william_ah": {
+      "open": {
+        "home_w": 0.8,
+        "handicap": 1.5,
+        "away_w": 0.91
+      },
+      "close": {
+        "home_w": 0.83,
+        "handicap": 2.25,
+        "away_w": 0.81
+      }
+    },
+    "william_ou": {
+      "open": {
+        "over": 0.62,
+        "line": 2.5,
+        "under": 1.15
+      },
+      "close": {
+        "over": 0.67,
+        "line": 3.5,
+        "under": 1.1
+      }
+    },
+    "william_1x2": {
+      "close": {
+        "w": 13.0,
+        "d": 7.5,
+        "l": 1.17
+      },
+      "open": {
+        "w": 10.0,
+        "d": 5.5,
+        "l": 1.25
       }
     }
   },
@@ -2613,9 +2613,9 @@
         "away_w": 1.05
       },
       "close": {
-        "home_w": 0.84,
+        "home_w": 0.94,
         "handicap": -0.5,
-        "away_w": 1.08
+        "away_w": 0.98
       }
     },
     "pin_ou": {
@@ -2625,7 +2625,7 @@
         "under": 1.01
       },
       "close": {
-        "over": 1.1,
+        "over": 1.11,
         "line": 2.25,
         "under": 0.81
       }
@@ -2637,9 +2637,9 @@
         "away_w": 1.05
       },
       "close": {
-        "home_w": 0.96,
+        "home_w": 1.07,
         "handicap": -0.75,
-        "away_w": 0.84
+        "away_w": 0.75
       }
     },
     "hkjc_ou": {
@@ -2661,9 +2661,9 @@
         "away_w": 0.98
       },
       "close": {
-        "home_w": 1.12,
-        "handicap": -0.75,
-        "away_w": 0.81
+        "home_w": 0.96,
+        "handicap": -0.5,
+        "away_w": 0.97
       }
     },
     "liji_ou": {
@@ -2673,9 +2673,9 @@
         "under": 0.9
       },
       "close": {
-        "over": 1.06,
-        "line": 2.25,
-        "under": 0.84
+        "over": 0.81,
+        "line": 2.0,
+        "under": 1.09
       }
     },
     "ms_ah": {
@@ -2685,9 +2685,9 @@
         "away_w": 0.96
       },
       "close": {
-        "home_w": 1.07,
-        "handicap": -0.75,
-        "away_w": 0.85
+        "home_w": 0.96,
+        "handicap": -0.5,
+        "away_w": 0.97
       }
     },
     "ms_ou": {
@@ -2697,9 +2697,9 @@
         "under": 0.9
       },
       "close": {
-        "over": 1.08,
-        "line": 2.25,
-        "under": 0.82
+        "over": 0.8,
+        "line": 2.0,
+        "under": 1.11
       }
     },
     "william_ah": {
@@ -2709,9 +2709,9 @@
         "away_w": 0.89
       },
       "close": {
-        "home_w": 0.93,
-        "handicap": -0.75,
-        "away_w": 0.73
+        "home_w": 0.95,
+        "handicap": -0.5,
+        "away_w": 0.8
       }
     },
     "william_ou": {
@@ -2728,9 +2728,9 @@
     },
     "william_1x2": {
       "close": {
-        "w": 1.8,
-        "d": 3.2,
-        "l": 4.75
+        "w": 1.95,
+        "d": 3.1,
+        "l": 4.2
       },
       "open": {
         "w": 1.65,
@@ -2750,9 +2750,9 @@
         "away_w": 0.82
       },
       "close": {
-        "home_w": 0.96,
-        "handicap": 2.0,
-        "away_w": 0.93
+        "home_w": 0.88,
+        "handicap": 2.25,
+        "away_w": 1.03
       }
     },
     "pin_ou": {
@@ -2762,9 +2762,9 @@
         "under": 1.02
       },
       "close": {
-        "over": 1.0,
+        "over": 0.86,
         "line": 3.25,
-        "under": 0.88
+        "under": 1.04
       }
     },
     "hkjc_ah": {
@@ -2774,9 +2774,9 @@
         "away_w": 1.02
       },
       "close": {
-        "home_w": 0.8,
+        "home_w": 0.88,
         "handicap": 2.25,
-        "away_w": 1.01
+        "away_w": 0.92
       }
     },
     "hkjc_ou": {
@@ -2798,9 +2798,9 @@
         "away_w": 0.72
       },
       "close": {
-        "home_w": 0.99,
-        "handicap": 2.0,
-        "away_w": 0.93
+        "home_w": 0.91,
+        "handicap": 2.25,
+        "away_w": 1.02
       }
     },
     "liji_ou": {
@@ -2810,9 +2810,9 @@
         "under": 0.95
       },
       "close": {
-        "over": 1.02,
+        "over": 0.92,
         "line": 3.25,
-        "under": 0.88
+        "under": 0.98
       }
     },
     "ms_ah": {
@@ -2822,9 +2822,9 @@
         "away_w": 0.7
       },
       "close": {
-        "home_w": 0.99,
-        "handicap": 2.0,
-        "away_w": 0.93
+        "home_w": 0.9,
+        "handicap": 2.25,
+        "away_w": 1.03
       }
     },
     "ms_ou": {
@@ -2834,9 +2834,9 @@
         "under": 0.95
       },
       "close": {
-        "over": 1.06,
+        "over": 0.89,
         "line": 3.25,
-        "under": 0.84
+        "under": 1.01
       }
     },
     "william_ah": {
@@ -2846,9 +2846,9 @@
         "away_w": 0.85
       },
       "close": {
-        "home_w": 0.76,
+        "home_w": 0.89,
         "handicap": 2.0,
-        "away_w": 0.87
+        "away_w": 0.73
       }
     },
     "william_ou": {
@@ -2858,16 +2858,16 @@
         "under": 1.25
       },
       "close": {
-        "over": 1.1,
+        "over": 1.0,
         "line": 3.5,
-        "under": 0.67
+        "under": 0.73
       }
     },
     "william_1x2": {
       "close": {
         "w": 13.0,
-        "d": 6.5,
-        "l": 1.18
+        "d": 7.5,
+        "l": 1.17
       },
       "open": {
         "w": 10.0,
@@ -2887,9 +2887,9 @@
         "away_w": 0.83
       },
       "close": {
-        "home_w": 0.99,
+        "home_w": 0.88,
         "handicap": 0.5,
-        "away_w": 0.92
+        "away_w": 1.05
       }
     },
     "pin_ou": {
@@ -2899,9 +2899,9 @@
         "under": 0.95
       },
       "close": {
-        "over": 0.91,
-        "line": 2.5,
-        "under": 0.98
+        "over": 1.05,
+        "line": 2.75,
+        "under": 0.86
       }
     },
     "hkjc_ah": {
@@ -2911,9 +2911,9 @@
         "away_w": 0.99
       },
       "close": {
-        "home_w": 0.78,
-        "handicap": 0.75,
-        "away_w": 1.03
+        "home_w": 1.15,
+        "handicap": 0.25,
+        "away_w": 0.69
       }
     },
     "hkjc_ou": {
@@ -2923,9 +2923,9 @@
         "under": 0.78
       },
       "close": {
-        "over": 0.89,
+        "over": 0.85,
         "line": 2.5,
-        "under": 0.81
+        "under": 0.85
       }
     },
     "liji_ah": {
@@ -2935,9 +2935,9 @@
         "away_w": 0.84
       },
       "close": {
-        "home_w": 1.02,
+        "home_w": 0.88,
         "handicap": 0.5,
-        "away_w": 0.9
+        "away_w": 1.05
       }
     },
     "liji_ou": {
@@ -2947,9 +2947,9 @@
         "under": 1.0
       },
       "close": {
-        "over": 0.94,
+        "over": 0.85,
         "line": 2.5,
-        "under": 0.96
+        "under": 1.05
       }
     },
     "ms_ah": {
@@ -2959,9 +2959,9 @@
         "away_w": 0.89
       },
       "close": {
-        "home_w": 1.02,
+        "home_w": 0.88,
         "handicap": 0.5,
-        "away_w": 0.9
+        "away_w": 1.05
       }
     },
     "ms_ou": {
@@ -2971,9 +2971,9 @@
         "under": 1.0
       },
       "close": {
-        "over": 0.93,
-        "line": 2.5,
-        "under": 0.97
+        "over": 1.06,
+        "line": 2.75,
+        "under": 0.84
       }
     },
     "william_ah": {
@@ -2983,9 +2983,9 @@
         "away_w": 0.75
       },
       "close": {
-        "home_w": 0.91,
+        "home_w": 0.8,
         "handicap": 0.5,
-        "away_w": 0.91
+        "away_w": 0.95
       }
     },
     "william_ou": {
@@ -3002,9 +3002,9 @@
     },
     "william_1x2": {
       "close": {
-        "w": 3.75,
+        "w": 3.3,
         "d": 3.6,
-        "l": 1.85
+        "l": 2.0
       },
       "open": {
         "w": 3.4,
@@ -3024,9 +3024,9 @@
         "away_w": 0.83
       },
       "close": {
-        "home_w": 0.95,
-        "handicap": -0.75,
-        "away_w": 0.95
+        "home_w": 1.14,
+        "handicap": -1.0,
+        "away_w": 0.81
       }
     },
     "pin_ou": {
@@ -3036,9 +3036,9 @@
         "under": 0.84
       },
       "close": {
-        "over": 1.0,
-        "line": 2.5,
-        "under": 0.89
+        "over": 0.89,
+        "line": 2.25,
+        "under": 1.02
       }
     },
     "hkjc_ah": {
@@ -3048,9 +3048,9 @@
         "away_w": 0.74
       },
       "close": {
-        "home_w": 0.99,
+        "home_w": 0.81,
         "handicap": -0.75,
-        "away_w": 0.81
+        "away_w": 0.99
       }
     },
     "hkjc_ou": {
@@ -3060,9 +3060,9 @@
         "under": 0.77
       },
       "close": {
-        "over": 0.84,
+        "over": 0.93,
         "line": 2.5,
-        "under": 0.86
+        "under": 0.77
       }
     },
     "liji_ah": {
@@ -3072,9 +3072,9 @@
         "away_w": 0.95
       },
       "close": {
-        "home_w": 0.98,
+        "home_w": 0.81,
         "handicap": -0.75,
-        "away_w": 0.94
+        "away_w": 1.13
       }
     },
     "liji_ou": {
@@ -3084,9 +3084,9 @@
         "under": 0.75
       },
       "close": {
-        "over": 1.04,
-        "line": 2.5,
-        "under": 0.86
+        "over": 0.87,
+        "line": 2.25,
+        "under": 1.03
       }
     },
     "ms_ah": {
@@ -3096,9 +3096,9 @@
         "away_w": 0.9
       },
       "close": {
-        "home_w": 0.96,
+        "home_w": 0.81,
         "handicap": -0.75,
-        "away_w": 0.96
+        "away_w": 1.13
       }
     },
     "ms_ou": {
@@ -3108,9 +3108,9 @@
         "under": 0.75
       },
       "close": {
-        "over": 1.02,
-        "line": 2.5,
-        "under": 0.88
+        "over": 0.88,
+        "line": 2.25,
+        "under": 1.02
       }
     },
     "william_ah": {
@@ -3120,9 +3120,9 @@
         "away_w": 0.73
       },
       "close": {
-        "home_w": 0.88,
+        "home_w": 0.72,
         "handicap": -0.75,
-        "away_w": 0.76
+        "away_w": 0.92
       }
     },
     "william_ou": {
@@ -3132,16 +3132,16 @@
         "under": 0.62
       },
       "close": {
-        "over": 0.95,
+        "over": 1.0,
         "line": 2.5,
-        "under": 0.8
+        "under": 0.73
       }
     },
     "william_1x2": {
       "close": {
-        "w": 1.73,
-        "d": 3.8,
-        "l": 4.2
+        "w": 1.62,
+        "d": 3.9,
+        "l": 5.0
       },
       "open": {
         "w": 2.3,
@@ -3161,9 +3161,9 @@
         "away_w": 0.81
       },
       "close": {
-        "home_w": 0.65,
-        "handicap": 0.25,
-        "away_w": 1.3
+        "home_w": 1.34,
+        "handicap": 0.0,
+        "away_w": 0.66
       }
     },
     "pin_ou": {
@@ -3173,9 +3173,9 @@
         "under": 0.98
       },
       "close": {
-        "over": 0.88,
+        "over": 1.0,
         "line": 1.75,
-        "under": 0.98
+        "under": 0.88
       }
     },
     "hkjc_ah": {
@@ -3197,9 +3197,9 @@
         "under": 0.92
       },
       "close": {
-        "over": 0.75,
+        "over": 0.78,
         "line": 1.75,
-        "under": 0.95
+        "under": 0.92
       }
     },
     "liji_ah": {
@@ -3209,9 +3209,9 @@
         "away_w": 1.04
       },
       "close": {
-        "home_w": 0.69,
+        "home_w": 0.67,
         "handicap": 0.25,
-        "away_w": 1.29
+        "away_w": 1.35
       }
     },
     "liji_ou": {
@@ -3221,9 +3221,9 @@
         "under": 0.9
       },
       "close": {
-        "over": 0.9,
+        "over": 1.02,
         "line": 1.75,
-        "under": 1.0
+        "under": 0.88
       }
     },
     "ms_ah": {
@@ -3233,9 +3233,9 @@
         "away_w": 1.04
       },
       "close": {
-        "home_w": 0.68,
+        "home_w": 0.67,
         "handicap": 0.25,
-        "away_w": 1.31
+        "away_w": 1.35
       }
     },
     "ms_ou": {
@@ -3245,9 +3245,9 @@
         "under": 0.9
       },
       "close": {
-        "over": 0.95,
+        "over": 1.02,
         "line": 1.75,
-        "under": 0.95
+        "under": 0.88
       }
     },
     "william_ah": {
@@ -3257,9 +3257,9 @@
         "away_w": 0.76
       },
       "close": {
-        "home_w": 0.85,
+        "home_w": 0.9,
         "handicap": 0.0,
-        "away_w": 0.77
+        "away_w": 0.74
       }
     },
     "william_ou": {
@@ -3269,16 +3269,16 @@
         "under": 0.67
       },
       "close": {
-        "over": 0.67,
+        "over": 0.7,
         "line": 1.5,
-        "under": 1.1
+        "under": 1.05
       }
     },
     "william_1x2": {
       "close": {
-        "w": 3.5,
-        "d": 2.25,
-        "l": 2.63
+        "w": 3.75,
+        "d": 2.2,
+        "l": 2.8
       },
       "open": {
         "w": 3.6,
@@ -3298,9 +3298,9 @@
         "away_w": 0.96
       },
       "close": {
-        "home_w": 0.93,
-        "handicap": 2.0,
-        "away_w": 0.96
+        "home_w": 0.87,
+        "handicap": 2.25,
+        "away_w": 1.04
       }
     },
     "pin_ou": {
@@ -3310,9 +3310,9 @@
         "under": 0.87
       },
       "close": {
-        "over": 0.9,
-        "line": 3.0,
-        "under": 0.97
+        "over": 1.07,
+        "line": 3.25,
+        "under": 0.83
       }
     },
     "hkjc_ah": {
@@ -3322,9 +3322,9 @@
         "away_w": 0.88
       },
       "close": {
-        "home_w": 0.9,
-        "handicap": 2.0,
-        "away_w": 0.9
+        "home_w": 0.82,
+        "handicap": 2.25,
+        "away_w": 0.98
       }
     },
     "hkjc_ou": {
@@ -3346,9 +3346,9 @@
         "away_w": 0.72
       },
       "close": {
-        "home_w": 0.98,
-        "handicap": 2.0,
-        "away_w": 0.94
+        "home_w": 0.86,
+        "handicap": 2.25,
+        "away_w": 1.07
       }
     },
     "liji_ou": {
@@ -3358,9 +3358,9 @@
         "under": 0.95
       },
       "close": {
-        "over": 0.97,
+        "over": 0.84,
         "line": 3.0,
-        "under": 0.93
+        "under": 1.06
       }
     },
     "ms_ah": {
@@ -3370,9 +3370,9 @@
         "away_w": 0.7
       },
       "close": {
-        "home_w": 0.97,
-        "handicap": 2.0,
-        "away_w": 0.95
+        "home_w": 0.86,
+        "handicap": 2.25,
+        "away_w": 1.07
       }
     },
     "ms_ou": {
@@ -3382,9 +3382,9 @@
         "under": 0.95
       },
       "close": {
-        "over": 0.96,
+        "over": 0.84,
         "line": 3.0,
-        "under": 0.94
+        "under": 1.06
       }
     },
     "william_ah": {
@@ -3394,9 +3394,9 @@
         "away_w": 0.71
       },
       "close": {
-        "home_w": 0.76,
+        "home_w": 0.92,
         "handicap": 2.0,
-        "away_w": 0.87
+        "away_w": 0.72
       }
     },
     "william_ou": {
@@ -3406,16 +3406,16 @@
         "under": 1.4
       },
       "close": {
-        "over": 1.38,
+        "over": 1.25,
         "line": 3.5,
-        "under": 0.53
+        "under": 0.6
       }
     },
     "william_1x2": {
       "close": {
-        "w": 13.0,
-        "d": 7.0,
-        "l": 1.17
+        "w": 15.0,
+        "d": 8.5,
+        "l": 1.14
       },
       "open": {
         "w": 15.0,
@@ -3435,9 +3435,9 @@
         "away_w": 0.83
       },
       "close": {
-        "home_w": 1.07,
+        "home_w": 1.0,
         "handicap": -0.25,
-        "away_w": 0.85
+        "away_w": 0.91
       }
     },
     "pin_ou": {
@@ -3447,9 +3447,9 @@
         "under": 0.88
       },
       "close": {
-        "over": 0.94,
+        "over": 0.93,
         "line": 3.0,
-        "under": 0.94
+        "under": 0.95
       }
     },
     "hkjc_ah": {
@@ -3459,9 +3459,9 @@
         "away_w": 0.83
       },
       "close": {
-        "home_w": 0.93,
+        "home_w": 0.95,
         "handicap": -0.25,
-        "away_w": 0.83
+        "away_w": 0.85
       }
     },
     "hkjc_ou": {
@@ -3483,9 +3483,9 @@
         "away_w": 0.82
       },
       "close": {
-        "home_w": 1.04,
+        "home_w": 1.0,
         "handicap": -0.25,
-        "away_w": 0.86
+        "away_w": 0.92
       }
     },
     "liji_ou": {
@@ -3497,7 +3497,7 @@
       "close": {
         "over": 0.94,
         "line": 3.0,
-        "under": 0.94
+        "under": 0.96
       }
     },
     "ms_ah": {
@@ -3507,9 +3507,9 @@
         "away_w": 0.8
       },
       "close": {
-        "home_w": 1.03,
+        "home_w": 0.99,
         "handicap": -0.25,
-        "away_w": 0.86
+        "away_w": 0.93
       }
     },
     "ms_ou": {
@@ -3519,9 +3519,9 @@
         "under": 0.9
       },
       "close": {
-        "over": 0.93,
+        "over": 0.94,
         "line": 3.0,
-        "under": 0.94
+        "under": 0.96
       }
     },
     "william_ah": {
@@ -3531,9 +3531,9 @@
         "away_w": 0.62
       },
       "close": {
-        "home_w": 0.9,
+        "home_w": 0.91,
         "handicap": -0.25,
-        "away_w": 0.74
+        "away_w": 0.73
       }
     },
     "william_ou": {
@@ -3543,7 +3543,7 @@
         "under": 1.3
       },
       "close": {
-        "over": 0.57,
+        "over": 0.55,
         "line": 2.5,
         "under": 1.3
       }
@@ -3572,9 +3572,9 @@
         "away_w": 1.03
       },
       "close": {
-        "home_w": 1.02,
+        "home_w": 1.03,
         "handicap": -0.25,
-        "away_w": 0.89
+        "away_w": 0.88
       }
     },
     "pin_ou": {
@@ -3584,9 +3584,9 @@
         "under": 0.83
       },
       "close": {
-        "over": 0.89,
+        "over": 0.88,
         "line": 2.75,
-        "under": 0.99
+        "under": 1.01
       }
     },
     "hkjc_ah": {
@@ -3622,7 +3622,7 @@
       "close": {
         "home_w": 1.07,
         "handicap": -0.25,
-        "away_w": 0.83
+        "away_w": 0.85
       }
     },
     "liji_ou": {
@@ -3634,7 +3634,7 @@
       "close": {
         "over": 0.95,
         "line": 2.75,
-        "under": 0.93
+        "under": 0.95
       }
     },
     "ms_ah": {
@@ -3644,9 +3644,9 @@
         "away_w": 0.86
       },
       "close": {
-        "home_w": 1.03,
+        "home_w": 1.05,
         "handicap": -0.25,
-        "away_w": 0.86
+        "away_w": 0.87
       }
     },
     "ms_ou": {
@@ -3656,9 +3656,9 @@
         "under": 0.9
       },
       "close": {
-        "over": 0.91,
+        "over": 0.9,
         "line": 2.75,
-        "under": 0.96
+        "under": 1.0
       }
     },
     "william_ah": {
@@ -3668,9 +3668,9 @@
         "away_w": 0.57
       },
       "close": {
-        "home_w": 0.89,
+        "home_w": 0.91,
         "handicap": -0.25,
-        "away_w": 0.75
+        "away_w": 0.73
       }
     },
     "william_ou": {
@@ -3687,9 +3687,9 @@
     },
     "william_1x2": {
       "close": {
-        "w": 2.2,
-        "d": 3.5,
-        "l": 2.8
+        "w": 2.25,
+        "d": 3.3,
+        "l": 2.88
       },
       "open": {
         "w": 2.25,
@@ -3709,9 +3709,9 @@
         "away_w": 1.01
       },
       "close": {
-        "home_w": 0.99,
+        "home_w": 0.93,
         "handicap": 1.5,
-        "away_w": 0.91
+        "away_w": 0.98
       }
     },
     "pin_ou": {
@@ -3721,9 +3721,9 @@
         "under": 0.85
       },
       "close": {
-        "over": 0.95,
+        "over": 1.06,
         "line": 3.0,
-        "under": 0.93
+        "under": 0.84
       }
     },
     "hkjc_ah": {
@@ -3757,9 +3757,9 @@
         "away_w": 1.03
       },
       "close": {
-        "home_w": 0.94,
+        "home_w": 0.92,
         "handicap": 1.5,
-        "away_w": 0.96
+        "away_w": 1.0
       }
     },
     "liji_ou": {
@@ -3769,9 +3769,9 @@
         "under": 1.0
       },
       "close": {
-        "over": 1.03,
+        "over": 1.04,
         "line": 3.0,
-        "under": 0.85
+        "under": 0.86
       }
     },
     "ms_ah": {
@@ -3781,9 +3781,9 @@
         "away_w": 0.87
       },
       "close": {
-        "home_w": 0.96,
+        "home_w": 0.93,
         "handicap": 1.5,
-        "away_w": 0.93
+        "away_w": 0.99
       }
     },
     "ms_ou": {
@@ -3793,9 +3793,9 @@
         "under": 0.85
       },
       "close": {
-        "over": 0.98,
-        "line": 3.0,
-        "under": 0.89
+        "over": 0.82,
+        "line": 2.75,
+        "under": 1.08
       }
     },
     "william_ah": {
@@ -3817,14 +3817,14 @@
         "under": 1.0
       },
       "close": {
-        "over": 0.55,
+        "over": 0.57,
         "line": 2.5,
-        "under": 1.3
+        "under": 1.25
       }
     },
     "william_1x2": {
       "close": {
-        "w": 8.5,
+        "w": 8.0,
         "d": 5.0,
         "l": 1.3
       },
@@ -3846,9 +3846,9 @@
         "away_w": 0.95
       },
       "close": {
-        "home_w": 0.92,
+        "home_w": 0.86,
         "handicap": -0.25,
-        "away_w": 0.97
+        "away_w": 1.05
       }
     },
     "pin_ou": {
@@ -3858,7 +3858,7 @@
         "under": 1.0
       },
       "close": {
-        "over": 0.9,
+        "over": 0.92,
         "line": 2.5,
         "under": 0.97
       }
@@ -3894,9 +3894,9 @@
         "away_w": 0.99
       },
       "close": {
-        "home_w": 0.91,
+        "home_w": 0.88,
         "handicap": -0.25,
-        "away_w": 0.99
+        "away_w": 1.04
       }
     },
     "liji_ou": {
@@ -3906,7 +3906,7 @@
         "under": 1.0
       },
       "close": {
-        "over": 0.88,
+        "over": 0.9,
         "line": 2.5,
         "under": 1.0
       }
@@ -3918,9 +3918,9 @@
         "away_w": 0.94
       },
       "close": {
-        "home_w": 0.91,
+        "home_w": 0.86,
         "handicap": -0.25,
-        "away_w": 0.98
+        "away_w": 1.06
       }
     },
     "ms_ou": {
@@ -3930,7 +3930,7 @@
         "under": 1.01
       },
       "close": {
-        "over": 0.89,
+        "over": 0.92,
         "line": 2.5,
         "under": 0.98
       }
@@ -3942,9 +3942,9 @@
         "away_w": 0.67
       },
       "close": {
-        "home_w": 0.8,
+        "home_w": 0.78,
         "handicap": -0.25,
-        "away_w": 0.85
+        "away_w": 0.87
       }
     },
     "william_ou": {
@@ -3954,7 +3954,7 @@
         "under": 0.95
       },
       "close": {
-        "over": 0.8,
+        "over": 0.83,
         "line": 2.5,
         "under": 0.91
       }
@@ -3962,8 +3962,8 @@
     "william_1x2": {
       "close": {
         "w": 2.1,
-        "d": 3.4,
-        "l": 3.1
+        "d": 3.3,
+        "l": 3.2
       },
       "open": {
         "w": 2.1,
@@ -3983,9 +3983,9 @@
         "away_w": 0.79
       },
       "close": {
-        "home_w": 0.87,
+        "home_w": 0.88,
         "handicap": 0.0,
-        "away_w": 1.02
+        "away_w": 1.03
       }
     },
     "pin_ou": {
@@ -3995,9 +3995,9 @@
         "under": 0.83
       },
       "close": {
-        "over": 0.93,
+        "over": 0.9,
         "line": 2.5,
-        "under": 0.93
+        "under": 0.99
       }
     },
     "hkjc_ah": {
@@ -4033,7 +4033,7 @@
       "close": {
         "home_w": 0.91,
         "handicap": 0.0,
-        "away_w": 0.99
+        "away_w": 1.01
       }
     },
     "liji_ou": {
@@ -4043,7 +4043,7 @@
         "under": 0.97
       },
       "close": {
-        "over": 0.91,
+        "over": 0.93,
         "line": 2.5,
         "under": 0.97
       }
@@ -4055,9 +4055,9 @@
         "away_w": 0.92
       },
       "close": {
-        "home_w": 0.89,
+        "home_w": 0.9,
         "handicap": 0.0,
-        "away_w": 1.0
+        "away_w": 1.02
       }
     },
     "ms_ou": {
@@ -4069,7 +4069,7 @@
       "close": {
         "over": 0.92,
         "line": 2.5,
-        "under": 0.95
+        "under": 0.98
       }
     },
     "william_ah": {
@@ -4120,7 +4120,7 @@
         "away_w": 1.03
       },
       "close": {
-        "home_w": 0.99,
+        "home_w": 1.01,
         "handicap": -0.5,
         "away_w": 0.9
       }
@@ -4132,9 +4132,9 @@
         "under": 0.87
       },
       "close": {
-        "over": 1.05,
-        "line": 2.75,
-        "under": 0.83
+        "over": 0.84,
+        "line": 2.5,
+        "under": 1.06
       }
     },
     "hkjc_ah": {
@@ -4170,7 +4170,7 @@
       "close": {
         "home_w": 1.01,
         "handicap": -0.5,
-        "away_w": 0.89
+        "away_w": 0.91
       }
     },
     "liji_ou": {
@@ -4182,7 +4182,7 @@
       "close": {
         "over": 0.89,
         "line": 2.5,
-        "under": 0.99
+        "under": 1.01
       }
     },
     "ms_ah": {
@@ -4192,9 +4192,9 @@
         "away_w": 1.17
       },
       "close": {
-        "home_w": 0.99,
+        "home_w": 1.01,
         "handicap": -0.5,
-        "away_w": 0.9
+        "away_w": 0.91
       }
     },
     "ms_ou": {
@@ -4204,9 +4204,9 @@
         "under": 0.96
       },
       "close": {
-        "over": 0.86,
+        "over": 0.87,
         "line": 2.5,
-        "under": 1.01
+        "under": 1.03
       }
     },
     "william_ah": {
@@ -4257,9 +4257,9 @@
         "away_w": 0.91
       },
       "close": {
-        "home_w": 1.05,
+        "home_w": 1.01,
         "handicap": -0.5,
-        "away_w": 0.81
+        "away_w": 0.85
       }
     },
     "pin_ou": {
@@ -4269,9 +4269,9 @@
         "under": 0.78
       },
       "close": {
-        "over": 0.98,
+        "over": 0.92,
         "line": 2.75,
-        "under": 0.85
+        "under": 0.92
       }
     },
     "hkjc_ah": {
@@ -4307,7 +4307,7 @@
       "close": {
         "home_w": 1.0,
         "handicap": -0.5,
-        "away_w": 0.9
+        "away_w": 0.92
       }
     },
     "liji_ou": {
@@ -4317,9 +4317,9 @@
         "under": 0.85
       },
       "close": {
-        "over": 1.0,
+        "over": 0.98,
         "line": 2.75,
-        "under": 0.88
+        "under": 0.92
       }
     },
     "ms_ah": {
@@ -4331,7 +4331,7 @@
       "close": {
         "home_w": 1.03,
         "handicap": -0.5,
-        "away_w": 0.86
+        "away_w": 0.89
       }
     },
     "ms_ou": {
@@ -4341,9 +4341,9 @@
         "under": 0.84
       },
       "close": {
-        "over": 1.0,
+        "over": 0.98,
         "line": 2.75,
-        "under": 0.87
+        "under": 0.92
       }
     },
     "william_ah": {
@@ -4365,15 +4365,15 @@
         "under": 1.0
       },
       "close": {
-        "over": 0.73,
+        "over": 0.7,
         "line": 2.5,
         "under": 1.0
       }
     },
     "william_1x2": {
       "close": {
-        "w": 1.95,
-        "d": 3.4,
+        "w": 1.91,
+        "d": 3.5,
         "l": 3.25
       },
       "open": {
@@ -4442,9 +4442,9 @@
         "away_w": 0.95
       },
       "close": {
-        "home_w": 0.87,
+        "home_w": 0.9,
         "handicap": -0.5,
-        "away_w": 1.03
+        "away_w": 1.02
       }
     },
     "liji_ou": {
@@ -4454,9 +4454,9 @@
         "under": 0.98
       },
       "close": {
-        "over": 0.86,
-        "line": 2.75,
-        "under": 1.02
+        "over": 1.05,
+        "line": 3.0,
+        "under": 0.85
       }
     },
     "ms_ah": {
@@ -4466,9 +4466,9 @@
         "away_w": 0.98
       },
       "close": {
-        "home_w": 0.87,
+        "home_w": 0.91,
         "handicap": -0.5,
-        "away_w": 1.02
+        "away_w": 1.01
       }
     },
     "ms_ou": {
@@ -4480,7 +4480,7 @@
       "close": {
         "over": 0.84,
         "line": 2.75,
-        "under": 1.03
+        "under": 1.06
       }
     },
     "william_ah": {
@@ -4502,16 +4502,16 @@
         "under": 1.15
       },
       "close": {
-        "over": 0.65,
+        "over": 0.62,
         "line": 2.5,
-        "under": 1.1
+        "under": 1.15
       }
     },
     "william_1x2": {
       "close": {
-        "w": 1.8,
-        "d": 3.3,
-        "l": 3.8
+        "w": 1.85,
+        "d": 3.4,
+        "l": 3.6
       },
       "open": {
         "w": 1.8,
@@ -4531,9 +4531,9 @@
         "away_w": 0.81
       },
       "close": {
-        "home_w": 1.04,
+        "home_w": 1.07,
         "handicap": -0.25,
-        "away_w": 0.83
+        "away_w": 0.8
       }
     },
     "pin_ou": {
@@ -4579,9 +4579,9 @@
         "away_w": 1.06
       },
       "close": {
-        "home_w": 0.94,
+        "home_w": 1.07,
         "handicap": -0.25,
-        "away_w": 0.88
+        "away_w": 0.83
       }
     },
     "liji_ou": {
@@ -4591,9 +4591,9 @@
         "under": 0.93
       },
       "close": {
-        "over": 0.87,
+        "over": 0.9,
         "line": 2.5,
-        "under": 0.93
+        "under": 0.98
       }
     },
     "ms_ah": {
@@ -4603,9 +4603,9 @@
         "away_w": 0.73
       },
       "close": {
-        "home_w": 0.99,
+        "home_w": 1.08,
         "handicap": -0.25,
-        "away_w": 0.85
+        "away_w": 0.82
       }
     },
     "ms_ou": {
@@ -4615,9 +4615,9 @@
         "under": 0.95
       },
       "close": {
-        "over": 0.86,
+        "over": 0.9,
         "line": 2.5,
-        "under": 0.96
+        "under": 0.98
       }
     },
     "william_ah": {
@@ -4668,9 +4668,9 @@
         "away_w": 0.77
       },
       "close": {
-        "home_w": 0.96,
+        "home_w": 0.92,
         "handicap": -0.75,
-        "away_w": 0.89
+        "away_w": 0.93
       }
     },
     "pin_ou": {
@@ -4680,9 +4680,9 @@
         "under": 0.82
       },
       "close": {
-        "over": 0.86,
+        "over": 0.91,
         "line": 2.5,
-        "under": 0.98
+        "under": 0.93
       }
     },
     "hkjc_ah": {
@@ -4716,7 +4716,7 @@
         "away_w": 0.9
       },
       "close": {
-        "home_w": 0.92,
+        "home_w": 1.0,
         "handicap": -0.75,
         "away_w": 0.9
       }
@@ -4728,7 +4728,7 @@
         "under": 0.95
       },
       "close": {
-        "over": 0.81,
+        "over": 0.89,
         "line": 2.5,
         "under": 0.99
       }
@@ -4740,9 +4740,9 @@
         "away_w": 0.88
       },
       "close": {
-        "home_w": 0.94,
+        "home_w": 0.97,
         "handicap": -0.75,
-        "away_w": 0.9
+        "away_w": 0.93
       }
     },
     "ms_ou": {
@@ -4752,9 +4752,9 @@
         "under": 0.95
       },
       "close": {
-        "over": 0.84,
+        "over": 0.92,
         "line": 2.5,
-        "under": 0.98
+        "under": 0.96
       }
     },
     "william_ah": {
@@ -4776,9 +4776,9 @@
         "under": 0.91
       },
       "close": {
-        "over": 0.75,
+        "over": 0.83,
         "line": 2.5,
-        "under": 0.91
+        "under": 0.85
       }
     },
     "william_1x2": {
@@ -4805,9 +4805,9 @@
         "away_w": 0.78
       },
       "close": {
-        "home_w": 0.83,
+        "home_w": 0.96,
         "handicap": -0.25,
-        "away_w": 1.03
+        "away_w": 0.89
       }
     },
     "pin_ou": {
@@ -4817,9 +4817,9 @@
         "under": 0.83
       },
       "close": {
-        "over": 0.89,
+        "over": 0.93,
         "line": 3.5,
-        "under": 0.94
+        "under": 0.91
       }
     },
     "hkjc_ah": {
@@ -4853,9 +4853,9 @@
         "away_w": 0.83
       },
       "close": {
-        "home_w": 1.05,
-        "handicap": -0.5,
-        "away_w": 0.83
+        "home_w": 0.97,
+        "handicap": -0.25,
+        "away_w": 0.93
       }
     },
     "liji_ou": {
@@ -4865,7 +4865,7 @@
         "under": 0.9
       },
       "close": {
-        "over": 0.92,
+        "over": 0.94,
         "line": 3.5,
         "under": 0.94
       }
@@ -4878,8 +4878,8 @@
       },
       "close": {
         "home_w": 1.02,
-        "handicap": -0.5,
-        "away_w": 0.82
+        "handicap": -0.25,
+        "away_w": 0.88
       }
     },
     "ms_ou": {
@@ -4889,9 +4889,9 @@
         "under": 0.9
       },
       "close": {
-        "over": 0.87,
+        "over": 0.94,
         "line": 3.5,
-        "under": 0.95
+        "under": 0.94
       }
     },
     "william_ah": {
@@ -4901,9 +4901,9 @@
         "away_w": 0.8
       },
       "close": {
-        "home_w": 1.0,
-        "handicap": -0.5,
-        "away_w": 0.73
+        "home_w": 0.91,
+        "handicap": -0.25,
+        "away_w": 0.81
       }
     },
     "william_ou": {
@@ -4913,16 +4913,16 @@
         "under": 0.83
       },
       "close": {
-        "over": 0.8,
+        "over": 0.85,
         "line": 3.5,
-        "under": 0.91
+        "under": 0.85
       }
     },
     "william_1x2": {
       "close": {
-        "w": 2.0,
+        "w": 2.15,
         "d": 3.6,
-        "l": 3.0
+        "l": 2.7
       },
       "open": {
         "w": 1.91,
@@ -4942,9 +4942,9 @@
         "away_w": 0.82
       },
       "close": {
-        "home_w": 1.03,
+        "home_w": 1.04,
         "handicap": -0.5,
-        "away_w": 0.83
+        "away_w": 0.82
       }
     },
     "pin_ou": {
@@ -4956,7 +4956,7 @@
       "close": {
         "over": 1.02,
         "line": 3.0,
-        "under": 0.83
+        "under": 0.82
       }
     },
     "hkjc_ah": {
@@ -4990,9 +4990,9 @@
         "away_w": 1.02
       },
       "close": {
-        "home_w": 0.84,
-        "handicap": -0.25,
-        "away_w": 1.04
+        "home_w": 1.07,
+        "handicap": -0.5,
+        "away_w": 0.83
       }
     },
     "liji_ou": {
@@ -5002,9 +5002,9 @@
         "under": 0.9
       },
       "close": {
-        "over": 0.83,
-        "line": 2.75,
-        "under": 1.03
+        "over": 1.07,
+        "line": 3.0,
+        "under": 0.81
       }
     },
     "ms_ah": {
@@ -5014,9 +5014,9 @@
         "away_w": 1.01
       },
       "close": {
-        "home_w": 1.0,
-        "handicap": -0.5,
-        "away_w": 0.84
+        "home_w": 0.82,
+        "handicap": -0.25,
+        "away_w": 1.08
       }
     },
     "ms_ou": {
@@ -5026,7 +5026,7 @@
         "under": 0.89
       },
       "close": {
-        "over": 1.01,
+        "over": 1.07,
         "line": 3.0,
         "under": 0.81
       }
@@ -5127,7 +5127,7 @@
         "away_w": 0.9
       },
       "close": {
-        "home_w": 0.95,
+        "home_w": 0.97,
         "handicap": -0.75,
         "away_w": 0.93
       }
@@ -5139,7 +5139,7 @@
         "under": 0.96
       },
       "close": {
-        "over": 0.9,
+        "over": 0.92,
         "line": 3.0,
         "under": 0.96
       }
@@ -5151,9 +5151,9 @@
         "away_w": 0.9
       },
       "close": {
-        "home_w": 0.91,
+        "home_w": 0.94,
         "handicap": -0.75,
-        "away_w": 0.93
+        "away_w": 0.96
       }
     },
     "ms_ou": {
@@ -5163,7 +5163,7 @@
         "under": 0.96
       },
       "close": {
-        "over": 0.85,
+        "over": 0.91,
         "line": 3.0,
         "under": 0.97
       }
@@ -5264,7 +5264,7 @@
         "away_w": 0.86
       },
       "close": {
-        "home_w": 1.02,
+        "home_w": 1.04,
         "handicap": -0.75,
         "away_w": 0.86
       }
@@ -5276,7 +5276,7 @@
         "under": 0.95
       },
       "close": {
-        "over": 0.91,
+        "over": 0.93,
         "line": 3.25,
         "under": 0.95
       }
@@ -5288,9 +5288,9 @@
         "away_w": 0.87
       },
       "close": {
-        "home_w": 0.99,
+        "home_w": 1.02,
         "handicap": -0.75,
-        "away_w": 0.85
+        "away_w": 0.88
       }
     },
     "ms_ou": {
@@ -5300,9 +5300,9 @@
         "under": 0.95
       },
       "close": {
-        "over": 0.86,
+        "over": 0.96,
         "line": 3.25,
-        "under": 0.96
+        "under": 0.92
       }
     },
     "william_ah": {
@@ -5324,9 +5324,9 @@
         "under": 0.7
       },
       "close": {
-        "over": 1.0,
+        "over": 1.05,
         "line": 3.5,
-        "under": 0.7
+        "under": 0.67
       }
     },
     "william_1x2": {
@@ -5353,9 +5353,9 @@
         "away_w": 1.04
       },
       "close": {
-        "home_w": 0.8,
+        "home_w": 0.82,
         "handicap": 0.25,
-        "away_w": 1.07
+        "away_w": 1.05
       }
     },
     "pin_ou": {
@@ -5365,9 +5365,9 @@
         "under": 0.91
       },
       "close": {
-        "over": 0.96,
+        "over": 0.92,
         "line": 3.25,
-        "under": 0.88
+        "under": 0.92
       }
     },
     "hkjc_ah": {
@@ -5401,9 +5401,9 @@
         "away_w": 0.92
       },
       "close": {
-        "home_w": 1.06,
+        "home_w": 1.09,
         "handicap": 0.0,
-        "away_w": 0.82
+        "away_w": 0.81
       }
     },
     "liji_ou": {
@@ -5413,7 +5413,7 @@
         "under": 1.01
       },
       "close": {
-        "over": 0.95,
+        "over": 0.97,
         "line": 3.25,
         "under": 0.91
       }
@@ -5425,9 +5425,9 @@
         "away_w": 0.93
       },
       "close": {
-        "home_w": 1.01,
+        "home_w": 1.09,
         "handicap": 0.0,
-        "away_w": 0.83
+        "away_w": 0.81
       }
     },
     "ms_ou": {
@@ -5437,9 +5437,9 @@
         "under": 1.01
       },
       "close": {
-        "over": 0.94,
+        "over": 0.96,
         "line": 3.25,
-        "under": 0.88
+        "under": 0.92
       }
     },
     "william_ah": {
@@ -5449,9 +5449,9 @@
         "away_w": 1.25
       },
       "close": {
-        "home_w": 0.55,
-        "handicap": 0.5,
-        "away_w": 1.3
+        "home_w": 1.0,
+        "handicap": 0.0,
+        "away_w": 0.73
       }
     },
     "william_ou": {
@@ -5463,14 +5463,14 @@
       "close": {
         "over": 1.1,
         "line": 3.5,
-        "under": 0.65
+        "under": 0.67
       }
     },
     "william_1x2": {
       "close": {
         "w": 2.5,
-        "d": 3.5,
-        "l": 2.3
+        "d": 3.6,
+        "l": 2.25
       },
       "open": {
         "w": 2.7,
@@ -5490,9 +5490,9 @@
         "away_w": 0.98
       },
       "close": {
-        "home_w": 0.93,
+        "home_w": 0.96,
         "handicap": 0.5,
-        "away_w": 0.93
+        "away_w": 0.89
       }
     },
     "pin_ou": {
@@ -5502,9 +5502,9 @@
         "under": 0.88
       },
       "close": {
-        "over": 0.84,
-        "line": 3.25,
-        "under": 1.0
+        "over": 1.03,
+        "line": 3.5,
+        "under": 0.82
       }
     },
     "hkjc_ah": {
@@ -5538,7 +5538,7 @@
         "away_w": 0.9
       },
       "close": {
-        "home_w": 0.95,
+        "home_w": 0.97,
         "handicap": 0.5,
         "away_w": 0.93
       }
@@ -5550,7 +5550,7 @@
         "under": 0.9
       },
       "close": {
-        "over": 0.87,
+        "over": 0.89,
         "line": 3.25,
         "under": 0.99
       }
@@ -5562,9 +5562,9 @@
         "away_w": 0.89
       },
       "close": {
-        "home_w": 0.94,
+        "home_w": 0.97,
         "handicap": 0.5,
-        "away_w": 0.9
+        "away_w": 0.93
       }
     },
     "ms_ou": {
@@ -5574,9 +5574,9 @@
         "under": 0.91
       },
       "close": {
-        "over": 0.82,
+        "over": 0.87,
         "line": 3.25,
-        "under": 1.0
+        "under": 1.01
       }
     },
     "william_ah": {
@@ -5627,9 +5627,9 @@
         "away_w": 0.92
       },
       "close": {
-        "home_w": 0.83,
+        "home_w": 0.85,
         "handicap": -0.5,
-        "away_w": 1.07
+        "away_w": 1.05
       }
     },
     "pin_ou": {
@@ -5639,9 +5639,9 @@
         "under": 1.02
       },
       "close": {
-        "over": 0.97,
+        "over": 0.99,
         "line": 2.25,
-        "under": 0.9
+        "under": 0.88
       }
     },
     "hkjc_ah": {
@@ -5675,7 +5675,7 @@
         "away_w": 0.92
       },
       "close": {
-        "home_w": 0.86,
+        "home_w": 0.88,
         "handicap": -0.5,
         "away_w": 1.02
       }
@@ -5687,7 +5687,7 @@
         "under": 0.86
       },
       "close": {
-        "over": 1.0,
+        "over": 1.02,
         "line": 2.25,
         "under": 0.86
       }
@@ -5699,9 +5699,9 @@
         "away_w": 0.89
       },
       "close": {
-        "home_w": 0.8,
+        "home_w": 0.89,
         "handicap": -0.5,
-        "away_w": 1.04
+        "away_w": 1.01
       }
     },
     "ms_ou": {
@@ -5711,9 +5711,9 @@
         "under": 0.81
       },
       "close": {
-        "over": 0.94,
+        "over": 1.01,
         "line": 2.25,
-        "under": 0.88
+        "under": 0.87
       }
     },
     "william_ah": {
@@ -5735,9 +5735,9 @@
         "under": 0.6
       },
       "close": {
-        "over": 1.15,
+        "over": 1.2,
         "line": 2.5,
-        "under": 0.65
+        "under": 0.62
       }
     },
     "william_1x2": {
@@ -5766,7 +5766,7 @@
       "close": {
         "home_w": 0.84,
         "handicap": 0.5,
-        "away_w": 1.0
+        "away_w": 1.02
       }
     },
     "pin_ou": {
@@ -5778,7 +5778,7 @@
       "close": {
         "over": 0.88,
         "line": 2.5,
-        "under": 0.94
+        "under": 0.95
       }
     },
     "hkjc_ah": {
@@ -5814,7 +5814,7 @@
       "close": {
         "home_w": 0.84,
         "handicap": 0.5,
-        "away_w": 1.06
+        "away_w": 1.08
       }
     },
     "liji_ou": {
@@ -5824,9 +5824,9 @@
         "under": 0.88
       },
       "close": {
-        "over": 0.97,
+        "over": 0.95,
         "line": 2.5,
-        "under": 0.91
+        "under": 0.95
       }
     },
     "ms_ah": {
@@ -5838,7 +5838,7 @@
       "close": {
         "home_w": 0.84,
         "handicap": 0.5,
-        "away_w": 1.05
+        "away_w": 1.08
       }
     },
     "ms_ou": {
@@ -5850,7 +5850,7 @@
       "close": {
         "over": 0.94,
         "line": 2.5,
-        "under": 0.93
+        "under": 0.96
       }
     },
     "william_ah": {
@@ -5901,9 +5901,9 @@
         "away_w": 0.98
       },
       "close": {
-        "home_w": 0.99,
+        "home_w": 0.97,
         "handicap": 0.0,
-        "away_w": 0.85
+        "away_w": 0.88
       }
     },
     "pin_ou": {
@@ -5913,9 +5913,9 @@
         "under": 0.96
       },
       "close": {
-        "over": 0.97,
-        "line": 2.75,
-        "under": 0.85
+        "over": 0.85,
+        "line": 2.5,
+        "under": 0.99
       }
     },
     "hkjc_ah": {
@@ -5949,9 +5949,9 @@
         "away_w": 1.04
       },
       "close": {
-        "home_w": 0.93,
+        "home_w": 0.98,
         "handicap": 0.0,
-        "away_w": 0.97
+        "away_w": 0.94
       }
     },
     "liji_ou": {
@@ -5961,7 +5961,7 @@
         "under": 0.98
       },
       "close": {
-        "over": 0.81,
+        "over": 0.83,
         "line": 2.5,
         "under": 1.07
       }
@@ -5973,9 +5973,9 @@
         "away_w": 0.92
       },
       "close": {
-        "home_w": 1.0,
+        "home_w": 0.97,
         "handicap": 0.0,
-        "away_w": 0.89
+        "away_w": 0.95
       }
     },
     "ms_ou": {
@@ -5985,9 +5985,9 @@
         "under": 0.97
       },
       "close": {
-        "over": 1.03,
-        "line": 2.75,
-        "under": 0.84
+        "over": 0.86,
+        "line": 2.5,
+        "under": 1.04
       }
     },
     "william_ah": {
@@ -6038,9 +6038,9 @@
         "away_w": 0.81
       },
       "close": {
-        "home_w": 0.9,
+        "home_w": 0.91,
         "handicap": -1.0,
-        "away_w": 0.93
+        "away_w": 0.94
       }
     },
     "pin_ou": {
@@ -6050,9 +6050,9 @@
         "under": 0.83
       },
       "close": {
-        "over": 0.93,
+        "over": 0.94,
         "line": 3.5,
-        "under": 0.88
+        "under": 0.89
       }
     },
     "hkjc_ah": {
@@ -6086,9 +6086,9 @@
         "away_w": 0.82
       },
       "close": {
-        "home_w": 0.96,
+        "home_w": 0.93,
         "handicap": -1.0,
-        "away_w": 0.92
+        "away_w": 0.97
       }
     },
     "liji_ou": {
@@ -6098,7 +6098,7 @@
         "under": 0.85
       },
       "close": {
-        "over": 0.97,
+        "over": 0.99,
         "line": 3.5,
         "under": 0.89
       }
@@ -6110,9 +6110,9 @@
         "away_w": 0.83
       },
       "close": {
-        "home_w": 0.91,
+        "home_w": 0.92,
         "handicap": -1.0,
-        "away_w": 0.93
+        "away_w": 0.98
       }
     },
     "ms_ou": {
@@ -6122,9 +6122,9 @@
         "under": 0.86
       },
       "close": {
-        "over": 0.93,
+        "over": 0.98,
         "line": 3.5,
-        "under": 0.89
+        "under": 0.9
       }
     },
     "william_ah": {
@@ -6134,9 +6134,9 @@
         "away_w": 0.78
       },
       "close": {
-        "home_w": 0.9,
+        "home_w": 0.89,
         "handicap": -1.0,
-        "away_w": 0.82
+        "away_w": 0.83
       }
     },
     "william_ou": {
@@ -6175,7 +6175,7 @@
         "away_w": 0.99
       },
       "close": {
-        "home_w": 0.91,
+        "home_w": 0.92,
         "handicap": -0.25,
         "away_w": 0.93
       }
@@ -6187,9 +6187,9 @@
         "under": 0.85
       },
       "close": {
-        "over": 0.83,
+        "over": 0.85,
         "line": 3.25,
-        "under": 0.99
+        "under": 1.0
       }
     },
     "hkjc_ah": {
@@ -6223,7 +6223,7 @@
         "away_w": 0.82
       },
       "close": {
-        "home_w": 0.94,
+        "home_w": 0.96,
         "handicap": -0.25,
         "away_w": 0.94
       }
@@ -6235,7 +6235,7 @@
         "under": 0.95
       },
       "close": {
-        "over": 0.81,
+        "over": 0.83,
         "line": 3.25,
         "under": 1.05
       }
@@ -6247,7 +6247,7 @@
         "away_w": 0.81
       },
       "close": {
-        "home_w": 0.9,
+        "home_w": 0.96,
         "handicap": -0.25,
         "away_w": 0.94
       }
@@ -6259,9 +6259,9 @@
         "under": 0.96
       },
       "close": {
-        "over": 0.8,
+        "over": 0.85,
         "line": 3.25,
-        "under": 1.02
+        "under": 1.03
       }
     },
     "william_ah": {
@@ -6273,7 +6273,7 @@
       "close": {
         "home_w": 0.87,
         "handicap": -0.25,
-        "away_w": 0.85
+        "away_w": 0.86
       }
     },
     "william_ou": {
@@ -6314,7 +6314,7 @@
       "close": {
         "home_w": 0.93,
         "handicap": 0.75,
-        "away_w": 0.94
+        "away_w": 0.95
       }
     },
     "pin_ou": {
@@ -6324,9 +6324,9 @@
         "under": 0.81
       },
       "close": {
-        "over": 0.97,
+        "over": 0.98,
         "line": 2.5,
-        "under": 0.88
+        "under": 0.89
       }
     },
     "hkjc_ah": {
@@ -6360,9 +6360,9 @@
         "away_w": 1.05
       },
       "close": {
-        "home_w": 0.88,
+        "home_w": 0.91,
         "handicap": 0.75,
-        "away_w": 1.02
+        "away_w": 1.01
       }
     },
     "liji_ou": {
@@ -6372,9 +6372,9 @@
         "under": 0.85
       },
       "close": {
-        "over": 1.01,
+        "over": 0.99,
         "line": 2.5,
-        "under": 0.87
+        "under": 0.91
       }
     },
     "ms_ah": {
@@ -6384,9 +6384,9 @@
         "away_w": 1.0
       },
       "close": {
-        "home_w": 0.9,
+        "home_w": 0.94,
         "handicap": 0.75,
-        "away_w": 0.94
+        "away_w": 0.96
       }
     },
     "ms_ou": {
@@ -6396,9 +6396,9 @@
         "under": 0.84
       },
       "close": {
-        "over": 0.94,
+        "over": 0.98,
         "line": 2.5,
-        "under": 0.88
+        "under": 0.9
       }
     },
     "william_ah": {
@@ -6408,9 +6408,9 @@
         "away_w": 1.01
       },
       "close": {
-        "home_w": 0.74,
+        "home_w": 0.76,
         "handicap": 0.75,
-        "away_w": 0.92
+        "away_w": 0.89
       }
     },
     "william_ou": {
@@ -6427,9 +6427,9 @@
     },
     "william_1x2": {
       "close": {
-        "w": 4.33,
+        "w": 4.4,
         "d": 3.5,
-        "l": 1.75
+        "l": 1.73
       },
       "open": {
         "w": 4.4,
@@ -6449,9 +6449,9 @@
         "away_w": 0.88
       },
       "close": {
-        "home_w": 0.83,
+        "home_w": 0.88,
         "handicap": -0.75,
-        "away_w": 1.05
+        "away_w": 1.01
       }
     },
     "pin_ou": {
@@ -6461,9 +6461,9 @@
         "under": 0.87
       },
       "close": {
-        "over": 0.97,
+        "over": 1.01,
         "line": 2.25,
-        "under": 0.88
+        "under": 0.87
       }
     },
     "hkjc_ah": {
@@ -6497,9 +6497,9 @@
         "away_w": 0.92
       },
       "close": {
-        "home_w": 0.9,
+        "home_w": 0.89,
         "handicap": -0.75,
-        "away_w": 0.98
+        "away_w": 1.01
       }
     },
     "liji_ou": {
@@ -6509,7 +6509,7 @@
         "under": 0.9
       },
       "close": {
-        "over": 0.96,
+        "over": 0.98,
         "line": 2.25,
         "under": 0.9
       }
@@ -6521,9 +6521,9 @@
         "away_w": 0.89
       },
       "close": {
-        "home_w": 0.83,
+        "home_w": 0.91,
         "handicap": -0.75,
-        "away_w": 1.01
+        "away_w": 0.99
       }
     },
     "ms_ou": {
@@ -6533,9 +6533,9 @@
         "under": 0.85
       },
       "close": {
-        "over": 0.93,
+        "over": 1.0,
         "line": 2.25,
-        "under": 0.89
+        "under": 0.88
       }
     },
     "william_ah": {
@@ -6545,9 +6545,9 @@
         "away_w": 0.78
       },
       "close": {
-        "home_w": 0.57,
-        "handicap": -0.5,
-        "away_w": 1.25
+        "home_w": 0.79,
+        "handicap": -0.75,
+        "away_w": 0.85
       }
     },
     "william_ou": {
@@ -6564,9 +6564,9 @@
     },
     "william_1x2": {
       "close": {
-        "w": 1.6,
+        "w": 1.65,
         "d": 3.4,
-        "l": 5.8
+        "l": 5.0
       },
       "open": {
         "w": 1.7,
@@ -6586,9 +6586,9 @@
         "away_w": 0.91
       },
       "close": {
-        "home_w": 0.94,
+        "home_w": 0.95,
         "handicap": 0.75,
-        "away_w": 0.96
+        "away_w": 0.95
       }
     },
     "pin_ou": {
@@ -6600,7 +6600,7 @@
       "close": {
         "over": 1.02,
         "line": 2.25,
-        "under": 0.87
+        "under": 0.88
       }
     },
     "hkjc_ah": {
@@ -6646,9 +6646,9 @@
         "under": 0.92
       },
       "close": {
-        "over": 1.05,
+        "over": 1.04,
         "line": 2.25,
-        "under": 0.85
+        "under": 0.86
       }
     },
     "ms_ah": {
@@ -6670,9 +6670,9 @@
         "under": 0.8
       },
       "close": {
-        "over": 1.04,
+        "over": 1.03,
         "line": 2.25,
-        "under": 0.86
+        "under": 0.87
       }
     },
     "william_ah": {
@@ -6795,7 +6795,7 @@
         "away_w": 1.0
       },
       "close": {
-        "home_w": 0.93,
+        "home_w": 0.94,
         "handicap": -0.5,
         "away_w": 0.95
       }
@@ -6807,7 +6807,7 @@
         "under": 0.94
       },
       "close": {
-        "over": 0.92,
+        "over": 0.93,
         "line": 2.75,
         "under": 0.94
       }
@@ -6932,7 +6932,7 @@
         "away_w": 0.81
       },
       "close": {
-        "home_w": 1.04,
+        "home_w": 1.05,
         "handicap": -1.25,
         "away_w": 0.84
       }
@@ -6944,7 +6944,7 @@
         "under": 0.96
       },
       "close": {
-        "over": 0.89,
+        "over": 0.9,
         "line": 3.0,
         "under": 0.97
       }
@@ -6997,9 +6997,9 @@
         "away_w": 0.85
       },
       "close": {
-        "home_w": 0.79,
+        "home_w": 0.8,
         "handicap": 0.0,
-        "away_w": 1.05
+        "away_w": 1.03
       }
     },
     "pin_ou": {
@@ -7069,9 +7069,9 @@
         "away_w": 1.04
       },
       "close": {
-        "home_w": 0.79,
+        "home_w": 0.8,
         "handicap": 0.0,
-        "away_w": 1.05
+        "away_w": 1.04
       }
     },
     "ms_ou": {
@@ -7112,9 +7112,9 @@
     },
     "william_1x2": {
       "close": {
-        "w": 2.3,
+        "w": 2.38,
         "d": 3.0,
-        "l": 2.75
+        "l": 2.63
       },
       "open": {
         "w": 2.3,
@@ -7134,9 +7134,9 @@
         "away_w": 1.01
       },
       "close": {
-        "home_w": 0.92,
-        "handicap": 0.75,
-        "away_w": 0.84
+        "home_w": 0.79,
+        "handicap": 1.0,
+        "away_w": 0.97
       }
     },
     "pin_ou": {
@@ -7146,9 +7146,9 @@
         "under": 0.9
       },
       "close": {
-        "over": 0.83,
-        "line": 3.0,
-        "under": 0.91
+        "over": 0.79,
+        "line": 3.25,
+        "under": 0.86
       }
     },
     "hkjc_ah": {
@@ -7242,16 +7242,16 @@
         "under": 0.85
       },
       "close": {
-        "over": 0.83,
+        "over": 1.05,
         "line": 3.5,
-        "under": 0.85
+        "under": 0.7
       }
     },
     "william_1x2": {
       "close": {
-        "w": 4.0,
-        "d": 3.9,
-        "l": 1.67
+        "w": 4.33,
+        "d": 3.7,
+        "l": 1.65
       },
       "open": {
         "w": 4.8,
@@ -7271,9 +7271,9 @@
         "away_w": 0.95
       },
       "close": {
-        "home_w": 0.89,
+        "home_w": 0.9,
         "handicap": -0.25,
-        "away_w": 0.91
+        "away_w": 0.92
       }
     },
     "pin_ou": {
@@ -7283,9 +7283,9 @@
         "under": 0.78
       },
       "close": {
-        "over": 0.98,
+        "over": 0.99,
         "line": 3.0,
-        "under": 0.81
+        "under": 0.82
       }
     },
     "hkjc_ah": {
@@ -7343,7 +7343,7 @@
         "away_w": 0.9
       },
       "close": {
-        "home_w": 0.95,
+        "home_w": 0.96,
         "handicap": -0.25,
         "away_w": 0.93
       }
@@ -7355,9 +7355,9 @@
         "under": 0.8
       },
       "close": {
-        "over": 1.06,
-        "line": 3.0,
-        "under": 0.8
+        "over": 0.81,
+        "line": 2.75,
+        "under": 1.06
       }
     },
     "william_ah": {
@@ -7408,9 +7408,9 @@
         "away_w": 0.92
       },
       "close": {
-        "home_w": 0.96,
+        "home_w": 1.01,
         "handicap": 0.75,
-        "away_w": 0.84
+        "away_w": 0.82
       }
     },
     "pin_ou": {
@@ -7422,7 +7422,7 @@
       "close": {
         "over": 0.93,
         "line": 4.0,
-        "under": 0.86
+        "under": 0.88
       }
     },
     "hkjc_ah": {
@@ -7480,9 +7480,9 @@
         "away_w": 0.92
       },
       "close": {
-        "home_w": 1.01,
+        "home_w": 1.03,
         "handicap": 0.75,
-        "away_w": 0.83
+        "away_w": 0.81
       }
     },
     "ms_ou": {
@@ -7492,9 +7492,9 @@
         "under": 0.87
       },
       "close": {
-        "over": 0.94,
+        "over": 0.93,
         "line": 4.0,
-        "under": 0.88
+        "under": 0.89
       }
     },
     "william_ah": {
@@ -7504,9 +7504,9 @@
         "away_w": 0.9
       },
       "close": {
-        "home_w": 0.94,
+        "home_w": 0.93,
         "handicap": 0.75,
-        "away_w": 0.78
+        "away_w": 0.81
       }
     },
     "william_ou": {
@@ -7523,9 +7523,9 @@
     },
     "william_1x2": {
       "close": {
-        "w": 3.9,
+        "w": 3.8,
         "d": 4.0,
-        "l": 1.65
+        "l": 1.67
       },
       "open": {
         "w": 3.6,
@@ -7545,9 +7545,9 @@
         "away_w": 0.85
       },
       "close": {
-        "home_w": 0.9,
+        "home_w": 0.95,
         "handicap": 0.75,
-        "away_w": 0.9
+        "away_w": 0.87
       }
     },
     "pin_ou": {
@@ -7557,9 +7557,9 @@
         "under": 0.91
       },
       "close": {
-        "over": 0.91,
+        "over": 0.85,
         "line": 3.5,
-        "under": 0.88
+        "under": 0.94
       }
     },
     "hkjc_ah": {
@@ -7617,9 +7617,9 @@
         "away_w": 0.91
       },
       "close": {
-        "home_w": 0.9,
+        "home_w": 0.93,
         "handicap": 0.75,
-        "away_w": 0.94
+        "away_w": 0.91
       }
     },
     "ms_ou": {
@@ -7629,9 +7629,9 @@
         "under": 0.93
       },
       "close": {
-        "over": 0.93,
+        "over": 0.9,
         "line": 3.5,
-        "under": 0.89
+        "under": 0.92
       }
     },
     "william_ah": {
@@ -7641,9 +7641,9 @@
         "away_w": 0.94
       },
       "close": {
-        "home_w": 0.83,
+        "home_w": 0.84,
         "handicap": 0.75,
-        "away_w": 0.89
+        "away_w": 0.9
       }
     },
     "william_ou": {
@@ -7655,7 +7655,7 @@
       "close": {
         "over": 0.85,
         "line": 3.5,
-        "under": 0.83
+        "under": 0.85
       }
     },
     "william_1x2": {
@@ -7682,9 +7682,9 @@
         "away_w": 0.76
       },
       "close": {
-        "home_w": 0.85,
+        "home_w": 0.86,
         "handicap": -0.25,
-        "away_w": 0.94
+        "away_w": 0.95
       }
     },
     "pin_ou": {
@@ -7694,9 +7694,9 @@
         "under": 0.88
       },
       "close": {
-        "over": 0.85,
+        "over": 0.86,
         "line": 3.25,
-        "under": 0.93
+        "under": 0.94
       }
     },
     "hkjc_ah": {
@@ -7780,7 +7780,7 @@
       "close": {
         "home_w": 0.85,
         "handicap": -0.25,
-        "away_w": 0.87
+        "away_w": 0.88
       }
     },
     "william_ou": {
@@ -7819,9 +7819,9 @@
         "away_w": 0.91
       },
       "close": {
-        "home_w": 0.87,
+        "home_w": 0.88,
         "handicap": -0.25,
-        "away_w": 0.93
+        "away_w": 0.94
       }
     },
     "pin_ou": {
@@ -7831,7 +7831,7 @@
         "under": 0.93
       },
       "close": {
-        "over": 0.96,
+        "over": 0.97,
         "line": 3.75,
         "under": 0.83
       }
@@ -7915,9 +7915,9 @@
         "away_w": 0.88
       },
       "close": {
-        "home_w": 0.81,
+        "home_w": 0.82,
         "handicap": -0.25,
-        "away_w": 0.91
+        "away_w": 0.92
       }
     },
     "william_ou": {
@@ -7956,9 +7956,9 @@
         "away_w": 1.02
       },
       "close": {
-        "home_w": 0.99,
+        "home_w": 0.98,
         "handicap": -1.25,
-        "away_w": 0.85
+        "away_w": 0.87
       }
     },
     "pin_ou": {
@@ -7970,7 +7970,7 @@
       "close": {
         "over": 0.96,
         "line": 2.5,
-        "under": 0.86
+        "under": 0.88
       }
     },
     "hkjc_ah": {
@@ -8004,21 +8004,21 @@
         "away_w": 1.07
       },
       "close": {
-        "home_w": 0.71,
-        "handicap": -1.0,
-        "away_w": 1.2
+        "home_w": 1.02,
+        "handicap": -1.25,
+        "away_w": 0.86
       }
     },
     "liji_ou": {
       "open": {
-        "over": 0.0,
-        "line": 0.0,
-        "under": 0.0
+        "over": 0.82,
+        "line": 2.25,
+        "under": 1.04
       },
       "close": {
-        "over": 0.0,
-        "line": 0.0,
-        "under": 0.0
+        "over": 0.82,
+        "line": 2.25,
+        "under": 1.04
       }
     },
     "ms_ah": {
@@ -8028,9 +8028,9 @@
         "away_w": 0.7
       },
       "close": {
-        "home_w": 0.67,
+        "home_w": 0.64,
         "handicap": -1.0,
-        "away_w": 1.2
+        "away_w": 1.25
       }
     },
     "ms_ou": {
@@ -8040,9 +8040,9 @@
         "under": 0.99
       },
       "close": {
-        "over": 0.77,
+        "over": 0.74,
         "line": 2.25,
-        "under": 1.05
+        "under": 1.08
       }
     },
     "william_ah": {
@@ -8052,9 +8052,9 @@
         "away_w": 0.67
       },
       "close": {
-        "home_w": 0.96,
+        "home_w": 0.95,
         "handicap": -1.25,
-        "away_w": 0.69
+        "away_w": 0.7
       }
     },
     "william_ou": {
@@ -8093,9 +8093,9 @@
         "away_w": 0.82
       },
       "close": {
-        "home_w": 0.97,
+        "home_w": 0.98,
         "handicap": -0.5,
-        "away_w": 0.86
+        "away_w": 0.87
       }
     },
     "pin_ou": {
@@ -8107,7 +8107,7 @@
       "close": {
         "over": 1.0,
         "line": 2.25,
-        "under": 0.83
+        "under": 0.84
       }
     },
     "hkjc_ah": {
@@ -8230,9 +8230,9 @@
         "away_w": 0.79
       },
       "close": {
-        "home_w": 0.78,
+        "home_w": 0.79,
         "handicap": -0.25,
-        "away_w": 1.08
+        "away_w": 1.09
       }
     },
     "pin_ou": {
@@ -8244,7 +8244,7 @@
       "close": {
         "over": 0.79,
         "line": 2.0,
-        "under": 1.05
+        "under": 1.06
       }
     },
     "hkjc_ah": {
@@ -8314,9 +8314,9 @@
         "under": 1.06
       },
       "close": {
-        "over": 0.77,
+        "over": 0.76,
         "line": 2.0,
-        "under": 1.05
+        "under": 1.06
       }
     },
     "william_ah": {
@@ -8516,9 +8516,9 @@
         "under": 0.82
       },
       "close": {
-        "over": 1.03,
+        "over": 1.04,
         "line": 2.5,
-        "under": 0.8
+        "under": 0.79
       }
     },
     "hkjc_ah": {
