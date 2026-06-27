@@ -1790,9 +1790,10 @@ def save_to_db(matches, db_path, date_str=None):
         liji_ah_data = m.get('liji_ah', {})
         ms_ah_data = m.get('ms_ah', {})
 
-        # 威廉希尔 1X2 (from oyzs)
+        # 威廉希尔 1X2 + AH (from oyzs)
         william_1x2_open = m.get('william_1x2_open', {})
         william_1x2_close = m.get('william_1x2_close', {})
+        william_ah_data = m.get('william_ah', {})
         # 用close写入william_1x2_w/d/l（与fetch_data.py一致）
         w1x2_w = william_1x2_close.get('w') or None
         w1x2_d = william_1x2_close.get('d') or None
@@ -1869,6 +1870,13 @@ def save_to_db(matches, db_path, date_str=None):
         ms_ah_open_hc_val = _or_none(ms_ah_data.get('open', {}), 'handicap', 'home_w', 'away_w', k='handicap')
         ms_ah_open_hw_val = _or_none(ms_ah_data.get('open', {}), 'handicap', 'home_w', 'away_w', k='home_w')
         ms_ah_open_aw_val = _or_none(ms_ah_data.get('open', {}), 'handicap', 'home_w', 'away_w', k='away_w')
+        # 威廉希尔 AH
+        william_ah_hc_val = _or_none(william_ah_data.get('close', {}), 'handicap', 'home_w', 'away_w', k='handicap')
+        william_ah_hw_val = _or_none(william_ah_data.get('close', {}), 'handicap', 'home_w', 'away_w', k='home_w')
+        william_ah_aw_val = _or_none(william_ah_data.get('close', {}), 'handicap', 'home_w', 'away_w', k='away_w')
+        william_ah_open_hc_val = _or_none(william_ah_data.get('open', {}), 'handicap', 'home_w', 'away_w', k='handicap')
+        william_ah_open_hw_val = _or_none(william_ah_data.get('open', {}), 'handicap', 'home_w', 'away_w', k='home_w')
+        william_ah_open_aw_val = _or_none(william_ah_data.get('open', {}), 'handicap', 'home_w', 'away_w', k='away_w')
 
         cursor.execute("""
             UPDATE poisson_predictions SET
@@ -1925,7 +1933,13 @@ def save_to_db(matches, db_path, date_str=None):
                 liji_ou_open_over = COALESCE(?, liji_ou_open_over), liji_ou_open_line = COALESCE(?, liji_ou_open_line), liji_ou_open_under = COALESCE(?, liji_ou_open_under),
                 ms_ou_over = COALESCE(?, ms_ou_over), ms_ou_line = COALESCE(?, ms_ou_line), ms_ou_under = COALESCE(?, ms_ou_under),
                 ms_ou_open_over = COALESCE(?, ms_ou_open_over), ms_ou_open_line = COALESCE(?, ms_ou_open_line), ms_ou_open_under = COALESCE(?, ms_ou_open_under),
-                william_1x2_w = COALESCE(?, william_1x2_w), william_1x2_d = COALESCE(?, william_1x2_d), william_1x2_l = COALESCE(?, william_1x2_l)
+                william_1x2_w = COALESCE(?, william_1x2_w), william_1x2_d = COALESCE(?, william_1x2_d), william_1x2_l = COALESCE(?, william_1x2_l),
+                william_ah_handicap = COALESCE(?, william_ah_handicap),
+                william_ah_home_water = COALESCE(?, william_ah_home_water),
+                william_ah_away_water = COALESCE(?, william_ah_away_water),
+                william_ah_open_handicap = COALESCE(?, william_ah_open_handicap),
+                william_ah_open_home_water = COALESCE(?, william_ah_open_home_water),
+                william_ah_open_away_water = COALESCE(?, william_ah_open_away_water)
             WHERE id = ?
         """, (
             pin_open.get('w', 0), pin_open.get('d', 0), pin_open.get('l', 0),
@@ -1956,6 +1970,8 @@ def save_to_db(matches, db_path, date_str=None):
             ms_ou_close_o, ms_ou_close_l, ms_ou_close_u,
             ms_ou_open_o, ms_ou_open_l, ms_ou_open_u,
             w1x2_w, w1x2_d, w1x2_l,
+            william_ah_hc_val, william_ah_hw_val, william_ah_aw_val,
+            william_ah_open_hc_val, william_ah_open_hw_val, william_ah_open_aw_val,
             record_id
         ))
         updated += 1
