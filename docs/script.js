@@ -169,15 +169,9 @@ function openAhModal(record) {
     line: lijiOu.line || null, over: lijiOu.over || null, under: lijiOu.under || null,
     open: lijiOuOpen.over ? { line: lijiOuOpen.line, over: lijiOuOpen.over, under: lijiOuOpen.under } : {}
   } : null;
-  const liji1x2 = (record.liji || {})['1x2'] || {};
-  const liji1x2Obj = (liji1x2.close || {}).w > 0 || (liji1x2.open || {}).w > 0 ? {
-    w: (liji1x2.close || {}).w || 0,
-    d: (liji1x2.close || {}).d || 0,
-    l: (liji1x2.close || {}).l || 0,
-    open: (liji1x2.open || {}).w > 0 ? liji1x2.open : {}
-  } : null;
-  if (lijiAhObj || lijiOuObj || liji1x2Obj) {
-    html += compactCompany('利记', 'ah-badge-liji', liji1x2Obj, lijiAhObj, lijiOuObj);
+  // liji1x2 moved to top table only
+  if (lijiAhObj || lijiOuObj) {
+    html += compactCompany('利记', 'ah-badge-liji', null, lijiAhObj, lijiOuObj);
   }
 
   // 百家平均已移除，HKJC亚盘已在上方显示
@@ -196,15 +190,9 @@ function openAhModal(record) {
     line: msOu.line || null, over: msOu.over || null, under: msOu.under || null,
     open: msOuOpen.over ? { line: msOuOpen.line, over: msOuOpen.over, under: msOuOpen.under } : {}
   } : null;
-  const ms1x2 = (record.ms || {})['1x2'] || {};
-  const ms1x2Obj = (ms1x2.close || {}).w > 0 || (ms1x2.open || {}).w > 0 ? {
-    w: (ms1x2.close || {}).w || 0,
-    d: (ms1x2.close || {}).d || 0,
-    l: (ms1x2.close || {}).l || 0,
-    open: (ms1x2.open || {}).w > 0 ? ms1x2.open : {}
-  } : null;
-  if (msAhObj || msOuObj || ms1x2Obj) {
-    html += compactCompany('明升', 'ah-badge-ms', ms1x2Obj, msAhObj, msOuObj);
+  // ms1x2 moved to top table only
+  if (msAhObj || msOuObj) {
+    html += compactCompany('明升', 'ah-badge-ms', null, msAhObj, msOuObj);
   }
 
   // 威廉希尔
