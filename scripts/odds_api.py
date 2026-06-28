@@ -1036,7 +1036,7 @@ def fetch_all(date_str: str = None, companies: List[str] = None,
                     "margin": margin(cw, cd, cl),
                     "implied_prob": dict(zip(["w","d","l"], _calc_implied(cw, cd, cl))),
                 }
-            # HKJC AH + OU
+            # HKJC 1X2 + AH + OU
             target["hkjc_ah"] = hkjc.get("ah", {})
             target["hkjc_ou"] = hkjc.get("ou", {})
             oyzs_merged_counts['hkjc'] += 1
@@ -1054,7 +1054,7 @@ def fetch_all(date_str: str = None, companies: List[str] = None,
                     "margin": margin(cw, cd, cl),
                     "implied_prob": dict(zip(["w","d","l"], _calc_implied(cw, cd, cl))),
                 }
-            # 利记 AH + OU
+            # 利记 1X2 + AH + OU
             target["liji_ah"] = liji.get("ah", {})
             target["liji_ou"] = liji.get("ou", {})
             oyzs_merged_counts['liji'] += 1
@@ -1072,7 +1072,7 @@ def fetch_all(date_str: str = None, companies: List[str] = None,
                     "margin": margin(cw, cd, cl),
                     "implied_prob": dict(zip(["w","d","l"], _calc_implied(cw, cd, cl))),
                 }
-            # 明升 AH + OU
+            # 明升 1X2 + AH + OU
             target["ms_ah"] = ms.get("ah", {})
             target["ms_ou"] = ms.get("ou", {})
             oyzs_merged_counts['mingsheng'] += 1
@@ -1112,24 +1112,28 @@ def fetch_all(date_str: str = None, companies: List[str] = None,
                 "away": oyzs_match.get("away", ""),
                 "match_id": oyzs_match.get("match_id", ""),
             }
-            # Pinnacle AH + OU
+            # Pinnacle 1X2 + AH + OU
             if "pinnacle" in companies:
                 pin = companies["pinnacle"]
+                entry["pin_1x2"] = pin.get("1x2", {})
                 entry["pin_ah"] = pin.get("ah", {})
                 entry["pin_ou"] = pin.get("ou", {})
-            # HKJC AH + OU
+            # HKJC 1X2 + AH + OU
             if "hkjc" in companies:
                 hkjc = companies["hkjc"]
+                entry["hkjc_1x2"] = hkjc.get("1x2", {})
                 entry["hkjc_ah"] = hkjc.get("ah", {})
                 entry["hkjc_ou"] = hkjc.get("ou", {})
-            # 利记 AH + OU
+            # 利记 1X2 + AH + OU
             liji = companies.get("liji") or companies.get("利记")
             if liji:
+                entry["liji_1x2"] = liji.get("1x2", {})
                 entry["liji_ah"] = liji.get("ah", {})
                 entry["liji_ou"] = liji.get("ou", {})
-            # 明升 AH + OU
+            # 明升 1X2 + AH + OU
             ms = companies.get("mingsheng") or companies.get("明升") or companies.get("sb")
             if ms:
+                entry["ms_1x2"] = ms.get("1x2", {})
                 entry["ms_ah"] = ms.get("ah", {})
                 entry["ms_ou"] = ms.get("ou", {})
             # 威廉希尔 AH + OU + 1X2

@@ -1095,6 +1095,24 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=True):
                                 'ah': entry.get('hkjc_ah', {}),
                                 'ou': entry.get('hkjc_ou', {}),
                             }
+                        if entry.get('liji_1x2') or entry.get('liji_ah') or entry.get('liji_ou'):
+                            companies['liji'] = {
+                                '1x2': entry.get('liji_1x2', {}),
+                                'ah': entry.get('liji_ah', {}),
+                                'ou': entry.get('liji_ou', {}),
+                            }
+                        if entry.get('ms_1x2') or entry.get('ms_ah') or entry.get('ms_ou'):
+                            companies['mingsheng'] = {
+                                '1x2': entry.get('ms_1x2', {}),
+                                'ah': entry.get('ms_ah', {}),
+                                'ou': entry.get('ms_ou', {}),
+                            }
+                        if entry.get('william_1x2') or entry.get('william_ah') or entry.get('william_ou'):
+                            companies['william'] = {
+                                '1x2': entry.get('william_1x2', {}),
+                                'ah': entry.get('william_ah', {}),
+                                'ou': entry.get('william_ou', {}),
+                            }
                         oyzs_data[key] = {'home': entry.get('home', ''), 'away': entry.get('away', ''), 'companies': companies}
                 print(f"[INFO] oyzs缓存: {len(oyzs_data)}场")
             except Exception as e:
@@ -1266,9 +1284,11 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=True):
             print(f"  威廉初盘: {william_1x2_open.get('w',0):.2f}/{william_1x2_open.get('d',0):.2f}/{william_1x2_open.get('l',0):.2f}")
             print(f"  威廉终盘: {william_1x2_close['w']:.2f}/{william_1x2_close['d']:.2f}/{william_1x2_close['l']:.2f}")
 
-        # === 利记/明升 (from oyzs) ===
+        # === 利记/明升 1X2 + AH + OU (from oyzs) ===
         liji_oyzs = oyzs_companies.get('liji') or oyzs_companies.get('利记') or {}
         ms_oyzs = oyzs_companies.get('mingsheng') or oyzs_companies.get('明升') or oyzs_companies.get('sb') or {}
+        m['liji_1x2'] = liji_oyzs.get('1x2', {})
+        m['ms_1x2'] = ms_oyzs.get('1x2', {})
         m['ou_liji'] = liji_oyzs.get('ou', {})
         m['ou_ms'] = ms_oyzs.get('ou', {})
         m['liji_ah'] = liji_oyzs.get('ah', {})
@@ -1613,6 +1633,11 @@ def save_to_db(matches, db_path, date_str=None):
         ('liji_ou_open_over', 'REAL'), ('liji_ou_open_line', 'REAL'), ('liji_ou_open_under', 'REAL'),
         ('ms_ou_over', 'REAL'), ('ms_ou_line', 'REAL'), ('ms_ou_under', 'REAL'),
         ('ms_ou_open_over', 'REAL'), ('ms_ou_open_line', 'REAL'), ('ms_ou_open_under', 'REAL'),
+        # 利记/明升 1X2 欧赔
+        ('liji_1x2_w', 'REAL'), ('liji_1x2_d', 'REAL'), ('liji_1x2_l', 'REAL'),
+        ('liji_1x2_open_w', 'REAL'), ('liji_1x2_open_d', 'REAL'), ('liji_1x2_open_l', 'REAL'),
+        ('ms_1x2_w', 'REAL'), ('ms_1x2_d', 'REAL'), ('ms_1x2_l', 'REAL'),
+        ('ms_1x2_open_w', 'REAL'), ('ms_1x2_open_d', 'REAL'), ('ms_1x2_open_l', 'REAL'),
     ]
     for col, ctype in new_columns:
         try:
@@ -1799,6 +1824,14 @@ def save_to_db(matches, db_path, date_str=None):
         w1x2_d = william_1x2_close.get('d') or None
         w1x2_l = william_1x2_close.get('l') or None
 
+        # 利记/明升 1X2 (from oyzs)
+        liji_1x2 = m.get('liji_1x2', {})
+        liji_1x2_open = liji_1x2.get('open', {})
+        liji_1x2_close = liji_1x2.get('close', {})
+        ms_1x2 = m.get('ms_1x2', {})
+        ms_1x2_open = ms_1x2.get('open', {})
+        ms_1x2_close = ms_1x2.get('close', {})
+
         # 提取大小球即时/初盘数据
         liji_ou_close = ou_liji_m.get('close', {})
         liji_ou_open = ou_liji_m.get('open', {})
@@ -1934,6 +1967,10 @@ def save_to_db(matches, db_path, date_str=None):
                 ms_ou_over = COALESCE(?, ms_ou_over), ms_ou_line = COALESCE(?, ms_ou_line), ms_ou_under = COALESCE(?, ms_ou_under),
                 ms_ou_open_over = COALESCE(?, ms_ou_open_over), ms_ou_open_line = COALESCE(?, ms_ou_open_line), ms_ou_open_under = COALESCE(?, ms_ou_open_under),
                 william_1x2_w = COALESCE(?, william_1x2_w), william_1x2_d = COALESCE(?, william_1x2_d), william_1x2_l = COALESCE(?, william_1x2_l),
+                liji_1x2_w = COALESCE(?, liji_1x2_w), liji_1x2_d = COALESCE(?, liji_1x2_d), liji_1x2_l = COALESCE(?, liji_1x2_l),
+                liji_1x2_open_w = COALESCE(?, liji_1x2_open_w), liji_1x2_open_d = COALESCE(?, liji_1x2_open_d), liji_1x2_open_l = COALESCE(?, liji_1x2_open_l),
+                ms_1x2_w = COALESCE(?, ms_1x2_w), ms_1x2_d = COALESCE(?, ms_1x2_d), ms_1x2_l = COALESCE(?, ms_1x2_l),
+                ms_1x2_open_w = COALESCE(?, ms_1x2_open_w), ms_1x2_open_d = COALESCE(?, ms_1x2_open_d), ms_1x2_open_l = COALESCE(?, ms_1x2_open_l),
                 william_ah_handicap = COALESCE(?, william_ah_handicap),
                 william_ah_home_water = COALESCE(?, william_ah_home_water),
                 william_ah_away_water = COALESCE(?, william_ah_away_water),
@@ -1970,6 +2007,10 @@ def save_to_db(matches, db_path, date_str=None):
             ms_ou_close_o, ms_ou_close_l, ms_ou_close_u,
             ms_ou_open_o, ms_ou_open_l, ms_ou_open_u,
             w1x2_w, w1x2_d, w1x2_l,
+            liji_1x2_close.get('w') or None, liji_1x2_close.get('d') or None, liji_1x2_close.get('l') or None,
+            liji_1x2_open.get('w') or None, liji_1x2_open.get('d') or None, liji_1x2_open.get('l') or None,
+            ms_1x2_close.get('w') or None, ms_1x2_close.get('d') or None, ms_1x2_close.get('l') or None,
+            ms_1x2_open.get('w') or None, ms_1x2_open.get('d') or None, ms_1x2_open.get('l') or None,
             william_ah_hc_val, william_ah_hw_val, william_ah_aw_val,
             william_ah_open_hc_val, william_ah_open_hw_val, william_ah_open_aw_val,
             record_id
