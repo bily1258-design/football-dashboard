@@ -159,8 +159,15 @@ function openAhModal(record) {
     line: lijiOu.line || null, over: lijiOu.over || null, under: lijiOu.under || null,
     open: lijiOuOpen.over ? { line: lijiOuOpen.line, over: lijiOuOpen.over, under: lijiOuOpen.under } : {}
   } : null;
-  if (lijiAhObj || lijiOuObj) {
-    html += compactCompany('利记', 'ah-badge-liji', null, lijiAhObj, lijiOuObj);
+  const liji1x2 = (record.liji || {})['1x2'] || {};
+  const liji1x2Obj = (liji1x2.close || {}).w > 0 || (liji1x2.open || {}).w > 0 ? {
+    w: (liji1x2.close || {}).w || 0,
+    d: (liji1x2.close || {}).d || 0,
+    l: (liji1x2.close || {}).l || 0,
+    open: (liji1x2.open || {}).w > 0 ? liji1x2.open : {}
+  } : null;
+  if (lijiAhObj || lijiOuObj || liji1x2Obj) {
+    html += compactCompany('利记', 'ah-badge-liji', liji1x2Obj, lijiAhObj, lijiOuObj);
   }
 
   // 百家平均已移除，HKJC亚盘已在上方显示
@@ -179,8 +186,15 @@ function openAhModal(record) {
     line: msOu.line || null, over: msOu.over || null, under: msOu.under || null,
     open: msOuOpen.over ? { line: msOuOpen.line, over: msOuOpen.over, under: msOuOpen.under } : {}
   } : null;
-  if (msAhObj || msOuObj) {
-    html += compactCompany('明升', 'ah-badge-ms', null, msAhObj, msOuObj);
+  const ms1x2 = (record.ms || {})['1x2'] || {};
+  const ms1x2Obj = (ms1x2.close || {}).w > 0 || (ms1x2.open || {}).w > 0 ? {
+    w: (ms1x2.close || {}).w || 0,
+    d: (ms1x2.close || {}).d || 0,
+    l: (ms1x2.close || {}).l || 0,
+    open: (ms1x2.open || {}).w > 0 ? ms1x2.open : {}
+  } : null;
+  if (msAhObj || msOuObj || ms1x2Obj) {
+    html += compactCompany('明升', 'ah-badge-ms', ms1x2Obj, msAhObj, msOuObj);
   }
 
   // 威廉希尔
@@ -198,7 +212,9 @@ function openAhModal(record) {
     open: {}
   } : null;
   if (williamAhObj || williamOuObj) {
-    html += compactCompany('威廉希尔', 'ah-badge-will', null, williamAhObj, williamOuObj);
+    const william1x2 = record.william_1x2 || {};
+    const william1x2Obj = (william1x2.w || 0) > 0 ? { w: william1x2.w, d: william1x2.d, l: william1x2.l } : null;
+    html += compactCompany('威廉希尔', 'ah-badge-will', william1x2Obj, williamAhObj, williamOuObj);
   }
 
   // ===== HHAD让球 =====

@@ -121,6 +121,10 @@ def load_from_db(db_path: str, max_days=999) -> dict:
         ('hkjc_ou_open_line', 'REAL'), ('hkjc_ou_open_over', 'REAL'), ('hkjc_ou_open_under', 'REAL'),
         ('hkjc_open_w', 'REAL'), ('hkjc_open_d', 'REAL'), ('hkjc_open_l', 'REAL'),
         ('william_1x2_w', 'REAL'), ('william_1x2_d', 'REAL'), ('william_1x2_l', 'REAL'),
+        ('liji_1x2_w', 'REAL'), ('liji_1x2_d', 'REAL'), ('liji_1x2_l', 'REAL'),
+        ('liji_1x2_open_w', 'REAL'), ('liji_1x2_open_d', 'REAL'), ('liji_1x2_open_l', 'REAL'),
+        ('ms_1x2_w', 'REAL'), ('ms_1x2_d', 'REAL'), ('ms_1x2_l', 'REAL'),
+        ('ms_1x2_open_w', 'REAL'), ('ms_1x2_open_d', 'REAL'), ('ms_1x2_open_l', 'REAL'),
         ('william_ah_handicap', 'REAL'), ('william_ah_home_water', 'REAL'), ('william_ah_away_water', 'REAL'),
         ('william_ah_open_handicap', 'REAL'), ('william_ah_open_home_water', 'REAL'), ('william_ah_open_away_water', 'REAL'),
         ('william_ou_over', 'REAL'), ('william_ou_line', 'REAL'), ('william_ou_under', 'REAL'),
@@ -168,7 +172,11 @@ def load_from_db(db_path: str, max_days=999) -> dict:
         william_1x2_w, william_1x2_d, william_1x2_l, \
         william_ah_handicap, william_ah_home_water, william_ah_away_water, \
         william_ah_open_handicap, william_ah_open_home_water, william_ah_open_away_water, \
-        william_ou_over, william_ou_line, william_ou_under \
+        william_ou_over, william_ou_line, william_ou_under, \
+        liji_1x2_w, liji_1x2_d, liji_1x2_l, \
+        liji_1x2_open_w, liji_1x2_open_d, liji_1x2_open_l, \
+        ms_1x2_w, ms_1x2_d, ms_1x2_l, \
+        ms_1x2_open_w, ms_1x2_open_d, ms_1x2_open_l \
         FROM poisson_predictions WHERE date >= ? ORDER BY date DESC, kickoff_time, id", (cutoff,))
     by_date = {}
     for r in cur.fetchall():
@@ -245,6 +253,18 @@ def load_from_db(db_path: str, max_days=999) -> dict:
                 },
             },
             'liji': {
+                '1x2': {
+                    'close': {
+                        'w': d.get('liji_1x2_w', 0) or 0,
+                        'd': d.get('liji_1x2_d', 0) or 0,
+                        'l': d.get('liji_1x2_l', 0) or 0,
+                    },
+                    'open': {
+                        'w': d.get('liji_1x2_open_w', 0) or 0,
+                        'd': d.get('liji_1x2_open_d', 0) or 0,
+                        'l': d.get('liji_1x2_open_l', 0) or 0,
+                    },
+                },
                 'close': {
                     'handicap': d.get('liji_handicap', None),
                     'home_w': d.get('liji_home_water', 0) or 0,
@@ -257,6 +277,18 @@ def load_from_db(db_path: str, max_days=999) -> dict:
                 },
             },
             'ms': {
+                '1x2': {
+                    'close': {
+                        'w': d.get('ms_1x2_w', 0) or 0,
+                        'd': d.get('ms_1x2_d', 0) or 0,
+                        'l': d.get('ms_1x2_l', 0) or 0,
+                    },
+                    'open': {
+                        'w': d.get('ms_1x2_open_w', 0) or 0,
+                        'd': d.get('ms_1x2_open_d', 0) or 0,
+                        'l': d.get('ms_1x2_open_l', 0) or 0,
+                    },
+                },
                 'close': {
                     'handicap': d.get('ms_handicap', None),
                     'home_w': d.get('ms_home_water', 0) or 0,
