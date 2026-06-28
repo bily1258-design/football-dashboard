@@ -84,7 +84,11 @@ def load_db_predictions(db_path: str, date_str: str) -> List[Dict]:
             william_1x2_w, william_1x2_d, william_1x2_l,
             william_ah_handicap, william_ah_home_water, william_ah_away_water,
             william_ah_open_handicap, william_ah_open_home_water, william_ah_open_away_water,
-            william_ou_over, william_ou_line, william_ou_under
+            william_ou_over, william_ou_line, william_ou_under,
+            liji_1x2_w, liji_1x2_d, liji_1x2_l,
+            liji_1x2_open_w, liji_1x2_open_d, liji_1x2_open_l,
+            ms_1x2_w, ms_1x2_d, ms_1x2_l,
+            ms_1x2_open_w, ms_1x2_open_d, ms_1x2_open_l
         FROM poisson_predictions
         WHERE date = ? OR (kickoff_time >= ? AND kickoff_time <= ?)
         ORDER BY kickoff_time, id
@@ -359,6 +363,18 @@ def merge_prediction(rec: Dict, om_match: Optional[Dict]) -> Dict:
             },
         },
         'liji': {
+            '1x2': {
+                'close': {
+                    'w': rec.get('liji_1x2_w', 0) or 0,
+                    'd': rec.get('liji_1x2_d', 0) or 0,
+                    'l': rec.get('liji_1x2_l', 0) or 0,
+                },
+                'open': {
+                    'w': rec.get('liji_1x2_open_w', 0) or 0,
+                    'd': rec.get('liji_1x2_open_d', 0) or 0,
+                    'l': rec.get('liji_1x2_open_l', 0) or 0,
+                },
+            },
             'close': {
                 'handicap': rec.get('liji_handicap', None),
                 'home_w': rec.get('liji_home_water', 0) or 0,
@@ -371,6 +387,18 @@ def merge_prediction(rec: Dict, om_match: Optional[Dict]) -> Dict:
             },
         },
         'ms': {
+            '1x2': {
+                'close': {
+                    'w': rec.get('ms_1x2_w', 0) or 0,
+                    'd': rec.get('ms_1x2_d', 0) or 0,
+                    'l': rec.get('ms_1x2_l', 0) or 0,
+                },
+                'open': {
+                    'w': rec.get('ms_1x2_open_w', 0) or 0,
+                    'd': rec.get('ms_1x2_open_d', 0) or 0,
+                    'l': rec.get('ms_1x2_open_l', 0) or 0,
+                },
+            },
             'close': {
                 'handicap': rec.get('ms_handicap', None),
                 'home_w': rec.get('ms_home_water', 0) or 0,
