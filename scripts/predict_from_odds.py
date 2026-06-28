@@ -477,7 +477,11 @@ def insert_predictions(rows, db_path):
                    pinnacle_close_w, pinnacle_close_d, pinnacle_close_l,
                    avg_odds_close_w, avg_odds_close_d, avg_odds_close_l,
                    pin_ah_handicap, pin_ah_home_water, pin_ah_away_water,
-                   pin_ou_line, pin_ou_over, pin_ou_under
+                   pin_ou_line, pin_ou_over, pin_ou_under,
+                   liji_1x2_w, liji_1x2_d, liji_1x2_l,
+                   liji_1x2_open_w, liji_1x2_open_d, liji_1x2_open_l,
+                   ms_1x2_w, ms_1x2_d, ms_1x2_l,
+                   ms_1x2_open_w, ms_1x2_open_d, ms_1x2_open_l
             FROM poisson_predictions
             WHERE date = ? AND home_team = ? AND away_team = ?
         """, (r['date'], r['home_team'], r['away_team']))
@@ -516,6 +520,11 @@ def insert_predictions(rows, db_path):
             final_pin_ou_l = _merge(r.get('pin_ou_line'), old[19])
             final_pin_ou_o = _merge(r.get('pin_ou_over'), old[20])
             final_pin_ou_u = _merge(r.get('pin_ou_under'), old[21])
+            # liji/ms 1x2: 直接保留旧值（predict不产生这些数据）
+            final_liji_1x2_w = old[22]; final_liji_1x2_d = old[23]; final_liji_1x2_l = old[24]
+            final_liji_1x2_ow = old[25]; final_liji_1x2_od = old[26]; final_liji_1x2_ol = old[27]
+            final_ms_1x2_w = old[28]; final_ms_1x2_d = old[29]; final_ms_1x2_l = old[30]
+            final_ms_1x2_ow = old[31]; final_ms_1x2_od = old[32]; final_ms_1x2_ol = old[33]
             
             # 删除旧记录后插入合并后的记录
             cur.execute("DELETE FROM poisson_predictions WHERE date = ? AND home_team = ? AND away_team = ?",
@@ -541,8 +550,12 @@ def insert_predictions(rows, db_path):
                     william_ou_over, william_ou_line, william_ou_under,
                     pin_ah_handicap, pin_ah_home_water, pin_ah_away_water,
                     pin_ou_line, pin_ou_over, pin_ou_under,
+                    liji_1x2_w, liji_1x2_d, liji_1x2_l,
+                    liji_1x2_open_w, liji_1x2_open_d, liji_1x2_open_l,
+                    ms_1x2_w, ms_1x2_d, ms_1x2_l,
+                    ms_1x2_open_w, ms_1x2_open_d, ms_1x2_open_l,
                     confidence_tier, calibrated_prob, best_direction_cn
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 r['date'], final_ko, r['league'], r['home_team'], r['away_team'],
                 r['prediction'], r['prediction_prob'],
@@ -563,6 +576,10 @@ def insert_predictions(rows, db_path):
                 final_william_ou_o, final_william_ou_l, final_william_ou_u,
                 final_pin_ah_h, final_pin_ah_hw, final_pin_ah_aw,
                 final_pin_ou_l, final_pin_ou_o, final_pin_ou_u,
+                final_liji_1x2_w, final_liji_1x2_d, final_liji_1x2_l,
+                final_liji_1x2_ow, final_liji_1x2_od, final_liji_1x2_ol,
+                final_ms_1x2_w, final_ms_1x2_d, final_ms_1x2_l,
+                final_ms_1x2_ow, final_ms_1x2_od, final_ms_1x2_ol,
                 r.get('confidence_tier', ''), r.get('calibrated_prob', 0), r.get('best_direction_cn', ''),
             ))
             upserted += 1
