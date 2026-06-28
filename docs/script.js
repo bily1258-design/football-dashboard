@@ -41,6 +41,8 @@ function openAhModal(record) {
   const pin = record.pinnacle || {};
   const hkjc = record.hkjc || {};
   const william = record.william_1x2 || {};
+  const liji1x2 = ((record.liji || {})['1x2'] || {}).close || {};
+  const ms1x2 = ((record.ms || {})['1x2'] || {}).close || {};
 
   // ── 1X2对比表（顶部4家一行）──
   let html = '<table class="ah-odds-table">';
@@ -53,6 +55,14 @@ function openAhModal(record) {
   html += `<td>${hkjc.w || '-'}</td><td>${hkjc.d || '-'}</td><td>${hkjc.l || '-'}</td></tr>`;
   html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-will">威廉希尔</span></td>`;
   html += `<td>${william.w || '-'}</td><td>${william.d || '-'}</td><td>${william.l || '-'}</td></tr>`;
+  if ((liji1x2.w || 0) > 0) {
+    html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-liji">利记</span></td>`;
+    html += `<td>${liji1x2.w || '-'}</td><td>${liji1x2.d || '-'}</td><td>${liji1x2.l || '-'}</td></tr>`;
+  }
+  if ((ms1x2.w || 0) > 0) {
+    html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-ms">明升</span></td>`;
+    html += `<td>${ms1x2.w || '-'}</td><td>${ms1x2.d || '-'}</td><td>${ms1x2.l || '-'}</td></tr>`;
+  }
   html += '</table>';
 
   // ── 各公司紧凑两行表 ──
