@@ -488,7 +488,7 @@ function loadDate() {
     const kickoff = (!r.kickoff || r.kickoff === '待定') ? '-' : r.kickoff.substring(11, 16);
     const probPct = (r.prediction_prob * 100).toFixed(1) + '%';
     const probLabel = r.prob_direction ? `${r.prob_direction} ${probPct}` : probPct;
-    const probDirClass = r.prob_direction === '主胜' ? 'hit' : (r.prob_direction === '客胜' ? 'miss' : 'draw');
+    const probDirClass = r.prob_hit ? 'hit' : (hasResult ? 'miss' : 'pending');
     const hasPoisson = r.poisson && (r.poisson.w > 0 || r.poisson.d > 0 || r.poisson.l > 0);
     const poissonCell = hasPoisson
       ? `<td class="poisson-clickable" data-date="${sel}" data-idx="${i}">${poissonStr}</td>`
