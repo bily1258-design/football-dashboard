@@ -255,12 +255,20 @@ function openAhModal(record) {
   }
 
   // ===== Pinnacle vs HKJC 分歧对比（用即时盘） =====
-  if (hkjc.w > 0 && pin.w > 0 && (pin.w !== hkjc.w || pin.d !== hkjc.d)) {
-    const hW = ((pin.w - hkjc.w) / hkjc.w * 100).toFixed(1);
-    const hD = ((pin.d - hkjc.d) / hkjc.d * 100).toFixed(1);
-    const hL = ((pin.l - hkjc.l) / hkjc.l * 100).toFixed(1);
+  // Pinnacle vs 参考行 分歧（fallback: HKJC → 威廉希尔 → 利记 → 明升）
+  const refChain = [
+    { name: 'HKJC', data: hkjc },
+    { name: '威廉希尔', data: william },
+    { name: '利记', data: liji1x2 },
+    { name: '明升', data: ms1x2 }
+  ];
+  const ref = refChain.find(r => (r.data.w || 0) > 0);
+  if (ref && pin.w > 0 && (pin.w !== ref.data.w || pin.d !== ref.data.d)) {
+    const hW = ((pin.w - ref.data.w) / ref.data.w * 100).toFixed(1);
+    const hD = ((pin.d - ref.data.d) / ref.data.d * 100).toFixed(1);
+    const hL = ((pin.l - ref.data.l) / ref.data.l * 100).toFixed(1);
     const hwarn = Math.abs(parseFloat(hW)) > 8 || Math.abs(parseFloat(hD)) > 8 || Math.abs(parseFloat(hL)) > 8;
-    html += '<div class="ah-section-title">Pinnacle vs HKJC 分歧</div>';
+    html += `<div class="ah-section-title">Pinnacle vs ${ref.name} 分歧</div>`;
     html += `<div class="ah-diff ${hwarn ? 'ah-diff-warn' : ''}">`;
     html += `胜 <span class="${parseFloat(hW) > 0 ? 'ev-pos' : 'ev-neg'}">${hW}%</span> | `;
     html += `平 <span class="${parseFloat(hD) > 0 ? 'ev-pos' : 'ev-neg'}">${hD}%</span> | `;
