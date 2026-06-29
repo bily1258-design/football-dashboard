@@ -10,7 +10,7 @@
 
 对齐策略：
   1. 以 DB 预测为主轴（有预测才有看板行）
-  2. 赛果从 DB actual_outcome 读取（由 fetch_zgzcw_results.py --backfill 写入）
+  2. 赛果从 DB actual_outcome 读取（由 review.py (500.com赛果回填) 写入）
   3. OddsMagnet 赔率按队名匹配补充 Pinnacle/HKJC
 """
 
@@ -249,7 +249,7 @@ def match_om_odds(team_home: str, team_away: str, om_data: Dict) -> Optional[Dic
 
 def merge_prediction(rec: Dict, om_match: Optional[Dict]) -> Dict:
     """合并单条预测记录 + OM赔率"""
-    # 解析已有赛果（由 fetch_zgzcw_results.py --backfill 写入 DB）
+    # 解析已有赛果（由 review.py (500.com赛果回填) 写入 DB）
     existing_outcome = rec.get('actual_outcome', '') or ''
     result_label, score, hs, as_ = parse_score(existing_outcome)
 
