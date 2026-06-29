@@ -4,7 +4,7 @@
 合并竞彩 + 北单复盘逻辑
 
 【数据源说明】：
-- 赛果：500.com (fetch_500com_results.py)
+- 赛果：500.com (fetch_results_cache.py)
 - 赔率：中国足彩网 zgzcw.com (fetch_pinnacle_odds.py)
 
 功能：赛果回填、命中分析、EV偏差分析、自动调参、生成统一复盘报告
@@ -194,23 +194,6 @@ def get_top_direction(final_win, final_draw, final_loss) -> str:
 
 # ========== 赛果回填 ==========
 
-def backfill_from_zgzcw(target_date: str) -> int:
-    """从足彩网竞彩比分直播抓赛果回填DB（队名同源，优先于500.com）"""
-    from fetch_zgzcw_results import fetch_results, PAGE_JZ, PAGE_BD, backfill_db as _backfill_zgzcw
-    
-    print(f"  足彩网赛果回填: {target_date}")
-    results = fetch_results(target_date, PAGE_JZ)
-    # 也抓北单补充
-    bd_results = fetch_results(target_date, PAGE_BD)
-    all_results = results + bd_results
-    
-    if not all_results:
-        print(f"  足彩网无赛果数据")
-        return 0
-    
-    print(f"  足彩网: {len(all_results)} 条赛果（竞彩{len(results)}+北单{len(bd_results)}）")
-    return _backfill_zgzcw(all_results, DB_PATH)
-
 
 def backfill_from_500com(target_date: str) -> int:
     """从500.com缓存文件回填赛果到football.db
@@ -264,64 +247,6 @@ def backfill_from_500com(target_date: str) -> int:
     print(f"  500.com: {len(all_results)} 条赛果")
     return _backfill_results(all_results)
 
-
-def backfill_from_zgzcw_cache(target_date: str) -> int:
-    """从足彩网缓存文件读取赛果回填DB（无需网络，GA环境适用）
-    读取500com格式缓存+zgzcw原始缓存，覆盖前后1天解决日期偏移
-    """
-    import json as _json
-    all_results = []
-    
-    # 1. 读取500com格式缓存（由fetch_results_cache.py生成，已含3天数据）
-    for offset in [-1, 0, 1]:
-        d = (datetime.strptime(target_date, '%Y-%m-%d') + timedelta(days=offset)).strftime('%Y-%m-%d')
-        base = d.replace('-', '')
-        cache_file = os.path.join(CACHE_DIR, f"500com_results_{base}.json")
-        if os.path.exists(cache_file):
-            with open(cache_file, 'r', encoding='utf-8') as f:
-                data = _json.loads(f.read())
-            for r in data.get('jingcai', []):
-                all_results.append({
-                    'home': r.get('home', ''),
-                    'away': r.get('away', ''),
-                    'score': r.get('score', ''),
-                    'outcome': r.get('outcome', '') + ' ' + r.get('score', '') if r.get('score') else r.get('outcome', ''),
-                })
-            for r in data.get('wanchang', []):
-                all_results.append({
-                    'home': r.get('home', ''),
-                    'away': r.get('away', ''),
-                    'score': r.get('score', ''),
-                    'outcome': r.get('outcome', '') + ' ' + r.get('score', '') if r.get('score') else r.get('outcome', ''),
-                })
-    
-    # 2. 读取zgzcw原始缓存（补充）
-    for offset in [-1, 0, 1]:
-        d = (datetime.strptime(target_date, '%Y-%m-%d') + timedelta(days=offset)).strftime('%Y-%m-%d')
-        base = d.replace('-', '')
-        for page_type in ['jz', 'bd']:
-            cache_file = os.path.join(CACHE_DIR, f"zgzcw_{page_type}_{base}.json")
-            if not os.path.exists(cache_file):
-                continue
-            with open(cache_file, 'r', encoding='utf-8') as f:
-                data = _json.loads(f.read())
-            for r in data.get('results', []):
-                score = r.get('score', '')
-                outcome = r.get('outcome', '')
-                if score and not re.search(r'\d+-\d+', outcome):
-                    outcome = f"{outcome} {score}"
-                all_results.append({
-                    'home': r.get('home', ''),
-                    'away': r.get('away', ''),
-                    'score': score,
-                    'outcome': outcome,
-                })
-    
-    if not all_results:
-        print(f"  足彩网缓存无赛果数据")
-        return 0
-    print(f"  足彩网缓存: {len(all_results)} 条赛果")
-    return _backfill_results(all_results)
 
 
 def _backfill_results(results: List[Dict]) -> int:
@@ -480,16 +405,37 @@ def run_review(target_date: str = None, skip_fetch: bool = False) -> str:
 
     # 0. 赛果回填
     if skip_fetch:
-        # GA环境：不抓网络，从缓存文件读
-        print("回填赛果（从缓存）...")
-        cache_count = backfill_from_zgzcw_cache(target_date)
-        if cache_count == 0:
-            backfill_from_500com(target_date)
+        # GA环境：不抓网络，从500.com缓存文件读
+        print("回填赛果（从500.com缓存）...")
+        backfill_from_500com(target_date)
     else:
-        # 本地环境：从网络抓
-        print("回填赛果...")
-        zgzcw_count = backfill_from_zgzcw(target_date)
-        if zgzcw_count == 0:
+        # 本地环境：从500.com抓取并缓存
+        print("回填赛果（500.com）...")
+        from fetch_results_cache import fetch_500com_results, save_cache
+        from datetime import datetime as _dt, timedelta as _td
+        all_results = []
+        seen_keys = set()
+        for offset in [-1, 0, 1]:
+            d = (_dt.strptime(target_date, '%Y-%m-%d') + _td(days=offset)).strftime('%Y-%m-%d')
+            results = fetch_500com_results(d)
+            for r in results:
+                key = (r.get('home', ''), r.get('away', ''))
+                if key not in seen_keys:
+                    seen_keys.add(key)
+                    all_results.append(r)
+        if all_results:
+            # 保存缓存供GA环境使用
+            save_cache(target_date, {
+                'date': target_date, 'jingcai': all_results, 'wanchang': [],
+                'fetch_time': _dt.now().isoformat(), 'source': '500com',
+            })
+            print(f"  500.com: {len(all_results)} 条赛果（已缓存）")
+            _backfill_results([{
+                'home': r['home'], 'away': r['away'], 'score': r['score'],
+                'outcome': f"{r['outcome']} {r['score']}",
+            } for r in all_results])
+        else:
+            # 缓存也没数据，尝试读旧缓存
             backfill_from_500com(target_date)
 
     # 1. 查目标日期全天有赛果的记录（固定日历日，不用相对24小时）
@@ -670,16 +616,7 @@ if __name__ == "__main__":
     if args.db:
         DB_PATH = args.db
 
-    if not args.skip_fetch:
-        print("=" * 50)
-        print("预刷新500.com赛果...")
-        try:
-            import fetch_500com_results as f5
-            f5.fetch_all_results()
-            print("✅ 500.com赛果已刷新")
-        except Exception as e:
-            print(f"⚠️ 刷新失败: {e}")
-    else:
+    if args.skip_fetch:
         print("⏭️ 跳过赛果抓取 (--skip-fetch)")
 
     target = args.date or datetime.now().strftime("%Y-%m-%d")
