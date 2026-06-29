@@ -294,53 +294,45 @@ def get_top_direction(final_win, final_draw, final_loss) -> str:
 def backfill_from_500com(target_date: str) -> int:
     """从500.com缓存文件回填赛果到football.db
 
-    加载目标日期+次日缓存（欧洲23:00晚场次日凌晨才进wanchang）
+    扫描CACHE_DIR下所有500com_results_*.json缓存文件，
+    确保历史日期缺赛果的记录也能被回填（不再限于当天+次日）。
     """
-    base = target_date.replace('-', '')
-    cache_today = os.path.join(CACHE_DIR, f"500com_results_{base}.json")
+    import json as _json
+    import glob
 
     all_results = []
-    jc_homes = set()
+    seen = set()  # (home, away) 去重
 
-    import json as _json
-
-    if os.path.exists(cache_today):
-        with open(cache_today, 'r', encoding='utf-8') as f:
+    # 扫描所有500com缓存文件
+    cache_files = sorted(glob.glob(os.path.join(CACHE_DIR, "500com_results_*.json")))
+    for cache_file in cache_files:
+        if not os.path.exists(cache_file):
+            continue
+        with open(cache_file, 'r', encoding='utf-8') as f:
             data = _json.loads(f.read())
-        for r in data.get('jingcai', []):
-            all_results.append({
-                'home': r['home'], 'away': r['away'], 'score': r['score'],
-                'outcome': f"{'主胜' if r['home_score'] > r['away_score'] else '平局' if r['home_score'] == r['away_score'] else '客胜'} {r['score']}",
-            })
         jc_homes = {r['home'] for r in data.get('jingcai', [])}
-        for r in data.get('wanchang', []):
-            if r['home'] not in jc_homes:
+        for r in data.get('jingcai', []):
+            key = (r['home'], r['away'])
+            if key not in seen:
+                seen.add(key)
                 all_results.append({
                     'home': r['home'], 'away': r['away'], 'score': r['score'],
-                    'outcome': f"{r['outcome']} {r['score']}",
+                    'outcome': f"{'主胜' if r['home_score'] > r['away_score'] else '平局' if r['home_score'] == r['away_score'] else '客胜'} {r['score']}",
                 })
-
-    # 加载次日缓存补欧洲晚场
-    next_date = (datetime.strptime(target_date, '%Y-%m-%d') + timedelta(days=1)).strftime('%Y-%m-%d')
-    next_base = next_date.replace('-', '')
-    cache_next = os.path.join(CACHE_DIR, f"500com_results_{next_base}.json")
-    if os.path.exists(cache_next):
-        with open(cache_next, 'r', encoding='utf-8') as f:
-            data = _json.loads(f.read())
-        td = target_date[5:].replace('-', '-')
         for r in data.get('wanchang', []):
-            ko = r.get('kickoff', '')
-            if ko.startswith(td) and r['home'] not in jc_homes:
+            key = (r['home'], r['away'])
+            if key not in seen and r['home'] not in jc_homes:
+                seen.add(key)
                 all_results.append({
                     'home': r['home'], 'away': r['away'], 'score': r['score'],
                     'outcome': f"{r['outcome']} {r['score']}",
                 })
 
     if not all_results:
-        print(f"  500.com无赛果数据")
+        print(f"  500.com无赛果数据 (扫描{len(cache_files)}个缓存文件)")
         return 0
 
-    print(f"  500.com: {len(all_results)} 条赛果")
+    print(f"  500.com: {len(all_results)} 条赛果 (扫描{len(cache_files)}个缓存文件)")
     return _backfill_results(all_results)
 
 
