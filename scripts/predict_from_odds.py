@@ -518,6 +518,11 @@ def insert_predictions(rows, db_path):
                    liji_1x2_open_w, liji_1x2_open_d, liji_1x2_open_l,
                    ms_1x2_w, ms_1x2_d, ms_1x2_l,
                    ms_1x2_open_w, ms_1x2_open_d, ms_1x2_open_l,
+                   liji_handicap, liji_home_water, liji_away_water,
+                   liji_open_handicap, liji_open_home_water, liji_open_away_water,
+                   ms_handicap, ms_home_water, ms_away_water,
+                   ms_open_handicap, ms_open_home_water, ms_open_away_water,
+                   hkjc_ah_handicap, hkjc_ah_home_water, hkjc_ah_away_water,
                    actual_outcome
             FROM poisson_predictions
             WHERE date = ? AND home_team = ? AND away_team = ?
@@ -562,8 +567,26 @@ def insert_predictions(rows, db_path):
             final_liji_1x2_ow = old[25]; final_liji_1x2_od = old[26]; final_liji_1x2_ol = old[27]
             final_ms_1x2_w = old[28]; final_ms_1x2_d = old[29]; final_ms_1x2_l = old[30]
             final_ms_1x2_ow = old[31]; final_ms_1x2_od = old[32]; final_ms_1x2_ol = old[33]
+            # liji AH: 新值优先（predict根据ah_source填充），旧值兜底
+            final_liji_handicap = _merge(r.get('liji_handicap'), old[34])
+            final_liji_home_water = _merge(r.get('liji_home_water'), old[35])
+            final_liji_away_water = _merge(r.get('liji_away_water'), old[36])
+            final_liji_open_handicap = _merge(r.get('liji_open_handicap'), old[37])
+            final_liji_open_home_water = _merge(r.get('liji_open_home_water'), old[38])
+            final_liji_open_away_water = _merge(r.get('liji_open_away_water'), old[39])
+            # ms AH: 同上
+            final_ms_handicap = _merge(r.get('ms_handicap'), old[40])
+            final_ms_home_water = _merge(r.get('ms_home_water'), old[41])
+            final_ms_away_water = _merge(r.get('ms_away_water'), old[42])
+            final_ms_open_handicap = _merge(r.get('ms_open_handicap'), old[43])
+            final_ms_open_home_water = _merge(r.get('ms_open_home_water'), old[44])
+            final_ms_open_away_water = _merge(r.get('ms_open_away_water'), old[45])
+            # hkjc AH: 同上
+            final_hkjc_ah_handicap = _merge(r.get('hkjc_ah_handicap'), old[46])
+            final_hkjc_ah_home_water = _merge(r.get('hkjc_ah_home_water'), old[47])
+            final_hkjc_ah_away_water = _merge(r.get('hkjc_ah_away_water'), old[48])
             # actual_outcome: 保留旧值（review.py回填的赛果，predict不产生）
-            final_actual_outcome = old[34] if len(old) > 34 else None
+            final_actual_outcome = old[49] if len(old) > 49 else None
             
             # 删除旧记录后插入合并后的记录
             cur.execute("DELETE FROM poisson_predictions WHERE date = ? AND home_team = ? AND away_team = ?",
@@ -593,8 +616,13 @@ def insert_predictions(rows, db_path):
                     liji_1x2_open_w, liji_1x2_open_d, liji_1x2_open_l,
                     ms_1x2_w, ms_1x2_d, ms_1x2_l,
                     ms_1x2_open_w, ms_1x2_open_d, ms_1x2_open_l,
+                    liji_handicap, liji_home_water, liji_away_water,
+                    liji_open_handicap, liji_open_home_water, liji_open_away_water,
+                    ms_handicap, ms_home_water, ms_away_water,
+                    ms_open_handicap, ms_open_home_water, ms_open_away_water,
+                    hkjc_ah_handicap, hkjc_ah_home_water, hkjc_ah_away_water,
                     actual_outcome, confidence_tier, calibrated_prob, best_direction_cn
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 r['date'], final_ko, r['league'], r['home_team'], r['away_team'],
                 r['prediction'], r['prediction_prob'],
@@ -619,6 +647,11 @@ def insert_predictions(rows, db_path):
                 final_liji_1x2_ow, final_liji_1x2_od, final_liji_1x2_ol,
                 final_ms_1x2_w, final_ms_1x2_d, final_ms_1x2_l,
                 final_ms_1x2_ow, final_ms_1x2_od, final_ms_1x2_ol,
+                final_liji_handicap, final_liji_home_water, final_liji_away_water,
+                final_liji_open_handicap, final_liji_open_home_water, final_liji_open_away_water,
+                final_ms_handicap, final_ms_home_water, final_ms_away_water,
+                final_ms_open_handicap, final_ms_open_home_water, final_ms_open_away_water,
+                final_hkjc_ah_handicap, final_hkjc_ah_home_water, final_hkjc_ah_away_water,
                 final_actual_outcome, r.get('confidence_tier', ''), r.get('calibrated_prob', 0), r.get('best_direction_cn', ''),
             ))
             upserted += 1
@@ -640,8 +673,22 @@ def insert_predictions(rows, db_path):
                     avg_margin,
                     source, odds_source,
                     ah_handicap, ah_home_water, ah_away_water, ah_source,
+                    william_1x2_w, william_1x2_d, william_1x2_l,
+                    william_ah_handicap, william_ah_home_water, william_ah_away_water,
+                    william_ou_over, william_ou_line, william_ou_under,
+                    pin_ah_handicap, pin_ah_home_water, pin_ah_away_water,
+                    pin_ou_line, pin_ou_over, pin_ou_under,
+                    liji_1x2_w, liji_1x2_d, liji_1x2_l,
+                    liji_1x2_open_w, liji_1x2_open_d, liji_1x2_open_l,
+                    ms_1x2_w, ms_1x2_d, ms_1x2_l,
+                    ms_1x2_open_w, ms_1x2_open_d, ms_1x2_open_l,
+                    liji_handicap, liji_home_water, liji_away_water,
+                    liji_open_handicap, liji_open_home_water, liji_open_away_water,
+                    ms_handicap, ms_home_water, ms_away_water,
+                    ms_open_handicap, ms_open_home_water, ms_open_away_water,
+                    hkjc_ah_handicap, hkjc_ah_home_water, hkjc_ah_away_water,
                     actual_outcome, confidence_tier, calibrated_prob, best_direction_cn
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 r['date'], r['kickoff_time'], r['league'], r['home_team'], r['away_team'],
                 r['prediction'], r['prediction_prob'],
@@ -657,6 +704,20 @@ def insert_predictions(rows, db_path):
                 r['avg_margin'],
                 r['source'], r['odds_source'],
                 r['ah_handicap'], r['ah_home_water'], r['ah_away_water'], r['ah_source'],
+                r.get('william_1x2_w', 0) or 0, r.get('william_1x2_d', 0) or 0, r.get('william_1x2_l', 0) or 0,
+                r.get('william_ah_handicap'), r.get('william_ah_home_water'), r.get('william_ah_away_water'),
+                r.get('william_ou_over'), r.get('william_ou_line'), r.get('william_ou_under'),
+                r.get('pin_ah_handicap'), r.get('pin_ah_home_water'), r.get('pin_ah_away_water'),
+                r.get('pin_ou_line'), r.get('pin_ou_over'), r.get('pin_ou_under'),
+                0, 0, 0,
+                0, 0, 0,
+                0, 0, 0,
+                0, 0, 0,
+                r.get('liji_handicap'), r.get('liji_home_water'), r.get('liji_away_water'),
+                r.get('liji_open_handicap'), r.get('liji_open_home_water'), r.get('liji_open_away_water'),
+                r.get('ms_handicap'), r.get('ms_home_water'), r.get('ms_away_water'),
+                r.get('ms_open_handicap'), r.get('ms_open_home_water'), r.get('ms_open_away_water'),
+                r.get('hkjc_ah_handicap'), r.get('hkjc_ah_home_water'), r.get('hkjc_ah_away_water'),
                 None,
                 r.get('confidence_tier', ''), r.get('calibrated_prob', 0), r.get('best_direction_cn', '')
             ))
@@ -722,6 +783,32 @@ def main():
                 r['ah_home_water'] = best_close.get('home_w', 0) or 0
                 r['ah_away_water'] = best_close.get('away_w', 0) or 0
                 r['ah_source'] = best.get('source', 'liji')
+                # 根据 ah_source 同步填充公司专属AH字段，使前端能正确显示亚盘
+                src = r['ah_source']
+                hc = r['ah_handicap']
+                hw = r['ah_home_water']
+                aw = r['ah_away_water']
+                if src == 'liji':
+                    r['liji_handicap'] = hc; r['liji_home_water'] = hw; r['liji_away_water'] = aw
+                    # 也填充open数据（如果有）
+                    ah_open = best.get('open') or {}
+                    if ah_open.get('handicap') is not None:
+                        r['liji_open_handicap'] = ah_open.get('handicap', 0) or 0
+                        r['liji_open_home_water'] = ah_open.get('home_w', 0) or 0
+                        r['liji_open_away_water'] = ah_open.get('away_w', 0) or 0
+                elif src == 'pin':
+                    r['pin_ah_handicap'] = hc; r['pin_ah_home_water'] = hw; r['pin_ah_away_water'] = aw
+                elif src == 'ms':
+                    r['ms_handicap'] = hc; r['ms_home_water'] = hw; r['ms_away_water'] = aw
+                    ah_open = best.get('open') or {}
+                    if ah_open.get('handicap') is not None:
+                        r['ms_open_handicap'] = ah_open.get('handicap', 0) or 0
+                        r['ms_open_home_water'] = ah_open.get('home_w', 0) or 0
+                        r['ms_open_away_water'] = ah_open.get('away_w', 0) or 0
+                elif src == 'hkjc':
+                    r['hkjc_ah_handicap'] = hc; r['hkjc_ah_home_water'] = hw; r['hkjc_ah_away_water'] = aw
+                elif src == 'william':
+                    r['william_ah_handicap'] = hc; r['william_ah_home_water'] = hw; r['william_ah_away_water'] = aw
                 filled += 1
         print(f'🎯 AH匹配: {filled}/{len(rows)} 场带AH数据入库')
 
