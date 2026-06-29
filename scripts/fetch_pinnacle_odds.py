@@ -1910,6 +1910,12 @@ def save_to_db(matches, db_path, date_str=None):
         william_ah_open_hc_val = _or_none(william_ah_data.get('open', {}), 'handicap', 'home_w', 'away_w', k='handicap')
         william_ah_open_hw_val = _or_none(william_ah_data.get('open', {}), 'handicap', 'home_w', 'away_w', k='home_w')
         william_ah_open_aw_val = _or_none(william_ah_data.get('open', {}), 'handicap', 'home_w', 'away_w', k='away_w')
+        # 威廉希尔 OU
+        william_ou_data = m.get('william_ou', {})
+        william_ou_close_d = william_ou_data.get('close', william_ou_data)
+        william_ou_over_val = _or_none(william_ou_close_d, 'over', 'line', 'under', k='over')
+        william_ou_line_val = _or_none(william_ou_close_d, 'over', 'line', 'under', k='line')
+        william_ou_under_val = _or_none(william_ou_close_d, 'over', 'line', 'under', k='under')
 
         cursor.execute("""
             UPDATE poisson_predictions SET
@@ -1976,7 +1982,10 @@ def save_to_db(matches, db_path, date_str=None):
                 william_ah_away_water = COALESCE(?, william_ah_away_water),
                 william_ah_open_handicap = COALESCE(?, william_ah_open_handicap),
                 william_ah_open_home_water = COALESCE(?, william_ah_open_home_water),
-                william_ah_open_away_water = COALESCE(?, william_ah_open_away_water)
+                william_ah_open_away_water = COALESCE(?, william_ah_open_away_water),
+                william_ou_over = COALESCE(?, william_ou_over),
+                william_ou_line = COALESCE(?, william_ou_line),
+                william_ou_under = COALESCE(?, william_ou_under)
             WHERE id = ?
         """, (
             pin_open.get('w', 0), pin_open.get('d', 0), pin_open.get('l', 0),
@@ -2013,6 +2022,7 @@ def save_to_db(matches, db_path, date_str=None):
             ms_1x2_open.get('w') or None, ms_1x2_open.get('d') or None, ms_1x2_open.get('l') or None,
             william_ah_hc_val, william_ah_hw_val, william_ah_aw_val,
             william_ah_open_hc_val, william_ah_open_hw_val, william_ah_open_aw_val,
+            william_ou_over_val, william_ou_line_val, william_ou_under_val,
             record_id
         ))
         updated += 1

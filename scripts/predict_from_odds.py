@@ -93,12 +93,23 @@ def load_ah_for_date(date_str: str) -> list:
                             break
                 if not ah_close:
                     continue
+                # 收集所有公司的AH和OU数据
+                all_ah = {}
+                all_ou = {}
+                for src_key in ('liji_ah', 'ms_ah', 'pin_ah', 'hkjc_ah', 'william_ah'):
+                    if src_key in match and match[src_key]:
+                        all_ah[src_key] = match[src_key]
+                for ou_key in ('liji_ou', 'ms_ou', 'pin_ou', 'hkjc_ou', 'william_ou'):
+                    if ou_key in match and match[ou_key]:
+                        all_ou[ou_key] = match[ou_key]
                 results.append({
                     'home': match.get('home', ''),
                     'away': match.get('away', ''),
                     'open': ah_open or {},
                     'close': ah_close,
                     'source': ah_source,
+                    'all_ah': all_ah,
+                    'all_ou': all_ou,
                 })
         except Exception as e:
             print(f'  WARN 读 {path} 失败: {e}')
@@ -787,32 +798,60 @@ def main():
                 r['ah_home_water'] = best_close.get('home_w', 0) or 0
                 r['ah_away_water'] = best_close.get('away_w', 0) or 0
                 r['ah_source'] = best.get('source', 'liji')
-                # 根据 ah_source 同步填充公司专属AH字段，使前端能正确显示亚盘
-                src = r['ah_source']
-                hc = r['ah_handicap']
-                hw = r['ah_home_water']
-                aw = r['ah_away_water']
-                if src == 'liji':
-                    r['liji_handicap'] = hc; r['liji_home_water'] = hw; r['liji_away_water'] = aw
-                    # 也填充open数据（如果有）
-                    ah_open = best.get('open') or {}
-                    if ah_open.get('handicap') is not None:
-                        r['liji_open_handicap'] = ah_open.get('handicap', 0) or 0
-                        r['liji_open_home_water'] = ah_open.get('home_w', 0) or 0
-                        r['liji_open_away_water'] = ah_open.get('away_w', 0) or 0
-                elif src == 'pin':
-                    r['pin_ah_handicap'] = hc; r['pin_ah_home_water'] = hw; r['pin_ah_away_water'] = aw
-                elif src == 'ms':
-                    r['ms_handicap'] = hc; r['ms_home_water'] = hw; r['ms_away_water'] = aw
-                    ah_open = best.get('open') or {}
-                    if ah_open.get('handicap') is not None:
-                        r['ms_open_handicap'] = ah_open.get('handicap', 0) or 0
-                        r['ms_open_home_water'] = ah_open.get('home_w', 0) or 0
-                        r['ms_open_away_water'] = ah_open.get('away_w', 0) or 0
-                elif src == 'hkjc':
-                    r['hkjc_ah_handicap'] = hc; r['hkjc_ah_home_water'] = hw; r['hkjc_ah_away_water'] = aw
-                elif src == 'william':
-                    r['william_ah_handicap'] = hc; r['william_ah_home_water'] = hw; r['william_ah_away_water'] = aw
+
+                # 从 all_ah 填充所有公司的AH字段
+                def _fill_ah(r, key_prefix, ah_data):
+                    """填充单个公司的AH数据到r"""
+                    close = ah_data.get('close', {})
+                    opn = ah_data.get('open', {})
+                    hc = close.get('handicap')
+                    hw = close.get('home_w', 0)
+                    aw = close.get('away_w', 0)
+                    if hc is not None or hw != 0 or aw != 0:
+                        r[f'{key_prefix}_handicap'] = hc if hc is not None else 0
+                        r[f'{key_prefix}_home_water'] = hw or 0
+                        r[f'{key_prefix}_away_water'] = aw or 0
+                        # open数据
+                        ohc = opn.get('handicap')
+                        ohw = opn.get('home_w', 0)
+                        oaw = opn.get('away_w', 0)
+                        if ohc is not None or ohw != 0 or oaw != 0:
+                            r[f'{key_prefix}_open_handicap'] = ohc if ohc is not None else 0
+                            r[f'{key_prefix}_open_home_water'] = ohw or 0
+                            r[f'{key_prefix}_open_away_water'] = oaw or 0
+
+                all_ah = best.get('all_ah', {})
+                ah_key_map = {'liji_ah': 'liji', 'ms_ah': 'ms', 'pin_ah': 'pin_ah', 'hkjc_ah': 'hkjc_ah', 'william_ah': 'william_ah'}
+                for src_key, db_prefix in ah_key_map.items():
+                    if src_key in all_ah and all_ah[src_key]:
+                        _fill_ah(r, db_prefix, all_ah[src_key])
+
+                # 从 all_ou 填充所有公司的OU字段
+                def _fill_ou(r, key_prefix, ou_data):
+                    """填充单个公司的OU数据到r"""
+                    close = ou_data if 'over' in ou_data else ou_data.get('close', {})
+                    opn = ou_data.get('open', {})
+                    over = close.get('over', 0)
+                    line = close.get('line')
+                    under = close.get('under', 0)
+                    if over != 0 or line is not None or under != 0:
+                        r[f'{key_prefix}_over'] = over or 0
+                        r[f'{key_prefix}_line'] = line
+                        r[f'{key_prefix}_under'] = under or 0
+                        # open
+                        oover = opn.get('over', 0)
+                        oline = opn.get('line')
+                        ounder = opn.get('under', 0)
+                        if oover != 0 or oline is not None or ounder != 0:
+                            r[f'{key_prefix}_open_over'] = oover or 0
+                            r[f'{key_prefix}_open_line'] = oline
+                            r[f'{key_prefix}_open_under'] = ounder or 0
+
+                all_ou = best.get('all_ou', {})
+                ou_key_map = {'liji_ou': 'liji_ou', 'ms_ou': 'ms_ou', 'pin_ou': 'pin_ou', 'hkjc_ou': 'hkjc_ou', 'william_ou': 'william_ou'}
+                for ou_key, db_prefix in ou_key_map.items():
+                    if ou_key in all_ou and all_ou[ou_key]:
+                        _fill_ou(r, db_prefix, all_ou[ou_key])
                 filled += 1
         print(f'🎯 AH匹配: {filled}/{len(rows)} 场带AH数据入库')
 
