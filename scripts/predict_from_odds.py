@@ -82,7 +82,7 @@ def load_ah_for_date(date_str: str) -> list:
                     if src in match and match[src]:
                         close = match[src].get('close', {})
                         opn = match[src].get('open', {})
-                        if close and close.get('handicap', 0) != 0:
+                        if close and (close.get('handicap') is not None or close.get('home_w', 0) != 0 or close.get('away_w', 0) != 0):
                             ah_close = close
                             ah_open = opn
                             ah_source = src.replace('_ah', '')
@@ -517,7 +517,8 @@ def insert_predictions(rows, db_path):
                    liji_1x2_w, liji_1x2_d, liji_1x2_l,
                    liji_1x2_open_w, liji_1x2_open_d, liji_1x2_open_l,
                    ms_1x2_w, ms_1x2_d, ms_1x2_l,
-                   ms_1x2_open_w, ms_1x2_open_d, ms_1x2_open_l
+                   ms_1x2_open_w, ms_1x2_open_d, ms_1x2_open_l,
+                   actual_outcome
             FROM poisson_predictions
             WHERE date = ? AND home_team = ? AND away_team = ?
         """, (r['date'], r['home_team'], r['away_team']))
@@ -561,6 +562,8 @@ def insert_predictions(rows, db_path):
             final_liji_1x2_ow = old[25]; final_liji_1x2_od = old[26]; final_liji_1x2_ol = old[27]
             final_ms_1x2_w = old[28]; final_ms_1x2_d = old[29]; final_ms_1x2_l = old[30]
             final_ms_1x2_ow = old[31]; final_ms_1x2_od = old[32]; final_ms_1x2_ol = old[33]
+            # actual_outcome: 保留旧值（review.py回填的赛果，predict不产生）
+            final_actual_outcome = old[34] if len(old) > 34 else None
             
             # 删除旧记录后插入合并后的记录
             cur.execute("DELETE FROM poisson_predictions WHERE date = ? AND home_team = ? AND away_team = ?",
@@ -590,8 +593,8 @@ def insert_predictions(rows, db_path):
                     liji_1x2_open_w, liji_1x2_open_d, liji_1x2_open_l,
                     ms_1x2_w, ms_1x2_d, ms_1x2_l,
                     ms_1x2_open_w, ms_1x2_open_d, ms_1x2_open_l,
-                    confidence_tier, calibrated_prob, best_direction_cn
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    actual_outcome, confidence_tier, calibrated_prob, best_direction_cn
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 r['date'], final_ko, r['league'], r['home_team'], r['away_team'],
                 r['prediction'], r['prediction_prob'],
@@ -616,7 +619,7 @@ def insert_predictions(rows, db_path):
                 final_liji_1x2_ow, final_liji_1x2_od, final_liji_1x2_ol,
                 final_ms_1x2_w, final_ms_1x2_d, final_ms_1x2_l,
                 final_ms_1x2_ow, final_ms_1x2_od, final_ms_1x2_ol,
-                r.get('confidence_tier', ''), r.get('calibrated_prob', 0), r.get('best_direction_cn', ''),
+                final_actual_outcome, r.get('confidence_tier', ''), r.get('calibrated_prob', 0), r.get('best_direction_cn', ''),
             ))
             upserted += 1
         else:
@@ -637,8 +640,8 @@ def insert_predictions(rows, db_path):
                     avg_margin,
                     source, odds_source,
                     ah_handicap, ah_home_water, ah_away_water, ah_source,
-                    confidence_tier, calibrated_prob, best_direction_cn
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    actual_outcome, confidence_tier, calibrated_prob, best_direction_cn
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 r['date'], r['kickoff_time'], r['league'], r['home_team'], r['away_team'],
                 r['prediction'], r['prediction_prob'],
@@ -654,6 +657,7 @@ def insert_predictions(rows, db_path):
                 r['avg_margin'],
                 r['source'], r['odds_source'],
                 r['ah_handicap'], r['ah_home_water'], r['ah_away_water'], r['ah_source'],
+                None,
                 r.get('confidence_tier', ''), r.get('calibrated_prob', 0), r.get('best_direction_cn', '')
             ))
             inserted += 1
@@ -711,11 +715,12 @@ def main():
                 sim = max(sim_fwd, sim_rev)
                 if sim > best_sim:
                     best_sim = sim
-                    best = close
+                    best = ah
             if best and best_sim >= 0.4:
-                r['ah_handicap'] = best.get('handicap', 0) or 0
-                r['ah_home_water'] = best.get('home_w', 0) or 0
-                r['ah_away_water'] = best.get('away_w', 0) or 0
+                best_close = best.get('close', best)
+                r['ah_handicap'] = best_close.get('handicap', 0) or 0
+                r['ah_home_water'] = best_close.get('home_w', 0) or 0
+                r['ah_away_water'] = best_close.get('away_w', 0) or 0
                 r['ah_source'] = best.get('source', 'liji')
                 filled += 1
         print(f'🎯 AH匹配: {filled}/{len(rows)} 场带AH数据入库')
