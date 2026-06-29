@@ -54,6 +54,10 @@ def load_ah_for_date(date_str: str) -> list:
     prev = (dt - timedelta(days=1)).strftime('%Y%m%d')
     for tag in (date_str.replace('-', ''), prev):
         path = os.path.join(RAW_ODDSMAGNET, f"oyzs_{tag}.json")
+        # 校验文件完整性：过小(可能是404页面)跳过
+        if os.path.exists(path) and os.path.getsize(path) < 30:
+            print(f"  WARN {os.path.basename(path)} 文件过小({os.path.getsize(path)}B)，跳过")
+            continue
         if not os.path.exists(path):
             # fallback: 尝试旧 ah_ 格式
             ah_path = os.path.join(RAW_ODDSMAGNET, f"ah_{tag}.json")
