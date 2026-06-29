@@ -209,10 +209,9 @@ function openAhModal(record) {
     line: williamOu.line || null, over: williamOu.over || null, under: williamOu.under || null,
     open: {}
   } : null;
+  // 威廉希尔（1X2已在顶部对比表显示，此处只显示亚盘+大小球）
   if (williamAhObj || williamOuObj) {
-    const william1x2 = record.william_1x2 || {};
-    const william1x2Obj = (william1x2.w || 0) > 0 ? { w: william1x2.w, d: william1x2.d, l: william1x2.l } : null;
-    html += compactCompany('威廉希尔', 'ah-badge-will', william1x2Obj, williamAhObj, williamOuObj);
+    html += compactCompany('威廉希尔', 'ah-badge-will', null, williamAhObj, williamOuObj);
   }
 
   // ===== HHAD让球 =====
