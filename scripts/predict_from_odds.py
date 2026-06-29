@@ -45,21 +45,57 @@ def name_sim(a: str, b: str) -> float:
 
 
 def load_ah_for_date(date_str: str) -> list:
-    """读 ah_YYYYMMDD.json + ah_YYYYMMDD.json（前一天），返回亚盘列表"""
+    """读 oyzs_YYYYMMDD.json（当天+前一天），提取亚盘列表
+    
+    ah_*.json 已废弃，亚盘数据统一走 oyzs。百家平均亚盘用利记收盘价替代。
+    """
     results = []
     dt = datetime.strptime(date_str, '%Y-%m-%d')
     prev = (dt - timedelta(days=1)).strftime('%Y%m%d')
     for tag in (date_str.replace('-', ''), prev):
-        path = os.path.join(RAW_ODDSMAGNET, f"ah_{tag}.json")
+        path = os.path.join(RAW_ODDSMAGNET, f"oyzs_{tag}.json")
         if not os.path.exists(path):
+            # fallback: 尝试旧 ah_ 格式
+            ah_path = os.path.join(RAW_ODDSMAGNET, f"ah_{tag}.json")
+            if os.path.exists(ah_path):
+                try:
+                    with open(ah_path, 'r', encoding='utf-8') as f:
+                        data = json.load(f)
+                    for key, ah in data.items():
+                        if not ah:
+                            continue
+                        results.append(ah)
+                except Exception as e:
+                    print(f'  WARN 读 {ah_path} 失败: {e}')
             continue
         try:
             with open(path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
-            for key, ah in data.items():
-                if not ah:
+            for key, match in data.items():
+                if not match:
                     continue
-                results.append(ah)
+                # 优先用利记亚盘（最接近百家平均），其次明升
+                ah_source = None
+                ah_close = None
+                ah_open = None
+                for src in ('liji_ah', 'ms_ah', 'pin_ah', 'hkjc_ah', 'william_ah'):
+                    if src in match and match[src]:
+                        close = match[src].get('close', {})
+                        opn = match[src].get('open', {})
+                        if close and close.get('handicap', 0) != 0:
+                            ah_close = close
+                            ah_open = opn
+                            ah_source = src.replace('_ah', '')
+                            break
+                if not ah_close:
+                    continue
+                results.append({
+                    'home': match.get('home', ''),
+                    'away': match.get('away', ''),
+                    'open': ah_open or {},
+                    'close': ah_close,
+                    'source': ah_source,
+                })
         except Exception as e:
             print(f'  WARN 读 {path} 失败: {e}')
     return results
@@ -680,7 +716,7 @@ def main():
                 r['ah_handicap'] = best.get('handicap', 0) or 0
                 r['ah_home_water'] = best.get('home_w', 0) or 0
                 r['ah_away_water'] = best.get('away_w', 0) or 0
-                r['ah_source'] = 'avg'
+                r['ah_source'] = best.get('source', 'liji')
                 filled += 1
         print(f'🎯 AH匹配: {filled}/{len(rows)} 场带AH数据入库')
 
