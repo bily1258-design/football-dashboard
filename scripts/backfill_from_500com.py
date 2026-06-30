@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-backfill_from_500com.py — 从500.com完场页批量回填历史赛果 v3
+backfill_from_500com.py — 从500.com完场页批量回填历史赛果 v4
+v4: 新增 fid 提取 + fid_500 写入DB，后续可用fid精准关联赛果/赔率
 
 用法:
   python scripts/backfill_from_500com.py --db data/football.db
@@ -9,6 +10,7 @@ backfill_from_500com.py — 从500.com完场页批量回填历史赛果 v3
   python scripts/backfill_from_500com.py --db data/football.db --last 7
   python scripts/backfill_from_500com.py --db data/football.db --date-from 2026-06-01 --date-to 2026-06-30
   python scripts/backfill_from_500com.py --db data/football.db --dry-run
+  python scripts/backfill_from_500com.py --db data/football.db --fid-only  # 只回填fid，不更新赛果
 """
 
 import os
@@ -162,17 +164,24 @@ def fetch_page(url, encoding='utf-8'):
 
 
 def parse_wanchang_html(html):
-    """解析500.com完场页HTML"""
+    """解析500.com完场页HTML — v4: 新增fid提取 + 修复比分解析
+    
+    v4修复：
+    - 从 <tr id="a{fid}"> 提取fid
+    - 优先从PK div(clt1/clt3)提取比分，避免亚盘盘口干扰
+    - 世界杯等有亚盘的比赛，td[5]格式为"5两球/两球半0"，不含纯比分
+    """
     results = []
     
-    table_match = re.search(r'<table[^>]*id="table_match"[^>]*>(.*?)</table>', html, re.S)
-    if not table_match:
-        trs = re.findall(r'<tr[^>]*>(.*?)</tr>', html, re.S)
-    else:
-        trs = re.findall(r'<tr[^>]*>(.*?)</tr>', table_match.group(1), re.S)
+    # 匹配带id属性的完整tr行
+    full_trs = re.findall(r'<tr([^>]*)>(.*?)</tr>', html, re.S)
     
-    for tr in trs:
-        tds = re.findall(r'<td[^>]*>(.*?)</td>', tr, re.S)
+    for attrs, content in full_trs:
+        # 提取fid: id="a1425100" → fid=1425100
+        fid_match = re.search(r'id="a(\d+)"', attrs)
+        fid = int(fid_match.group(1)) if fid_match else None
+        
+        tds = re.findall(r'<td[^>]*>(.*?)</td>', content, re.S)
         if len(tds) < 8:
             continue
         
@@ -187,7 +196,6 @@ def parse_wanchang_html(html):
         
         league = clean_tds[0]
         home_raw = clean_tds[4] if len(clean_tds) > 4 else ''
-        score_raw = clean_tds[5] if len(clean_tds) > 5 else ''
         away_raw = clean_tds[6] if len(clean_tds) > 6 else ''
         
         # 清理队名 - 去排名和编号
@@ -199,12 +207,27 @@ def parse_wanchang_html(html):
         home = re.sub(r'^\[世\d+\]\d*', '', home).strip()
         away = re.sub(r'\d*\[世\d+\]$', '', away).strip()
         
-        # 提取比分
+        # === 比分提取（v4修复） ===
+        # 方法1: 优先从PK div的clt1/clt3提取（最可靠）
+        # 格式: <a class="clt1">5</a><a class="fhuise">盘口</a><a class="clt3">0</a>
         h_score = a_score = None
-        m = re.match(r'^(\d+).*?(\d+)$', score_raw.replace(' ', ''))
-        if m:
-            h_score = int(m.group(1))
-            a_score = int(m.group(2))
+        pk_match = re.search(r'<div class="pk">(.*?)</div>', content, re.S)
+        if pk_match:
+            pk_html = pk_match.group(1)
+            home_score_m = re.search(r'class="clt1"[^>]*>\s*(\d+)\s*<', pk_html)
+            away_score_m = re.search(r'class="clt3"[^>]*>\s*(\d+)\s*<', pk_html)
+            if home_score_m and away_score_m:
+                h_score = int(home_score_m.group(1))
+                a_score = int(away_score_m.group(1))
+        
+        # 方法2: 从td[5]提取（普通比赛格式 "3-2"）
+        if h_score is None:
+            score_raw = clean_tds[5] if len(clean_tds) > 5 else ''
+            # 只匹配纯数字比分格式，避免匹配到含盘口的 "5两球0"
+            m = re.match(r'^(\d+)\s*[-/]\s*(\d+)$', score_raw.replace(' ', ''))
+            if m:
+                h_score = int(m.group(1))
+                a_score = int(m.group(2))
         
         if h_score is not None and a_score is not None:
             score = f'{h_score}-{a_score}'
@@ -217,6 +240,7 @@ def parse_wanchang_html(html):
             
             results.append({
                 'source': 'wanchang',
+                'fid': fid,  # v4: 500.com比赛ID
                 'league': league,
                 'home': home,
                 'away': away,
@@ -237,41 +261,77 @@ def fetch_wanchang_by_date(date_str):
     return parse_wanchang_html(html)
 
 
-def backfill_db(results, db_path, dry_run=False):
+def backfill_db(results, db_path, dry_run=False, fid_only=False):
+    """回填赛果和fid到DB
+    
+    Args:
+        results: parse_wanchang_html 返回的结果列表
+        db_path: 数据库路径
+        dry_run: 只显示不写入
+        fid_only: 只回填fid_500字段，不更新actual_outcome
+    """
     if not results:
-        return 0, []
+        return 0, 0, []
     
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
-    cursor.execute("""
-        SELECT id, home_team, away_team, kickoff_time
-        FROM poisson_predictions
-        WHERE actual_outcome IS NULL OR actual_outcome = '' OR actual_outcome NOT GLOB '*[0-9]-[0-9]*'
-    """)
+    
+    if fid_only:
+        # 只回填fid: 找所有fid_500为空的记录
+        cursor.execute("""
+            SELECT id, home_team, away_team, kickoff_time, fid_500
+            FROM poisson_predictions
+            WHERE fid_500 IS NULL
+        """)
+    else:
+        cursor.execute("""
+            SELECT id, home_team, away_team, kickoff_time, fid_500
+            FROM poisson_predictions
+            WHERE actual_outcome IS NULL OR actual_outcome = '' OR actual_outcome NOT GLOB '*[0-9]-[0-9]*'
+        """)
     db_records = [dict(r) for r in cursor.fetchall()]
     
     updated = 0
+    fid_updated = 0
     details = []
     for rec in db_records:
         for res in results:
             if team_match(rec['home_team'], rec['away_team'], res['home'], res['away']):
                 if not dry_run:
-                    cursor.execute(
-                        "UPDATE poisson_predictions SET actual_outcome = ? WHERE id = ?",
-                        (res['outcome'], rec['id'])
-                    )
+                    sets = []
+                    params = []
+                    
+                    # 写入fid（如果结果有fid且DB记录没有）
+                    if res.get('fid') and not rec.get('fid_500'):
+                        sets.append("fid_500 = ?")
+                        params.append(res['fid'])
+                        fid_updated += 1
+                    
+                    # 写入赛果（非fid_only模式）
+                    if not fid_only:
+                        sets.append("actual_outcome = ?")
+                        params.append(res['outcome'])
+                    
+                    if sets:
+                        params.append(rec['id'])
+                        cursor.execute(
+                            f"UPDATE poisson_predictions SET {', '.join(sets)} WHERE id = ?",
+                            params
+                        )
+                        updated += 1
+                
+                fid_tag = f' fid={res["fid"]}' if res.get('fid') else ''
                 details.append(
                     f"  ✅ {rec['home_team']} vs {rec['away_team']} ← "
-                    f"[{res['league']}] {res['home']} {res['score']} {res['away']}"
+                    f"[{res['league']}] {res['home']} {res['score']} {res['away']}{fid_tag}"
                 )
-                updated += 1
                 break
     
-    if not dry_run:
+    if not dry_run and (updated or fid_updated):
         conn.commit()
     conn.close()
-    return updated, details
+    return updated, fid_updated, details
 
 
 def get_unfilled_dates(db_path, last_n=None):
@@ -293,13 +353,14 @@ def get_unfilled_dates(db_path, last_n=None):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="批量回填历史赛果（500.com完场页）")
+    parser = argparse.ArgumentParser(description="批量回填历史赛果（500.com完场页）v4")
     parser.add_argument('--db', required=True, help='数据库路径')
     parser.add_argument('--date', help='指定日期 YYYY-MM-DD')
     parser.add_argument('--date-from', help='起始日期 YYYY-MM-DD')
     parser.add_argument('--date-to', help='结束日期 YYYY-MM-DD')
     parser.add_argument('--last', type=int, help='只回填最近N天')
     parser.add_argument('--dry-run', action='store_true', help='只显示不写入')
+    parser.add_argument('--fid-only', action='store_true', help='只回填fid_500字段，不更新赛果')
     parser.add_argument('--verbose', '-v', action='store_true', help='显示每条匹配详情')
     args = parser.parse_args()
 
@@ -323,28 +384,38 @@ def main():
     
     conn = sqlite3.connect(args.db)
     c = conn.cursor()
-    c.execute("""
-        SELECT COUNT(*) FROM poisson_predictions
-        WHERE (actual_outcome IS NULL OR actual_outcome = '' OR actual_outcome NOT GLOB '*[0-9]-[0-9]*')
-          AND date(kickoff_time) <= date('now')
-    """)
+    
+    if args.fid_only:
+        c.execute("SELECT COUNT(*) FROM poisson_predictions WHERE fid_500 IS NULL")
+    else:
+        c.execute("""
+            SELECT COUNT(*) FROM poisson_predictions
+            WHERE (actual_outcome IS NULL OR actual_outcome = '' OR actual_outcome NOT GLOB '*[0-9]-[0-9]*')
+              AND date(kickoff_time) <= date('now')
+        """)
     missing = c.fetchone()[0]
     conn.close()
     
-    print(f'📋 待回填: {missing}场赛果, {len(dates)}个日期 ({dates[-1]} ~ {dates[0]})')
+    mode_tag = ' [fid-only]' if args.fid_only else ''
+    print(f'📋 待回填: {missing}条记录, {len(dates)}个日期 ({dates[-1]} ~ {dates[0]}){mode_tag}')
     
     total_updated = 0
+    total_fid = 0
     for date_str in dates:
         results = fetch_wanchang_by_date(date_str)
         if not results:
             print(f'  {date_str}: ⚠️ 无赛果数据')
             continue
         
-        updated, details = backfill_db(results, args.db, args.dry_run)
+        # 统计有fid的结果数
+        fid_count = sum(1 for r in results if r.get('fid'))
+        
+        updated, fid_updated, details = backfill_db(results, args.db, args.dry_run, args.fid_only)
         total_updated += updated
+        total_fid += fid_updated
         
         tag = ' [dry]' if args.dry_run else ''
-        print(f'  {date_str}: {len(results)}场完场, 回填{tag} {updated} 条')
+        print(f'  {date_str}: {len(results)}场完场({fid_count}场有fid), 回填{tag} {updated}条赛果, {fid_updated}条fid')
         
         if args.verbose:
             for d in details:
@@ -352,7 +423,7 @@ def main():
         
         time.sleep(1.5)
     
-    print(f'\n🎉 总计回填: {total_updated} 条赛果 (还剩 {missing - total_updated} 条未匹配)')
+    print(f'\n🎉 总计: {total_updated}条赛果, {total_fid}条fid (还剩 {missing - total_updated} 条未匹配)')
 
 
 if __name__ == '__main__':
