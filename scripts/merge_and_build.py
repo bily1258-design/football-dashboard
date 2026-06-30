@@ -856,11 +856,13 @@ def main():
     # 优先保留有真实 kickoff 的版本，删掉 kickoff="待定" 的版本
     cross_date_dedup = 0
     cross_date_kickoff_fixed = 0
-    all_matches = {}  # (canonical_home, canonical_away) → (date, record)
+    all_matches = {}  # (canonical_home, canonical_away, kickoff_date) → (date, record)
     for d_key in sorted(by_date.keys()):
         kept = []
         for r in by_date[d_key]:
-            mk = _match_key(r.get('home', ''), r.get('away', ''))
+            ko = r.get('kickoff', '') or ''
+            ko_date = ko[:10] if len(ko) >= 10 else d_key
+            mk = _match_key(r.get('home', ''), r.get('away', '')) + (ko_date,)
             if mk in all_matches:
                 prev_date, prev_rec = all_matches[mk]
                 prev_kickoff = prev_rec.get('kickoff', '')
