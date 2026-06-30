@@ -1,433 +1,7 @@
 {
   "date": "2026-06-30",
-  "fetch_time": "2026-06-29 14:52:49",
+  "fetch_time": "2026-06-30 10:29:53",
   "matches": {
-    "巴西_日本": {
-      "info": {
-        "match_id": "4459720",
-        "number": "",
-        "league": "世界杯",
-        "kickoff": "2026-06-30 01:00:00",
-        "home": "巴西",
-        "away": "日本"
-      },
-      "odds": {
-        "pinnacle": {
-          "source": "pinnacle",
-          "odds_w": 1.74,
-          "odds_d": 3.8,
-          "odds_l": 5.42,
-          "open_w": 1.75,
-          "open_d": 3.6,
-          "open_l": 4.64,
-          "margin": 0.0224,
-          "implied_prob": {
-            "w": 0.5621,
-            "d": 0.2574,
-            "l": 0.1805
-          }
-        },
-        "hkjc": {
-          "source": "hkjc",
-          "odds_w": 1.58,
-          "odds_d": 3.55,
-          "odds_l": 4.65,
-          "open_w": 1.67,
-          "open_d": 3.25,
-          "open_l": 4.65,
-          "margin": 0.1297,
-          "implied_prob": {
-            "w": 0.5603,
-            "d": 0.2494,
-            "l": 0.1904
-          }
-        },
-        "liji": {
-          "source": "liji",
-          "odds_w": 1.71,
-          "odds_d": 3.63,
-          "odds_l": 4.96,
-          "margin": 0.0619,
-          "implied_prob": {
-            "w": 0.5507,
-            "d": 0.2594,
-            "l": 0.1899
-          }
-        },
-        "mingsheng": {
-          "source": "mingsheng",
-          "odds_w": 1.71,
-          "odds_d": 3.75,
-          "odds_l": 5.0,
-          "margin": 0.0515,
-          "implied_prob": {
-            "w": 0.5562,
-            "d": 0.2536,
-            "l": 0.1902
-          }
-        },
-        "威廉希尔": {
-          "source": "威廉希尔",
-          "odds_w": 1.7,
-          "odds_d": 3.6,
-          "odds_l": 5.0,
-          "open_w": 1.73,
-          "open_d": 3.5,
-          "open_l": 4.8,
-          "margin": 0.066,
-          "implied_prob": {
-            "w": 0.5518,
-            "d": 0.2606,
-            "l": 0.1876
-          }
-        },
-        "betfair": {
-          "source": "betfair",
-          "odds_w": 1.75,
-          "odds_d": 3.9,
-          "odds_l": 5.7,
-          "margin": 0.0032,
-          "implied_prob": {
-            "w": 0.5696,
-            "d": 0.2556,
-            "l": 0.1749
-          }
-        }
-      },
-      "pin_ah": {
-        "open": {
-          "home_w": 0.99,
-          "handicap": -0.75,
-          "away_w": 0.83
-        },
-        "close": {
-          "home_w": 0.95,
-          "handicap": -0.75,
-          "away_w": 0.97
-        }
-      },
-      "pin_ou": {
-        "open": {
-          "over": 1.01,
-          "line": 2.5,
-          "under": 0.8
-        },
-        "close": {
-          "over": 0.85,
-          "line": 2.25,
-          "under": 1.06
-        }
-      },
-      "hkjc_ah": {
-        "open": {
-          "home_w": 0.99,
-          "handicap": -0.75,
-          "away_w": 0.78
-        },
-        "close": {
-          "home_w": 0.83,
-          "handicap": -0.75,
-          "away_w": 0.97
-        }
-      },
-      "hkjc_ou": {
-        "open": {
-          "over": 1.0,
-          "line": 2.5,
-          "under": 0.72
-        },
-        "close": {
-          "over": 0.9,
-          "line": 2.5,
-          "under": 0.8
-        }
-      },
-      "liji_ah": {
-        "open": {
-          "home_w": 0.95,
-          "handicap": -0.75,
-          "away_w": 0.95
-        },
-        "close": {
-          "home_w": 0.97,
-          "handicap": -0.75,
-          "away_w": 0.96
-        }
-      },
-      "liji_ou": {
-        "open": {
-          "over": 0.85,
-          "line": 2.25,
-          "under": 1.03
-        },
-        "close": {
-          "over": 0.86,
-          "line": 2.25,
-          "under": 1.04
-        }
-      },
-      "ms_ah": {
-        "open": {
-          "home_w": 0.76,
-          "handicap": -0.5,
-          "away_w": 1.08
-        },
-        "close": {
-          "home_w": 0.95,
-          "handicap": -0.75,
-          "away_w": 0.98
-        }
-      },
-      "ms_ou": {
-        "open": {
-          "over": 1.0,
-          "line": 2.5,
-          "under": 0.82
-        },
-        "close": {
-          "over": 0.84,
-          "line": 2.25,
-          "under": 1.06
-        }
-      },
-      "william_ah": {
-        "open": {
-          "home_w": 0.88,
-          "handicap": -0.75,
-          "away_w": 0.76
-        },
-        "close": {
-          "home_w": 0.82,
-          "handicap": -0.75,
-          "away_w": 0.81
-        }
-      },
-      "william_ou": {
-        "open": {
-          "over": 0.95,
-          "line": 2.5,
-          "under": 0.8
-        },
-        "close": {
-          "over": 1.0,
-          "line": 2.5,
-          "under": 0.73
-        }
-      }
-    },
-    "德国_巴拉圭": {
-      "info": {
-        "match_id": "4459718",
-        "number": "",
-        "league": "世界杯",
-        "kickoff": "2026-06-30 04:30:00",
-        "home": "德国",
-        "away": "巴拉圭"
-      },
-      "odds": {
-        "pinnacle": {
-          "source": "pinnacle",
-          "odds_w": 1.38,
-          "odds_d": 5.23,
-          "odds_l": 9.21,
-          "open_w": 1.42,
-          "open_d": 4.75,
-          "open_l": 7.43,
-          "margin": 0.0244,
-          "implied_prob": {
-            "w": 0.7074,
-            "d": 0.1866,
-            "l": 0.106
-          }
-        },
-        "hkjc": {
-          "source": "hkjc",
-          "odds_w": 1.22,
-          "odds_d": 4.75,
-          "odds_l": 9.0,
-          "open_w": 1.26,
-          "open_d": 4.5,
-          "open_l": 8.75,
-          "margin": 0.1413,
-          "implied_prob": {
-            "w": 0.7182,
-            "d": 0.1845,
-            "l": 0.0974
-          }
-        },
-        "liji": {
-          "source": "liji",
-          "odds_w": 1.34,
-          "odds_d": 4.88,
-          "odds_l": 8.8,
-          "margin": 0.0648,
-          "implied_prob": {
-            "w": 0.7008,
-            "d": 0.1924,
-            "l": 0.1067
-          }
-        },
-        "mingsheng": {
-          "source": "mingsheng",
-          "odds_w": 1.36,
-          "odds_d": 4.85,
-          "odds_l": 8.8,
-          "margin": 0.0551,
-          "implied_prob": {
-            "w": 0.6969,
-            "d": 0.1954,
-            "l": 0.1077
-          }
-        },
-        "威廉希尔": {
-          "source": "威廉希尔",
-          "odds_w": 1.35,
-          "odds_d": 4.8,
-          "odds_l": 8.0,
-          "open_w": 1.4,
-          "open_d": 4.5,
-          "open_l": 7.0,
-          "margin": 0.074,
-          "implied_prob": {
-            "w": 0.6897,
-            "d": 0.194,
-            "l": 0.1164
-          }
-        },
-        "betfair": {
-          "source": "betfair",
-          "odds_w": 1.37,
-          "odds_d": 5.3,
-          "odds_l": 11.0,
-          "margin": 0.0095,
-          "implied_prob": {
-            "w": 0.723,
-            "d": 0.1869,
-            "l": 0.0901
-          }
-        }
-      },
-      "pin_ah": {
-        "open": {
-          "home_w": 0.95,
-          "handicap": -1.25,
-          "away_w": 0.9
-        },
-        "close": {
-          "home_w": 0.83,
-          "handicap": -1.25,
-          "away_w": 1.08
-        }
-      },
-      "pin_ou": {
-        "open": {
-          "over": 1.01,
-          "line": 2.75,
-          "under": 0.85
-        },
-        "close": {
-          "over": 0.96,
-          "line": 2.75,
-          "under": 0.94
-        }
-      },
-      "hkjc_ah": {
-        "open": {
-          "home_w": 0.76,
-          "handicap": -1.25,
-          "away_w": 1.02
-        },
-        "close": {
-          "home_w": 0.72,
-          "handicap": -1.25,
-          "away_w": 1.11
-        }
-      },
-      "hkjc_ou": {
-        "open": {
-          "over": 0.85,
-          "line": 2.75,
-          "under": 0.85
-        },
-        "close": {
-          "over": 0.78,
-          "line": 2.75,
-          "under": 0.92
-        }
-      },
-      "liji_ah": {
-        "open": {
-          "home_w": 0.84,
-          "handicap": -1.25,
-          "away_w": 1.08
-        },
-        "close": {
-          "home_w": 0.84,
-          "handicap": -1.25,
-          "away_w": 1.09
-        }
-      },
-      "liji_ou": {
-        "open": {
-          "over": 1.0,
-          "line": 2.75,
-          "under": 0.9
-        },
-        "close": {
-          "over": 0.97,
-          "line": 2.75,
-          "under": 0.93
-        }
-      },
-      "ms_ah": {
-        "open": {
-          "home_w": 1.22,
-          "handicap": -1.5,
-          "away_w": 0.66
-        },
-        "close": {
-          "home_w": 0.85,
-          "handicap": -1.25,
-          "away_w": 1.08
-        }
-      },
-      "ms_ou": {
-        "open": {
-          "over": 0.78,
-          "line": 2.5,
-          "under": 1.04
-        },
-        "close": {
-          "over": 0.96,
-          "line": 2.75,
-          "under": 0.94
-        }
-      },
-      "william_ah": {
-        "open": {
-          "home_w": 0.86,
-          "handicap": -1.25,
-          "away_w": 0.77
-        },
-        "close": {
-          "home_w": 0.75,
-          "handicap": -1.25,
-          "away_w": 0.88
-        }
-      },
-      "william_ou": {
-        "open": {
-          "over": 0.73,
-          "line": 2.5,
-          "under": 1.0
-        },
-        "close": {
-          "over": 0.7,
-          "line": 2.5,
-          "under": 1.05
-        }
-      }
-    },
     "荷兰_摩洛哥": {
       "info": {
         "match_id": "4459719",
@@ -440,83 +14,83 @@
       "odds": {
         "pinnacle": {
           "source": "pinnacle",
-          "odds_w": 2.3,
-          "odds_d": 3.15,
-          "odds_l": 3.7,
+          "odds_w": 2.42,
+          "odds_d": 3.05,
+          "odds_l": 3.22,
           "open_w": 2.01,
           "open_d": 3.31,
           "open_l": 3.82,
-          "margin": 0.0226,
+          "margin": 0.0517,
           "implied_prob": {
-            "w": 0.4252,
-            "d": 0.3105,
-            "l": 0.2643
+            "w": 0.3929,
+            "d": 0.3118,
+            "l": 0.2953
           }
         },
         "hkjc": {
           "source": "hkjc",
-          "odds_w": 1.92,
-          "odds_d": 3.1,
-          "odds_l": 3.5,
+          "odds_w": 2.0,
+          "odds_d": 3.05,
+          "odds_l": 3.3,
           "open_w": 1.91,
           "open_d": 3.0,
           "open_l": 3.8,
-          "margin": 0.1291,
+          "margin": 0.1309,
           "implied_prob": {
-            "w": 0.4613,
-            "d": 0.2857,
-            "l": 0.253
+            "w": 0.4421,
+            "d": 0.2899,
+            "l": 0.268
           }
         },
         "liji": {
           "source": "liji",
-          "odds_w": 2.29,
-          "odds_d": 3.12,
-          "odds_l": 3.27,
-          "margin": 0.063,
+          "odds_w": 2.43,
+          "odds_d": 3.11,
+          "odds_l": 3.13,
+          "margin": 0.0525,
           "implied_prob": {
-            "w": 0.4108,
-            "d": 0.3015,
-            "l": 0.2877
+            "w": 0.391,
+            "d": 0.3055,
+            "l": 0.3035
           }
         },
         "mingsheng": {
           "source": "mingsheng",
-          "odds_w": 2.29,
-          "odds_d": 3.1,
-          "odds_l": 3.45,
-          "margin": 0.0492,
+          "odds_w": 2.44,
+          "odds_d": 3.05,
+          "odds_l": 3.2,
+          "margin": 0.0502,
           "implied_prob": {
-            "w": 0.4162,
-            "d": 0.3075,
-            "l": 0.2763
+            "w": 0.3902,
+            "d": 0.3122,
+            "l": 0.2976
           }
         },
         "威廉希尔": {
           "source": "威廉希尔",
-          "odds_w": 2.2,
+          "odds_w": 2.4,
           "odds_d": 3.1,
-          "odds_l": 3.4,
+          "odds_l": 3.0,
           "open_w": 2.05,
           "open_d": 3.25,
           "open_l": 3.6,
-          "margin": 0.0712,
+          "margin": 0.0726,
           "implied_prob": {
-            "w": 0.4243,
-            "d": 0.3011,
-            "l": 0.2746
+            "w": 0.3885,
+            "d": 0.3008,
+            "l": 0.3108
           }
         },
         "betfair": {
           "source": "betfair",
-          "odds_w": 2.34,
-          "odds_d": 3.2,
-          "odds_l": 3.75,
-          "margin": 0.0066,
+          "odds_w": 2.48,
+          "odds_d": 3.1,
+          "odds_l": 3.55,
+          "margin": 0.0075,
           "implied_prob": {
-            "w": 0.4246,
-            "d": 0.3105,
-            "l": 0.2649
+            "w": 0.4002,
+            "d": 0.3202,
+            "l": 0.2796
           }
         }
       },
@@ -527,9 +101,9 @@
           "away_w": 0.81
         },
         "close": {
-          "home_w": 0.94,
+          "home_w": 1.07,
           "handicap": -0.25,
-          "away_w": 0.98
+          "away_w": 0.83
         }
       },
       "pin_ou": {
@@ -539,9 +113,9 @@
           "under": 0.85
         },
         "close": {
-          "over": 1.0,
+          "over": 0.91,
           "line": 2.25,
-          "under": 0.91
+          "under": 0.98
         }
       },
       "hkjc_ah": {
@@ -551,9 +125,9 @@
           "away_w": 1.08
         },
         "close": {
-          "home_w": 0.79,
+          "home_w": 0.91,
           "handicap": -0.25,
-          "away_w": 1.01
+          "away_w": 0.89
         }
       },
       "hkjc_ou": {
@@ -563,9 +137,9 @@
           "under": 0.86
         },
         "close": {
-          "over": 0.82,
+          "over": 0.78,
           "line": 2.25,
-          "under": 0.88
+          "under": 0.92
         }
       },
       "liji_ah": {
@@ -575,9 +149,9 @@
           "away_w": 1.06
         },
         "close": {
-          "home_w": 0.96,
+          "home_w": 1.09,
           "handicap": -0.25,
-          "away_w": 0.97
+          "away_w": 0.85
         }
       },
       "liji_ou": {
@@ -587,9 +161,9 @@
           "under": 0.89
         },
         "close": {
-          "over": 0.96,
+          "over": 0.91,
           "line": 2.25,
-          "under": 0.94
+          "under": 1.01
         }
       },
       "ms_ah": {
@@ -599,9 +173,9 @@
           "away_w": 1.06
         },
         "close": {
-          "home_w": 0.95,
+          "home_w": 1.05,
           "handicap": -0.25,
-          "away_w": 0.98
+          "away_w": 0.87
         }
       },
       "ms_ou": {
@@ -611,9 +185,9 @@
           "under": 0.89
         },
         "close": {
-          "over": 0.97,
+          "over": 0.95,
           "line": 2.25,
-          "under": 0.93
+          "under": 0.95
         }
       },
       "william_ah": {
@@ -623,9 +197,9 @@
           "away_w": 0.69
         },
         "close": {
-          "home_w": 0.8,
+          "home_w": 0.88,
           "handicap": -0.25,
-          "away_w": 0.86
+          "away_w": 0.75
         }
       },
       "william_ou": {
@@ -641,6 +215,432 @@
         }
       }
     },
+    "巴西_日本": {
+      "info": {
+        "match_id": "4459720",
+        "number": "",
+        "league": "世界杯",
+        "kickoff": "2026-06-30 01:00:00",
+        "home": "巴西",
+        "away": "日本"
+      },
+      "odds": {
+        "pinnacle": {
+          "source": "pinnacle",
+          "odds_w": 1.79,
+          "odds_d": 3.56,
+          "odds_l": 5.36,
+          "open_w": 1.75,
+          "open_d": 3.6,
+          "open_l": 4.64,
+          "margin": 0.0262,
+          "implied_prob": {
+            "w": 0.5444,
+            "d": 0.2737,
+            "l": 0.1818
+          }
+        },
+        "hkjc": {
+          "source": "hkjc",
+          "odds_w": 1.64,
+          "odds_d": 3.65,
+          "odds_l": 4.0,
+          "open_w": 1.67,
+          "open_d": 3.25,
+          "open_l": 4.65,
+          "margin": 0.1338,
+          "implied_prob": {
+            "w": 0.5378,
+            "d": 0.2417,
+            "l": 0.2205
+          }
+        },
+        "liji": {
+          "source": "liji",
+          "odds_w": 1.78,
+          "odds_d": 3.54,
+          "odds_l": 4.84,
+          "margin": 0.0509,
+          "implied_prob": {
+            "w": 0.5346,
+            "d": 0.2688,
+            "l": 0.1966
+          }
+        },
+        "mingsheng": {
+          "source": "mingsheng",
+          "odds_w": 1.79,
+          "odds_d": 3.5,
+          "odds_l": 4.85,
+          "margin": 0.0506,
+          "implied_prob": {
+            "w": 0.5318,
+            "d": 0.272,
+            "l": 0.1963
+          }
+        },
+        "威廉希尔": {
+          "source": "威廉希尔",
+          "odds_w": 1.75,
+          "odds_d": 3.3,
+          "odds_l": 5.0,
+          "open_w": 1.73,
+          "open_d": 3.5,
+          "open_l": 4.8,
+          "margin": 0.0744,
+          "implied_prob": {
+            "w": 0.5318,
+            "d": 0.282,
+            "l": 0.1861
+          }
+        },
+        "betfair": {
+          "source": "betfair",
+          "odds_w": 1.81,
+          "odds_d": 3.65,
+          "odds_l": 5.6,
+          "margin": 0.0051,
+          "implied_prob": {
+            "w": 0.5497,
+            "d": 0.2726,
+            "l": 0.1777
+          }
+        }
+      },
+      "pin_ah": {
+        "open": {
+          "home_w": 0.99,
+          "handicap": -0.75,
+          "away_w": 0.83
+        },
+        "close": {
+          "home_w": 1.05,
+          "handicap": -0.75,
+          "away_w": 0.85
+        }
+      },
+      "pin_ou": {
+        "open": {
+          "over": 1.01,
+          "line": 2.5,
+          "under": 0.8
+        },
+        "close": {
+          "over": 1.02,
+          "line": 2.25,
+          "under": 0.88
+        }
+      },
+      "hkjc_ah": {
+        "open": {
+          "home_w": 0.99,
+          "handicap": -0.75,
+          "away_w": 0.78
+        },
+        "close": {
+          "home_w": 0.93,
+          "handicap": -0.75,
+          "away_w": 0.87
+        }
+      },
+      "hkjc_ou": {
+        "open": {
+          "over": 1.0,
+          "line": 2.5,
+          "under": 0.72
+        },
+        "close": {
+          "over": 0.77,
+          "line": 2.25,
+          "under": 0.93
+        }
+      },
+      "liji_ah": {
+        "open": {
+          "home_w": 0.95,
+          "handicap": -0.75,
+          "away_w": 0.95
+        },
+        "close": {
+          "home_w": 1.08,
+          "handicap": -0.75,
+          "away_w": 0.86
+        }
+      },
+      "liji_ou": {
+        "open": {
+          "over": 0.85,
+          "line": 2.25,
+          "under": 1.03
+        },
+        "close": {
+          "over": 1.0,
+          "line": 2.25,
+          "under": 0.92
+        }
+      },
+      "ms_ah": {
+        "open": {
+          "home_w": 0.76,
+          "handicap": -0.5,
+          "away_w": 1.08
+        },
+        "close": {
+          "home_w": 1.09,
+          "handicap": -0.75,
+          "away_w": 0.85
+        }
+      },
+      "ms_ou": {
+        "open": {
+          "over": 1.0,
+          "line": 2.5,
+          "under": 0.82
+        },
+        "close": {
+          "over": 1.0,
+          "line": 2.25,
+          "under": 0.92
+        }
+      },
+      "william_ah": {
+        "open": {
+          "home_w": 0.88,
+          "handicap": -0.75,
+          "away_w": 0.76
+        },
+        "close": {
+          "home_w": 0.88,
+          "handicap": -0.75,
+          "away_w": 0.76
+        }
+      },
+      "william_ou": {
+        "open": {
+          "over": 0.95,
+          "line": 2.5,
+          "under": 0.8
+        },
+        "close": {
+          "over": 1.1,
+          "line": 2.5,
+          "under": 0.67
+        }
+      }
+    },
+    "德国_巴拉圭": {
+      "info": {
+        "match_id": "4459718",
+        "number": "",
+        "league": "世界杯",
+        "kickoff": "2026-06-30 04:30:00",
+        "home": "德国",
+        "away": "巴拉圭"
+      },
+      "odds": {
+        "pinnacle": {
+          "source": "pinnacle",
+          "odds_w": 1.34,
+          "odds_d": 5.3,
+          "odds_l": 11.0,
+          "open_w": 1.42,
+          "open_d": 4.75,
+          "open_l": 7.43,
+          "margin": 0.0259,
+          "implied_prob": {
+            "w": 0.7275,
+            "d": 0.1839,
+            "l": 0.0886
+          }
+        },
+        "hkjc": {
+          "source": "hkjc",
+          "odds_w": 1.21,
+          "odds_d": 4.95,
+          "odds_l": 9.75,
+          "open_w": 1.26,
+          "open_d": 4.5,
+          "open_l": 8.75,
+          "margin": 0.131,
+          "implied_prob": {
+            "w": 0.7307,
+            "d": 0.1786,
+            "l": 0.0907
+          }
+        },
+        "liji": {
+          "source": "liji",
+          "odds_w": 1.34,
+          "odds_d": 5.1,
+          "odds_l": 9.2,
+          "margin": 0.0511,
+          "implied_prob": {
+            "w": 0.71,
+            "d": 0.1866,
+            "l": 0.1034
+          }
+        },
+        "mingsheng": {
+          "source": "mingsheng",
+          "odds_w": 1.35,
+          "odds_d": 4.95,
+          "odds_l": 9.2,
+          "margin": 0.0514,
+          "implied_prob": {
+            "w": 0.7045,
+            "d": 0.1921,
+            "l": 0.1034
+          }
+        },
+        "威廉希尔": {
+          "source": "威廉希尔",
+          "odds_w": 1.33,
+          "odds_d": 4.8,
+          "odds_l": 9.0,
+          "open_w": 1.4,
+          "open_d": 4.5,
+          "open_l": 7.0,
+          "margin": 0.0713,
+          "implied_prob": {
+            "w": 0.7018,
+            "d": 0.1945,
+            "l": 0.1037
+          }
+        },
+        "betfair": {
+          "source": "betfair",
+          "odds_w": 1.36,
+          "odds_d": 5.4,
+          "odds_l": 11.5,
+          "margin": 0.0075,
+          "implied_prob": {
+            "w": 0.7299,
+            "d": 0.1838,
+            "l": 0.0863
+          }
+        }
+      },
+      "pin_ah": {
+        "open": {
+          "home_w": 0.95,
+          "handicap": -1.25,
+          "away_w": 0.9
+        },
+        "close": {
+          "home_w": 1.1,
+          "handicap": -1.5,
+          "away_w": 0.85
+        }
+      },
+      "pin_ou": {
+        "open": {
+          "over": 1.01,
+          "line": 2.75,
+          "under": 0.85
+        },
+        "close": {
+          "over": 0.88,
+          "line": 2.75,
+          "under": 1.03
+        }
+      },
+      "hkjc_ah": {
+        "open": {
+          "home_w": 0.76,
+          "handicap": -1.25,
+          "away_w": 1.02
+        },
+        "close": {
+          "home_w": 0.69,
+          "handicap": -1.25,
+          "away_w": 1.15
+        }
+      },
+      "hkjc_ou": {
+        "open": {
+          "over": 0.85,
+          "line": 2.75,
+          "under": 0.85
+        },
+        "close": {
+          "over": 0.74,
+          "line": 2.75,
+          "under": 0.97
+        }
+      },
+      "liji_ah": {
+        "open": {
+          "home_w": 0.84,
+          "handicap": -1.25,
+          "away_w": 1.08
+        },
+        "close": {
+          "home_w": 1.09,
+          "handicap": -1.5,
+          "away_w": 0.85
+        }
+      },
+      "liji_ou": {
+        "open": {
+          "over": 1.0,
+          "line": 2.75,
+          "under": 0.9
+        },
+        "close": {
+          "over": 0.91,
+          "line": 2.75,
+          "under": 1.01
+        }
+      },
+      "ms_ah": {
+        "open": {
+          "home_w": 1.22,
+          "handicap": -1.5,
+          "away_w": 0.66
+        },
+        "close": {
+          "home_w": 1.03,
+          "handicap": -1.5,
+          "away_w": 0.87
+        }
+      },
+      "ms_ou": {
+        "open": {
+          "over": 0.78,
+          "line": 2.5,
+          "under": 1.04
+        },
+        "close": {
+          "over": 0.9,
+          "line": 2.75,
+          "under": 0.98
+        }
+      },
+      "william_ah": {
+        "open": {
+          "home_w": 0.86,
+          "handicap": -1.25,
+          "away_w": 0.77
+        },
+        "close": {
+          "home_w": 0.72,
+          "handicap": -1.25,
+          "away_w": 0.93
+        }
+      },
+      "william_ou": {
+        "open": {
+          "over": 0.73,
+          "line": 2.5,
+          "under": 1.0
+        },
+        "close": {
+          "over": 0.62,
+          "line": 2.5,
+          "under": 1.2
+        }
+      }
+    },
     "IA阿克拉内斯_弗拉姆": {
       "info": {
         "match_id": "4480130",
@@ -653,68 +653,68 @@
       "odds": {
         "pinnacle": {
           "source": "pinnacle",
-          "odds_w": 2.72,
-          "odds_d": 4.14,
-          "odds_l": 2.24,
+          "odds_w": 2.67,
+          "odds_d": 3.88,
+          "odds_l": 2.31,
           "open_w": 2.68,
           "open_d": 3.83,
           "open_l": 2.26,
-          "margin": 0.0555,
+          "margin": 0.0651,
           "implied_prob": {
-            "w": 0.3483,
-            "d": 0.2288,
-            "l": 0.4229
+            "w": 0.3516,
+            "d": 0.242,
+            "l": 0.4064
           }
         },
         "liji": {
           "source": "liji",
-          "odds_w": 2.52,
-          "odds_d": 3.7,
-          "odds_l": 2.41,
-          "margin": 0.082,
+          "odds_w": 2.57,
+          "odds_d": 3.77,
+          "odds_l": 2.34,
+          "margin": 0.0818,
           "implied_prob": {
-            "w": 0.3667,
-            "d": 0.2498,
-            "l": 0.3835
+            "w": 0.3597,
+            "d": 0.2452,
+            "l": 0.3951
           }
         },
         "mingsheng": {
           "source": "mingsheng",
-          "odds_w": 2.62,
-          "odds_d": 3.8,
-          "odds_l": 2.2,
-          "margin": 0.0994,
+          "odds_w": 2.5,
+          "odds_d": 3.65,
+          "odds_l": 2.35,
+          "margin": 0.0995,
           "implied_prob": {
-            "w": 0.3472,
-            "d": 0.2394,
-            "l": 0.4135
+            "w": 0.3638,
+            "d": 0.2492,
+            "l": 0.387
           }
         },
         "威廉希尔": {
           "source": "威廉希尔",
-          "odds_w": 2.63,
-          "odds_d": 3.75,
-          "odds_l": 2.15,
+          "odds_w": 2.5,
+          "odds_d": 3.6,
+          "odds_l": 2.25,
           "open_w": 2.63,
           "open_d": 3.5,
           "open_l": 2.2,
-          "margin": 0.112,
+          "margin": 0.1222,
           "implied_prob": {
-            "w": 0.3419,
-            "d": 0.2398,
-            "l": 0.4183
+            "w": 0.3564,
+            "d": 0.2475,
+            "l": 0.396
           }
         },
         "betfair": {
           "source": "betfair",
-          "odds_w": 2.88,
-          "odds_d": 4.1,
-          "odds_l": 2.38,
-          "margin": 0.0113,
+          "odds_w": 2.74,
+          "odds_d": 4.3,
+          "odds_l": 2.42,
+          "margin": 0.0108,
           "implied_prob": {
-            "w": 0.3433,
-            "d": 0.2412,
-            "l": 0.4155
+            "w": 0.3611,
+            "d": 0.2301,
+            "l": 0.4088
           }
         }
       },
@@ -725,9 +725,9 @@
           "away_w": 1.0
         },
         "close": {
-          "home_w": 0.85,
+          "home_w": 0.8,
           "handicap": 0.25,
-          "away_w": 1.0
+          "away_w": 1.05
         }
       },
       "pin_ou": {
@@ -737,9 +737,9 @@
           "under": 0.9
         },
         "close": {
-          "over": 0.97,
-          "line": 3.75,
-          "under": 0.85
+          "over": 0.9,
+          "line": 3.5,
+          "under": 0.93
         }
       },
       "hkjc_ah": {
@@ -773,9 +773,9 @@
           "away_w": 0.8
         },
         "close": {
-          "home_w": 0.85,
-          "handicap": 0.25,
-          "away_w": 1.07
+          "home_w": 1.05,
+          "handicap": 0.0,
+          "away_w": 0.87
         }
       },
       "liji_ou": {
@@ -785,9 +785,9 @@
           "under": 0.98
         },
         "close": {
-          "over": 0.88,
+          "over": 1.05,
           "line": 3.5,
-          "under": 1.02
+          "under": 0.85
         }
       },
       "ms_ah": {
@@ -797,9 +797,9 @@
           "away_w": 1.03
         },
         "close": {
-          "home_w": 0.85,
-          "handicap": 0.25,
-          "away_w": 1.05
+          "home_w": 1.01,
+          "handicap": 0.0,
+          "away_w": 0.89
         }
       },
       "ms_ou": {
@@ -809,9 +809,9 @@
           "under": 0.98
         },
         "close": {
-          "over": 1.03,
-          "line": 3.75,
-          "under": 0.85
+          "over": 1.0,
+          "line": 3.5,
+          "under": 0.88
         }
       },
       "william_ah": {
@@ -821,9 +821,9 @@
           "away_w": 1.2
         },
         "close": {
-          "home_w": 0.81,
+          "home_w": 0.77,
           "handicap": 0.25,
-          "away_w": 0.96
+          "away_w": 1.03
         }
       },
       "william_ou": {
@@ -833,9 +833,9 @@
           "under": 0.85
         },
         "close": {
-          "over": 0.75,
+          "over": 0.85,
           "line": 3.5,
-          "under": 0.95
+          "under": 0.83
         }
       }
     },
@@ -851,83 +851,83 @@
       "odds": {
         "pinnacle": {
           "source": "pinnacle",
-          "odds_w": 3.68,
-          "odds_d": 3.65,
-          "odds_l": 2.05,
+          "odds_w": 3.59,
+          "odds_d": 3.46,
+          "odds_l": 2.14,
           "open_w": 3.89,
           "open_d": 3.37,
           "open_l": 1.96,
-          "margin": 0.0335,
+          "margin": 0.0349,
           "implied_prob": {
-            "w": 0.2629,
-            "d": 0.2651,
-            "l": 0.472
+            "w": 0.2692,
+            "d": 0.2793,
+            "l": 0.4515
           }
         },
         "hkjc": {
           "source": "hkjc",
-          "odds_w": 3.9,
-          "odds_d": 3.2,
-          "odds_l": 1.79,
+          "odds_w": 3.55,
+          "odds_d": 3.15,
+          "odds_l": 1.89,
           "open_w": 3.7,
           "open_d": 3.15,
           "open_l": 1.85,
-          "margin": 0.1276,
+          "margin": 0.1283,
           "implied_prob": {
-            "w": 0.2274,
-            "d": 0.2771,
-            "l": 0.4955
+            "w": 0.2497,
+            "d": 0.2814,
+            "l": 0.469
           }
         },
         "liji": {
           "source": "liji",
-          "odds_w": 3.53,
-          "odds_d": 3.49,
-          "odds_l": 2.03,
-          "margin": 0.0624,
+          "odds_w": 3.34,
+          "odds_d": 3.34,
+          "odds_l": 2.16,
+          "margin": 0.0618,
           "implied_prob": {
-            "w": 0.2666,
-            "d": 0.2697,
-            "l": 0.4637
+            "w": 0.282,
+            "d": 0.282,
+            "l": 0.436
           }
         },
         "mingsheng": {
           "source": "mingsheng",
-          "odds_w": 3.25,
-          "odds_d": 3.55,
-          "odds_l": 2.05,
-          "margin": 0.0772,
+          "odds_w": 3.35,
+          "odds_d": 3.35,
+          "odds_l": 2.19,
+          "margin": 0.0536,
           "implied_prob": {
-            "w": 0.2856,
-            "d": 0.2615,
-            "l": 0.4529
+            "w": 0.2833,
+            "d": 0.2833,
+            "l": 0.4334
           }
         },
         "威廉希尔": {
           "source": "威廉希尔",
-          "odds_w": 3.6,
-          "odds_d": 3.4,
-          "odds_l": 2.0,
+          "odds_w": 3.4,
+          "odds_d": 3.3,
+          "odds_l": 2.1,
           "open_w": 3.8,
           "open_d": 3.5,
           "open_l": 1.85,
-          "margin": 0.0719,
+          "margin": 0.0733,
           "implied_prob": {
-            "w": 0.2591,
-            "d": 0.2744,
-            "l": 0.4665
+            "w": 0.274,
+            "d": 0.2823,
+            "l": 0.4437
           }
         },
         "betfair": {
           "source": "betfair",
-          "odds_w": 4.0,
-          "odds_d": 3.65,
-          "odds_l": 2.08,
-          "margin": 0.0048,
+          "odds_w": 3.75,
+          "odds_d": 3.5,
+          "odds_l": 2.2,
+          "margin": 0.0069,
           "implied_prob": {
-            "w": 0.2488,
-            "d": 0.2727,
-            "l": 0.4785
+            "w": 0.2648,
+            "d": 0.2837,
+            "l": 0.4514
           }
         }
       },
@@ -938,9 +938,9 @@
           "away_w": 0.97
         },
         "close": {
-          "home_w": 0.86,
-          "handicap": 0.5,
-          "away_w": 1.06
+          "home_w": 1.06,
+          "handicap": 0.25,
+          "away_w": 0.85
         }
       },
       "pin_ou": {
@@ -950,9 +950,9 @@
           "under": 0.85
         },
         "close": {
-          "over": 1.0,
-          "line": 2.75,
-          "under": 0.89
+          "over": 0.96,
+          "line": 2.5,
+          "under": 0.93
         }
       },
       "hkjc_ah": {
@@ -962,9 +962,9 @@
           "away_w": 0.67
         },
         "close": {
-          "home_w": 0.69,
-          "handicap": 0.75,
-          "away_w": 1.16
+          "home_w": 1.07,
+          "handicap": 0.25,
+          "away_w": 0.75
         }
       },
       "hkjc_ou": {
@@ -974,9 +974,9 @@
           "under": 0.84
         },
         "close": {
-          "over": 0.83,
+          "over": 0.84,
           "line": 2.5,
-          "under": 0.87
+          "under": 0.86
         }
       },
       "liji_ah": {
@@ -986,9 +986,9 @@
           "away_w": 1.03
         },
         "close": {
-          "home_w": 0.89,
-          "handicap": 0.5,
-          "away_w": 1.03
+          "home_w": 1.07,
+          "handicap": 0.25,
+          "away_w": 0.85
         }
       },
       "liji_ou": {
@@ -998,9 +998,9 @@
           "under": 0.95
         },
         "close": {
-          "over": 1.05,
-          "line": 2.75,
-          "under": 0.85
+          "over": 0.96,
+          "line": 2.5,
+          "under": 0.94
         }
       },
       "ms_ah": {
@@ -1010,9 +1010,9 @@
           "away_w": 0.93
         },
         "close": {
-          "home_w": 0.87,
-          "handicap": 0.5,
-          "away_w": 1.05
+          "home_w": 1.06,
+          "handicap": 0.25,
+          "away_w": 0.86
         }
       },
       "ms_ou": {
@@ -1022,9 +1022,9 @@
           "under": 0.98
         },
         "close": {
-          "over": 1.03,
-          "line": 2.75,
-          "under": 0.87
+          "over": 0.99,
+          "line": 2.5,
+          "under": 0.91
         }
       },
       "william_ah": {
@@ -1034,9 +1034,9 @@
           "away_w": 0.87
         },
         "close": {
-          "home_w": 0.8,
-          "handicap": 0.5,
-          "away_w": 0.95
+          "home_w": 0.91,
+          "handicap": 0.25,
+          "away_w": 0.71
         }
       },
       "william_ou": {
@@ -1046,9 +1046,9 @@
           "under": 0.95
         },
         "close": {
-          "over": 0.8,
+          "over": 0.91,
           "line": 2.5,
-          "under": 0.95
+          "under": 0.91
         }
       }
     },
@@ -1064,83 +1064,83 @@
       "odds": {
         "pinnacle": {
           "source": "pinnacle",
-          "odds_w": 1.27,
-          "odds_d": 6.28,
-          "odds_l": 10.72,
+          "odds_w": 1.29,
+          "odds_d": 6.14,
+          "odds_l": 9.68,
           "open_w": 1.33,
           "open_d": 4.71,
           "open_l": 8.03,
-          "margin": 0.0399,
+          "margin": 0.0414,
           "implied_prob": {
-            "w": 0.7572,
-            "d": 0.1531,
-            "l": 0.0897
+            "w": 0.7444,
+            "d": 0.1564,
+            "l": 0.0992
           }
         },
         "hkjc": {
           "source": "hkjc",
-          "odds_w": 1.18,
-          "odds_d": 5.4,
-          "odds_l": 10.5,
+          "odds_w": 1.19,
+          "odds_d": 5.3,
+          "odds_l": 10.0,
           "open_w": 1.25,
           "open_d": 4.7,
           "open_l": 8.5,
-          "margin": 0.1279,
+          "margin": 0.129,
           "implied_prob": {
-            "w": 0.7514,
-            "d": 0.1642,
-            "l": 0.0844
+            "w": 0.7443,
+            "d": 0.1671,
+            "l": 0.0886
           }
         },
         "liji": {
           "source": "liji",
-          "odds_w": 1.26,
-          "odds_d": 6.0,
-          "odds_l": 9.6,
-          "margin": 0.0646,
+          "odds_w": 1.28,
+          "odds_d": 5.8,
+          "odds_l": 8.8,
+          "margin": 0.0672,
           "implied_prob": {
-            "w": 0.7456,
-            "d": 0.1566,
-            "l": 0.0979
+            "w": 0.732,
+            "d": 0.1615,
+            "l": 0.1065
           }
         },
         "mingsheng": {
           "source": "mingsheng",
-          "odds_w": 1.27,
-          "odds_d": 5.9,
-          "odds_l": 8.2,
-          "margin": 0.0789,
+          "odds_w": 1.31,
+          "odds_d": 5.6,
+          "odds_l": 9.3,
+          "margin": 0.0495,
           "implied_prob": {
-            "w": 0.7299,
-            "d": 0.1571,
-            "l": 0.113
+            "w": 0.7274,
+            "d": 0.1702,
+            "l": 0.1025
           }
         },
         "威廉希尔": {
           "source": "威廉希尔",
-          "odds_w": 1.25,
-          "odds_d": 5.8,
-          "odds_l": 9.5,
+          "odds_w": 1.29,
+          "odds_d": 5.5,
+          "odds_l": 8.5,
           "open_w": 1.4,
           "open_d": 4.4,
           "open_l": 7.0,
-          "margin": 0.0777,
+          "margin": 0.0746,
           "implied_prob": {
-            "w": 0.7423,
-            "d": 0.16,
-            "l": 0.0977
+            "w": 0.7213,
+            "d": 0.1692,
+            "l": 0.1095
           }
         },
         "betfair": {
           "source": "betfair",
-          "odds_w": 1.29,
+          "odds_w": 1.3,
           "odds_d": 6.4,
-          "odds_l": 13.0,
-          "margin": 0.0083,
+          "odds_l": 12.5,
+          "margin": 0.0054,
           "implied_prob": {
-            "w": 0.7688,
-            "d": 0.155,
-            "l": 0.0763
+            "w": 0.765,
+            "d": 0.1554,
+            "l": 0.0796
           }
         }
       },
@@ -1151,9 +1151,9 @@
           "away_w": 0.99
         },
         "close": {
-          "home_w": 0.99,
+          "home_w": 1.05,
           "handicap": -1.75,
-          "away_w": 0.92
+          "away_w": 0.86
         }
       },
       "pin_ou": {
@@ -1163,9 +1163,9 @@
           "under": 0.94
         },
         "close": {
-          "over": 1.05,
+          "over": 0.95,
           "line": 3.25,
-          "under": 0.85
+          "under": 0.93
         }
       },
       "hkjc_ah": {
@@ -1175,9 +1175,9 @@
           "away_w": 1.07
         },
         "close": {
-          "home_w": 0.9,
+          "home_w": 0.96,
           "handicap": -1.75,
-          "away_w": 0.9
+          "away_w": 0.84
         }
       },
       "hkjc_ou": {
@@ -1199,9 +1199,9 @@
           "away_w": 0.87
         },
         "close": {
-          "home_w": 0.96,
-          "handicap": -1.75,
-          "away_w": 0.96
+          "home_w": 0.83,
+          "handicap": -1.5,
+          "away_w": 1.09
         }
       },
       "liji_ou": {
@@ -1211,9 +1211,9 @@
           "under": 0.95
         },
         "close": {
-          "over": 1.04,
+          "over": 0.97,
           "line": 3.25,
-          "under": 0.86
+          "under": 0.93
         }
       },
       "ms_ah": {
@@ -1223,9 +1223,9 @@
           "away_w": 0.8
         },
         "close": {
-          "home_w": 0.98,
-          "handicap": -1.75,
-          "away_w": 0.94
+          "home_w": 0.84,
+          "handicap": -1.5,
+          "away_w": 1.08
         }
       },
       "ms_ou": {
@@ -1235,9 +1235,9 @@
           "under": 0.92
         },
         "close": {
-          "over": 1.05,
+          "over": 0.97,
           "line": 3.25,
-          "under": 0.85
+          "under": 0.93
         }
       },
       "william_ah": {
@@ -1259,9 +1259,9 @@
           "under": 0.95
         },
         "close": {
-          "over": 1.2,
+          "over": 1.1,
           "line": 3.5,
-          "under": 0.62
+          "under": 0.67
         }
       }
     },
@@ -1277,17 +1277,17 @@
       "odds": {
         "pinnacle": {
           "source": "pinnacle",
-          "odds_w": 2.22,
-          "odds_d": 2.95,
-          "odds_l": 4.11,
+          "odds_w": 2.29,
+          "odds_d": 2.88,
+          "odds_l": 3.99,
           "open_w": 2.16,
           "open_d": 3.22,
           "open_l": 3.76,
-          "margin": 0.0328,
+          "margin": 0.0345,
           "implied_prob": {
-            "w": 0.4362,
-            "d": 0.3282,
-            "l": 0.2356
+            "w": 0.4221,
+            "d": 0.3356,
+            "l": 0.2423
           }
         },
         "hkjc": {
@@ -1307,53 +1307,53 @@
         },
         "liji": {
           "source": "liji",
-          "odds_w": 2.25,
-          "odds_d": 2.92,
-          "odds_l": 3.64,
-          "margin": 0.0616,
+          "odds_w": 2.21,
+          "odds_d": 2.93,
+          "odds_l": 3.72,
+          "margin": 0.0626,
           "implied_prob": {
-            "w": 0.4186,
-            "d": 0.3226,
-            "l": 0.2588
+            "w": 0.4258,
+            "d": 0.3212,
+            "l": 0.253
           }
         },
         "mingsheng": {
           "source": "mingsheng",
-          "odds_w": 2.25,
-          "odds_d": 2.96,
-          "odds_l": 3.35,
-          "margin": 0.0807,
+          "odds_w": 2.26,
+          "odds_d": 2.85,
+          "odds_l": 3.9,
+          "margin": 0.0498,
           "implied_prob": {
-            "w": 0.4112,
-            "d": 0.3126,
-            "l": 0.2762
+            "w": 0.4215,
+            "d": 0.3342,
+            "l": 0.2443
           }
         },
         "威廉希尔": {
           "source": "威廉希尔",
-          "odds_w": 2.2,
+          "odds_w": 2.15,
           "odds_d": 2.9,
-          "odds_l": 3.7,
+          "odds_l": 3.8,
           "open_w": 2.0,
           "open_d": 3.1,
           "open_l": 3.8,
-          "margin": 0.0696,
+          "margin": 0.0731,
           "implied_prob": {
-            "w": 0.425,
-            "d": 0.3224,
-            "l": 0.2527
+            "w": 0.4334,
+            "d": 0.3213,
+            "l": 0.2452
           }
         },
         "betfair": {
           "source": "betfair",
-          "odds_w": 2.28,
-          "odds_d": 3.0,
+          "odds_w": 2.32,
+          "odds_d": 2.98,
           "odds_l": 4.2,
-          "margin": 0.01,
+          "margin": 0.0047,
           "implied_prob": {
-            "w": 0.4342,
-            "d": 0.33,
-            "l": 0.2357
+            "w": 0.429,
+            "d": 0.334,
+            "l": 0.237
           }
         }
       },
@@ -1364,9 +1364,9 @@
           "away_w": 1.06
         },
         "close": {
-          "home_w": 0.86,
+          "home_w": 0.92,
           "handicap": -0.25,
-          "away_w": 1.05
+          "away_w": 0.99
         }
       },
       "pin_ou": {
@@ -1376,9 +1376,9 @@
           "under": 0.99
         },
         "close": {
-          "over": 0.8,
+          "over": 0.87,
           "line": 1.75,
-          "under": 1.11
+          "under": 1.03
         }
       },
       "hkjc_ah": {
@@ -1412,9 +1412,9 @@
           "away_w": 1.06
         },
         "close": {
-          "home_w": 0.87,
+          "home_w": 0.9,
           "handicap": -0.25,
-          "away_w": 1.05
+          "away_w": 1.02
         }
       },
       "liji_ou": {
@@ -1424,9 +1424,9 @@
           "under": 0.8
         },
         "close": {
-          "over": 0.83,
+          "over": 0.85,
           "line": 1.75,
-          "under": 1.07
+          "under": 1.05
         }
       },
       "ms_ah": {
@@ -1436,9 +1436,9 @@
           "away_w": 0.8
         },
         "close": {
-          "home_w": 0.86,
+          "home_w": 0.92,
           "handicap": -0.25,
-          "away_w": 1.06
+          "away_w": 1.0
         }
       },
       "ms_ou": {
@@ -1448,9 +1448,9 @@
           "under": 0.8
         },
         "close": {
-          "over": 0.82,
+          "over": 0.86,
           "line": 1.75,
-          "under": 1.08
+          "under": 1.04
         }
       },
       "william_ah": {
@@ -1460,9 +1460,9 @@
           "away_w": 0.8
         },
         "close": {
-          "home_w": 0.76,
+          "home_w": 0.74,
           "handicap": -0.25,
-          "away_w": 0.85
+          "away_w": 0.89
         }
       },
       "william_ou": {
@@ -1472,9 +1472,435 @@
           "under": 0.53
         },
         "close": {
-          "over": 0.57,
+          "over": 0.62,
           "line": 1.5,
-          "under": 1.3
+          "under": 1.2
+        }
+      }
+    },
+    "VPS瓦萨_图尔库国际": {
+      "info": {
+        "match_id": "4550790",
+        "number": "",
+        "league": "芬兰杯",
+        "kickoff": "2026-06-30 23:00:00",
+        "home": "VPS瓦萨",
+        "away": "图尔库国际"
+      },
+      "odds": {
+        "pinnacle": {
+          "source": "pinnacle",
+          "odds_w": 3.54,
+          "odds_d": 3.36,
+          "odds_l": 2.15,
+          "open_w": 3.58,
+          "open_d": 3.37,
+          "open_l": 2.04,
+          "margin": 0.0452,
+          "implied_prob": {
+            "w": 0.2703,
+            "d": 0.2847,
+            "l": 0.445
+          }
+        },
+        "hkjc": {
+          "source": "hkjc",
+          "odds_w": 3.15,
+          "odds_d": 3.15,
+          "odds_l": 2.01,
+          "open_w": 3.0,
+          "open_d": 3.1,
+          "open_l": 2.1,
+          "margin": 0.1325,
+          "implied_prob": {
+            "w": 0.2803,
+            "d": 0.2803,
+            "l": 0.4393
+          }
+        },
+        "liji": {
+          "source": "liji",
+          "odds_w": 3.15,
+          "odds_d": 3.0,
+          "odds_l": 2.04,
+          "margin": 0.141,
+          "implied_prob": {
+            "w": 0.2782,
+            "d": 0.2921,
+            "l": 0.4296
+          }
+        },
+        "mingsheng": {
+          "source": "mingsheng",
+          "odds_w": 3.4,
+          "odds_d": 3.3,
+          "odds_l": 2.08,
+          "margin": 0.0779,
+          "implied_prob": {
+            "w": 0.2729,
+            "d": 0.2811,
+            "l": 0.446
+          }
+        },
+        "威廉希尔": {
+          "source": "威廉希尔",
+          "odds_w": 3.25,
+          "odds_d": 3.0,
+          "odds_l": 2.05,
+          "open_w": 3.7,
+          "open_d": 3.2,
+          "open_l": 1.85,
+          "margin": 0.1288,
+          "implied_prob": {
+            "w": 0.2726,
+            "d": 0.2953,
+            "l": 0.4321
+          }
+        },
+        "betfair": {
+          "source": "betfair",
+          "odds_w": 3.7,
+          "odds_d": 3.3,
+          "odds_l": 2.16,
+          "margin": 0.0363,
+          "implied_prob": {
+            "w": 0.2608,
+            "d": 0.2924,
+            "l": 0.4468
+          }
+        }
+      },
+      "pin_ah": {
+        "open": {
+          "home_w": 0.78,
+          "handicap": 0.5,
+          "away_w": 1.05
+        },
+        "close": {
+          "home_w": 1.02,
+          "handicap": 0.25,
+          "away_w": 0.85
+        }
+      },
+      "pin_ou": {
+        "open": {
+          "over": 0.99,
+          "line": 2.5,
+          "under": 0.81
+        },
+        "close": {
+          "over": 0.83,
+          "line": 2.25,
+          "under": 1.03
+        }
+      },
+      "hkjc_ah": {
+        "open": {
+          "home_w": 0.86,
+          "handicap": 0.25,
+          "away_w": 0.9
+        },
+        "close": {
+          "home_w": 0.92,
+          "handicap": 0.25,
+          "away_w": 0.84
+        }
+      },
+      "hkjc_ou": {
+        "open": {
+          "over": 0.97,
+          "line": 2.5,
+          "under": 0.74
+        },
+        "close": {
+          "over": 0.97,
+          "line": 2.5,
+          "under": 0.74
+        }
+      },
+      "liji_ah": {
+        "open": {
+          "home_w": 0.84,
+          "handicap": 0.5,
+          "away_w": 0.98
+        },
+        "close": {
+          "home_w": 0.78,
+          "handicap": 0.5,
+          "away_w": 1.04
+        }
+      },
+      "liji_ou": {
+        "open": {
+          "over": 0.8,
+          "line": 2.25,
+          "under": 1.0
+        },
+        "close": {
+          "over": 0.8,
+          "line": 2.25,
+          "under": 1.0
+        }
+      },
+      "ms_ah": {
+        "open": {
+          "home_w": 0.82,
+          "handicap": 0.5,
+          "away_w": 1.02
+        },
+        "close": {
+          "home_w": 1.02,
+          "handicap": 0.25,
+          "away_w": 0.82
+        }
+      },
+      "ms_ou": {
+        "open": {
+          "over": 0.81,
+          "line": 2.25,
+          "under": 1.01
+        },
+        "close": {
+          "over": 0.81,
+          "line": 2.25,
+          "under": 1.01
+        }
+      },
+      "william_ah": {
+        "open": {
+          "home_w": 0.0,
+          "handicap": 0.0,
+          "away_w": 0.0
+        },
+        "close": {
+          "home_w": 0.0,
+          "handicap": 0.0,
+          "away_w": 0.0
+        }
+      },
+      "william_ou": {
+        "open": {
+          "over": 0.8,
+          "line": 2.5,
+          "under": 0.85
+        },
+        "close": {
+          "over": 0.95,
+          "line": 2.5,
+          "under": 0.7
+        }
+      }
+    },
+    "博塔弗戈SP_雷加塔斯巴西": {
+      "info": {
+        "match_id": "4494596",
+        "number": "",
+        "league": "巴西乙",
+        "kickoff": "2026-07-01 07:00:00",
+        "home": "博塔弗戈SP",
+        "away": "雷加塔斯巴西"
+      },
+      "odds": {
+        "pinnacle": {
+          "source": "pinnacle",
+          "odds_w": 2.3,
+          "odds_d": 3.0,
+          "odds_l": 3.62,
+          "open_w": 2.36,
+          "open_d": 3.02,
+          "open_l": 3.21,
+          "margin": 0.0443,
+          "implied_prob": {
+            "w": 0.4163,
+            "d": 0.3192,
+            "l": 0.2645
+          }
+        },
+        "hkjc": {
+          "source": "hkjc",
+          "odds_w": 2.19,
+          "odds_d": 2.98,
+          "odds_l": 2.94,
+          "open_w": 2.21,
+          "open_d": 2.9,
+          "open_l": 2.98,
+          "margin": 0.1323,
+          "implied_prob": {
+            "w": 0.4033,
+            "d": 0.2964,
+            "l": 0.3004
+          }
+        },
+        "liji": {
+          "source": "liji",
+          "odds_w": 2.22,
+          "odds_d": 3.1,
+          "odds_l": 2.86,
+          "margin": 0.1228,
+          "implied_prob": {
+            "w": 0.4012,
+            "d": 0.2873,
+            "l": 0.3114
+          }
+        },
+        "mingsheng": {
+          "source": "mingsheng",
+          "odds_w": 2.21,
+          "odds_d": 3.05,
+          "odds_l": 3.15,
+          "margin": 0.0979,
+          "implied_prob": {
+            "w": 0.4122,
+            "d": 0.2987,
+            "l": 0.2892
+          }
+        },
+        "威廉希尔": {
+          "source": "威廉希尔",
+          "odds_w": 2.25,
+          "odds_d": 3.1,
+          "odds_l": 3.0,
+          "open_w": 2.5,
+          "open_d": 2.88,
+          "open_l": 2.8,
+          "margin": 0.1003,
+          "implied_prob": {
+            "w": 0.4039,
+            "d": 0.2932,
+            "l": 0.3029
+          }
+        },
+        "betfair": {
+          "source": "betfair",
+          "odds_w": 2.3,
+          "odds_d": 3.25,
+          "odds_l": 3.6,
+          "margin": 0.0203,
+          "implied_prob": {
+            "w": 0.4262,
+            "d": 0.3016,
+            "l": 0.2723
+          }
+        }
+      },
+      "pin_ah": {
+        "open": {
+          "home_w": 1.01,
+          "handicap": -0.25,
+          "away_w": 0.8
+        },
+        "close": {
+          "home_w": 0.94,
+          "handicap": -0.25,
+          "away_w": 0.93
+        }
+      },
+      "pin_ou": {
+        "open": {
+          "over": 1.0,
+          "line": 2.25,
+          "under": 0.79
+        },
+        "close": {
+          "over": 0.78,
+          "line": 2.25,
+          "under": 0.96
+        }
+      },
+      "hkjc_ah": {
+        "open": {
+          "home_w": 0.99,
+          "handicap": -0.25,
+          "away_w": 0.78
+        },
+        "close": {
+          "home_w": 0.98,
+          "handicap": -0.25,
+          "away_w": 0.79
+        }
+      },
+      "hkjc_ou": {
+        "open": {
+          "over": 0.98,
+          "line": 2.25,
+          "under": 0.73
+        },
+        "close": {
+          "over": 0.86,
+          "line": 2.25,
+          "under": 0.84
+        }
+      },
+      "liji_ah": {
+        "open": {
+          "home_w": 0.98,
+          "handicap": -0.25,
+          "away_w": 0.9
+        },
+        "close": {
+          "home_w": 1.02,
+          "handicap": -0.25,
+          "away_w": 0.86
+        }
+      },
+      "liji_ou": {
+        "open": {
+          "over": 0.72,
+          "line": 2.0,
+          "under": 1.16
+        },
+        "close": {
+          "over": 0.54,
+          "line": 2.0,
+          "under": 1.47
+        }
+      },
+      "ms_ah": {
+        "open": {
+          "home_w": 1.0,
+          "handicap": -0.25,
+          "away_w": 0.84
+        },
+        "close": {
+          "home_w": 0.95,
+          "handicap": -0.25,
+          "away_w": 0.89
+        }
+      },
+      "ms_ou": {
+        "open": {
+          "over": 1.04,
+          "line": 2.25,
+          "under": 0.78
+        },
+        "close": {
+          "over": 0.86,
+          "line": 2.25,
+          "under": 0.96
+        }
+      },
+      "william_ah": {
+        "open": {
+          "home_w": 1.5,
+          "handicap": -0.5,
+          "away_w": 0.44
+        },
+        "close": {
+          "home_w": 0.87,
+          "handicap": -0.25,
+          "away_w": 0.74
+        }
+      },
+      "william_ou": {
+        "open": {
+          "over": 1.4,
+          "line": 2.5,
+          "under": 0.5
+        },
+        "close": {
+          "over": 1.05,
+          "line": 2.5,
+          "under": 0.73
         }
       }
     },
@@ -1491,55 +1917,55 @@
         "pinnacle": {
           "source": "pinnacle",
           "odds_w": 1.28,
-          "odds_d": 5.68,
-          "odds_l": 12.7,
+          "odds_d": 5.56,
+          "odds_l": 13.34,
           "open_w": 1.28,
           "open_d": 5.28,
           "open_l": 10.13,
-          "margin": 0.036,
+          "margin": 0.0361,
           "implied_prob": {
             "w": 0.7541,
-            "d": 0.1699,
-            "l": 0.076
+            "d": 0.1736,
+            "l": 0.0724
           }
         },
         "hkjc": {
           "source": "hkjc",
-          "odds_w": 1.14,
-          "odds_d": 5.5,
-          "odds_l": 14.0,
+          "odds_w": 1.16,
+          "odds_d": 5.2,
+          "odds_l": 12.5,
           "open_w": 1.14,
           "open_d": 5.5,
           "open_l": 14.0,
-          "margin": 0.1304,
+          "margin": 0.1344,
           "implied_prob": {
-            "w": 0.776,
-            "d": 0.1608,
-            "l": 0.0632
+            "w": 0.7599,
+            "d": 0.1695,
+            "l": 0.0705
           }
         },
         "liji": {
           "source": "liji",
-          "odds_w": 1.28,
-          "odds_d": 5.3,
-          "odds_l": 10.5,
-          "margin": 0.0651,
+          "odds_w": 1.26,
+          "odds_d": 5.4,
+          "odds_l": 11.5,
+          "margin": 0.0659,
           "implied_prob": {
-            "w": 0.7335,
-            "d": 0.1771,
-            "l": 0.0894
+            "w": 0.7447,
+            "d": 0.1738,
+            "l": 0.0816
           }
         },
         "mingsheng": {
           "source": "mingsheng",
-          "odds_w": 1.26,
-          "odds_d": 5.3,
-          "odds_l": 10.0,
-          "margin": 0.0824,
+          "odds_w": 1.25,
+          "odds_d": 5.5,
+          "odds_l": 13.0,
+          "margin": 0.0587,
           "implied_prob": {
-            "w": 0.7333,
-            "d": 0.1743,
-            "l": 0.0924
+            "w": 0.7556,
+            "d": 0.1717,
+            "l": 0.0727
           }
         },
         "威廉希尔": {
@@ -1559,14 +1985,14 @@
         },
         "betfair": {
           "source": "betfair",
-          "odds_w": 1.29,
-          "odds_d": 5.8,
-          "odds_l": 16.0,
-          "margin": 0.0101,
+          "odds_w": 1.3,
+          "odds_d": 5.7,
+          "odds_l": 16.5,
+          "margin": 0.0052,
           "implied_prob": {
-            "w": 0.7674,
-            "d": 0.1707,
-            "l": 0.0619
+            "w": 0.7652,
+            "d": 0.1745,
+            "l": 0.0603
           }
         }
       },
@@ -1579,7 +2005,7 @@
         "close": {
           "home_w": 0.88,
           "handicap": -1.5,
-          "away_w": 1.03
+          "away_w": 1.04
         }
       },
       "pin_ou": {
@@ -1589,9 +2015,9 @@
           "under": 0.97
         },
         "close": {
-          "over": 0.94,
+          "over": 0.96,
           "line": 2.5,
-          "under": 0.94
+          "under": 0.93
         }
       },
       "hkjc_ah": {
@@ -1601,9 +2027,9 @@
           "away_w": 0.87
         },
         "close": {
-          "home_w": 0.93,
+          "home_w": 1.03,
           "handicap": -1.75,
-          "away_w": 0.87
+          "away_w": 0.78
         }
       },
       "hkjc_ou": {
@@ -1625,9 +2051,9 @@
           "away_w": 1.02
         },
         "close": {
-          "home_w": 0.91,
+          "home_w": 0.88,
           "handicap": -1.5,
-          "away_w": 0.99
+          "away_w": 1.04
         }
       },
       "liji_ou": {
@@ -1637,9 +2063,9 @@
           "under": 0.99
         },
         "close": {
-          "over": 0.93,
+          "over": 1.0,
           "line": 2.5,
-          "under": 0.95
+          "under": 0.9
         }
       },
       "ms_ah": {
@@ -1651,7 +2077,7 @@
         "close": {
           "home_w": 0.88,
           "handicap": -1.5,
-          "away_w": 1.02
+          "away_w": 1.04
         }
       },
       "ms_ou": {
@@ -1661,9 +2087,9 @@
           "under": 0.8
         },
         "close": {
-          "over": 0.91,
+          "over": 0.99,
           "line": 2.5,
-          "under": 0.97
+          "under": 0.91
         }
       },
       "william_ah": {
@@ -1685,9 +2111,9 @@
           "under": 0.95
         },
         "close": {
-          "over": 0.8,
+          "over": 0.91,
           "line": 2.5,
-          "under": 0.95
+          "under": 0.91
         }
       }
     },
@@ -1704,16 +2130,16 @@
         "pinnacle": {
           "source": "pinnacle",
           "odds_w": 2.25,
-          "odds_d": 3.28,
-          "odds_l": 3.51,
+          "odds_d": 3.27,
+          "odds_l": 3.54,
           "open_w": 2.12,
           "open_d": 3.32,
           "open_l": 3.75,
-          "margin": 0.0342,
+          "margin": 0.0327,
           "implied_prob": {
-            "w": 0.4297,
-            "d": 0.2948,
-            "l": 0.2755
+            "w": 0.4304,
+            "d": 0.2961,
+            "l": 0.2735
           }
         },
         "hkjc": {
@@ -1733,26 +2159,26 @@
         },
         "liji": {
           "source": "liji",
-          "odds_w": 2.19,
-          "odds_d": 3.26,
-          "odds_l": 3.36,
-          "margin": 0.0609,
+          "odds_w": 2.21,
+          "odds_d": 3.15,
+          "odds_l": 3.41,
+          "margin": 0.0633,
           "implied_prob": {
-            "w": 0.4304,
-            "d": 0.2891,
-            "l": 0.2805
+            "w": 0.4256,
+            "d": 0.2986,
+            "l": 0.2758
           }
         },
         "mingsheng": {
           "source": "mingsheng",
-          "odds_w": 2.21,
-          "odds_d": 3.2,
-          "odds_l": 3.15,
-          "margin": 0.0825,
+          "odds_w": 2.26,
+          "odds_d": 3.25,
+          "odds_l": 3.25,
+          "margin": 0.0579,
           "implied_prob": {
-            "w": 0.418,
-            "d": 0.2887,
-            "l": 0.2933
+            "w": 0.4183,
+            "d": 0.2909,
+            "l": 0.2909
           }
         },
         "威廉希尔": {
@@ -1792,7 +2218,7 @@
         "close": {
           "home_w": 0.93,
           "handicap": -0.25,
-          "away_w": 0.97
+          "away_w": 0.98
         }
       },
       "pin_ou": {
@@ -1802,9 +2228,9 @@
           "under": 0.83
         },
         "close": {
-          "over": 0.96,
+          "over": 0.93,
           "line": 2.25,
-          "under": 0.93
+          "under": 0.96
         }
       },
       "hkjc_ah": {
@@ -1838,9 +2264,9 @@
           "away_w": 1.06
         },
         "close": {
-          "home_w": 0.89,
+          "home_w": 0.88,
           "handicap": -0.25,
-          "away_w": 1.01
+          "away_w": 1.04
         }
       },
       "liji_ou": {
@@ -1850,9 +2276,9 @@
           "under": 0.88
         },
         "close": {
-          "over": 0.93,
+          "over": 0.88,
           "line": 2.25,
-          "under": 0.95
+          "under": 1.02
         }
       },
       "ms_ah": {
@@ -1864,7 +2290,7 @@
         "close": {
           "home_w": 0.91,
           "handicap": -0.25,
-          "away_w": 0.99
+          "away_w": 1.01
         }
       },
       "ms_ou": {
@@ -1874,9 +2300,9 @@
           "under": 0.83
         },
         "close": {
-          "over": 0.94,
+          "over": 0.89,
           "line": 2.25,
-          "under": 0.94
+          "under": 1.01
         }
       },
       "william_ah": {
@@ -1898,9 +2324,9 @@
           "under": 0.6
         },
         "close": {
-          "over": 1.1,
+          "over": 1.05,
           "line": 2.5,
-          "under": 0.67
+          "under": 0.7
         }
       }
     },
@@ -1916,83 +2342,83 @@
       "odds": {
         "pinnacle": {
           "source": "pinnacle",
-          "odds_w": 1.37,
-          "odds_d": 4.95,
-          "odds_l": 9.28,
+          "odds_w": 1.38,
+          "odds_d": 4.89,
+          "odds_l": 9.09,
           "open_w": 1.54,
           "open_d": 4.24,
           "open_l": 6.27,
-          "margin": 0.0397,
+          "margin": 0.0391,
           "implied_prob": {
-            "w": 0.7021,
-            "d": 0.1943,
-            "l": 0.1036
+            "w": 0.6973,
+            "d": 0.1968,
+            "l": 0.1059
           }
         },
         "hkjc": {
           "source": "hkjc",
-          "odds_w": 1.29,
-          "odds_d": 4.25,
-          "odds_l": 9.0,
+          "odds_w": 1.3,
+          "odds_d": 4.3,
+          "odds_l": 8.5,
           "open_w": 1.38,
           "open_d": 3.95,
           "open_l": 7.0,
-          "margin": 0.1216,
+          "margin": 0.1194,
           "implied_prob": {
-            "w": 0.6912,
-            "d": 0.2098,
-            "l": 0.0991
+            "w": 0.6872,
+            "d": 0.2077,
+            "l": 0.1051
           }
         },
         "liji": {
           "source": "liji",
-          "odds_w": 1.34,
-          "odds_d": 4.8,
-          "odds_l": 9.0,
-          "margin": 0.0657,
+          "odds_w": 1.35,
+          "odds_d": 4.75,
+          "odds_l": 8.8,
+          "margin": 0.0648,
           "implied_prob": {
-            "w": 0.7003,
-            "d": 0.1955,
-            "l": 0.1043
+            "w": 0.6956,
+            "d": 0.1977,
+            "l": 0.1067
           }
         },
         "mingsheng": {
           "source": "mingsheng",
-          "odds_w": 1.35,
+          "odds_w": 1.37,
           "odds_d": 4.7,
-          "odds_l": 8.2,
-          "margin": 0.0755,
+          "odds_l": 8.9,
+          "margin": 0.0551,
           "implied_prob": {
-            "w": 0.6888,
-            "d": 0.1978,
-            "l": 0.1134
+            "w": 0.6918,
+            "d": 0.2017,
+            "l": 0.1065
           }
         },
         "威廉希尔": {
           "source": "威廉希尔",
           "odds_w": 1.36,
           "odds_d": 4.6,
-          "odds_l": 8.5,
+          "odds_l": 8.0,
           "open_w": 1.55,
           "open_d": 3.9,
           "open_l": 5.8,
-          "margin": 0.0703,
+          "margin": 0.0777,
           "implied_prob": {
-            "w": 0.687,
-            "d": 0.2031,
-            "l": 0.1099
+            "w": 0.6823,
+            "d": 0.2017,
+            "l": 0.116
           }
         },
         "betfair": {
           "source": "betfair",
           "odds_w": 1.39,
-          "odds_d": 5.4,
+          "odds_d": 5.3,
           "odds_l": 10.0,
-          "margin": 0.0046,
+          "margin": 0.0081,
           "implied_prob": {
-            "w": 0.7161,
-            "d": 0.1843,
-            "l": 0.0995
+            "w": 0.7136,
+            "d": 0.1872,
+            "l": 0.0992
           }
         }
       },
@@ -2003,9 +2429,9 @@
           "away_w": 0.95
         },
         "close": {
-          "home_w": 0.87,
+          "home_w": 0.89,
           "handicap": -1.25,
-          "away_w": 1.04
+          "away_w": 1.01
         }
       },
       "pin_ou": {
@@ -2015,9 +2441,9 @@
           "under": 0.94
         },
         "close": {
-          "over": 0.84,
+          "over": 0.85,
           "line": 2.5,
-          "under": 1.06
+          "under": 1.04
         }
       },
       "hkjc_ah": {
@@ -2027,9 +2453,9 @@
           "away_w": 0.72
         },
         "close": {
-          "home_w": 0.86,
+          "home_w": 0.85,
           "handicap": -1.25,
-          "away_w": 0.94
+          "away_w": 0.95
         }
       },
       "hkjc_ou": {
@@ -2039,9 +2465,9 @@
           "under": 0.85
         },
         "close": {
-          "over": 0.85,
+          "over": 0.76,
           "line": 2.5,
-          "under": 0.85
+          "under": 0.94
         }
       },
       "liji_ah": {
@@ -2051,9 +2477,9 @@
           "away_w": 1.01
         },
         "close": {
-          "home_w": 0.84,
+          "home_w": 0.91,
           "handicap": -1.25,
-          "away_w": 1.06
+          "away_w": 1.01
         }
       },
       "liji_ou": {
@@ -2063,7 +2489,7 @@
           "under": 1.04
         },
         "close": {
-          "over": 0.83,
+          "over": 0.85,
           "line": 2.5,
           "under": 1.05
         }
@@ -2075,9 +2501,9 @@
           "away_w": 0.91
         },
         "close": {
-          "home_w": 0.84,
+          "home_w": 0.91,
           "handicap": -1.25,
-          "away_w": 1.06
+          "away_w": 1.01
         }
       },
       "ms_ou": {
@@ -2087,9 +2513,9 @@
           "under": 0.93
         },
         "close": {
-          "over": 0.83,
+          "over": 0.86,
           "line": 2.5,
-          "under": 1.05
+          "under": 1.04
         }
       },
       "william_ah": {
@@ -2099,9 +2525,9 @@
           "away_w": 0.75
         },
         "close": {
-          "home_w": 0.78,
+          "home_w": 0.81,
           "handicap": -1.25,
-          "away_w": 0.86
+          "away_w": 0.84
         }
       },
       "william_ou": {
@@ -2116,10 +2542,223 @@
           "under": 0.95
         }
       }
+    },
+    "赫尔辛基_埃尔维斯": {
+      "info": {
+        "match_id": "4550788",
+        "number": "",
+        "league": "芬兰杯",
+        "kickoff": "2026-07-02 00:00:00",
+        "home": "赫尔辛基",
+        "away": "埃尔维斯"
+      },
+      "odds": {
+        "pinnacle": {
+          "source": "pinnacle",
+          "odds_w": 1.68,
+          "odds_d": 4.27,
+          "odds_l": 4.35,
+          "open_w": 1.66,
+          "open_d": 4.21,
+          "open_l": 4.29,
+          "margin": 0.0593,
+          "implied_prob": {
+            "w": 0.5619,
+            "d": 0.2211,
+            "l": 0.217
+          }
+        },
+        "hkjc": {
+          "source": "hkjc",
+          "odds_w": 1.56,
+          "odds_d": 4.1,
+          "odds_l": 4.0,
+          "open_w": 1.56,
+          "open_d": 4.1,
+          "open_l": 4.0,
+          "margin": 0.1349,
+          "implied_prob": {
+            "w": 0.5648,
+            "d": 0.2149,
+            "l": 0.2203
+          }
+        },
+        "liji": {
+          "source": "liji",
+          "odds_w": 1.59,
+          "odds_d": 3.84,
+          "odds_l": 3.98,
+          "margin": 0.1406,
+          "implied_prob": {
+            "w": 0.5514,
+            "d": 0.2283,
+            "l": 0.2203
+          }
+        },
+        "mingsheng": {
+          "source": "mingsheng",
+          "odds_w": 1.65,
+          "odds_d": 3.9,
+          "odds_l": 3.9,
+          "margin": 0.1189,
+          "implied_prob": {
+            "w": 0.5417,
+            "d": 0.2292,
+            "l": 0.2292
+          }
+        },
+        "威廉希尔": {
+          "source": "威廉希尔",
+          "odds_w": 1.67,
+          "odds_d": 3.7,
+          "odds_l": 4.0,
+          "open_w": 1.67,
+          "open_d": 3.7,
+          "open_l": 4.0,
+          "margin": 0.1191,
+          "implied_prob": {
+            "w": 0.5351,
+            "d": 0.2415,
+            "l": 0.2234
+          }
+        },
+        "betfair": {
+          "source": "betfair",
+          "odds_w": 1.69,
+          "odds_d": 4.3,
+          "odds_l": 4.3,
+          "margin": 0.0569,
+          "implied_prob": {
+            "w": 0.5599,
+            "d": 0.2201,
+            "l": 0.2201
+          }
+        }
+      },
+      "pin_ah": {
+        "open": {
+          "home_w": 0.85,
+          "handicap": -0.75,
+          "away_w": 0.96
+        },
+        "close": {
+          "home_w": 0.86,
+          "handicap": -0.75,
+          "away_w": 0.98
+        }
+      },
+      "pin_ou": {
+        "open": {
+          "over": 0.88,
+          "line": 3.25,
+          "under": 0.91
+        },
+        "close": {
+          "over": 0.89,
+          "line": 3.25,
+          "under": 0.93
+        }
+      },
+      "hkjc_ah": {
+        "open": {
+          "home_w": 0.82,
+          "handicap": -0.75,
+          "away_w": 0.95
+        },
+        "close": {
+          "home_w": 0.82,
+          "handicap": -0.75,
+          "away_w": 0.95
+        }
+      },
+      "hkjc_ou": {
+        "open": {
+          "over": 1.01,
+          "line": 3.5,
+          "under": 0.71
+        },
+        "close": {
+          "over": 1.01,
+          "line": 3.5,
+          "under": 0.71
+        }
+      },
+      "liji_ah": {
+        "open": {
+          "home_w": 0.82,
+          "handicap": -0.75,
+          "away_w": 1.0
+        },
+        "close": {
+          "home_w": 0.82,
+          "handicap": -0.75,
+          "away_w": 1.0
+        }
+      },
+      "liji_ou": {
+        "open": {
+          "over": 0.9,
+          "line": 3.25,
+          "under": 0.9
+        },
+        "close": {
+          "over": 0.92,
+          "line": 3.25,
+          "under": 0.88
+        }
+      },
+      "ms_ah": {
+        "open": {
+          "home_w": 0.0,
+          "handicap": 0.0,
+          "away_w": 0.0
+        },
+        "close": {
+          "home_w": 0.0,
+          "handicap": 0.0,
+          "away_w": 0.0
+        }
+      },
+      "ms_ou": {
+        "open": {
+          "over": 0.92,
+          "line": 3.25,
+          "under": 0.9
+        },
+        "close": {
+          "over": 0.92,
+          "line": 3.25,
+          "under": 0.9
+        }
+      },
+      "william_ah": {
+        "open": {
+          "home_w": 0.0,
+          "handicap": 0.0,
+          "away_w": 0.0
+        },
+        "close": {
+          "home_w": 0.0,
+          "handicap": 0.0,
+          "away_w": 0.0
+        }
+      },
+      "william_ou": {
+        "open": {
+          "over": 1.05,
+          "line": 3.5,
+          "under": 0.67
+        },
+        "close": {
+          "over": 1.05,
+          "line": 3.5,
+          "under": 0.67
+        }
+      }
     }
   },
   "summary": {
-    "total": 10,
+    "total": 13,
     "sources": [
       "betfair",
       "hkjc",
