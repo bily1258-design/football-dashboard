@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """fetch_data.py — 主调度
 
-Termux 模式：fetch raw → git push
-完整模式：fetch raw → align → build
+Termux 模式：500.com fetch → push DB + git push
+完整模式：500.com fetch → align → build
 
 用法：
   python fetch_data.py --date 2026-05-30       # 全流程
@@ -23,19 +23,65 @@ CACHE_DIR = os.path.join(REPO_DIR, 'data', 'cache')
 sys.path.insert(0, SCRIPT_DIR)
 
 
-def step_fetch(date_str: str):
-    """Step 1: 抓取 raw 数据（赔率+亚盘，赛果回填已移至step_backfill_results走足彩网）"""
+def step_fetch(date_str: str = None, db_path: str = None):
+    """Step 1: 从500.com抓取5家公司赔率数据（替代旧zgzcw路径）
+
+    数据源: odds.500.com JSON API
+    公司: Pinnacle(1055)/Bet365(3)/利记(651)/明升(140)/威廉希尔(293)
+    玩法: 1X2 / AH / OU (开盘+收盘)
+
+    前置步骤: backfill_from_500com（回填fid_500 + 赛果）
+    """
     print("\n" + "=" * 50)
-    print(f"STEP 1: 抓取 raw 数据 — {date_str}")
+    print("STEP 0: 500.com 赛果回填 + FID匹配")
     print("=" * 50)
 
-    from odds_api import fetch_all as fetch_om
+    backfill_script = os.path.join(SCRIPT_DIR, 'backfill_from_500com.py')
+    bf = subprocess.run(
+        [sys.executable, backfill_script, '--db', db_path, '--last', '7'],
+        cwd=REPO_DIR, capture_output=True, text=True, timeout=120
+    )
+    for line in bf.stdout.split('\n'):
+        if any(k in line for k in ['回填', 'fid', '总计', '⚠', '✅']):
+            print(f"  {line.strip()}")
 
-    om = fetch_om(date_str)
+    print("\n" + "=" * 50)
+    print("STEP 1: 抓取500.com赔率数据")
+    print("=" * 50)
 
-    om_summary = om.get('summary', {})
-    print(f"📊 OM:  Pinnacle{om_summary.get('pinnacle_count',0)} HKJC{om_summary.get('hkjc_count',0)} 利记{om_summary.get('liji_count',0)}")
-    return om
+    if not db_path:
+        db_path = os.environ.get('FOOTBALL_DB_PATH',
+            os.path.join(REPO_DIR, 'data', 'football.db'))
+
+    fetch_500com = os.path.join(SCRIPT_DIR, 'fetch_500com_odds.py')
+    companies = ['pinnacle', 'bet365', 'liji', 'mingsheng', 'william']
+    total_updated = 0
+
+    for company in companies:
+        print(f"\n[{company}] 抓取500.com赔率...")
+        cmd = [sys.executable, fetch_500com,
+               '--db', db_path,
+               '--company', company,
+               '--save-raw',
+               '--limit', '30']
+        result = subprocess.run(cmd, cwd=REPO_DIR, capture_output=True, text=True, timeout=180)
+
+        if result.returncode == 0:
+            for line in result.stdout.split('\n'):
+                if any(k in line for k in ['更新', '有数据', '已完成', 'DB']):
+                    print(f"  {line.strip()}")
+            last_lines = result.stdout.strip().split('\n')[-2:]
+            for line in last_lines:
+                if '总计' in line:
+                    print(f"  {line.strip()}")
+            print(f"  OK [{company}]")
+        else:
+            print(f"  WARN [{company}] failed (rc={result.returncode})")
+            if result.stderr:
+                print(f"  stderr: {result.stderr[:200]}")
+
+    return total_updated
+
 
 def step_fetch_pinnacle(date_str: str, db_path: str = None):
     print("\n" + "=" * 50)
@@ -46,7 +92,6 @@ def step_fetch_pinnacle(date_str: str, db_path: str = None):
             os.path.join(REPO_DIR, 'data', 'football.db'))
     cmd = [sys.executable, os.path.join(SCRIPT_DIR, 'fetch_pinnacle_odds.py'), '--date', date_str]
     result = subprocess.run(cmd, cwd=REPO_DIR, capture_output=True, text=True, timeout=600)
-    # 打印关键输出（亚盘/赔率等），让用户看到进度
     for line in result.stdout.split('\n'):
         if any(k in line for k in ['亚盘', 'AH', 'ah_', 'Pinnacle', 'HKJC', '百家', '更新', 'ERROR', 'WARN', 'INFO', 'matched', 'updated', '记录']):
             print(f"  {line.strip()}")
@@ -71,11 +116,6 @@ def step_update_ah(date_str: str, db_path: str = None):
     from datetime import datetime, timedelta
 
     def _ah_or_none(d, k):
-        """亚盘 close/open dict 取值。
-        - dict 为空 → None
-        - dict 三个字段（盘口/主水/客水）全 0 → None（视作"没抓到"，COALESCE 保留 DB 旧值）
-        - 否则返回 dict.get(k)（真平手 0.0 也能正常取到）
-        """
         if not d:
             return None
         h = d.get('handicap', 0) or 0
@@ -86,11 +126,6 @@ def step_update_ah(date_str: str, db_path: str = None):
         return d.get(k)
 
     def _ou_or_none(d, k):
-        """OU 大小球 dict 取值。
-        - dict 为空 → None
-        - dict 三个字段（over/line/under）全 0 → None（视作"没抓到"，COALESCE 保留 DB 旧值）
-        - 否则返回 dict.get(k)（line=0 不算"全 0"，只要 over/under 水位非 0 就放过）
-        """
         if not d:
             return None
         o = d.get('over', 0) or 0
@@ -104,26 +139,23 @@ def step_update_ah(date_str: str, db_path: str = None):
     prev_day = (datetime.strptime(date_str, '%Y-%m-%d') - timedelta(days=1)).strftime('%Y-%m-%d')
     window_start = f"{prev_day} 12:00"
     next_day = (datetime.strptime(date_str, '%Y-%m-%d') + timedelta(days=1)).strftime('%Y-%m-%d')
-    window_end = f"{next_day} 12:06"  # 2026-06-20 改造：11:59 -> 12:06，覆盖12:00整点边界
+    window_end = f"{next_day} 12:06"
     
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     
-    # 确保ah字段存在
     for col, ctype in [('ah_handicap', 'REAL'), ('ah_home_water', 'REAL'), ('ah_away_water', 'REAL'), ('ah_source', 'TEXT'),
                        ('ah_open_handicap', 'REAL'), ('ah_open_home_water', 'REAL'), ('ah_open_away_water', 'REAL'),
                        ('liji_handicap', 'REAL'), ('liji_home_water', 'REAL'), ('liji_away_water', 'REAL'),
                        ('liji_open_handicap', 'REAL'), ('liji_open_home_water', 'REAL'), ('liji_open_away_water', 'REAL'),
                        ('ms_handicap', 'REAL'), ('ms_home_water', 'REAL'), ('ms_away_water', 'REAL'),
                        ('ms_open_handicap', 'REAL'), ('ms_open_home_water', 'REAL'), ('ms_open_away_water', 'REAL'),
-                       # 大小球字段
                        ('ou_over', 'REAL'), ('ou_line', 'REAL'), ('ou_under', 'REAL'),
                        ('ou_open_over', 'REAL'), ('ou_open_line', 'REAL'), ('ou_open_under', 'REAL'),
                        ('liji_ou_over', 'REAL'), ('liji_ou_line', 'REAL'), ('liji_ou_under', 'REAL'),
                        ('liji_ou_open_over', 'REAL'), ('liji_ou_open_line', 'REAL'), ('liji_ou_open_under', 'REAL'),
                        ('ms_ou_over', 'REAL'), ('ms_ou_line', 'REAL'), ('ms_ou_under', 'REAL'),
                        ('ms_ou_open_over', 'REAL'), ('ms_ou_open_line', 'REAL'), ('ms_ou_open_under', 'REAL'),
-                       # 威廉希尔字段
                        ('william_1x2_w', 'REAL'), ('william_1x2_d', 'REAL'), ('william_1x2_l', 'REAL'),
                        ('william_ah_handicap', 'REAL'), ('william_ah_home_water', 'REAL'), ('william_ah_away_water', 'REAL'),
                        ('william_ah_open_handicap', 'REAL'), ('william_ah_open_home_water', 'REAL'), ('william_ah_open_away_water', 'REAL'),
@@ -153,7 +185,6 @@ def step_update_ah(date_str: str, db_path: str = None):
             for key, entry in oyzs_data.items():
                 ah_home = entry.get('home', '')
                 ah_away = entry.get('away', '')
-                # 亚盘优先级: Pinnacle → 利记 → 威廉希尔 → HKJC
                 pin_ah = entry.get('pin_ah', {})
                 liji_ah = entry.get('liji_ah', {})
                 william_ah = entry.get('william_ah', {})
@@ -186,7 +217,6 @@ def step_update_ah(date_str: str, db_path: str = None):
                     and ah_close.get('away_w', 0) == 0):
                     continue
                 
-                # 逐条相似度匹配，避免精确队名匹配漏掉同名变体（如"沙特"vs"沙特阿拉伯"）
                 matched_ids = []
                 for rid, db_home, db_away in db_records:
                     h_match = max(
@@ -202,21 +232,16 @@ def step_update_ah(date_str: str, db_path: str = None):
                         matched_ids.append(rid)
                 
                 if matched_ids:
-                    # 逐条更新所有相似匹配的记录（按id，不依赖精确队名）
-                    # 2026-06-21 改造：用 _ah_or_none helper 统一处理"没抓到 vs 真平手 vs 真数据"三种场景
-                    # 返回 None → COALESCE 保留 DB 旧值；返回 0.0/非零 → 写入
                     ah_val = _ah_or_none(ah_close, 'handicap')
                     hw_val = _ah_or_none(ah_close, 'home_w')
                     aw_val = _ah_or_none(ah_close, 'away_w')
                     src_val = ah_source or 'pinnacle'
 
-                    # Pinnacle/利记/HKJC初盘
                     ah_open = ah_open_data
                     ah_open_h = _ah_or_none(ah_open, 'handicap')
                     ah_open_hw = _ah_or_none(ah_open, 'home_w')
                     ah_open_aw = _ah_or_none(ah_open, 'away_w')
 
-                    # 利记/明升数据
                     liji_data = entry.get('liji_ah', {})
                     liji_close = liji_data.get('close', {})
                     liji_open = liji_data.get('open', {})
@@ -237,7 +262,6 @@ def step_update_ah(date_str: str, db_path: str = None):
                     ms_ohw = _ah_or_none(ms_open, 'home_w')
                     ms_oaw = _ah_or_none(ms_open, 'away_w')
 
-                    # 威廉希尔数据
                     william_data = entry.get('william_ah', {})
                     william_close = william_data.get('close', {})
                     william_open = william_data.get('open', {})
@@ -248,8 +272,6 @@ def step_update_ah(date_str: str, db_path: str = None):
                     william_ohw = _ah_or_none(william_open, 'home_w')
                     william_oaw = _ah_or_none(william_open, 'away_w')
 
-                    # 大小球数据（OU 段 2026-06-21 改造：用 _ou_or_none helper 统一处理"没抓到 vs 真数据"，SQL 同步改 COALESCE 保留旧值）
-                    # OU大小球优先级: Pinnacle → 利记
                     pin_ou = entry.get('pin_ou', {})
                     liji_ou_data = entry.get('liji_ou', {})
                     ou_close = pin_ou.get('close', {}) or liji_ou_data.get('close', {})
@@ -278,14 +300,12 @@ def step_update_ah(date_str: str, db_path: str = None):
                     ou_ms_op_l = _ou_or_none(ou_ms_open, 'line')
                     ou_ms_op_u = _ou_or_none(ou_ms_open, 'under')
 
-                    # 威廉希尔OU数据
                     ou_william_close = entry.get('william_ou', {}).get('close', {})
                     ou_william_open = entry.get('william_ou', {}).get('open', {})
                     ou_william_o = _ou_or_none(ou_william_close, 'over')
                     ou_william_l = _ou_or_none(ou_william_close, 'line')
                     ou_william_u = _ou_or_none(ou_william_close, 'under')
 
-                    # 威廉希尔1X2欧赔数据
                     william_1x2 = entry.get('william_1x2', {})
                     william_1x2_close = william_1x2.get('close', {})
                     william_1x2_open = william_1x2.get('open', {})
@@ -361,11 +381,7 @@ def step_update_ah(date_str: str, db_path: str = None):
     return ah_updated
 
 def step_update_db(db_path: str = None):
-    """Step 1.3: 3 链条全量更新 (fusion -> EV -> kelly)
-
-    顺序：fusion 必须在 EV 之前 (EV 依赖 fusion 概率)，
-          kelly 在最后 (用 fusion 或 final + odds)
-    """
+    """Step 1.3: 3 链条全量更新 (fusion -> EV -> kelly)"""
     print("\n" + "=" * 50)
     print("STEP 1.3: DB 3链条全量更新 (fusion + EV + kelly)")
     print("=" * 50)
@@ -388,7 +404,6 @@ def step_update_db(db_path: str = None):
         cmd = [sys.executable, script] + args
         result = subprocess.run(cmd, cwd=REPO_DIR, capture_output=True, text=True, timeout=timeout)
         if result.returncode == 0:
-            # 输出关键统计行
             for line in result.stdout.split('\n'):
                 if any(k in line for k in ['更新', '完成', 'updated', 'updated:', '条记录', '条 (错误', '总记录']):
                     print(' ', line.strip())
@@ -405,11 +420,7 @@ def step_update_db(db_path: str = None):
 
 
 def step_predict(date_str: str, db_path: str = None):
-    """Step 1.4: 从 OM 赔率生成泊松预测，INSERT 到 DB
-
-    termux 抓 raw 后，把当日比赛写入 poisson_predictions 表，
-    这样 align_and_merge 才能从 DB 读到新比赛，新比赛才会进看板
-    """
+    """Step 1.4: 从 OM 赔率生成泊松预测，INSERT 到 DB"""
     print("\n" + "=" * 50)
     print(f"STEP 1.4: 生成预测 (OM → DB) — {date_str}")
     print("=" * 50)
@@ -420,7 +431,6 @@ def step_predict(date_str: str, db_path: str = None):
            '--date', date_str, '--db', db_path]
     result = subprocess.run(cmd, cwd=REPO_DIR, capture_output=True, text=True, timeout=120)
     if result.returncode == 0:
-        # 输出脚本关键行
         for line in result.stdout.split('\n'):
             if any(k in line for k in ['OM matches', 'Predictions', '新增', '跳过']):
                 print(' ', line)
@@ -434,14 +444,11 @@ def step_push(date_str: str):
     """Step 1.5: git push raw 数据（Termux模式）
     
     流程：先 stash → pull → stash pop → commit → push
-    避免 rebase 冲突（raw data 跟 GA commit 同时改同一文件时）
-    push 失败时 force-with-lease 兜底（raw data 每次重新生成，覆盖安全）
     """
     print("\n" + "=" * 50)
     print("STEP 1.5: 推送 raw 数据到 GitHub")
     print("=" * 50)
 
-    # 清理 rebase 残留（防中途崩了留尾巴）
     repo_git = os.path.join(REPO_DIR, '.git')
     if os.path.isdir(os.path.join(repo_git, 'rebase-merge')) or os.path.isdir(os.path.join(repo_git, 'rebase-apply')):
         print("⚠️ 检测到 rebase 残留，自动清理")
@@ -457,12 +464,10 @@ def step_push(date_str: str):
             except OSError:
                 pass
 
-    # 使用 HTTPS+PAT 方式推送（SSH 在 Termux 不稳定）
     pat = os.environ.get('GITHUB_PAT', '')
     https_url = f'https://{pat}@github.com/bily1258-design/football-dashboard.git' if pat else ''
     remote_url = https_url if https_url else 'origin'
 
-    # 先 stash 本地改动，pull 最新，再 stash pop → 避免跟 GA commit 冲突
     subprocess.run(['git', 'stash', '--include-untracked'], cwd=REPO_DIR, capture_output=True)
     pull = subprocess.run(
         ['git', 'pull', remote_url, 'main'],
@@ -472,7 +477,6 @@ def step_push(date_str: str):
         print(f"⚠️ pull失败: {pull.stderr[:200]}")
     pop = subprocess.run(['git', 'stash', 'pop'], cwd=REPO_DIR, capture_output=True, text=True)
     if pop.returncode != 0:
-        # stash pop 冲突时，用 ours 策略（raw data 本地版本优先）
         print("⚠️ stash pop 冲突，用本地版本解决")
         subprocess.run(['git', 'checkout', '--ours', '.'], cwd=REPO_DIR, capture_output=True)
         subprocess.run(['git', 'add', '-A'], cwd=REPO_DIR)
@@ -486,7 +490,6 @@ def step_push(date_str: str):
         print("  无新数据，跳过推送")
         return True
 
-    # 正常 push
     push = subprocess.run(
         ['git', 'push', remote_url, 'main'],
         cwd=REPO_DIR, capture_output=True, text=True, timeout=180
@@ -495,7 +498,6 @@ def step_push(date_str: str):
         print("✅ raw 数据已推送 → GA 将自动触发构建")
         return True
 
-    # push 失败（non-fast-forward 等），force-with-lease 兜底
     print(f"⚠️ 正常push失败: {push.stderr[:200]}")
     print("  尝试 force-with-lease ...")
     force_push = subprocess.run(
@@ -558,7 +560,6 @@ def step_backfill_results(date_str: str, db_path: str = None):
     print("=" * 50)
 
     total = 0
-    # 回填当天和前一天
     dates = [date_str]
     try:
         prev = (datetime.strptime(date_str, '%Y-%m-%d') - timedelta(days=1)).strftime('%Y-%m-%d')
@@ -583,7 +584,6 @@ def step_backfill_results(date_str: str, db_path: str = None):
     except Exception as e:
         print(f"⚠️ 足彩网赛果抓取失败: {e}，尝试500.com...")
 
-    # 兜底: 500.com缓存
     try:
         all_500 = []
         for d in dates:
@@ -680,7 +680,7 @@ def step_push_db(db_path: str = None):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='主调度：fetch → report → review → align → build → push')
+    parser = argparse.ArgumentParser(description='主调度：500.com fetch → align → build → push')
     parser.add_argument('--date', type=str, default=None, help='日期 YYYY-MM-DD')
     parser.add_argument('--yesterday', action='store_true', help='用昨天日期')
     parser.add_argument('--today', action='store_true', help='用今天日期')
@@ -707,20 +707,20 @@ def main():
 
     print(f"🎯 目标日期: {date_str}")
 
-    # Termux 模式：只抓raw + push（其余步骤由GA完成）
+    # Termux 模式：500.com抓取 + push DB + git push
     if args.fetch_and_push:
-        step_fetch(date_str)
-        step_backfill_results(date_str, db_path)  # 赛果回填（Termux有chromium可抓zgzcw）
-        step_push_db(db_path)  # 推送回填后的DB到Release
+        step_fetch(date_str, db_path)
+        step_backfill_results(date_str, db_path)  # 赛果回填
+        step_push_db(db_path)  # 推送DB到Release
         step_push(date_str)
         
-        print("\n✅ Termux模式完成：raw数据+赛果回填已推送，GA将执行后续全流程")
+        print("\n✅ Termux模式完成：500.com数据已推送，GA将执行后续全流程")
         return
 
     # 只抓取模式
     if args.fetch_only:
-        step_fetch(date_str)
-        print("\n✅ 数据已抓取到 data/raw/")
+        step_fetch(date_str, db_path)
+        print("\n✅ 500.com赔率数据已写入DB")
         return
 
     # 只构建模式
@@ -731,7 +731,7 @@ def main():
         return
 
     # 完整模式：fetch → report → review → align → build
-    step_fetch(date_str)
+    step_fetch(date_str, db_path)
     step_predict(date_str, db_path)          # 先INSERT预测记录
     step_fetch_pinnacle(date_str, db_path)   # 再UPDATE赔率
     step_update_ah(date_str, db_path)        # 亚盘数据写入DB
@@ -756,4 +756,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
