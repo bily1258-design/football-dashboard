@@ -551,12 +551,13 @@ def step_daily_report(date_str: str, incremental: bool = False):
 
 
 def step_backfill_results(date_str: str, db_path: str = None):
-    """Step: 从足彩网抓赛果回填DB（优先于500.com）
-    
+    """Step: 从500.com抓赛果回填DB（替代旧足彩网）
+
+    使用 backfill_from_500com.py 回填 actual_outcome + fid_500
     回填当天+前一天：当天可能有凌晨完场的，前一天是主要完场日
     """
     print("\n" + "=" * 50)
-    print(f"STEP: 赛果回填 — {date_str} + 前一天")
+    print(f"STEP: 500.com赛果回填 — {date_str} + 前一天")
     print("=" * 50)
 
     total = 0
@@ -567,42 +568,27 @@ def step_backfill_results(date_str: str, db_path: str = None):
     except:
         pass
 
-    try:
-        from fetch_zgzcw_results import fetch_results, PAGE_JZ, PAGE_BD, backfill_db as _backfill_zgzcw
-        for d in dates:
-            results = fetch_results(d, PAGE_JZ)
-            bd_results = fetch_results(d, PAGE_BD)
-            all_results = results + bd_results
-            if all_results:
-                count = _backfill_zgzcw(all_results, db_path)
-                total += count
-        if total > 0:
-            print(f"✅ 足彩网回填共 {total} 条")
-            return total
-        else:
-            print("  足彩网无赛果数据，尝试500.com...")
-    except Exception as e:
-        print(f"⚠️ 足彩网赛果抓取失败: {e}，尝试500.com...")
+    backfill_script = os.path.join(SCRIPT_DIR, 'backfill_from_500com.py')
+    for d in dates:
+        bf = subprocess.run(
+            [sys.executable, backfill_script, '--db', db_path, '--date', d],
+            cwd=REPO_DIR, capture_output=True, text=True, timeout=120
+        )
+        for line in bf.stdout.split('\n'):
+            cnt = 0
+            if '回填' in line:
+                import re
+                m = re.search(r'回填\s*(\d+)\s*条赛果', line)
+                if m:
+                    cnt = int(m.group(1))
+                m2 = re.search(r'(\d+)条fid', line)
+                if m2:
+                    print(f"  {line.strip()}")
+                elif cnt > 0:
+                    print(f"  {line.strip()}")
+        if bf.returncode != 0:
+            print(f"  ⚠️ {d} 500.com回填失败: {bf.stderr[:200]}")
 
-    try:
-        all_500 = []
-        for d in dates:
-            base = d.replace('-', '')
-            next_base = (datetime.strptime(d, '%Y-%m-%d') + timedelta(days=1)).strftime('%Y%m%d')
-            for suffix in [base, next_base]:
-                cf = os.path.join(CACHE_DIR, f"500com_results_{suffix}.json")
-                if os.path.exists(cf):
-                    with open(cf, 'r', encoding='utf-8') as f:
-                        all_500.extend(json.load(f).get('results', []))
-        if all_500:
-            from review import _backfill_results
-            count = _backfill_results(all_500)
-            print(f"✅ 500.com回填 {count} 条")
-            return count
-    except Exception as e:
-        print(f"⚠️ 500.com兜底也失败: {e}")
-
-    print("  无赛果可回填")
     return total
 
 
@@ -710,7 +696,7 @@ def main():
     # Termux 模式：500.com抓取 + push DB + git push
     if args.fetch_and_push:
         step_fetch(date_str, db_path)
-        step_backfill_results(date_str, db_path)  # 赛果回填
+        step_backfill_results(date_str, db_path)  # 赛果回填（500.com）
         step_push_db(db_path)  # 推送DB到Release
         step_push(date_str)
         
@@ -736,7 +722,7 @@ def main():
     step_fetch_pinnacle(date_str, db_path)   # 再UPDATE赔率
     step_update_ah(date_str, db_path)        # 亚盘数据写入DB
     step_update_db(db_path)
-    step_backfill_results(date_str, db_path) # 赛果回填（足彩网优先）
+    step_backfill_results(date_str, db_path) # 赛果回填（500.com）
     
     if args.with_report:
         step_prepare_odds(date_str)
