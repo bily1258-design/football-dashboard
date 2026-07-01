@@ -989,7 +989,7 @@ def fetch_all(date_str: str = None, companies: List[str] = None,
     # 5.1 已合并到oyzs处理中（Pinnacle/利记/HKJC亚盘）
 
     # 5.1 合并 oyzs 数据（Pinnacle/HKJC/利记/明升 的 1X2+AH+OU）
-    oyzs_merged_counts = {'pinnacle': 0, 'hkjc': 0, 'liji': 0, 'mingsheng': 0, 'william': 0}
+    oyzs_merged_counts = {'pinnacle': 0, 'bet365': 0, 'hkjc': 0, 'liji': 0, 'mingsheng': 0, 'william': 0}
 
     for key, oyzs_match in oyzs_data.items():
         target = merged.get(key)
