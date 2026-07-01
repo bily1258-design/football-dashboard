@@ -48,8 +48,9 @@ def fetch_page(date_str: str, page_type: str = PAGE_JZ) -> Optional[str]:
     req = urllib.request.Request(url, headers=HEADERS)
     try:
         with urllib.request.urlopen(req, timeout=20) as resp:
-            if resp.status != 200:
-                print(f'  ❌ HTTP {resp.status}')
+            code = resp.getcode()
+            if code != 200:
+                print(f'  ❌ HTTP {code}')
                 return None
             raw = resp.read()
             try:

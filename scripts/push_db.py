@@ -23,7 +23,7 @@ def get_token():
     if token:
         return token
     secret_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-        '..', '..', 'SECRET.md')
+        '..', 'SECRET.md')
     if os.path.exists(secret_path):
         with open(secret_path, 'r') as f:
             for line in f:
@@ -44,7 +44,7 @@ def api_request(url, token, method='GET', data=None):
     req = urllib.request.Request(url, data=data, headers=headers, method=method)
     try:
         resp = urllib.request.urlopen(req, timeout=30)
-        if resp.status == 204:
+        if resp.getcode() == 204:
             return None
         return json.loads(resp.read())
     except urllib.error.HTTPError as e:
@@ -173,7 +173,8 @@ def upload_asset(token, release_id, db_path):
         print(f'✅ DB已上传: {result["browser_download_url"]} ({len(content)//1024}KB)')
         return True
     except urllib.error.HTTPError as e:
-        print(f'❌ 上传失败: {e.code} {e.read().decode()[:200]}')
+        error_body = e.read().decode()[:200] if e.headers.get('Content-Length') else str(e)
+        print(f'❌ 上传失败: {e.code} {error_body}')
         return False
 
 
@@ -208,7 +209,6 @@ def push_db(db_path=None, no_merge=False):
     if not release:
         print('[ERROR] 无法创建/获取 Release')
         return False
-
     return upload_asset(token, release['id'], db_path)
 
 
