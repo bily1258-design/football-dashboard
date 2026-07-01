@@ -280,6 +280,23 @@ def update_db(db_path, records, company, dry_run=False):
     
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
+    
+    # 确保DB有所需的列
+    required_cols = [
+        (f'{db_prefix}_open_w', 'REAL'), (f'{db_prefix}_open_d', 'REAL'), (f'{db_prefix}_open_l', 'REAL'),
+        (f'{db_prefix}_close_w', 'REAL'), (f'{db_prefix}_close_d', 'REAL'), (f'{db_prefix}_close_l', 'REAL'),
+        (f'{ah_prefix}_handicap', 'REAL'), (f'{ah_prefix}_home_water', 'REAL'), (f'{ah_prefix}_away_water', 'REAL'),
+        (f'{ah_prefix}_open_handicap', 'REAL'), (f'{ah_prefix}_open_home_water', 'REAL'), (f'{ah_prefix}_open_away_water', 'REAL'),
+        (f'{ou_prefix}_line', 'REAL'), (f'{ou_prefix}_over', 'REAL'), (f'{ou_prefix}_under', 'REAL'),
+        (f'{ou_prefix}_open_line', 'REAL'), (f'{ou_prefix}_open_over', 'REAL'), (f'{ou_prefix}_open_under', 'REAL'),
+    ]
+    cursor.execute("PRAGMA table_info(poisson_predictions)")
+    existing = {row[1] for row in cursor.fetchall()}
+    for col, ctype in required_cols:
+        if col not in existing:
+            cursor.execute(f"ALTER TABLE poisson_predictions ADD COLUMN {col} {ctype}")
+            print(f"  [DB] 新增列: {col}")
+    conn.commit()
     updated = 0
     
     for rec in records:
