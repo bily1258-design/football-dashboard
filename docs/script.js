@@ -51,7 +51,7 @@ function openAhModal(record) {
   html += `<td>${record.odds.w || '-'}</td><td>${record.odds.d || '-'}</td><td>${record.odds.l || '-'}</td></tr>`;
   html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-pin">Pinnacle</span></td>`;
   html += `<td>${pin.w || '-'}</td><td>${pin.d || '-'}</td><td>${pin.l || '-'}</td></tr>`;
-  html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-hkjc">HKJC</span></td>`;
+  html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-bet365">Bet365</span></td>`;
   html += `<td>${hkjc.w || '-'}</td><td>${hkjc.d || '-'}</td><td>${hkjc.l || '-'}</td></tr>`;
   html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-will">威廉希尔</span></td>`;
   html += `<td>${william.w || '-'}</td><td>${william.d || '-'}</td><td>${william.l || '-'}</td></tr>`;
@@ -147,8 +147,8 @@ function openAhModal(record) {
     return s;
   }
 
-  // HKJC（1X2已在顶部对比表显示，此处只显示亚盘+大小球）
-  html += compactCompany('HKJC', 'ah-badge-hkjc',
+  // Bet365（1X2已在顶部对比表显示，此处只显示亚盘+大小球）
+  html += compactCompany('Bet365', 'ah-badge-bet365',
     null, record.hkjc_ah, record.hkjc_ou);
 
   // Pinnacle（1X2已在顶部对比表显示，此处只显示亚盘+大小球）
@@ -174,7 +174,7 @@ function openAhModal(record) {
     html += compactCompany('利记', 'ah-badge-liji', null, lijiAhObj, lijiOuObj);
   }
 
-  // 百家平均已移除，HKJC亚盘已在上方显示
+  // 百家平均已移除，Bet365亚盘已在上方显示
 
   // 明升
   const ms = record.ms || {};
@@ -241,10 +241,10 @@ function openAhModal(record) {
     html += '</div>';
   }
 
-  // ===== Pinnacle vs HKJC 分歧对比（用即时盘） =====
-  // Pinnacle vs 参考行 分歧（fallback: HKJC → 威廉希尔 → 利记 → 明升）
+  // ===== Pinnacle vs Bet365 分歧对比（用即时盘） =====
+  // Pinnacle vs 参考行 分歧（fallback: Bet365 → 威廉希尔 → 利记 → 明升）
   const refChain = [
-    { name: 'HKJC', data: hkjc },
+    { name: 'Bet365', data: hkjc },
     { name: '威廉希尔', data: william },
     { name: '利记', data: liji1x2Top },
     { name: '明升', data: ms1x2Top }
@@ -474,7 +474,7 @@ function loadDate() {
     const tierBadge = `<span style="display:inline-block;padding:1px 5px;border-radius:3px;font-size:10px;color:#fff;background:${tierColors[tier]||'#484f58'};margin-left:3px">${tierLabels[tier]||'低'}</span>`;
     const evW = r.ev.w, evD = r.ev.d, evL = r.ev.l;
     const evCls = v => v > 0 ? 'ev-pos' : 'ev-neg';
-    // 亚盘列优先显示Pinnacle让球，其次利记，再次威廉希尔，再次HKJC
+    // 亚盘列优先显示Pinnacle让球，其次利记，再次威廉希尔，再次Bet365
     const pinAh = r.pin_ah || {};
     const lijiAh = (r.liji || {}).close || {};
     let ahDisplayVal = '-';
@@ -659,7 +659,7 @@ function downloadExcel() {
   const headers = ['编号','联赛','开赛时间','主队','亚盘盘口','亚盘主水','亚盘客水','亚盘来源','客队','来源','推荐方向','概率推荐','赛果','比分',
     '胜赔','平赔','负赔','泊松W','泊松D','泊松L','综合W','综合D','综合L',
     'EV_W','EV_D','EV_L','凯利W','凯利D','凯利L',
-    'Pinnacle即时_W','Pinnacle即时_D','Pinnacle即时_L','Pinnacle初_W','Pinnacle初_D','Pinnacle初_L','HKJC_W','HKJC_D','HKJC_L',
+    'Pinnacle即时_W','Pinnacle即时_D','Pinnacle即时_L','Pinnacle初_W','Pinnacle初_D','Pinnacle初_L','Bet365_W','Bet365_D','Bet365_L',
     'HHAD盘口','HHAD胜','HHAD平','HHAD负',
     'Pinnacle_AH_让球','Pinnacle_AH_主水','Pinnacle_AH_客水',
     'Pinnacle_OU_盘口','Pinnacle_OU_大球','Pinnacle_OU_小球',
