@@ -128,6 +128,12 @@ def load_from_db(db_path: str, max_days=999) -> dict:
         ('william_ah_handicap', 'REAL'), ('william_ah_home_water', 'REAL'), ('william_ah_away_water', 'REAL'),
         ('william_ah_open_handicap', 'REAL'), ('william_ah_open_home_water', 'REAL'), ('william_ah_open_away_water', 'REAL'),
         ('william_ou_over', 'REAL'), ('william_ou_line', 'REAL'), ('william_ou_under', 'REAL'),
+        ('bet365_open_w', 'REAL'), ('bet365_open_d', 'REAL'), ('bet365_open_l', 'REAL'),
+        ('bet365_close_w', 'REAL'), ('bet365_close_d', 'REAL'), ('bet365_close_l', 'REAL'),
+        ('bet365_ah_handicap', 'REAL'), ('bet365_ah_home_water', 'REAL'), ('bet365_ah_away_water', 'REAL'),
+        ('bet365_ah_open_handicap', 'REAL'), ('bet365_ah_open_home_water', 'REAL'), ('bet365_ah_open_away_water', 'REAL'),
+        ('bet365_ou_line', 'REAL'), ('bet365_ou_over', 'REAL'), ('bet365_ou_under', 'REAL'),
+        ('bet365_ou_open_line', 'REAL'), ('bet365_ou_open_over', 'REAL'), ('bet365_ou_open_under', 'REAL'),
     ]
     cur.execute("PRAGMA table_info(poisson_predictions)")
     existing = {row[1] for row in cur.fetchall()}
@@ -176,7 +182,13 @@ def load_from_db(db_path: str, max_days=999) -> dict:
         liji_1x2_w, liji_1x2_d, liji_1x2_l, \
         liji_1x2_open_w, liji_1x2_open_d, liji_1x2_open_l, \
         ms_1x2_w, ms_1x2_d, ms_1x2_l, \
-        ms_1x2_open_w, ms_1x2_open_d, ms_1x2_open_l \
+        ms_1x2_open_w, ms_1x2_open_d, ms_1x2_open_l, \
+        bet365_open_w, bet365_open_d, bet365_open_l, \
+        bet365_close_w, bet365_close_d, bet365_close_l, \
+        bet365_ah_handicap, bet365_ah_home_water, bet365_ah_away_water, \
+        bet365_ah_open_handicap, bet365_ah_open_home_water, bet365_ah_open_away_water, \
+        bet365_ou_line, bet365_ou_over, bet365_ou_under, \
+        bet365_ou_open_line, bet365_ou_open_over, bet365_ou_open_under \
         FROM poisson_predictions WHERE date >= ? ORDER BY date DESC, kickoff_time, id", (cutoff,))
     by_date = {}
     for r in cur.fetchall():
@@ -222,8 +234,14 @@ def load_from_db(db_path: str, max_days=999) -> dict:
                 'open': {'w': d.get('pinnacle_open_w',0) or 0, 'd': d.get('pinnacle_open_d',0) or 0, 'l': d.get('pinnacle_open_l',0) or 0},
             },
             'hkjc': {
-                'w': d.get('hkjc_close_w',0) or 0, 'd': d.get('hkjc_close_d',0) or 0, 'l': d.get('hkjc_close_l',0) or 0,
-                'open': {'w': d.get('hkjc_open_w',0) or 0, 'd': d.get('hkjc_open_d',0) or 0, 'l': d.get('hkjc_open_l',0) or 0},
+                'w': (d.get('bet365_close_w',0) or 0) or (d.get('hkjc_close_w',0) or 0),
+                'd': (d.get('bet365_close_d',0) or 0) or (d.get('hkjc_close_d',0) or 0),
+                'l': (d.get('bet365_close_l',0) or 0) or (d.get('hkjc_close_l',0) or 0),
+                'open': {
+                    'w': (d.get('bet365_open_w',0) or 0) or (d.get('hkjc_open_w',0) or 0),
+                    'd': (d.get('bet365_open_d',0) or 0) or (d.get('hkjc_open_d',0) or 0),
+                    'l': (d.get('bet365_open_l',0) or 0) or (d.get('hkjc_open_l',0) or 0),
+                },
             },
             'risk_level': d.get('risk_level','') or '', 'stars': stars,
             'confidence_index': round(ci,2), 'reference_score': d.get('reference_score','') or '',
@@ -351,23 +369,23 @@ def load_from_db(db_path: str, max_days=999) -> dict:
                 },
             },
             'hkjc_ah': {
-                'handicap': d.get('hkjc_ah_handicap', None),
-                'home_w': d.get('hkjc_ah_home_water', 0) or 0,
-                'away_w': d.get('hkjc_ah_away_water', 0) or 0,
+                'handicap': d.get('bet365_ah_handicap') if d.get('bet365_ah_handicap') else d.get('hkjc_ah_handicap'),
+                'home_w': (d.get('bet365_ah_home_water', 0) or 0) or (d.get('hkjc_ah_home_water', 0) or 0),
+                'away_w': (d.get('bet365_ah_away_water', 0) or 0) or (d.get('hkjc_ah_away_water', 0) or 0),
                 'open': {
-                    'handicap': d.get('hkjc_ah_open_handicap', None),
-                    'home_w': d.get('hkjc_ah_open_home_water', 0) or 0,
-                    'away_w': d.get('hkjc_ah_open_away_water', 0) or 0,
+                    'handicap': d.get('bet365_ah_open_handicap') if d.get('bet365_ah_open_handicap') else d.get('hkjc_ah_open_handicap'),
+                    'home_w': (d.get('bet365_ah_open_home_water', 0) or 0) or (d.get('hkjc_ah_open_home_water', 0) or 0),
+                    'away_w': (d.get('bet365_ah_open_away_water', 0) or 0) or (d.get('hkjc_ah_open_away_water', 0) or 0),
                 },
             },
             'hkjc_ou': {
-                'line': d.get('hkjc_ou_line', None),
-                'over': d.get('hkjc_ou_over', 0) or 0,
-                'under': d.get('hkjc_ou_under', 0) or 0,
+                'line': d.get('bet365_ou_line') if d.get('bet365_ou_line') else d.get('hkjc_ou_line'),
+                'over': (d.get('bet365_ou_over', 0) or 0) or (d.get('hkjc_ou_over', 0) or 0),
+                'under': (d.get('bet365_ou_under', 0) or 0) or (d.get('hkjc_ou_under', 0) or 0),
                 'open': {
-                    'line': d.get('hkjc_ou_open_line', None),
-                    'over': d.get('hkjc_ou_open_over', 0) or 0,
-                    'under': d.get('hkjc_ou_open_under', 0) or 0,
+                    'line': d.get('bet365_ou_open_line') if d.get('bet365_ou_open_line') else d.get('hkjc_ou_open_line'),
+                    'over': (d.get('bet365_ou_open_over', 0) or 0) or (d.get('hkjc_ou_open_over', 0) or 0),
+                    'under': (d.get('bet365_ou_open_under', 0) or 0) or (d.get('hkjc_ou_open_under', 0) or 0),
                 },
             },
             'william_1x2': {
