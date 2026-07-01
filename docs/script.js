@@ -39,6 +39,7 @@ function openAhModal(record) {
   modal.style.display = 'flex';
 
   const pin = record.pinnacle || {};
+  const pinOpen = pin.open || {};
   const hkjc = record.hkjc || {};
   const william = record.william_1x2 || {};
   const liji1x2Top = ((record.liji || {})['1x2'] || {}).close || {};
@@ -47,8 +48,8 @@ function openAhModal(record) {
   // ── 1X2对比表（顶部4家一行）──
   let html = '<table class="ah-odds-table">';
   html += '<tr><th class="ah-col-label">盘口</th><th>胜(主)</th><th>平</th><th>负(客)</th></tr>';
-  html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-jc">平博初盘</span></td>`;
-  html += `<td>${record.odds.w || '-'}</td><td>${record.odds.d || '-'}</td><td>${record.odds.l || '-'}</td></tr>`;
+  html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-pin">平博初盘(Pinnacle初盘)</span></td>`;
+  html += `<td>${pinOpen.w || pin.w || '-'}</td><td>${pinOpen.d || pin.d || '-'}</td><td>${pinOpen.l || pin.l || '-'}</td></tr>`;
   html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-pin">Pinnacle</span></td>`;
   html += `<td>${pin.w || '-'}</td><td>${pin.d || '-'}</td><td>${pin.l || '-'}</td></tr>`;
   html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-bet365">Bet365</span></td>`;
