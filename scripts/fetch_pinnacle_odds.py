@@ -1064,12 +1064,12 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=True):
                     for key, v in oyzs_bd.items():
                         if key not in oyzs_data:
                             oyzs_data[key] = v
-        oyzs_stats = {'pinnacle': 0, 'hkjc': 0, 'liji': 0, 'mingsheng': 0, 'william': 0}
+        oyzs_stats = {'pinnacle': 0, 'bet365': 0, 'hkjc': 0, 'liji': 0, 'mingsheng': 0, 'william': 0}
         for mk, mv in oyzs_data.items():
             for ck in oyzs_stats:
                 if mv.get('companies', {}).get(ck):
                     oyzs_stats[ck] += 1
-        print(f"[INFO] oyzs数据: {len(oyzs_data)}场 [Pin:{oyzs_stats['pinnacle']} HKJC:{oyzs_stats['hkjc']} William:{oyzs_stats['william']} 利记:{oyzs_stats['liji']} 明升:{oyzs_stats['mingsheng']}]")
+        print(f"[INFO] oyzs数据: {len(oyzs_data)}场 [Pin:{oyzs_stats['pinnacle']} Bet365:{oyzs_stats['bet365']} HKJC:{oyzs_stats['hkjc']} William:{oyzs_stats['william']} 利记:{oyzs_stats['liji']} 明升:{oyzs_stats['mingsheng']}]")
     except Exception as e:
         print(f"[WARN] oyzs获取失败: {e}")
     
@@ -1240,14 +1240,15 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=True):
             ou_c = pin_ou_oyzs['close']
             print(f"  大小球(Pin): {ou_c.get('over',0):.2f}/{ou_c.get('line',0)}/{ou_c.get('under',0):.2f}")
 
-        # === HKJC 1X2 + AH + OU (from oyzs) ===
-        hkjc_oyzs = oyzs_companies.get('hkjc', {})
+        # === Bet365/HKJC 1X2 + AH + OU (from oyzs) ===
+        # 优先Bet365(aid=2)，fallback到HKJC(aid=136)
+        hkjc_oyzs = oyzs_companies.get('bet365', {}) or oyzs_companies.get('hkjc', {})
         hkjc_1x2 = hkjc_oyzs.get('1x2', {})
         hkjc_open = hkjc_1x2.get('open', {})
         hkjc_close = hkjc_1x2.get('close', {})
 
         if hkjc_close.get('d', 0) > 0 and hkjc_close.get('d', 0) < 2.0:
-            print(f"  [WARN] HKJC疑似让球盘(d={hkjc_close['d']:.2f}<2.0)，已丢弃")
+            print(f"  [WARN] Bet365/HKJC疑似让球盘(d={hkjc_close['d']:.2f}<2.0)，已丢弃")
             hkjc_open = {}
             hkjc_close = {}
 
@@ -1255,8 +1256,8 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=True):
         m['hkjc_close'] = hkjc_close
 
         if hkjc_open.get('w', 0) > 0:
-            print(f"  HKJC初盘: {hkjc_open['w']:.2f}/{hkjc_open['d']:.2f}/{hkjc_open['l']:.2f}")
-            print(f"  HKJC最新: {hkjc_close['w']:.2f}/{hkjc_close['d']:.2f}/{hkjc_close['l']:.2f}")
+            print(f"  Bet365/HKJC初盘: {hkjc_open['w']:.2f}/{hkjc_open['d']:.2f}/{hkjc_open['l']:.2f}")
+            print(f"  Bet365/HKJC最新: {hkjc_close['w']:.2f}/{hkjc_close['d']:.2f}/{hkjc_close['l']:.2f}")
 
         hkjc_ah_data = hkjc_oyzs.get('ah', {})
         hkjc_ou_data = hkjc_oyzs.get('ou', {})
@@ -1266,10 +1267,10 @@ def fetch_pinnacle_odds(date_str=None, include_beidan=True):
 
         if hkjc_ah_data.get('close', {}).get('handicap', 0) != 0:
             ah_c = hkjc_ah_data['close']
-            print(f"  亚盘(HKJC): 盘口{ah_c['handicap']} 主水{ah_c.get('home_w',0):.2f} 客水{ah_c.get('away_w',0):.2f}")
+            print(f"  亚盘(Bet365/HKJC): 盘口{ah_c['handicap']} 主水{ah_c.get('home_w',0):.2f} 客水{ah_c.get('away_w',0):.2f}")
         if hkjc_ou_data.get('close', {}).get('line', 0) != 0:
             ou_c = hkjc_ou_data['close']
-            print(f"  大小球(HKJC): {ou_c.get('over',0):.2f}/{ou_c.get('line',0)}/{ou_c.get('under',0):.2f}")
+            print(f"  大小球(Bet365/HKJC): {ou_c.get('over',0):.2f}/{ou_c.get('line',0)}/{ou_c.get('under',0):.2f}")
 
         # === William 1X2 + AH + OU (from oyzs) ===
         william_oyzs = oyzs_companies.get('william') or oyzs_companies.get('威廉希尔') or {}
