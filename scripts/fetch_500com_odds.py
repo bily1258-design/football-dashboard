@@ -332,9 +332,12 @@ def get_pending_fids(db_path, company, limit=50, rebuild=False):
     """获取需要抓取赔率的fid列表
     
     rebuild=True时返回所有有fid的记录
+    否则检查1X2+AH+OU三组字段，任一缺失就重新抓取
     """
     cfg = COMPANY_CONFIG[company]
     db_prefix = cfg['db_prefix']
+    ah_prefix = cfg['ah_prefix']
+    ou_prefix = cfg['ou_prefix']
     
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
@@ -350,22 +353,31 @@ def get_pending_fids(db_path, company, limit=50, rebuild=False):
     else:
         # 威廉希尔close用1x2前缀
         if company == 'william':
-            check_col = 'william_1x2_w'
+            check_1x2 = 'william_1x2_w'
         else:
-            check_col = f'{db_prefix}_close_w'
+            check_1x2 = f'{db_prefix}_close_w'
+        check_ah = f'{ah_prefix}_handicap'
+        check_ou = f'{ou_prefix}_line'
         
+        # 任一数据组缺失就视为pending（1X2/AH/OU可能有先后上线时间差）
         c.execute(f"""
             SELECT DISTINCT fid_500, home_team, away_team, kickoff_time
             FROM poisson_predictions
             WHERE fid_500 IS NOT NULL
-              AND ({check_col} = 0 OR {check_col} IS NULL)
+              AND (
+                {check_1x2} = 0 OR {check_1x2} IS NULL
+                OR {check_ah} = 0 OR {check_ah} IS NULL
+                OR {check_ou} = 0 OR {check_ou} IS NULL
+              )
             ORDER BY kickoff_time DESC
             LIMIT ?
         """, (limit,))
-    
     rows = [{'fid': r[0], 'home': r[1], 'away': r[2], 'kickoff': r[3]} for r in c.fetchall()]
     conn.close()
     return rows
+
+
+
 
 
 def main():
