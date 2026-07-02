@@ -4,7 +4,8 @@ extract_fids_from_live.py v4 — 从500.com页面提取fid，匹配DB比赛
 
 数据源:
   1. wanchang.php     — 完场页（最近所有已结束赛事，fid最全最稳）
-  2. weekfixture.php  — 未来2天赛事（未开赛+进行中）
+  2. live.500.com/    — 首页（当前/即将开赛赛事，与 weekfixture 互补）
+  3. weekfixture.php  — 未来2天赛事（未开赛+进行中）
 
 v4 改进:
   - 去掉2h1.php（比赛结束即消失，不持久）
@@ -161,7 +162,17 @@ def main():
     except Exception as e:
         print(f"  ❌ wanchang.php 失败: {e}")
 
-    # 2. weekfixture.php — 未来2天赛事
+    # 2. live.500.com 首页 — 当前/即将开赛赛事（与 weekfixture 互补）
+    print("获取 live.500.com 首页...")
+    try:
+        raw_home = fetch_page_raw('https://live.500.com/')
+        matches_home = extract_fid_rows(raw_home, 'homepage')
+        print(f"  首页: {len(matches_home)}场")
+        all_matches.extend(matches_home)
+    except Exception as e:
+        print(f"  ❌ 首页 失败: {e}")
+
+    # 3. weekfixture.php — 未来2天赛事
     print("获取 weekfixture.php (未来2天赛事)...")
     try:
         raw_week = fetch_page_raw('https://live.500.com/weekfixture.php')

@@ -1,6 +1,6 @@
 // script.js — 竞彩泊松预测看板前端
 
-const DATA_URL = 'data/results.json';
+const DATA_URL = 'data/results.json.gz';
 const WEEKDAY_CN = ['周日','周一','周二','周三','周四','周五','周六'];
 let allData = null;
 let currentSource = 'all';
@@ -394,7 +394,23 @@ function renderHeatmap(sorted, actualScore) {
 async function init() {
   try {
     const resp = await fetch(DATA_URL);
-    allData = await resp.json();
+    if (DATA_URL.endsWith('.gz')) {
+      const blob = await resp.blob();
+      if (typeof DecompressionStream !== 'undefined') {
+        const ds = new DecompressionStream('gzip');
+        const stream = blob.stream().pipeThrough(ds);
+        const decompressed = await new Response(stream).blob();
+        allData = JSON.parse(await decompressed.text());
+      } else {
+        // 降级: 用 pako.js
+        const buf = await blob.arrayBuffer();
+        const pako = await import('https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js');
+        const text = pako.ungzip(new Uint8Array(buf), { to: 'string' });
+        allData = JSON.parse(text);
+      }
+    } else {
+      allData = await resp.json();
+    }
     renderDateSelector();
     loadDate();
     renderDailyStats();
