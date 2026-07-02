@@ -79,8 +79,6 @@ football-dashboard/
 │   ├── fetch_500com_odds.py       # 500.com赔率抓取（Bet365/Pinnacle/利记/明升/威廉）
 │   ├── merge_and_build.py         # 看板数据合并构建（bet365优先hkjc兜底）
 │   ├── pipeline.py                # 13步全链路入口（含预测/校准/复盘）
-│   ├── odds_api.py                # 足彩网赔率抓取（oyzs三合一+百家平均）
-│   ├── fetch_pinnacle_odds.py     # Pinnacle/HKJC数据处理+入库
 │   ├── predict_from_odds.py       # 泊松预测
 │   ├── calc_lambda.py             # λ补算
 │   ├── update_db_fusion.py        # LGBM融合概率
@@ -95,7 +93,6 @@ football-dashboard/
 │   ├── backfill_from_footballdata.py  # football-data.org历史赔率
 │   ├── fundamental_analysis.py    # 基本面分析
 │   ├── fusion_predict.py          # 融合预测
-│   ├── fetch_zgzcw_results.py     # 足彩网赛果抓取
 │   ├── fetch_standings_qtx.py     # 球天下积分榜
 │   ├── team_aliases.py            # 队名别名归一化
 │   └── utils.py / tools.py        # 工具函数
@@ -115,7 +112,7 @@ football-dashboard/
 
 ## 数据源
 
-### 赔率数据（500.com 优先）
+### 赔率数据（全部来自 500.com）
 
 | 数据 | 来源 | 脚本 | 说明 |
 |------|------|------|------|
@@ -124,8 +121,6 @@ football-dashboard/
 | 利记 1X2+AH+OU | odds.500.com (cid=651) | fetch_500com_odds.py | |
 | 明升 1X2+AH+OU | odds.500.com (cid=140) | fetch_500com_odds.py | |
 | 威廉希尔 1X2+AH+OU | odds.500.com (cid=293) | fetch_500com_odds.py | |
-| 竞彩百家平均 | zgzcw.com | odds_api.py | 备用/补充 |
-| Betfair | zgzcw.com (cid=56) | odds_api.py | 备用 |
 
 ### 赛果与积分
 
@@ -171,7 +166,8 @@ https://bily1258-design.github.io/football-dashboard/
 - **fetch_500com_odds.py**：Bet365/Pinnacle/利记/明升/威廉 1X2+AH+OU，ALTER TABLE 自动加列
 - **merge_and_build.py**：读 bet365_* 优先 hkjc_* 兜底，输出 key 名不变（前端兼容）
 - **前端**：标签 HKJC → Bet365，CSS badge 更新，分歧对比改为 Pinnacle vs Bet365
-- **DB 双列共存**：hkjc_*（oyzs 写入）+ bet365_*（500.com 写入），bet365 优先
+- **移除 zgzcw.com 全部依赖**：删除 odds_api.py / fetch_pinnacle_odds.py / fetch_zgzcw_results.py / fetch_data.py，所有数据统一从 500.com 获取
+- **DB 列简化**：bet365_* 为唯一主力列，hkjc_* 列保留但不再有新数据写入
 
 ### 2026-06-26
 - pipeline 替代 fetch_data，13步全闭环

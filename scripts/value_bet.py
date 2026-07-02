@@ -2,7 +2,7 @@
 """价值投注计算模块 V3
 
 【数据源说明】：
-- 赔率：中国足彩网 zgzcw.com (fetch_pinnacle_odds.py)，非500.com，非中国竞彩网(sporttery.cn)
+- 赔率：500.com (fetch_500com_odds.py) — Bet365/Pinnacle/利记等
 
 核心变更（V2→V3）：
 - EV公式改为概率优势法：EV = fusion概率 / 市场隐含概率 - 1

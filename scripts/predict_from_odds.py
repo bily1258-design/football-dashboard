@@ -33,87 +33,15 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 REPO_DIR = os.path.dirname(SCRIPT_DIR)
 RAW_OM = os.path.join(REPO_DIR, "data", "raw", "oddsmagnet")
 RAW_BSD = os.path.join(REPO_DIR, "data", "raw", "bsd")
-RAW_ODDSMAGNET = os.path.join(REPO_DIR, "data", "raw", "oddsmagnet")
 DB_PATH = os.path.join(REPO_DIR, "data", "football.db")
 
 
 def name_sim(a: str, b: str) -> float:
-    """字符集相似度（与fetch_pinnacle_odds.team_name_similarity公式对齐：交集/较长串长度）"""
+    """字符集相似度（交集/较长串长度）"""
     if not a or not b:
         return 0.0
     return len(set(a) & set(b)) / max(len(a), len(b), 1)
 
-
-def load_ah_for_date(date_str: str) -> list:
-    """读 oyzs_YYYYMMDD.json（当天+前一天），提取亚盘列表
-    
-    ah_*.json 已废弃，亚盘数据统一走 oyzs。百家平均亚盘用利记收盘价替代。
-    """
-    results = []
-    dt = datetime.strptime(date_str, '%Y-%m-%d')
-    prev = (dt - timedelta(days=1)).strftime('%Y%m%d')
-    for tag in (date_str.replace('-', ''), prev):
-        path = os.path.join(RAW_ODDSMAGNET, f"oyzs_{tag}.json")
-        # 校验文件完整性：过小(可能是404页面)跳过
-        if os.path.exists(path) and os.path.getsize(path) < 30:
-            print(f"  WARN {os.path.basename(path)} 文件过小({os.path.getsize(path)}B)，跳过")
-            continue
-        if not os.path.exists(path):
-            # fallback: 尝试旧 ah_ 格式
-            ah_path = os.path.join(RAW_ODDSMAGNET, f"ah_{tag}.json")
-            if os.path.exists(ah_path):
-                try:
-                    with open(ah_path, 'r', encoding='utf-8') as f:
-                        data = json.load(f)
-                    for key, ah in data.items():
-                        if not ah:
-                            continue
-                        results.append(ah)
-                except Exception as e:
-                    print(f'  WARN 读 {ah_path} 失败: {e}')
-            continue
-        try:
-            with open(path, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-            for key, match in data.items():
-                if not match:
-                    continue
-                # 优先用利记亚盘（最接近百家平均），其次明升
-                ah_source = None
-                ah_close = None
-                ah_open = None
-                for src in ('liji_ah', 'ms_ah', 'pin_ah', 'hkjc_ah', 'william_ah'):
-                    if src in match and match[src]:
-                        close = match[src].get('close', {})
-                        opn = match[src].get('open', {})
-                        if close and (close.get('handicap') is not None or close.get('home_w', 0) != 0 or close.get('away_w', 0) != 0):
-                            ah_close = close
-                            ah_open = opn
-                            ah_source = src.replace('_ah', '')
-                            break
-                if not ah_close:
-                    continue
-                # 收集所有公司的AH和OU数据
-                all_ah = {}
-                all_ou = {}
-                for src_key in ('liji_ah', 'ms_ah', 'pin_ah', 'hkjc_ah', 'william_ah'):
-                    if src_key in match and match[src_key]:
-                        all_ah[src_key] = match[src_key]
-                for ou_key in ('liji_ou', 'ms_ou', 'pin_ou', 'hkjc_ou', 'william_ou'):
-                    if ou_key in match and match[ou_key]:
-                        all_ou[ou_key] = match[ou_key]
-                results.append({
-                    'home': match.get('home', ''),
-                    'away': match.get('away', ''),
-                    'open': ah_open or {},
-                    'close': ah_close,
-                    'source': ah_source,
-                    'all_ah': all_ah,
-                    'all_ou': all_ou,
-                })
-        except Exception as e:
-            print(f'  WARN 读 {path} 失败: {e}')
-    return results
 
 # === 算法常量（默认值，可被 calibration_params.json 覆盖）===
 BASE_TOTAL_GOALS = 2.4    # 联赛平均总进球（主+客）
@@ -766,94 +694,6 @@ def main():
 
     rows = build_predictions(matches, args.date)
     print(f'🧮 生成预测: {len(rows)} 场')
-
-    ah_index = load_ah_for_date(args.date)
-    if ah_index:
-        filled = 0
-        for r in rows:
-            home = r.get('home_team', '')
-            away = r.get('away_team', '')
-            best = None
-            best_sim = 0
-            for ah in ah_index:
-                ah_home = ah.get('home', '')
-                ah_away = ah.get('away', '')
-                close = ah.get('close', {})
-                if not close:
-                    continue
-                h = close.get('handicap', 0)
-                hw = close.get('home_w', 0)
-                aw = close.get('away_w', 0)
-                if h == 0 and hw == 0 and aw == 0:
-                    continue
-                sim_fwd = (name_sim(ah_home, home) + name_sim(ah_away, away)) / 2
-                sim_rev = (name_sim(ah_home, away) + name_sim(ah_away, home)) / 2
-                sim = max(sim_fwd, sim_rev)
-                if sim > best_sim:
-                    best_sim = sim
-                    best = ah
-            if best and best_sim >= 0.4:
-                best_close = best.get('close', best)
-                r['ah_handicap'] = best_close.get('handicap', 0) or 0
-                r['ah_home_water'] = best_close.get('home_w', 0) or 0
-                r['ah_away_water'] = best_close.get('away_w', 0) or 0
-                r['ah_source'] = best.get('source', 'liji')
-
-                # 从 all_ah 填充所有公司的AH字段
-                def _fill_ah(r, key_prefix, ah_data):
-                    """填充单个公司的AH数据到r"""
-                    close = ah_data.get('close', {})
-                    opn = ah_data.get('open', {})
-                    hc = close.get('handicap')
-                    hw = close.get('home_w', 0)
-                    aw = close.get('away_w', 0)
-                    if hc is not None or hw != 0 or aw != 0:
-                        r[f'{key_prefix}_handicap'] = hc if hc is not None else 0
-                        r[f'{key_prefix}_home_water'] = hw or 0
-                        r[f'{key_prefix}_away_water'] = aw or 0
-                        # open数据
-                        ohc = opn.get('handicap')
-                        ohw = opn.get('home_w', 0)
-                        oaw = opn.get('away_w', 0)
-                        if ohc is not None or ohw != 0 or oaw != 0:
-                            r[f'{key_prefix}_open_handicap'] = ohc if ohc is not None else 0
-                            r[f'{key_prefix}_open_home_water'] = ohw or 0
-                            r[f'{key_prefix}_open_away_water'] = oaw or 0
-
-                all_ah = best.get('all_ah', {})
-                ah_key_map = {'liji_ah': 'liji', 'ms_ah': 'ms', 'pin_ah': 'pin_ah', 'hkjc_ah': 'hkjc_ah', 'william_ah': 'william_ah'}
-                for src_key, db_prefix in ah_key_map.items():
-                    if src_key in all_ah and all_ah[src_key]:
-                        _fill_ah(r, db_prefix, all_ah[src_key])
-
-                # 从 all_ou 填充所有公司的OU字段
-                def _fill_ou(r, key_prefix, ou_data):
-                    """填充单个公司的OU数据到r"""
-                    close = ou_data if 'over' in ou_data else ou_data.get('close', {})
-                    opn = ou_data.get('open', {})
-                    over = close.get('over', 0)
-                    line = close.get('line')
-                    under = close.get('under', 0)
-                    if over != 0 or line is not None or under != 0:
-                        r[f'{key_prefix}_over'] = over or 0
-                        r[f'{key_prefix}_line'] = line
-                        r[f'{key_prefix}_under'] = under or 0
-                        # open
-                        oover = opn.get('over', 0)
-                        oline = opn.get('line')
-                        ounder = opn.get('under', 0)
-                        if oover != 0 or oline is not None or ounder != 0:
-                            r[f'{key_prefix}_open_over'] = oover or 0
-                            r[f'{key_prefix}_open_line'] = oline
-                            r[f'{key_prefix}_open_under'] = ounder or 0
-
-                all_ou = best.get('all_ou', {})
-                ou_key_map = {'liji_ou': 'liji_ou', 'ms_ou': 'ms_ou', 'pin_ou': 'pin_ou', 'hkjc_ou': 'hkjc_ou', 'william_ou': 'william_ou'}
-                for ou_key, db_prefix in ou_key_map.items():
-                    if ou_key in all_ou and all_ou[ou_key]:
-                        _fill_ou(r, db_prefix, all_ou[ou_key])
-                filled += 1
-        print(f'🎯 AH匹配: {filled}/{len(rows)} 场带AH数据入库')
 
     inserted, upserted = insert_predictions(rows, db_path)
     print(f'✅ 新增: {inserted} 场')

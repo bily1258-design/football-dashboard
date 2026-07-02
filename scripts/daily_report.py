@@ -6,7 +6,7 @@
 
 【数据源说明】：
 - 赛果：500.com (fetch_500com_results.py)
-- 赔率：中国足彩网 zgzcw.com (fetch_pinnacle_odds.py)，非500.com，非中国竞彩网(sporttery.cn)
+- 赔率：500.com (fetch_500com_odds.py)，Bet365/Pinnacle/利记等
 - 基础数据：football-data.org API
 
 执行方式:
@@ -3998,15 +3998,15 @@ def main():
         
         # 先获取百家指数赔率数据并计算EV（在保存文件前）
         try:
-            from fetch_pinnacle_odds import fetch_pinnacle_odds, team_name_similarity
+            # 赔率数据从 DB bet365_*/pinnacle_* 列读取（500.com数据源）
             
             log("\n正在获取百家指数赔率数据...")
-            pinnacle_data = fetch_pinnacle_odds(date_str)
+            pinnacle_data = None  # 不再从足彩网抓取，赔率已由fetch_500com_odds写入DB
             
             # 时间窗口跨两天，也要抓次日的百家指数
             try:
                 next_day = (datetime.strptime(date_str, '%Y-%m-%d') + timedelta(days=1)).strftime('%Y-%m-%d')
-                pinnacle_data_next = fetch_pinnacle_odds(next_day)
+                pinnacle_data_next = None  # 不再从足彩网抓取
                 if pinnacle_data_next:
                     # 去重：按home+away合并
                     existing_keys = {(p.get('home',''), p.get('away','')) for p in (pinnacle_data or [])}
@@ -4083,8 +4083,8 @@ def main():
 
                 # 将Pinnacle/SB/百家赔率写入DB（通过缓存）
                 try:
-                    from fetch_pinnacle_odds import apply_odds_to_db
-                    jc_updated = apply_odds_to_db(DB_PATH, date_str=date_str)
+                    # apply_odds_to_db 已由 fetch_500com_odds.py 替代
+                    jc_updated = 0  # 已由 fetch_500com_odds.py 处理
                     log(f"✓ 百家指数赔率写入DB: {jc_updated} 场")
                 except Exception as e_db:
                     log(f"⚠️ 百家指数赔率写入DB失败: {e_db}")

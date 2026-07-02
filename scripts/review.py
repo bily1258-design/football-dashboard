@@ -5,7 +5,7 @@
 
 【数据源说明】：
 - 赛果：500.com (fetch_results_cache.py)
-- 赔率：中国足彩网 zgzcw.com (fetch_pinnacle_odds.py)
+- 赔率：500.com (fetch_500com_odds.py) — Bet365/Pinnacle/利记等
 
 功能：赛果回填、命中分析、EV偏差分析、自动调参、生成统一复盘报告
 
@@ -716,5 +716,5 @@ if __name__ == "__main__":
     print(f"\n完成: {target}")
     print(report[:500])
 
-    # 看板推送由 fetch_data.py 的 step_align/step_build/step_push/step_push_db 统一负责
+    # 看板推送由 pipeline.py 调用 merge_and_build.py + push_db.py 统一负责
     # 此处不再重复执行

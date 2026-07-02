@@ -2,26 +2,26 @@
 """pipeline.py — 预测+赔率回填+融合+EV+Kelly+去重+对齐+复盘+构建+推送 全链路入口
 
 步骤顺序硬编码，从根本上杜绝 yml 排列出错：
-  1. predict_from_odds    — OM赔率 → 泊松预测 INSERT DB
-  2. fetch_pinnacle_odds  — Pinnacle/HKJC/威廉初终盘 UPDATE DB
-  3. calc_lambda          — 补算 lambda
-  4. update_db_fusion     — LGBM融合概率填充
-  5. value_bet --all      — EV 重算
-  6. update_db_kelly      — Kelly 重算
+  0. extract_fids        — 从500.com补fid_500
+  1. predict_from_odds   — OM赔率 → 泊松预测 INSERT DB
+  2. fetch_500com_odds   — Bet365/Pinnacle/利记等赔率 UPDATE DB
+  3. calc_lambda         — 补算 lambda
+  4. update_db_fusion    — LGBM融合概率填充
+  5. value_bet --all     — EV 重算
+  6. update_db_kelly     — Kelly 重算
   7. align_and_merge --cleanup-db  — 去重复
   8. align_and_merge --all         — 对齐合并 → processed/
-  9. review               — 赛果回填 + 命中分析（填充 actual_outcome）
- 10. recalibrate_db       — 联赛分层参数 + isotonic校准 + 信心分层
+  9. review              — 赛果回填 + 命中分析（填充 actual_outcome）
+ 10. recalibrate_db      — 联赛分层参数 + isotonic校准 + 信心分层
  11. merge_and_build --db — 构建 docs/ (results.json + index.html)
- 12. git push docs/       — 推 docs/ 到仓库（触发 GA 部署）
- 13. push_db              — DB 推 Release
+ 12. git push docs/      — 推 docs/ 到仓库（触发 GA 部署）
+ 13. push_db             — DB 推 Release
 
 用法：
-  python scripts/pipeline.py --date 2026-06-18 --db data/football.db
-  python scripts/pipeline.py --date 2026-06-18 --db data/football.db --skip-push
-  python scripts/pipeline.py --date 2026-06-18 --db data/football.db --skip-review
-  python scripts/pipeline.py --date 2026-06-18 --db data/football.db --pinnacle-from-cache
-  python scripts/pipeline.py --date 2026-06-18 --db data/football.db --verbose   # 显示子脚本完整输出
+  python scripts/pipeline.py --date 2026-07-02 --db data/football.db
+  python scripts/pipeline.py --date 2026-07-02 --db data/football.db --skip-push
+  python scripts/pipeline.py --date 2026-07-02 --db data/football.db --skip-review
+  python scripts/pipeline.py --date 2026-07-02 --db data/football.db --verbose
 """
 
 import subprocess
@@ -34,18 +34,19 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # 步骤定义: (label, script, extra_args, required, skip_key)
 STEPS = [
+    ("0  补fid",         "extract_fids_from_live.py", ["--db", "{db}", "--date", "{date}", "-v"], False, "skip_fid"),
     ("1  泊松预测",      "predict_from_odds.py",   ["--date", "{date}", "--db", "{db}"], False, "skip_predict"),
-    ("2  Pinnacle赔率",  "fetch_pinnacle_odds.py", ["--date", "{date}"],                  False, None),
+    ("2  500.com赔率",   "fetch_500com_odds.py",   ["--db", "{db}", "--company", "all", "--limit", "30"], False, None),
     ("3  λ补算",         "calc_lambda.py",          ["--db", "{db}", "--date", "{date}"],   False, None),
     ("4  LGBM融合",      "update_db_fusion.py",    ["--db", "{db}"],                       False, None),
     ("5  EV重算",        "value_bet.py",            ["--all", "--db", "{db}"],              False, None),
     ("6  Kelly重算",     "update_db_kelly.py",     ["--db", "{db}"],                       False, None),
     ("7  DB去重",        "align_and_merge.py",      ["--cleanup-db", "--db", "{db}"],       False, None),
     ("8  对齐合并",      "align_and_merge.py",      ["--all", "--db", "{db}"],              True,  None),
-    ("9  复盘",          "review.py",               ["--date", "{date}", "--db", "{db}"],   False, "skip_review"),  # --skip-fetch在main里动态追加
+    ("9  复盘",          "review.py",               ["--date", "{date}", "--db", "{db}"],   False, "skip_review"),
     ("10 校准",          "recalibrate_db.py",       ["--db", "{db}"],                       False, None),
     ("11 构建",          "merge_and_build.py",      ["--db", "{db}"],                       False, None),
-    ("12 推送docs",      None,                       None,                                  False, "skip_push"),  # 特殊处理
+    ("12 推送docs",      None,                       None,                                  False, "skip_push"),
     ("13 推送DB",        "push_db.py",              ["--db", "{db}"],                       False, "skip_push"),
 ]
 
@@ -60,7 +61,6 @@ def run(cmd, label, required=True, verbose=False):
 
     if result.returncode != 0:
         if not verbose and result.stderr:
-            # 失败时显示尾部输出帮助排查
             tail = result.stderr.strip().split('\n')
             for line in tail[-10:]:
                 print(f"    {line}")
@@ -110,10 +110,9 @@ def main():
     parser.add_argument("--skip-push", action="store_true", help="跳过推送（本地测试用 / GA用）")
     parser.add_argument("--skip-predict", action="store_true", help="跳过 predict（已有预测时）")
     parser.add_argument("--skip-review", action="store_true", help="跳过 review（当日无赛果时）")
-    parser.add_argument("--pinnacle-from-cache", action="store_true",
-                        help="Pinnacle从缓存写入DB（GA环境用，不抓网络）")
+    parser.add_argument("--skip-fid", action="store_true", help="跳过补fid（fid已有时）")
     parser.add_argument("--skip-fetch", action="store_true",
-                        help="跳过赛果抓取（DB已有赛果时用，如GA环境）")
+                        help="跳过赛果抓取（DB已有赛果时用）")
     parser.add_argument("-v", "--verbose", action="store_true", help="显示子脚本完整输出")
     args = parser.parse_args()
 
@@ -126,6 +125,7 @@ def main():
         "skip_review": args.skip_review,
         "skip_push": args.skip_push,
         "skip_fetch": args.skip_fetch,
+        "skip_fid": args.skip_fid,
     }
 
     print(f"🚀 pipeline {date} {'(verbose)' if verbose else ''}")
@@ -133,7 +133,6 @@ def main():
 
     failed = []
     for label, script, extra_args, required, skip_key in STEPS:
-        # 检查是否跳过
         if skip_key and skip_flags.get(skip_key):
             print(f"  ⏭️  {label}")
             continue
@@ -145,13 +144,8 @@ def main():
             print(f"  {result}  {label}")
             continue
 
-        # 特殊处理: Pinnacle从缓存写入（GA环境）
-        actual_args = list(extra_args)
-        if label.startswith("2") and args.pinnacle_from_cache:
-            actual_args = ["--apply", "{date}", "--db", "{db}"]
-
         # 构建命令
-        fmt_args = [a.format(date=date, db=db) for a in actual_args]
+        fmt_args = [a.format(date=date, db=db) for a in extra_args]
         cmd = [sys.executable, os.path.join(SCRIPT_DIR, script)] + fmt_args
 
         # review步骤：--skip-fetch时跳过网络抓取
