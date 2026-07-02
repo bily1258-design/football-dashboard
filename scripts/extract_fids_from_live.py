@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
 """
-extract_fids_from_live.py v3 — 从500.com页面提取fid+赛果，匹配DB比赛
+extract_fids_from_live.py v3 — 从500.com页面提取fid，匹配DB比赛
 
 数据源:
-  1. 2h1.php         — 当天赛事（含完场比分+即时+未开赛）
-  2. weekfixture.php — 未来2天赛事（未开赛）
+  1. 2h1.php         — 当天赛事（未开赛+进行中）
+  2. weekfixture.php — 未来2天赛事
 
 v3 改进:
   - 同时抓取2h1.php和weekfixture.php，覆盖当天+未来2天
-  - 提取完场比分(status=4)写入actual_outcome
   - weekfixture.php用id="aXXX"提取fid（无fid属性）
-  - 比分提取: class="red">N - N<
+  - 去掉赛果回填（2h1.php完场数据不持久，赛果由review.py负责）
 
 用法: python scripts/extract_fids_from_live.py --db data/football.db [--date 2026-07-02] [-v] [--dry-run]
 """
@@ -73,12 +72,10 @@ TEAM_ALIASES = {
 
 
 def normalize(name):
-    """标准化队名用于匹配"""
     return name.replace(' ', '').replace('&amp;', '&').replace('（', '(').replace('）', ')')
 
 
 def is_fuzzy_safe(short_name, long_name):
-    """模糊匹配安全检查"""
     if len(short_name) < 3:
         return False
     if len(long_name) == 0:
@@ -87,7 +84,6 @@ def is_fuzzy_safe(short_name, long_name):
 
 
 def fuzzy_match(name_a, name_b):
-    """安全模糊匹配"""
     if name_a == name_b:
         return True
     if name_a in name_b:
@@ -98,7 +94,6 @@ def fuzzy_match(name_a, name_b):
 
 
 def match_teams(db_home_norm, db_away_norm, page_home_norm, page_away_norm):
-    """匹配两队名，返回匹配类型或None"""
     if page_home_norm == db_home_norm and page_away_norm == db_away_norm:
         return 'exact'
     if page_home_norm == db_away_norm and page_away_norm == db_home_norm:
@@ -117,7 +112,6 @@ def match_teams(db_home_norm, db_away_norm, page_home_norm, page_away_norm):
 
 
 def fetch_page_raw(url):
-    """获取页面原始字节"""
     req = urllib.request.Request(url, headers={
         'User-Agent': 'Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36',
     })
@@ -126,45 +120,22 @@ def fetch_page_raw(url):
 
 
 def extract_from_2h1(raw):
-    """从2h1.php提取比赛 (fid, league, home, away, status, home_score, away_score)
-    
-    结构: <tr id="aXXXXX" status="N" gy="league,home,away" ... fid="XXXXX">
-    status=0 未开赛, status=4 完场
-    完场比分: <td align="center" class="red">0 - 1</td>
+    """从2h1.php提取比赛 (fid, league, home, away)
+    结构: <tr id="aXXXXX" status="N" gy="league,home,away" ...>
+    id="aXXX"的数字就是fid
     """
     matches = []
     pattern = rb'id="a(\d+)"\s+status="([^"]*)"\s+gy="([^"]*)"'
     rows = re.findall(pattern, raw)
-
     for aid_bytes, status_bytes, gy_bytes in rows:
         fid = aid_bytes.decode()
-        status = status_bytes.decode()
         gy = gy_bytes.decode('gbk', errors='replace')
         parts = gy.split(',')
         if len(parts) < 3:
             continue
-        league = parts[0].strip()
-        home = parts[1].strip()
-        away = parts[2].strip()
-
-        home_score = None
-        away_score = None
-        if status == '4':
-            start = raw.find(f'id="a{fid}"'.encode())
-            if start >= 0:
-                end = raw.find(b'</tr>', start)
-                if end < 0:
-                    end = start + 3000
-                chunk = raw[start:end]
-                # 比分在 class="red" 的td中: class="red">0 - 1<
-                score_match = re.search(rb'class="red">(\d+)\s*-\s*(\d+)<', chunk)
-                if score_match:
-                    home_score = int(score_match.group(1))
-                    away_score = int(score_match.group(2))
-
         matches.append({
-            'fid': fid, 'league': league, 'home': home, 'away': away,
-            'status': status, 'home_score': home_score, 'away_score': away_score,
+            'fid': fid, 'league': parts[0].strip(),
+            'home': parts[1].strip(), 'away': parts[2].strip(),
             'source': '2h1'
         })
     return matches
@@ -172,9 +143,8 @@ def extract_from_2h1(raw):
 
 def extract_from_weekfixture(raw):
     """从weekfixture.php提取比赛 (fid, league, home, away)
-    
     结构: <tr id="aXXXXX" gy="league,home,away" ...>
-    注意: weekfixture没有fid属性，id="aXXXXX"的数字就是fid
+    注意: weekfixture没有fid属性，id="aXXX"的数字就是fid
     """
     matches = []
     pattern = rb'id="a(\d+)"\s+gy="([^"]*)"'
@@ -185,12 +155,9 @@ def extract_from_weekfixture(raw):
         parts = gy.split(',')
         if len(parts) < 3:
             continue
-        league = parts[0].strip()
-        home = parts[1].strip()
-        away = parts[2].strip()
         matches.append({
-            'fid': fid, 'league': league, 'home': home, 'away': away,
-            'status': '0', 'home_score': None, 'away_score': None,
+            'fid': fid, 'league': parts[0].strip(),
+            'home': parts[1].strip(), 'away': parts[2].strip(),
             'source': 'weekfixture'
         })
     return matches
@@ -199,7 +166,7 @@ def extract_from_weekfixture(raw):
 def main():
     parser = argparse.ArgumentParser(description='从500.com页面提取fid更新DB v3')
     parser.add_argument('--db', default='data/football.db', help='数据库路径')
-    parser.add_argument('--date', default=None, help='目标日期，默认按页面当天')
+    parser.add_argument('--date', default=None, help='目标日期，默认所有缺fid')
     parser.add_argument('-v', '--verbose', action='store_true', help='详细输出')
     parser.add_argument('--dry-run', action='store_true', help='只匹配不写入DB')
     args = parser.parse_args()
@@ -210,8 +177,7 @@ def main():
     try:
         raw_2h1 = fetch_page_raw('https://live.500.com/2h1.php')
         matches_2h1 = extract_from_2h1(raw_2h1)
-        finished = [m for m in matches_2h1 if m['status'] == '4']
-        print(f"  当天: {len(matches_2h1)}场 (完场{len(finished)}场, 未开赛{len(matches_2h1)-len(finished)}场)")
+        print(f"  当天: {len(matches_2h1)}场")
         all_matches.extend(matches_2h1)
     except Exception as e:
         print(f"  ❌ 2h1.php 失败: {e}")
@@ -240,14 +206,12 @@ def main():
     conn = sqlite3.connect(args.db)
     cur = conn.cursor()
 
-    date_filter = args.date
-
     # 查缺fid的比赛
-    if date_filter:
+    if args.date:
         cur.execute(
             "SELECT id, home_team, away_team, kickoff_time, fid_500 "
             "FROM poisson_predictions WHERE date=? AND (fid_500 IS NULL OR fid_500='' OR fid_500=0)",
-            (date_filter,)
+            (args.date,)
         )
     else:
         cur.execute(
@@ -260,7 +224,6 @@ def main():
     # 匹配fid
     stats = {'exact': 0, 'alias': 0, 'fuzzy': 0, 'swap_exact': 0, 'swap_alias': 0, 'swap_fuzzy': 0, 'miss': 0}
     fid_matched = 0
-    score_updated = 0
 
     for match_id, db_home, db_away, kickoff, fid_500 in db_rows:
         db_home_norm = normalize(db_home)
@@ -291,31 +254,6 @@ def main():
             if args.verbose:
                 print(f"  ❌ ID={match_id}: {db_home} vs {db_away} -> 页面未匹配")
 
-    # 补赛果：从2h1.php的完场比分回填actual_outcome
-    finished_matches = [m for m in all_matches if m['status'] == '4' and m['home_score'] is not None]
-    if finished_matches:
-        print(f"\n赛果回填: {len(finished_matches)}场完场比赛")
-        for fm in finished_matches:
-            fid = fm['fid']
-            hs = fm['home_score']
-            gs = fm['away_score']
-            if hs > gs:
-                outcome = f"主胜 {hs}-{gs}"
-            elif hs == gs:
-                outcome = f"平局 {hs}-{gs}"
-            else:
-                outcome = f"客胜 {hs}-{gs}"
-
-            if not args.dry_run:
-                cur.execute(
-                    "UPDATE poisson_predictions SET actual_outcome=? WHERE fid_500=? AND (actual_outcome IS NULL OR actual_outcome='')",
-                    (outcome, fid)
-                )
-                if cur.rowcount > 0:
-                    score_updated += 1
-                    if args.verbose:
-                        print(f"  ⚽ 赛果: {fm['home']} {hs}-{gs} {fm['away']} ({outcome})")
-
     if not args.dry_run:
         conn.commit()
     conn.close()
@@ -325,8 +263,6 @@ def main():
     print(f"  精确: {stats['exact']}  别名: {stats['alias']}  模糊: {stats['fuzzy']}")
     print(f"  互换精确: {stats['swap_exact']}  互换别名: {stats['swap_alias']}  互换模糊: {stats['swap_fuzzy']}")
     print(f"  未匹配: {stats['miss']}")
-    print(f"=== 赛果回填 ===")
-    print(f"更新 {score_updated} 场赛果")
     if args.dry_run:
         print("(dry-run模式，未写入DB)")
 
