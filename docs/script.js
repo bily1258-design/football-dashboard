@@ -66,96 +66,77 @@ function openAhModal(record) {
   }
   html += '</table>';
 
-  // ── 各公司紧凑两行表 ──
-  // 足彩网风格: | | 主队 | 让球 | 客队 | 主胜 | 和局 | 客胜 | 大球 | 盘口 | 小球 |
-  //             |初|  hw  |  hc  |  aw  |  w   |  d   |  l   | over | line |under |
-  //             |即|  hw  |  hc  |  aw  |  w   |  d   |  l   | over | line |under |
-  function compactCompany(badge, badgeCls, d1x2, dAh, dOu) {
-    const o1 = (d1x2 && d1x2.open) || {}, c1 = d1x2 || {};
+  // ── 亚盘+大小球 统一对比表（5家合并1表） ──
+  function ahRow(badge, badgeCls, dAh, dOu) {
     const oAh = (dAh && dAh.open) || {}, cAh = dAh || {};
     const oOu = (dOu && dOu.open) || {}, cOu = dOu || {};
-
-    const has1x2 = (c1.w || 0) > 0 || (o1.w || 0) > 0;
     const hasAh = (cAh.handicap !== null && cAh.handicap !== undefined) ||
                   (oAh.handicap !== null && oAh.handicap !== undefined);
     const hasOu = (cOu.line || 0) > 0 || (oOu.line || 0) > 0;
-    if (!has1x2 && !hasAh && !hasOu) return '';
+    if (!hasAh && !hasOu) return '';
 
-    // 检查哪些列有数据
-    const showAh = hasAh, show1x2 = has1x2, showOu = hasOu;
-
-    let s = `<div class="ah-section-title${badgeCls === 'ah-badge-pin' ? ' ah-section-pin' : ''}"><span class="ah-badge ${badgeCls}">${badge}</span></div>`;
-    s += '<table class="ah-odds-table ah-wide">';
-
-    // 表头
-    s += '<tr><th></th>';
-    if (showAh) s += '<th>主队</th><th>让球</th><th>客队</th>';
-    if (show1x2) s += '<th>主胜</th><th>和局</th><th>客胜</th>';
-    if (showOu) s += '<th>大球</th><th>盘口</th><th>小球</th>';
-    s += '</tr>';
-
-    // 有无初盘
-    const hasOpen1x2 = (o1.w || 0) > 0;
     const hasOpenAh = (oAh.handicap !== null && oAh.handicap !== undefined);
     const hasOpenOu = (oOu.line || 0) > 0;
+    const hasOpen = hasOpenAh || hasOpenOu;
 
-    // 格式化单元格（即时行直接显示当前值）
-    function fmt(openV, closeV, hasOpen) {
+    function fmtV(openV, closeV) {
       if (closeV != null && closeV !== 0) return closeV;
       if (openV != null && openV !== 0) return openV;
       return '-';
     }
+    function fmtH(openH, closeH) {
+      const h = (closeH !== null && closeH !== undefined) ? closeH : openH;
+      return (h !== null && h !== undefined) ? handicapToChinese(h) : '-';
+    }
 
+    let s = '';
     // 初盘行
-    if (hasOpen1x2 || hasOpenAh || hasOpenOu) {
-      s += '<tr><td class="ah-col-label">初</td>';
-      if (showAh) {
+    if (hasOpen) {
+      s += `<tr><td class="ah-col-label">初</td>`;
+      s += `<td class="ah-col-label"><span class="ah-badge ${badgeCls}">${badge}</span></td>`;
+      if (hasAh) {
         s += `<td>${hasOpenAh ? (oAh.home_w || '-') : '-'}</td>`;
         s += `<td>${hasOpenAh ? handicapToChinese(oAh.handicap) : '-'}</td>`;
         s += `<td>${hasOpenAh ? (oAh.away_w || '-') : '-'}</td>`;
+      } else {
+        s += '<td>-</td><td>-</td><td>-</td>';
       }
-      if (show1x2) {
-        s += `<td>${hasOpen1x2 ? (o1.w || '-') : '-'}</td>`;
-        s += `<td>${hasOpen1x2 ? (o1.d || '-') : '-'}</td>`;
-        s += `<td>${hasOpen1x2 ? (o1.l || '-') : '-'}</td>`;
-      }
-      if (showOu) {
+      if (hasOu) {
         s += `<td>${hasOpenOu ? (oOu.over || '-') : '-'}</td>`;
         s += `<td>${hasOpenOu ? (oOu.line || '-') : '-'}</td>`;
         s += `<td>${hasOpenOu ? (oOu.under || '-') : '-'}</td>`;
+      } else {
+        s += '<td>-</td><td>-</td><td>-</td>';
       }
       s += '</tr>';
     }
-
-    // 即时行（带初→即时变化颜色）
-    s += '<tr><td class="ah-col-label">即</td>';
-    if (showAh) {
-      s += `<td>${fmt(oAh.home_w, cAh.home_w, hasOpenAh)}</td>`;
-      s += `<td>${handicapToChinese(cAh.handicap !== null && cAh.handicap !== undefined ? cAh.handicap : oAh.handicap)}</td>`;
-      s += `<td>${fmt(oAh.away_w, cAh.away_w, hasOpenAh)}</td>`;
+    // 即时行
+    s += `<tr class="company-end"><td class="ah-col-label">即</td>`;
+    s += `<td class="ah-col-label"><span class="ah-badge ${badgeCls}">${badge}</span></td>`;
+    if (hasAh) {
+      s += `<td>${fmtV(oAh.home_w, cAh.home_w)}</td>`;
+      s += `<td>${fmtH(oAh.handicap, cAh.handicap)}</td>`;
+      s += `<td>${fmtV(oAh.away_w, cAh.away_w)}</td>`;
+    } else {
+      s += '<td>-</td><td>-</td><td>-</td>';
     }
-    if (show1x2) {
-      s += `<td>${fmt(o1.w, c1.w, hasOpen1x2)}</td>`;
-      s += `<td>${fmt(o1.d, c1.d, hasOpen1x2)}</td>`;
-      s += `<td>${fmt(o1.l, c1.l, hasOpen1x2)}</td>`;
+    if (hasOu) {
+      s += `<td>${fmtV(oOu.over, cOu.over)}</td>`;
+      s += `<td>${fmtV(oOu.line, cOu.line)}</td>`;
+      s += `<td>${fmtV(oOu.under, cOu.under)}</td>`;
+    } else {
+      s += '<td>-</td><td>-</td><td>-</td>';
     }
-    if (showOu) {
-      s += `<td>${fmt(oOu.over, cOu.over, hasOpenOu)}</td>`;
-      s += `<td>${fmt(oOu.line, cOu.line, hasOpenOu)}</td>`;
-      s += `<td>${fmt(oOu.under, cOu.under, hasOpenOu)}</td>`;
-    }
-    s += '</tr></table>';
+    s += '</tr>';
     return s;
   }
 
-  // Bet365（1X2已在顶部对比表显示，此处只显示亚盘+大小球）
-  html += compactCompany('Bet365', 'ah-badge-bet365',
-    null, record.hkjc_ah, record.hkjc_ou);
-
-  // Pinnacle（1X2已在顶部对比表显示，此处只显示亚盘+大小球）
-  html += compactCompany('Pinnacle', 'ah-badge-pin',
-    null, record.pin_ah, record.pin_ou);
-
+  // 构建统一表
+  let ahRows = '';
+  // Bet365
+  ahRows += ahRow('Bet365', 'ah-badge-bet365', record.hkjc_ah, record.hkjc_ou);
+  // Pinnacle
+  ahRows += ahRow('Pinnacle', 'ah-badge-pin', record.pin_ah, record.pin_ou);
   // 利记
   const liji = record.liji || {};
   const lijiClose = liji.close || {};
@@ -170,13 +151,7 @@ function openAhModal(record) {
     line: lijiOu.line || null, over: lijiOu.over || null, under: lijiOu.under || null,
     open: lijiOuOpen.over ? { line: lijiOuOpen.line, over: lijiOuOpen.over, under: lijiOuOpen.under } : {}
   } : null;
-  // liji1x2 moved to top table only
-  if (lijiAhObj || lijiOuObj) {
-    html += compactCompany('利记', 'ah-badge-liji', null, lijiAhObj, lijiOuObj);
-  }
-
-  // 百家平均已移除，Bet365亚盘已在上方显示
-
+  ahRows += ahRow('利记', 'ah-badge-liji', lijiAhObj, lijiOuObj);
   // 明升
   const ms = record.ms || {};
   const msClose = ms.close || {};
@@ -191,11 +166,7 @@ function openAhModal(record) {
     line: msOu.line || null, over: msOu.over || null, under: msOu.under || null,
     open: msOuOpen.over ? { line: msOuOpen.line, over: msOuOpen.over, under: msOuOpen.under } : {}
   } : null;
-  // ms1x2 moved to top table only
-  if (msAhObj || msOuObj) {
-    html += compactCompany('明升', 'ah-badge-ms', null, msAhObj, msOuObj);
-  }
-
+  ahRows += ahRow('明升', 'ah-badge-ms', msAhObj, msOuObj);
   // 威廉希尔
   const williamAh = record.william_ah || {};
   const williamAhClose = (williamAh.close || (williamAh.handicap !== null && williamAh.handicap !== undefined)) ? williamAh : {};
@@ -210,9 +181,13 @@ function openAhModal(record) {
     line: williamOu.line || null, over: williamOu.over || null, under: williamOu.under || null,
     open: {}
   } : null;
-  // 威廉希尔（1X2已在顶部对比表显示，此处只显示亚盘+大小球）
-  if (williamAhObj || williamOuObj) {
-    html += compactCompany('威廉希尔', 'ah-badge-will', null, williamAhObj, williamOuObj);
+  ahRows += ahRow('威廉希尔', 'ah-badge-will', williamAhObj, williamOuObj);
+
+  if (ahRows) {
+    html += '<table class="ah-odds-table ah-wide">';
+    html += '<tr><th></th><th>公司</th><th>主队</th><th>让球</th><th>客队</th><th>大球</th><th>盘口</th><th>小球</th></tr>';
+    html += ahRows;
+    html += '</table>';
   }
 
   // ===== HHAD让球 =====

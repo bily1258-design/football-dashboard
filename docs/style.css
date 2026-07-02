@@ -324,3 +324,7 @@ tr:hover { background: #161b22; }
   font-weight: bold;
   margin-left: 6px;
 }
+/* 合并表：同公司初即两行分隔线 */
+.ah-odds-table.ah-wide tr.company-end td {
+  border-bottom: 2px solid #30363d;
+}
