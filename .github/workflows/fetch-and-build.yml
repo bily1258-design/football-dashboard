@@ -58,7 +58,7 @@ jobs:
       - name: Run pipeline
         run: |
           if [ -f data/football.db ]; then
-            python scripts/pipeline.py --date ${{ steps.date.outputs.date }} --db data/football.db --skip-push --skip-fetch
+            python scripts/pipeline.py --date ${{ steps.date.outputs.date }} --db data/football.db --skip-push --skip-fetch --skip-odds
           else
             echo "⚠️ No DB, skipping pipeline"
           fi

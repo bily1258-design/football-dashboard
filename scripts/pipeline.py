@@ -36,7 +36,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 STEPS = [
     ("0  补fid",         "extract_fids_from_live.py", ["--db", "{db}", "--date", "{date}", "-v"], False, "skip_fid"),
     ("1  泊松预测",      "predict_from_odds.py",   ["--date", "{date}", "--db", "{db}"], False, "skip_predict"),
-    ("2  500.com赔率",   "fetch_500com_odds.py",   ["--db", "{db}", "--company", "all", "--limit", "80"], False, None),
+    ("2  500.com赔率",   "fetch_500com_odds.py",   ["--db", "{db}", "--company", "all", "--limit", "80"], False, "skip_odds"),
     ("3  λ补算",         "calc_lambda.py",          ["--db", "{db}", "--date", "{date}"],   False, None),
     ("4  LGBM融合",      "update_db_fusion.py",    ["--db", "{db}"],                       False, None),
     ("5  EV重算",        "value_bet.py",            ["--all", "--db", "{db}"],              False, None),
@@ -113,6 +113,8 @@ def main():
     parser.add_argument("--skip-fid", action="store_true", help="跳过补fid（fid已有时）")
     parser.add_argument("--skip-fetch", action="store_true",
                         help="跳过赛果抓取（DB已有赛果时用）")
+    parser.add_argument("--skip-odds", action="store_true",
+                        help="跳过500.com赔率抓取（DB已由本地补全时用，GA应带此参数）")
     parser.add_argument("-v", "--verbose", action="store_true", help="显示子脚本完整输出")
     args = parser.parse_args()
 
@@ -126,6 +128,7 @@ def main():
         "skip_push": args.skip_push,
         "skip_fetch": args.skip_fetch,
         "skip_fid": args.skip_fid,
+        "skip_odds": args.skip_odds,
     }
 
     print(f"🚀 pipeline {date} {'(verbose)' if verbose else ''}")
