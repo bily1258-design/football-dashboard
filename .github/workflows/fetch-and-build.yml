@@ -73,16 +73,12 @@ jobs:
 
       # ===== Pages 部署 =====
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          path: ./docs
-          retention-days: 1
-
-      - name: Deploy to Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-        timeout-minutes: 15
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
+          publish_branch: gh-pages
+          force_orphan: true
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
