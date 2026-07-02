@@ -712,3 +712,4 @@ function downloadExcel() {
 }
 
 document.addEventListener('DOMContentLoaded', init);
+
