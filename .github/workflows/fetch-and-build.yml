@@ -10,17 +10,15 @@ on:
   workflow_dispatch:
     inputs:
       date:
-        description: 'Target date (YYYY-MM-DD), default today'
+        description: Target date (YYYY-MM-DD), default today
         required: false
         type: string
   schedule:
-    - cron: '0 5 * * *'   # 13:00 Beijing
-    - cron: '0 11 * * *'  # 19:00 Beijing
+    - cron: '0 5 * * *'
+    - cron: '0 11 * * *'
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 jobs:
   build:
@@ -49,11 +47,15 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release download db-latest             --repo bily1258-design/football-dashboard             --pattern 'football.db'             --dir data/             --clobber             || echo "⚠️ No DB in Release"
+          gh release download db-latest \
+            --repo bily1258-design/football-dashboard \
+            --pattern 'football.db' \
+            --dir data/ \
+            --clobber || echo "No DB in Release"
           if [ -f data/football.db ]; then
-            echo "✅ DB downloaded: $(du -h data/football.db | cut -f1)"
+            echo "DB downloaded: $(du -h data/football.db | cut -f1)"
           else
-            echo "⚠️ No DB available, pipeline may be limited"
+            echo "No DB available, pipeline may be limited"
           fi
 
       - name: Run pipeline
@@ -61,7 +63,7 @@ jobs:
           if [ -f data/football.db ]; then
             python scripts/pipeline.py --date ${{ steps.date.outputs.date }} --db data/football.db --skip-push --skip-fetch --skip-odds
           else
-            echo "⚠️ No DB, skipping pipeline"
+            echo "No DB, skipping pipeline"
           fi
 
       - name: Push DB to Release
@@ -69,17 +71,20 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           if [ -f data/football.db ]; then
-            gh release upload db-latest data/football.db --clobber || echo "⚠️ DB push failed, continuing"
+            gh release upload db-latest data/football.db --clobber || echo "DB push failed, continuing"
           fi
 
-      # ===== Pages 部署 =====
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs
-          publish_branch: gh-pages
-          force_orphan: true
-          user_name: 'github-actions[bot]'
-          user_email: 'github-actions[bot]@users.noreply.github.com'
+      # Deploy docs to gh-pages branch via gh CLI
+      - name: Deploy to Pages
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd docs
+          git init -b main
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          echo "football.db" > .gitignore
+          git add -A
+          git commit -m "deploy: $(date +%Y-%m-%d)"
+          gh auth setup-git
+          git push -f origin main:gh-pages
