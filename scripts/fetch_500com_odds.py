@@ -389,7 +389,7 @@ def main():
     parser.add_argument('--fid', type=int, help='只抓指定fid')
     parser.add_argument('--limit', type=int, default=100, help='每家公司最多抓取场次数 (默认100)')
     parser.add_argument('--dry-run', action='store_true', help='只显示不写入')
-    parser.add_argument('--delay', type=float, default=1.5, help='请求间隔秒数 (默认1.5)')
+    parser.add_argument('--delay', type=float, default=0.5, help='请求间隔秒数 (默认0.5)')
     parser.add_argument('--save-raw', action='store_true', help='保存原始JSON到data/raw/500com/')
     parser.add_argument('--rebuild', action='store_true', help='重刷所有有fid的记录(含已有赔率)')
     args = parser.parse_args()
