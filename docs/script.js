@@ -172,14 +172,15 @@ function openAhModal(record) {
   const williamAhClose = (williamAh.close || (williamAh.handicap !== null && williamAh.handicap !== undefined)) ? williamAh : {};
   const williamAhOpen = (williamAh.open) || {};
   const williamOu = record.william_ou || {};
+  const williamOuOpen = williamOu.open || {};
   const williamAhObj = (williamAhClose.handicap !== null && williamAhClose.handicap !== undefined) ||
                        (williamAhOpen.handicap !== null && williamAhOpen.handicap !== undefined) ? {
     handicap: williamAhClose.handicap !== null && williamAhClose.handicap !== undefined ? williamAhClose.handicap : null, home_w: williamAhClose.home_w || null, away_w: williamAhClose.away_w || null,
     open: (williamAhOpen.handicap !== null && williamAhOpen.handicap !== undefined) ? { handicap: williamAhOpen.handicap, home_w: williamAhOpen.home_w, away_w: williamAhOpen.away_w } : {}
   } : null;
-  const williamOuObj = (williamOu.over || 0) > 0 ? {
+  const williamOuObj = (williamOu.over || 0) > 0 || (williamOuOpen.over || 0) > 0 ? {
     line: williamOu.line || null, over: williamOu.over || null, under: williamOu.under || null,
-    open: {}
+    open: williamOuOpen.over ? { line: williamOuOpen.line, over: williamOuOpen.over, under: williamOuOpen.under } : {}
   } : null;
   ahRows += ahRow('威廉希尔', 'ah-badge-will', williamAhObj, williamOuObj);
 

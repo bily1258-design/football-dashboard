@@ -407,6 +407,11 @@ def load_from_db(db_path: str, max_days=999) -> dict:
                 'over': d.get('william_ou_over', 0) or 0,
                 'line': d.get('william_ou_line', None),
                 'under': d.get('william_ou_under', 0) or 0,
+                'open': {
+                    'over': d.get('william_ou_open_over', 0) or 0,
+                    'line': d.get('william_ou_open_line', None),
+                    'under': d.get('william_ou_open_under', 0) or 0,
+                },
             },
         })
     conn.close()
