@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """
-extract_fids_from_live.py v3 — 从500.com页面提取fid，匹配DB比赛
+extract_fids_from_live.py v4 — 从500.com页面提取fid，匹配DB比赛
 
 数据源:
-  1. 2h1.php         — 当天赛事（未开赛+进行中）
-  2. weekfixture.php — 未来2天赛事
+  1. wanchang.php     — 完场页（最近所有已结束赛事，fid最全最稳）
+  2. weekfixture.php  — 未来2天赛事（未开赛+进行中）
 
-v3 改进:
-  - 同时抓取2h1.php和weekfixture.php，覆盖当天+未来2天
-  - weekfixture.php用id="aXXX"提取fid（无fid属性）
-  - 去掉赛果回填（2h1.php完场数据不持久，赛果由review.py负责）
+v4 改进:
+  - 去掉2h1.php（比赛结束即消失，不持久）
+  - 新增wanchang.php（完场页，已结束比赛fid长期保留）
+  - 赛果回填仍由review.py + fetch_results_cache.py负责
 
 用法: python scripts/extract_fids_from_live.py --db data/football.db [--date 2026-07-02] [-v] [--dry-run]
 """
@@ -119,35 +119,13 @@ def fetch_page_raw(url):
         return resp.read()
 
 
-def extract_from_2h1(raw):
-    """从2h1.php提取比赛 (fid, league, home, away)
-    结构: <tr id="aXXXXX" status="N" gy="league,home,away" ...>
-    id="aXXX"的数字就是fid
+def extract_fid_rows(raw, source):
+    """通用提取: <tr id="aXXXXX" gy="league,home,away"> → fid列表
+
+    wanchang.php 和 weekfixture.php 结构一致，都用 id="aXXX" + gy="..."
     """
     matches = []
-    pattern = rb'id="a(\d+)"\s+status="([^"]*)"\s+gy="([^"]*)"'
-    rows = re.findall(pattern, raw)
-    for aid_bytes, status_bytes, gy_bytes in rows:
-        fid = aid_bytes.decode()
-        gy = gy_bytes.decode('gbk', errors='replace')
-        parts = gy.split(',')
-        if len(parts) < 3:
-            continue
-        matches.append({
-            'fid': fid, 'league': parts[0].strip(),
-            'home': parts[1].strip(), 'away': parts[2].strip(),
-            'source': '2h1'
-        })
-    return matches
-
-
-def extract_from_weekfixture(raw):
-    """从weekfixture.php提取比赛 (fid, league, home, away)
-    结构: <tr id="aXXXXX" gy="league,home,away" ...>
-    注意: weekfixture没有fid属性，id="aXXX"的数字就是fid
-    """
-    matches = []
-    pattern = rb'id="a(\d+)"\s+gy="([^"]*)"'
+    pattern = rb'id="a(\d+)"[^>]*gy="([^"]*)"'
     rows = re.findall(pattern, raw)
     for aid_bytes, gy_bytes in rows:
         fid = aid_bytes.decode()
@@ -158,13 +136,13 @@ def extract_from_weekfixture(raw):
         matches.append({
             'fid': fid, 'league': parts[0].strip(),
             'home': parts[1].strip(), 'away': parts[2].strip(),
-            'source': 'weekfixture'
+            'source': source
         })
     return matches
 
 
 def main():
-    parser = argparse.ArgumentParser(description='从500.com页面提取fid更新DB v3')
+    parser = argparse.ArgumentParser(description='从500.com页面提取fid更新DB v4')
     parser.add_argument('--db', default='data/football.db', help='数据库路径')
     parser.add_argument('--date', default=None, help='目标日期，默认所有缺fid')
     parser.add_argument('-v', '--verbose', action='store_true', help='详细输出')
@@ -173,19 +151,21 @@ def main():
 
     all_matches = []
 
-    print("获取 2h1.php (当天赛事)...")
+    # 1. wanchang.php — 最近所有完场（含今日+昨日+更早，一次请求覆盖）
+    print("获取 wanchang.php (最近完场)...")
     try:
-        raw_2h1 = fetch_page_raw('https://live.500.com/2h1.php')
-        matches_2h1 = extract_from_2h1(raw_2h1)
-        print(f"  当天: {len(matches_2h1)}场")
-        all_matches.extend(matches_2h1)
+        raw = fetch_page_raw('https://live.500.com/wanchang.php')
+        rows = extract_fid_rows(raw, 'wanchang')
+        print(f"  完场: {len(rows)}场")
+        all_matches.extend(rows)
     except Exception as e:
-        print(f"  ❌ 2h1.php 失败: {e}")
+        print(f"  ❌ wanchang.php 失败: {e}")
 
+    # 2. weekfixture.php — 未来2天赛事
     print("获取 weekfixture.php (未来2天赛事)...")
     try:
         raw_week = fetch_page_raw('https://live.500.com/weekfixture.php')
-        matches_week = extract_from_weekfixture(raw_week)
+        matches_week = extract_fid_rows(raw_week, 'weekfixture')
         print(f"  未来2天: {len(matches_week)}场")
         all_matches.extend(matches_week)
     except Exception as e:
