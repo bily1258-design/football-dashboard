@@ -6,6 +6,7 @@ on:
     paths:
       - 'data/raw/**'
       - 'docs/**'
+      - '.github/workflows/**'
   workflow_dispatch:
     inputs:
       date:
