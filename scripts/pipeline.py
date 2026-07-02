@@ -36,7 +36,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 STEPS = [
     ("0  补fid",         "extract_fids_from_live.py", ["--db", "{db}", "--date", "{date}", "-v"], False, "skip_fid"),
     ("1  泊松预测",      "predict_from_odds.py",   ["--date", "{date}", "--db", "{db}"], False, "skip_predict"),
-    ("2  500.com赔率",   "fetch_500com_odds.py",   ["--db", "{db}", "--company", "all", "--limit", "30"], False, None),
+    ("2  500.com赔率",   "fetch_500com_odds.py",   ["--db", "{db}", "--company", "all", "--limit", "80"], False, None),
     ("3  λ补算",         "calc_lambda.py",          ["--db", "{db}", "--date", "{date}"],   False, None),
     ("4  LGBM融合",      "update_db_fusion.py",    ["--db", "{db}"],                       False, None),
     ("5  EV重算",        "value_bet.py",            ["--all", "--db", "{db}"],              False, None),
