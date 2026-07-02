@@ -48,12 +48,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release download db-latest \
-            --repo bily1258-design/football-dashboard \
-            --pattern 'football.db' \
-            --dir data/ \
-            --clobber \
-            || echo "⚠️ No DB in Release"
+          gh release download db-latest             --repo bily1258-design/football-dashboard             --pattern 'football.db'             --dir data/             --clobber             || echo "⚠️ No DB in Release"
           if [ -f data/football.db ]; then
             echo "✅ DB downloaded: $(du -h data/football.db | cut -f1)"
           else
@@ -63,7 +58,7 @@ jobs:
       - name: Run pipeline
         run: |
           if [ -f data/football.db ]; then
-            python scripts/pipeline.py --date ${{ steps.date.outputs.date }} --db data/football.db --skip-push --pinnacle-from-cache --skip-fetch
+            python scripts/pipeline.py --date ${{ steps.date.outputs.date }} --db data/football.db --skip-push --skip-fetch
           else
             echo "⚠️ No DB, skipping pipeline"
           fi
