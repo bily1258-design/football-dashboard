@@ -195,11 +195,21 @@ def fetch_ou(fid, cid):
 
 
 def fetch_all_odds(fid, cid):
-    """抓取一个fid的1X2+AH+OU数据"""
+    """抓取一个fid的1X2+AH+OU数据（并发请求3个端点）"""
+    from concurrent.futures import ThreadPoolExecutor, as_completed
     result = {'fid': fid, 'cid': cid}
-    result['1x2'] = fetch_1x2(fid, cid)
-    result['ah'] = fetch_ah(fid, cid)
-    result['ou'] = fetch_ou(fid, cid)
+    with ThreadPoolExecutor(max_workers=3) as pool:
+        futures = {
+            pool.submit(fetch_1x2, fid, cid): '1x2',
+            pool.submit(fetch_ah, fid, cid): 'ah',
+            pool.submit(fetch_ou, fid, cid): 'ou',
+        }
+        for f in as_completed(futures):
+            key = futures[f]
+            try:
+                result[key] = f.result()
+            except Exception:
+                result[key] = None
     return result
 
 
