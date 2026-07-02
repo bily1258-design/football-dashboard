@@ -86,5 +86,6 @@ jobs:
           echo "football.db" > .gitignore
           git add -A
           git commit -m "deploy: $(date +%Y-%m-%d)"
+          git remote add origin "https://github.com/bily1258-design/football-dashboard.git"
           gh auth setup-git
           git push -f origin main:gh-pages
