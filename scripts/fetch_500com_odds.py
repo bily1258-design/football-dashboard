@@ -68,14 +68,24 @@ HEADERS = {
     'X-Requested-With': 'XMLHttpRequest',
 }
 
+# 页面对应的Referer（新ajax API需要正确Referer）
+PAGE_REFERERS = {
+    '1x2': 'https://odds.500.com/fenxi/ouzhi-{fid}.shtml',
+    'ah':  'https://odds.500.com/fenxi/yazhi-{fid}.shtml',
+    'ou':  'https://odds.500.com/fenxi/daxiao-{fid}.shtml',
+}
+
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data', 'raw', '500com')
 
 
-def fetch_json(url, retries=2):
+def fetch_json(url, retries=2, referer=None):
     """请求500.com JSON接口"""
+    headers = dict(HEADERS)
+    if referer:
+        headers['Referer'] = referer
     for attempt in range(retries + 1):
         try:
-            req = urllib.request.Request(url, headers=HEADERS)
+            req = urllib.request.Request(url, headers=headers)
             with urllib.request.urlopen(req, timeout=15) as resp:
                 raw = resp.read().decode('utf-8', errors='replace')
                 raw = raw.strip()
@@ -123,33 +133,110 @@ def fetch_1x2(fid, cid):
         return None
 
 
+# 中文盘口 → 数值映射
+HANDICAP_MAP = {
+    '平手': 0, '平手/半球': 0.25, '半球': 0.5, '半球/一球': 0.75,
+    '一球': 1.0, '一球/球半': 1.25, '球半': 1.5, '球半/两球': 1.75,
+    '两球': 2.0, '两球/两球半': 2.25, '两球半': 2.5, '两球半/三球': 2.75,
+    '三球': 3.0, '三球/三球半': 3.25, '三球半': 3.5,
+    '受平手/半球': -0.25, '受半球': -0.5, '受半球/一球': -0.75,
+    '受一球': -1.0, '受一球/球半': -1.25, '受球半': -1.5,
+    '受球半/两球': -1.75, '受两球': -2.0, '受两球/两球半': -2.25,
+    '受两球半': -2.5, '受两球半/三球': -2.75, '受三球': -3.0,
+}
+
+def _parse_html_table(rows):
+    """解析500.com ajax返回的HTML片段表格
+    
+    亚盘格式: <td>主队水</td><td>盘口</td><td>客队水</td><td>时间</td>
+    大小球格式: <td>大球赔率</td><td>盘口</td><td>小球赔率</td><td>时间</td>
+    返回: [{col1, col2, col3, timestamp}, ...]，最新在前
+    """
+    import re
+    results = []
+    for row in rows:
+        tds = re.findall(r"<td[^>]*>([^<]*)</td>", row)
+        if len(tds) >= 3:
+            results.append({
+                'col1': tds[0].strip(),
+                'col2': re.sub(r'<[^>]+>', '', tds[1]).replace('&nbsp;', '').strip(),
+                'col3': tds[2].strip(),
+                'timestamp': tds[3].strip() if len(tds) > 3 else '',
+            })
+    return results
+
+
+def _handicap_to_float(text):
+    """将中文盘口转为数值，如 '球半' → 1.5, '受半球' → -0.5"""
+    # 去除HTML标签、升降标记
+    import re
+    clean = re.sub(r'<[^>]+>', '', text).replace('&nbsp;', '').strip()
+    # 直接查表
+    if clean in HANDICAP_MAP:
+        return HANDICAP_MAP[clean]
+    # 尝试数字格式如 "-0.75" 或 "0.5"
+    try:
+        return float(clean)
+    except ValueError:
+        return None
+
+
+def _parse_ou_line(text):
+    """解析大小球盘口字符串为数值
+    
+    '2.5/3' → 2.75, '2.5' → 2.5
+    """
+    import re
+    clean = re.sub(r'<[^>]+>', '', text).replace('&nbsp;', '').strip()
+    if '/' in clean:
+        parts = clean.split('/')
+        try:
+            return (float(parts[0]) + float(parts[1])) / 2
+        except ValueError:
+            return None
+    try:
+        return float(clean)
+    except ValueError:
+        return None
+
+
 def fetch_ah(fid, cid):
     """抓取亚盘历史
     
-    API: /json/odds.php?fid={fid}&cid={cid}&type=asian&r=1
-    返回: [[home_water,handicap,away_water,timestamp,...], ...]
+    API: /fenxi1/inc/yazhiajax.php?fid={fid}&id={cid}&r=1
+    返回: HTML表格行，解析为 [home_water, handicap, away_water]
     """
-    url = f'https://odds.500.com/json/odds.php?fid={fid}&cid={cid}&type=asian&r=1'
-    data = fetch_json(url)
+    url = f'https://odds.500.com/fenxi1/inc/yazhiajax.php?fid={fid}&id={cid}&r=1'
+    referer = PAGE_REFERERS['ah'].format(fid=fid)
+    data = fetch_json(url, referer=referer)
     if not data or not isinstance(data, list) or len(data) < 1:
         return None
     
+    parsed = _parse_html_table(data)
+    if not parsed:
+        return None
+    
     try:
-        close = data[0]
+        close = parsed[0]
+        handicap = _handicap_to_float(close['col2'])
+        if handicap is None:
+            return None
         result = {
             'close': {
-                'home_water': float(close[0]),
-                'handicap': float(close[1]),
-                'away_water': float(close[2]),
+                'home_water': float(close['col1']),
+                'handicap': handicap,
+                'away_water': float(close['col3']),
             },
         }
-        if len(data) >= 2:
-            open_ = data[-1]
-            result['open'] = {
-                'home_water': float(open_[0]),
-                'handicap': float(open_[1]),
-                'away_water': float(open_[2]),
-            }
+        if len(parsed) >= 2:
+            open_ = parsed[-1]
+            handicap_open = _handicap_to_float(open_['col2'])
+            if handicap_open is not None:
+                result['open'] = {
+                    'home_water': float(open_['col1']),
+                    'handicap': handicap_open,
+                    'away_water': float(open_['col3']),
+                }
         return result
     except (IndexError, ValueError, TypeError):
         return None
@@ -158,37 +245,36 @@ def fetch_ah(fid, cid):
 def fetch_ou(fid, cid):
     """抓取大小球历史
     
-    API: /json/odds.php?fid={fid}&cid={cid}&type=daxiao&r=1
-    返回: [[over,line,under,timestamp,...], ...]
-    注意: line可能是字符串如"2.5/3"
+    API: /fenxi1/inc/daxiaoajax.php?fid={fid}&id={cid}&r=1
+    返回: HTML表格行，解析为 [over, line, under]
     """
-    url = f'https://odds.500.com/json/odds.php?fid={fid}&cid={cid}&type=daxiao&r=1'
-    data = fetch_json(url)
+    url = f'https://odds.500.com/fenxi1/inc/daxiaoajax.php?fid={fid}&id={cid}&r=1'
+    referer = PAGE_REFERERS['ou'].format(fid=fid)
+    data = fetch_json(url, referer=referer)
     if not data or not isinstance(data, list) or len(data) < 1:
         return None
     
+    parsed = _parse_html_table(data)
+    if not parsed:
+        return None
+    
     def parse_ou_record(rec):
-        """解析OU记录，line可能是字符串"""
-        over = float(rec[0])
-        line_raw = rec[1]
-        under = float(rec[2])
-        # 处理 "2.5/3" 格式 → 2.75
-        if isinstance(line_raw, str) and '/' in line_raw:
-            parts = line_raw.split('/')
-            try:
-                low = float(parts[0])
-                high = float(parts[1])
-                line = (low + high) / 2
-            except ValueError:
-                line = low
-        else:
-            line = float(line_raw)
+        over = float(rec['col1'])
+        line = _parse_ou_line(rec['col2'])
+        if line is None:
+            return None
+        under = float(rec['col3'])
         return {'over': over, 'line': line, 'under': under}
     
     try:
-        result = {'close': parse_ou_record(data[0])}
-        if len(data) >= 2:
-            result['open'] = parse_ou_record(data[-1])
+        close = parse_ou_record(parsed[0])
+        if close is None:
+            return None
+        result = {'close': close}
+        if len(parsed) >= 2:
+            open_ = parse_ou_record(parsed[-1])
+            if open_ is not None:
+                result['open'] = open_
         return result
     except (IndexError, ValueError, TypeError):
         return None
