@@ -148,29 +148,39 @@ HANDICAP_MAP = {
 def _parse_html_table(rows):
     """解析500.com ajax返回的HTML片段表格
     
-    亚盘格式: <td>主队水</td><td>盘口</td><td>客队水</td><td>时间</td>
+    亚盘格式: <td>主队水</td><td>盘口<font>升降</font></td><td>客队水</td><td>时间</td>
     大小球格式: <td>大球赔率</td><td>盘口</td><td>小球赔率</td><td>时间</td>
     返回: [{col1, col2, col3, timestamp}, ...]，最新在前
     """
     import re
     results = []
     for row in rows:
-        tds = re.findall(r"<td[^>]*>([^<]*)</td>", row)
+        # 带DOTALL才能跨嵌套标签匹配
+        tds = re.findall(r"<td[^>]*>(.*?)</td>", row, re.DOTALL)
         if len(tds) >= 3:
+            def clean(t):
+                # 去掉所有HTML标签、&nbsp;、空白
+                t = re.sub(r'<[^>]+>', '', t)
+                t = t.replace('&nbsp;', '')
+                return t.strip()
             results.append({
-                'col1': tds[0].strip(),
-                'col2': re.sub(r'<[^>]+>', '', tds[1]).replace('&nbsp;', '').strip(),
-                'col3': tds[2].strip(),
-                'timestamp': tds[3].strip() if len(tds) > 3 else '',
+                'col1': clean(tds[0]),
+                'col2': clean(tds[1]),
+                'col3': clean(tds[2]),
+                'timestamp': clean(tds[3]) if len(tds) > 3 else '',
             })
     return results
 
 
 def _handicap_to_float(text):
     """将中文盘口转为数值，如 '球半' → 1.5, '受半球' → -0.5"""
-    # 去除HTML标签、升降标记
     import re
     clean = re.sub(r'<[^>]+>', '', text).replace('&nbsp;', '').strip()
+    # 去掉升降标记（<font>内的文本残留）
+    for suffix in ['升', '降']:
+        if clean.endswith(suffix):
+            clean = clean[:-len(suffix)].strip()
+            break
     # 直接查表
     if clean in HANDICAP_MAP:
         return HANDICAP_MAP[clean]
@@ -424,9 +434,10 @@ def update_db(db_path, records, company, dry_run=False):
     return updated
 
 
-def get_pending_fids(db_path, company, limit=50, rebuild=False):
+def get_pending_fids(db_path, company, limit=50, rebuild=False, max_days=30):
     """获取需要抓取赔率的fid列表
     
+    max_days: 默认只返回30天内的比赛（500.com过期旧数据）
     rebuild=True时返回所有有fid的记录
     否则检查1X2+AH+OU三组字段，任一缺失就重新抓取
     """
@@ -438,11 +449,13 @@ def get_pending_fids(db_path, company, limit=50, rebuild=False):
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
     
+    date_filter = f"AND kickoff_time >= DATE('now', '-{max_days} days')" if max_days else ''
+    
     if rebuild:
         c.execute(f"""
             SELECT DISTINCT fid_500, home_team, away_team, kickoff_time
             FROM poisson_predictions
-            WHERE fid_500 IS NOT NULL
+            WHERE fid_500 IS NOT NULL {date_filter}
             ORDER BY kickoff_time DESC
             LIMIT ?
         """, (limit,))
@@ -460,7 +473,7 @@ def get_pending_fids(db_path, company, limit=50, rebuild=False):
         c.execute(f"""
             SELECT DISTINCT fid_500, home_team, away_team, kickoff_time
             FROM poisson_predictions
-            WHERE fid_500 IS NOT NULL
+            WHERE fid_500 IS NOT NULL {date_filter}
               AND (
                 {check_1x2} = 0 OR {check_1x2} IS NULL
                 OR {check_ah} IS NULL
@@ -489,6 +502,8 @@ def main():
     parser.add_argument('--delay', type=float, default=0.5, help='请求间隔秒数 (默认0.5)')
     parser.add_argument('--save-raw', action='store_true', help='保存原始JSON到data/raw/500com/')
     parser.add_argument('--rebuild', action='store_true', help='重刷所有有fid的记录(含已有赔率)')
+    parser.add_argument('--max-days', type=int, default=30,
+                       help='只抓取N天内的比赛 (默认30天, 0=不限)')
     args = parser.parse_args()
     
     companies = list(COMPANY_CONFIG.keys()) if args.company == 'all' else [args.company]
@@ -538,7 +553,7 @@ def main():
         cfg = COMPANY_CONFIG[company]
         cid = cfg['cid']
         
-        pending = get_pending_fids(args.db, company, args.limit, args.rebuild)
+        pending = get_pending_fids(args.db, company, args.limit, args.rebuild, max_days=args.max_days)
         if not pending:
             print(f'✅ [{company}] 所有记录已有赔率数据')
             continue
