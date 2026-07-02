@@ -370,14 +370,15 @@ def get_pending_fids(db_path, company, limit=50, rebuild=False):
         check_ou = f'{ou_prefix}_line'
         
         # 任一数据组缺失就视为pending（1X2/AH/OU可能有先后上线时间差）
+        # 注意: AH让球=0是平手盘(有效数据), OU盘口不会为0, 所以AH/OU只用IS NULL判断
         c.execute(f"""
             SELECT DISTINCT fid_500, home_team, away_team, kickoff_time
             FROM poisson_predictions
             WHERE fid_500 IS NOT NULL
               AND (
                 {check_1x2} = 0 OR {check_1x2} IS NULL
-                OR {check_ah} = 0 OR {check_ah} IS NULL
-                OR {check_ou} = 0 OR {check_ou} IS NULL
+                OR {check_ah} IS NULL
+                OR {check_ou} IS NULL
               )
             ORDER BY kickoff_time DESC
             LIMIT ?
