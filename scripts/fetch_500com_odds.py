@@ -61,8 +61,8 @@ COMPANY_CONFIG = {
     'hkjc': {
         'cid': 122,
         'db_prefix': 'hkjc',
-        'ah_prefix': 'hkjc',
-        'ou_prefix': 'hkjc',
+        'ah_prefix': 'hkjc_ah',
+        'ou_prefix': 'hkjc_ou',
     },
 }
 
