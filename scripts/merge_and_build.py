@@ -233,15 +233,19 @@ def load_from_db(db_path: str, max_days=999) -> dict:
                 'w': d.get('pinnacle_close_w',0) or 0, 'd': d.get('pinnacle_close_d',0) or 0, 'l': d.get('pinnacle_close_l',0) or 0,
                 'open': {'w': d.get('pinnacle_open_w',0) or 0, 'd': d.get('pinnacle_open_d',0) or 0, 'l': d.get('pinnacle_open_l',0) or 0},
             },
+            'bet365': {
+                'w': d.get('bet365_close_w',0) or 0, 'd': d.get('bet365_close_d',0) or 0, 'l': d.get('bet365_close_l',0) or 0,
+                'open': {'w': d.get('bet365_open_w',0) or 0, 'd': d.get('bet365_open_d',0) or 0, 'l': d.get('bet365_open_l',0) or 0},
+            },
             'hkjc': {
-                'w': (d.get('bet365_close_w',0) or 0) or (d.get('hkjc_close_w',0) or 0),
-                'd': (d.get('bet365_close_d',0) or 0) or (d.get('hkjc_close_d',0) or 0),
-                'l': (d.get('bet365_close_l',0) or 0) or (d.get('hkjc_close_l',0) or 0),
-                'open': {
-                    'w': (d.get('bet365_open_w',0) or 0) or (d.get('hkjc_open_w',0) or 0),
-                    'd': (d.get('bet365_open_d',0) or 0) or (d.get('hkjc_open_d',0) or 0),
-                    'l': (d.get('bet365_open_l',0) or 0) or (d.get('hkjc_open_l',0) or 0),
-                },
+                'w': d.get('hkjc_close_w',0) or 0,
+                'd': d.get('hkjc_close_d',0) or 0,
+                'l': d.get('hkjc_close_l',0) or 0,
+            },
+            'hkjc_open': {
+                'w': d.get('hkjc_open_w',0) or 0,
+                'd': d.get('hkjc_open_d',0) or 0,
+                'l': d.get('hkjc_open_l',0) or 0,
             },
             'risk_level': d.get('risk_level','') or '', 'stars': stars,
             'confidence_index': round(ci,2), 'reference_score': d.get('reference_score','') or '',
@@ -633,13 +637,13 @@ def generate_index_html(by_date, daily_stats, summary, league_score_freq=None, o
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>竞彩泊松预测看板</title>
+<title>香港马会泊松预测看板</title>
 <link rel="stylesheet" href="style.css">
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 </head>
 <body>
 <div class="header">
-<h1>⚽ 竞彩泊松预测看板</h1>
+<h1>⚽ 香港马会泊松预测看板</h1>
 <div class="sub">更新于 {summary['last_updated']} | 共 {summary['total_matches']} 场已开奖 | {summary['days']} 天数据</div>
 </div>
 
@@ -668,7 +672,7 @@ def generate_index_html(by_date, daily_stats, summary, league_score_freq=None, o
 <select id="dateSelect"></select>
 <div class="source-tabs">
 <button class="source-tab active" data-source="all">全部</button>
-<button class="source-tab" data-source="jingcai">竞彩足球</button>
+<button class="source-tab" data-source="jingcai">香港马会</button>
 <button class="source-tab" data-source="beidan">北京单场</button>
 </div>
 <label><input type="checkbox" id="showResulted" checked> 已开奖</label>

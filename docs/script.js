@@ -1,4 +1,4 @@
-// script.js — 竞彩泊松预测看板前端
+// script.js — 香港马会泊松预测看板前端
 
 const DATA_URL = 'data/results.json.gz';
 const WEEKDAY_CN = ['周日','周一','周二','周三','周四','周五','周六'];
@@ -41,6 +41,7 @@ function openAhModal(record) {
   const pin = record.pinnacle || {};
   const pinOpen = pin.open || {};
   const hkjc = record.hkjc || {};
+  const bet365 = record.bet365 || {};
   const william = record.william_1x2 || {};
   const liji1x2Top = ((record.liji || {})['1x2'] || {}).close || {};
   const ms1x2Top = ((record.ms || {})['1x2'] || {}).close || {};
@@ -53,7 +54,7 @@ function openAhModal(record) {
   html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-pin">Pinnacle</span></td>`;
   html += `<td>${pin.w || '-'}</td><td>${pin.d || '-'}</td><td>${pin.l || '-'}</td></tr>`;
   html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-bet365">Bet365</span></td>`;
-  html += `<td>${hkjc.w || '-'}</td><td>${hkjc.d || '-'}</td><td>${hkjc.l || '-'}</td></tr>`;
+  html += `<td>${bet365.w || '-'}</td><td>${bet365.d || '-'}</td><td>${bet365.l || '-'}</td></tr>`;
   html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-will">威廉希尔</span></td>`;
   html += `<td>${william.w || '-'}</td><td>${william.d || '-'}</td><td>${william.l || '-'}</td></tr>`;
   if ((liji1x2Top.w || 0) > 0) {
@@ -194,7 +195,7 @@ function openAhModal(record) {
   // ===== HHAD让球 =====
   const hhad = record.hhad || {};
   if (hhad.handicap !== null && hhad.handicap !== undefined) {
-    html += '<div class="ah-section-title">竞彩让球(HHAD)</div>';
+    html += '<div class="ah-section-title">让球(HHAD)</div>';
     html += '<table class="ah-odds-table">';
     html += '<tr><th>让球</th><th>胜</th><th>平</th><th>负</th></tr>';
     html += `<tr><td>${handicapToChinese(hhad.handicap)}</td><td>${hhad.w || '-'}</td><td>${hhad.d || '-'}</td><td>${hhad.l || '-'}</td></tr>`;
@@ -218,13 +219,14 @@ function openAhModal(record) {
     html += '</div>';
   }
 
-  // ===== Pinnacle vs 竞彩 分歧对比（窗口底部，用即时盘） =====
-  if (record.odds.w > 0 && pin.w > 0 && (pin.w !== record.odds.w || pin.d !== record.odds.d)) {
-    const dW = ((pin.w - record.odds.w) / record.odds.w * 100).toFixed(1);
-    const dD = ((pin.d - record.odds.d) / record.odds.d * 100).toFixed(1);
-    const dL = ((pin.l - record.odds.l) / record.odds.l * 100).toFixed(1);
+  // ===== Pinnacle vs 香港马会 分歧对比（窗口底部，用即时盘） =====
+  const hkjcOdds = record.hkjc || {};
+  if (hkjcOdds.w > 0 && pin.w > 0 && (pin.w !== hkjcOdds.w || pin.d !== hkjcOdds.d)) {
+    const dW = ((pin.w - hkjcOdds.w) / hkjcOdds.w * 100).toFixed(1);
+    const dD = ((pin.d - hkjcOdds.d) / hkjcOdds.d * 100).toFixed(1);
+    const dL = ((pin.l - hkjcOdds.l) / hkjcOdds.l * 100).toFixed(1);
     const warn = Math.abs(parseFloat(dW)) > 8 || Math.abs(parseFloat(dD)) > 8 || Math.abs(parseFloat(dL)) > 8;
-    html += '<div class="ah-section-title">Pinnacle vs 竞彩 分歧</div>';
+    html += '<div class="ah-section-title">Pinnacle vs 香港马会 分歧</div>';
     html += `<div class="ah-diff ${warn ? 'ah-diff-warn' : ''}">`;
     html += `胜 <span class="${parseFloat(dW) > 0 ? 'ev-pos' : 'ev-neg'}">${dW}%</span> | `;
     html += `平 <span class="${parseFloat(dD) > 0 ? 'ev-pos' : 'ev-neg'}">${dD}%</span> | `;
@@ -236,7 +238,7 @@ function openAhModal(record) {
   // ===== Pinnacle vs Bet365 分歧对比（用即时盘） =====
   // Pinnacle vs 参考行 分歧（fallback: Bet365 → 威廉希尔 → 利记 → 明升）
   const refChain = [
-    { name: 'Bet365', data: hkjc },
+    { name: 'Bet365', data: bet365 },
     { name: '威廉希尔', data: william },
     { name: '利记', data: liji1x2Top },
     { name: '明升', data: ms1x2Top }
@@ -475,7 +477,7 @@ function loadDate() {
       : '待定';
     const srcBadge = r.source === 'beidan'
       ? '<span class="badge badge-bd">北单</span>'
-      : '<span class="badge badge-jc">竞彩</span>';
+      : '<span class="badge badge-jc">香港马会</span>';
     const tierColors = {high:'#4caf50', medium:'#ff9800', low:'#8b949e', very_low:'#484f58'};
     const tierLabels = {high:'高', medium:'中', low:'低', very_low:'低'};
     const tier = r.confidence_tier || 'very_low';
@@ -525,7 +527,7 @@ function loadDate() {
 
     html += `<tr>
 <td>${i + 1} ${srcBadge}${tierBadge}</td>
-<td>${r.source === 'beidan' ? '北单' : '竞彩'}${r.league}</td>
+<td>${r.source === 'beidan' ? '北单' : '香港马会'}${r.league}</td>
 <td>${kickoff}</td>
 <td>${r.home}</td>${ahCell}<td>${r.away}</td>
 <td class="${dirClass}">${r.ev_direction || '-'}</td>
@@ -724,7 +726,7 @@ function downloadExcel() {
   const ws2 = XLSX.utils.aoa_to_sheet(dailyRows);
   XLSX.utils.book_append_sheet(wb, ws2, '每日统计');
 
-  XLSX.writeFile(wb, `竞彩预测_${sel}.xlsx`);
+  XLSX.writeFile(wb, `香港马会预测_${sel}.xlsx`);
 }
 
 document.addEventListener('DOMContentLoaded', init);

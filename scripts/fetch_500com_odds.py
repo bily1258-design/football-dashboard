@@ -58,6 +58,12 @@ COMPANY_CONFIG = {
         'ah_prefix': 'william_ah',
         'ou_prefix': 'william_ou',
     },
+    'hkjc': {
+        'cid': 122,
+        'db_prefix': 'hkjc',
+        'ah_prefix': 'hkjc',
+        'ou_prefix': 'hkjc',
+    },
 }
 
 HEADERS = {
