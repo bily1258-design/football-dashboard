@@ -527,7 +527,7 @@ function loadDate() {
 
     html += `<tr>
 <td>${i + 1} ${srcBadge}${tierBadge}</td>
-<td>${r.source === 'beidan' ? '北单' : '香港马会'}${r.league}</td>
+<td>${r.league}</td>
 <td>${kickoff}</td>
 <td>${r.home}</td>${ahCell}<td>${r.away}</td>
 <td class="${dirClass}">${r.ev_direction || '-'}</td>
