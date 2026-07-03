@@ -1,7 +1,13 @@
 {
   "fid": 1373537,
   "cid": 651,
-  "ou": null,
+  "ou": {
+    "close": {
+      "over": 0.8,
+      "line": 2.25,
+      "under": 1.0
+    }
+  },
   "ah": {
     "close": {
       "home_water": 0.95,
