@@ -1,15 +1,13 @@
 #!/usr/bin/env python3
 """
-extract_fids_from_live.py v5 — 从500.com页面提取fid，按联赛过滤，匹配DB比赛
+extract_fids_from_live.py v6 — 从500.com页面提取fid，按联赛过滤，匹配DB比赛
 
-v5 新增:
-  - LEAGUE_WHITELIST: 只保留竞彩/北单常见联赛（过滤友谊赛/低级别）
-  - --save-future: 将过滤后的未来比赛fid直接插入poisson_predictions
+v6 改用精简数据源：竞彩页(?e=date) + 北单页(zqdc.php)
+  替换旧的 wanchang.php + 首页 + weekfixture.php 三个源
 
 数据源:
-  1. wanchang.php     — 完场页（最近所有已结束赛事）
-  2. live.500.com/    — 首页（当前/即将开赛赛事）
-  3. weekfixture.php  — 未来2天赛事（未开赛+进行中）
+  1. live.500.com/?e={date}  — 竞彩当日及未来2天赛事（精炼、不杂）
+  2. live.500.com/zqdc.php   — 北单当期赛事（芬甲、挪甲、瑞典超等）
 
 用法:
   python scripts/extract_fids_from_live.py --db data/football.db [-v] [--dry-run]
@@ -22,6 +20,7 @@ import re
 import sqlite3
 import urllib.request
 import sys
+import time
 from datetime import datetime, timedelta
 
 # ===== 竞彩/北单常见联赛白名单 =====
@@ -133,7 +132,9 @@ def match_teams(db_home_norm, db_away_norm, page_home_norm, page_away_norm):
 
 def fetch_page_raw(url):
     req = urllib.request.Request(url, headers={
-        'User-Agent': 'Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+        'Accept-Language': 'zh-CN,zh;q=0.9',
+        'Referer': 'https://live.500.com/',
     })
     with urllib.request.urlopen(req, timeout=20) as resp:
         return resp.read()
@@ -158,84 +159,6 @@ def extract_fid_rows(raw, source):
             'home': parts[1].strip(), 'away': parts[2].strip(),
             'source': source
         })
-    return matches
-
-
-def extract_weekfixture_with_date(raw):
-    """从 weekfixture.php 提取 fid + 联赛时间信息
-
-    返回: [{'fid', 'league', 'home', 'away', 'source', 'date', 'time'}, ...]
-    """
-    text = raw.decode('gbk', errors='replace')
-
-    # 先找日期标题行: "2026年07月04日 (星期六)"
-    date_headers = list(re.finditer(r'(\d{4})年(\d{1,2})月(\d{1,2})日', text))
-
-    if not date_headers:
-        # 回退到基础提取
-        return extract_fid_rows(raw, 'weekfixture')
-
-    matches = []
-    # 对每个 fid 行，找到它前面的最近日期
-    pattern = rb'id=\"a(\d+)\"[^>]*gy=\"([^\"]*)\"'
-    rows = re.findall(pattern, raw)
-
-    for aid_bytes, gy_bytes in rows:
-        fid = aid_bytes.decode()
-        gy = gy_bytes.decode('gbk', errors='replace')
-        parts = gy.split(',')
-        if len(parts) < 3:
-            continue
-
-        league = parts[0].strip()
-        home = parts[1].strip()
-        away = parts[2].strip()
-
-        # 在HTML中找到这行的位置，往前找最近的日期
-        row_html = f'id="a{fid}"'
-        pos = text.find(row_html)
-        match_date = None
-        match_time = ''
-
-        if pos >= 0:
-            # 往前找最近的时间戳 <td align="center">07-04 10:00</td>
-            before = text[max(0, pos - 500):pos]
-            time_match = re.search(r'<td[^>]*>\s*(\d{1,2}-\d{1,2})\s+(\d{2}:\d{2})\s*</td>', before)
-            if time_match:
-                mm_dd = time_match.group(1)
-                match_time = time_match.group(2)
-            else:
-                # 再从行内找
-                after = text[pos:pos + 600]
-                time_match = re.search(r'<td[^>]*>\s*(\d{1,2}-\d{1,2})\s+(\d{2}:\d{2})\s*</td>', after)
-                if time_match:
-                    mm_dd = time_match.group(1)
-                    match_time = time_match.group(2)
-
-            # 找最近的日期标题
-            for i in range(len(date_headers) - 1, -1, -1):
-                dh = date_headers[i]
-                if dh.start() < pos:
-                    year = dh.group(1)
-                    month = dh.group(2).zfill(2)
-                    day = dh.group(3).zfill(2)
-                    match_date = f'{year}-{month}-{day}'
-                    break
-
-        if not match_date:
-            # 保底：今天
-            match_date = datetime.now().strftime('%Y-%m-%d')
-
-        matches.append({
-            'fid': fid,
-            'league': league,
-            'home': home,
-            'away': away,
-            'source': 'weekfixture',
-            'date': match_date,
-            'time': match_time,
-        })
-
     return matches
 
 
@@ -266,36 +189,41 @@ def main():
     args = parser.parse_args()
 
     all_matches = []
+    today = datetime.now().strftime('%Y-%m-%d')
 
-    # 1. wanchang.php — 最近所有完场
-    print("获取 wanchang.php (最近完场)...")
-    try:
-        raw = fetch_page_raw('https://live.500.com/wanchang.php')
-        rows = extract_fid_rows(raw, 'wanchang')
-        print(f"  完场: {len(rows)}场")
-        all_matches.extend(rows)
-    except Exception as e:
-        print(f"  ❌ wanchang.php 失败: {e}")
+    # 1. 竞彩页 ?e={date} — 只抓今明2天（竞彩页面有限流，不宜多抓）
+    if args.date:
+        # --date 模式：只抓指定日期
+        dates_to_fetch = [args.date]
+    else:
+        # 默认抓今天 + 明天
+        base = datetime.now()
+        dates_to_fetch = [base.strftime('%Y-%m-%d'),
+                          (base + timedelta(days=1)).strftime('%Y-%m-%d')]
 
-    # 2. live.500.com 首页
-    print("获取 live.500.com 首页...")
-    try:
-        raw_home = fetch_page_raw('https://live.500.com/')
-        matches_home = extract_fid_rows(raw_home, 'homepage')
-        print(f"  首页: {len(matches_home)}场")
-        all_matches.extend(matches_home)
-    except Exception as e:
-        print(f"  ❌ 首页 失败: {e}")
+    for date_str in dates_to_fetch:
+        url = f'https://live.500.com/?e={date_str}'
+        try:
+            raw = fetch_page_raw(url)
+            rows = extract_fid_rows(raw, 'jingcai')
+            for r in rows:
+                r['date'] = date_str
+            print(f"  ?e={date_str}: {len(rows)}场")
+            all_matches.extend(rows)
+        except Exception as e:
+            print(f"  ⚠ ?e={date_str}: {e}")
+        # 防限流延时
+        time.sleep(1.5)
 
-    # 3. weekfixture.php — 未来2天赛事（带日期）
-    print("获取 weekfixture.php (未来2天赛事)...")
+    # 2. 北单页 zqdc.php — 当期北单赛事
+    print("获取 zqdc.php (北单当期)...")
     try:
-        raw_week = fetch_page_raw('https://live.500.com/weekfixture.php')
-        matches_week = extract_weekfixture_with_date(raw_week)
-        print(f"  未来2天: {len(matches_week)}场")
-        all_matches.extend(matches_week)
+        raw_bd = fetch_page_raw('https://live.500.com/zqdc.php')
+        rows_bd = extract_fid_rows(raw_bd, 'beidan')
+        print(f"  北单: {len(rows_bd)}场")
+        all_matches.extend(rows_bd)
     except Exception as e:
-        print(f"  ❌ weekfixture.php 失败: {e}")
+        print(f"  ❌ zqdc.php 失败: {e}")
 
     print(f"合计: {len(all_matches)}场比赛")
 
@@ -382,10 +310,13 @@ def main():
 
     # === 第二步：保存未匹配的未来比赛fid ===
     if args.save_future:
-        # 只保存 weekfixture 来源的比赛（有完整日期信息）
-        unmatched = [m for m in unique_matches if m['fid'] not in matched_fids and m['source'] == 'weekfixture']
+        # 保存 jingcai 和 beidan 来源中未匹配且是未来日期的比赛
+        now = datetime.now().strftime('%Y-%m-%d')
+        unmatched = [m for m in unique_matches
+                     if m['fid'] not in matched_fids
+                     and m.get('date', now) >= now]
         print(f"\n=== 保存未来比赛fid ===")
-        print(f"过滤后未匹配的fid: {len(unmatched)}场")
+        print(f"过滤后未匹配的未来比赛: {len(unmatched)}场")
 
         saved = 0
         for m in unmatched:
