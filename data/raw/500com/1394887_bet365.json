@@ -1,0 +1,40 @@
+{
+  "fid": 1394887,
+  "cid": 3,
+  "ou": {
+    "close": {
+      "over": 0.85,
+      "line": 2.5,
+      "under": 0.95
+    },
+    "open": {
+      "over": 1.0,
+      "line": 2.5,
+      "under": 0.8
+    }
+  },
+  "1x2": {
+    "close": {
+      "w": 2.25,
+      "d": 3.3,
+      "l": 2.7
+    },
+    "open": {
+      "w": 1.91,
+      "d": 3.25,
+      "l": 3.5
+    }
+  },
+  "ah": {
+    "close": {
+      "home_water": 1.02,
+      "handicap": 0.25,
+      "away_water": 0.77
+    },
+    "open": {
+      "home_water": 1.0,
+      "handicap": 0.5,
+      "away_water": 0.8
+    }
+  }
+}

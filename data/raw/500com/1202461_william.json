@@ -1,0 +1,40 @@
+{
+  "fid": 1202461,
+  "cid": 293,
+  "1x2": {
+    "close": {
+      "w": 1.35,
+      "d": 5.0,
+      "l": 7.5
+    },
+    "open": {
+      "w": 1.4,
+      "d": 5.0,
+      "l": 6.0
+    }
+  },
+  "ou": {
+    "close": {
+      "over": 0.95,
+      "line": 3.5,
+      "under": 0.8
+    },
+    "open": {
+      "over": 0.4,
+      "line": 2.5,
+      "under": 1.88
+    }
+  },
+  "ah": {
+    "close": {
+      "home_water": 0.8,
+      "handicap": 1.25,
+      "away_water": 0.86
+    },
+    "open": {
+      "home_water": 0.81,
+      "handicap": 1.25,
+      "away_water": 0.96
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "fid": 1209561,
+  "cid": 3,
+  "1x2": {
+    "close": {
+      "w": 1.66,
+      "d": 4.33,
+      "l": 4.2
+    },
+    "open": {
+      "w": 1.61,
+      "d": 3.9,
+      "l": 4.5
+    }
+  },
+  "ou": {
+    "close": {
+      "over": 1.0,
+      "line": 3.25,
+      "under": 0.8
+    },
+    "open": {
+      "over": 0.95,
+      "line": 3.25,
+      "under": 0.85
+    }
+  },
+  "ah": {
+    "close": {
+      "home_water": 0.85,
+      "handicap": 0.75,
+      "away_water": 0.95
+    },
+    "open": {
+      "home_water": 0.85,
+      "handicap": 0.5,
+      "away_water": 0.95
+    }
+  }
+}

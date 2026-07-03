@@ -1,0 +1,40 @@
+{
+  "fid": 1234943,
+  "cid": 293,
+  "ou": {
+    "close": {
+      "over": 0.95,
+      "line": 3.5,
+      "under": 0.75
+    },
+    "open": {
+      "over": 0.3,
+      "line": 2.5,
+      "under": 2.1
+    }
+  },
+  "1x2": {
+    "close": {
+      "w": 1.13,
+      "d": 7.5,
+      "l": 13.0
+    },
+    "open": {
+      "w": 1.11,
+      "d": 9.0,
+      "l": 12.0
+    }
+  },
+  "ah": {
+    "close": {
+      "home_water": 0.94,
+      "handicap": 2.25,
+      "away_water": 0.71
+    },
+    "open": {
+      "home_water": 1.05,
+      "handicap": 2.5,
+      "away_water": 0.65
+    }
+  }
+}
