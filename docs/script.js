@@ -1,4 +1,4 @@
-// script.js — 香港马会泊松预测看板前端
+// script.js — 泊松预测看板前端
 
 const DATA_URL = 'data/results.json.gz';
 const WEEKDAY_CN = ['周日','周一','周二','周三','周四','周五','周六'];

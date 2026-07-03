@@ -637,13 +637,13 @@ def generate_index_html(by_date, daily_stats, summary, league_score_freq=None, o
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>香港马会泊松预测看板</title>
+<title>泊松预测看板</title>
 <link rel="stylesheet" href="style.css">
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 </head>
 <body>
 <div class="header">
-<h1>⚽ 香港马会泊松预测看板</h1>
+<h1>⚽ 泊松预测看板</h1>
 <div class="sub">更新于 {summary['last_updated']} | 共 {summary['total_matches']} 场已开奖 | {summary['days']} 天数据</div>
 </div>
 
