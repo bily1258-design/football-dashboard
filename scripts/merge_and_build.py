@@ -600,18 +600,21 @@ def build_league_score_freq(db_path: str) -> dict:
     return {lg: dict(scores) for lg, scores in league_scores.items()}
 
 
-def filter_by_league_by_date(by_date, verbose=True):
-    """按联赛白名单过滤 by_date 中的所有记录"""
+def filter_by_league_by_date(by_date, verbose=True, max_days=10):
+    """限制看板天数，避免数据过大。去掉了联赛白名单过滤。"""
+    dates = sorted(by_date.keys(), reverse=True)
     total_before = sum(len(v) for v in by_date.values())
-    for date, records in list(by_date.items()):
-        kept = [r for r in records if r.get('league', '') in LEAGUE_WHITELIST]
-        if kept:
-            by_date[date] = kept
-        else:
+    kept = 0
+    if len(dates) > max_days:
+        for date in dates[max_days:]:
+            kept += len(by_date[date])
             del by_date[date]
+        if verbose:
+            print(f'📅 天数截断: {len(dates)}天 → {max_days}天 (去掉第{max_days+1}天及之后 {kept} 场)')
+    # 不再按联赛过滤
     total_after = sum(len(v) for v in by_date.values())
-    if verbose:
-        print(f'🏷️ 联赛过滤: {total_before} → {total_after} 场 (去掉 {total_before - total_after} 场)')
+    if verbose and total_before != total_after:
+        print(f'   总场次: {total_before} → {total_after} 场')
 
 
 def generate_results_json(by_date, daily_stats, summary, output_dir=None):
