@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2026-07-03 22:00:11",
+    "generated_at": "2026-07-03 22:19:57",
     "total_dates": 10,
     "total_matches": 143,
     "date_range": {
@@ -47,7 +47,7 @@
         "prob_rate": 0.0
       }
     },
-    "last_updated": "2026-07-03 22:00"
+    "last_updated": "2026-07-03 22:19"
   },
   "daily_stats": {
     "2026-07-04": {
@@ -16895,23 +16895,23 @@
           "under": 0.67
         },
         "hkjc_ah": {
-          "handicap": -0.25,
-          "home_w": 0.68,
-          "away_w": 1.17,
+          "handicap": 0.25,
+          "home_w": 0.67,
+          "away_w": 1.15,
           "open": {
-            "handicap": null,
-            "home_w": 0,
-            "away_w": 0
+            "handicap": 1.0,
+            "home_w": 0.9,
+            "away_w": 0.95
           }
         },
         "hkjc_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0,
+          "line": 2.5,
+          "over": 1.15,
+          "under": 0.67,
           "open": {
-            "line": null,
-            "over": 0,
-            "under": 0
+            "line": 2.5,
+            "over": 0.9,
+            "under": 0.95
           }
         }
       }
