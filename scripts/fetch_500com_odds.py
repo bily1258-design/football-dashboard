@@ -253,6 +253,16 @@ def fetch_ah(fid, cid):
                     'handicap': handicap_open,
                     'away_water': float(open_['col3']),
                 }
+        elif len(parsed) == 1:
+            # 只有1行数据时，该行既是即时也是初盘
+            only = parsed[0]
+            handicap_only = _handicap_to_float(only['col2'])
+            if handicap_only is not None:
+                result['open'] = {
+                    'home_water': float(only['col1']),
+                    'handicap': handicap_only,
+                    'away_water': float(only['col3']),
+                }
         return result
     except (IndexError, ValueError, TypeError):
         return None
@@ -289,6 +299,11 @@ def fetch_ou(fid, cid):
         result = {'close': close}
         if len(parsed) >= 2:
             open_ = parse_ou_record(parsed[-1])
+            if open_ is not None:
+                result['open'] = open_
+        elif len(parsed) == 1:
+            # 只有1行数据时，该行既是即时也是初盘
+            open_ = parse_ou_record(parsed[0])
             if open_ is not None:
                 result['open'] = open_
         return result
