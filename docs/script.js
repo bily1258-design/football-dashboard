@@ -203,6 +203,21 @@ function openAhModal(record) {
 
 
 
+  // ===== Pinnacle 初盘 vs 即时盘 分歧对比 =====
+  if (pinOpen.w > 0 && pin.w > 0 && (pinOpen.w !== pin.w || pinOpen.d !== pin.d || pinOpen.l !== pin.l)) {
+    const poW = ((pin.w - pinOpen.w) / pinOpen.w * 100).toFixed(1);
+    const poD = ((pin.d - pinOpen.d) / pinOpen.d * 100).toFixed(1);
+    const poL = ((pin.l - pinOpen.l) / pinOpen.l * 100).toFixed(1);
+    const powarn = Math.abs(parseFloat(poW)) > 8 || Math.abs(parseFloat(poD)) > 8 || Math.abs(parseFloat(poL)) > 8;
+    html += '<div class="ah-section-title">平博初盘 vs 即时盘 分歧</div>';
+    html += `<div class="ah-diff ${powarn ? 'ah-diff-warn' : ''}">`;
+    html += `胜 <span class="${parseFloat(poW) > 0 ? 'ev-pos' : 'ev-neg'}">${poW}%</span> | `;
+    html += `平 <span class="${parseFloat(poD) > 0 ? 'ev-pos' : 'ev-neg'}">${poD}%</span> | `;
+    html += `负 <span class="${parseFloat(poL) > 0 ? 'ev-pos' : 'ev-neg'}">${poL}%</span>`;
+    if (powarn) html += ' <span class="ah-warn-tag">⚠ 分歧大</span>';
+    html += '</div>';
+  }
+
   // ===== Pinnacle vs 竞彩 分歧对比（窗口底部，用即时盘） =====
   if (record.odds.w > 0 && pin.w > 0 && (pin.w !== record.odds.w || pin.d !== record.odds.d)) {
     const dW = ((pin.w - record.odds.w) / record.odds.w * 100).toFixed(1);
