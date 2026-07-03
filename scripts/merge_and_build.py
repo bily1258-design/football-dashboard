@@ -15,6 +15,19 @@ from collections import defaultdict
 
 from team_aliases import canonical as _canonical, match_key as _match_key
 
+# ===== 联赛白名单（与 extract_fids_from_live.py 保持一致） =====
+LEAGUE_WHITELIST = {
+    # 国内
+    '中超', '中甲',
+    # 韩国
+    'K1联赛', 'K2联赛',
+    # 北欧（北单覆盖）
+    '芬超', '芬甲', '冰岛超', '瑞典超', '挪甲', '爱甲',
+    # 美洲
+    '美冠', '巴乙', '厄甲',
+    # 国家队赛事
+    '世界杯',
+}
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 REPO_DIR = os.path.dirname(SCRIPT_DIR)
 PROCESSED_DIR = os.path.join(REPO_DIR, "data", "processed")
@@ -587,6 +600,20 @@ def build_league_score_freq(db_path: str) -> dict:
     return {lg: dict(scores) for lg, scores in league_scores.items()}
 
 
+def filter_by_league_by_date(by_date, verbose=True):
+    """按联赛白名单过滤 by_date 中的所有记录"""
+    total_before = sum(len(v) for v in by_date.values())
+    for date, records in list(by_date.items()):
+        kept = [r for r in records if r.get('league', '') in LEAGUE_WHITELIST]
+        if kept:
+            by_date[date] = kept
+        else:
+            del by_date[date]
+    total_after = sum(len(v) for v in by_date.values())
+    if verbose:
+        print(f'🏷️ 联赛过滤: {total_before} → {total_after} 场 (去掉 {total_before - total_after} 场)')
+
+
 def generate_results_json(by_date, daily_stats, summary, output_dir=None):
     if not output_dir:
         output_dir = DATA_DIR
@@ -929,6 +956,12 @@ def main():
     n_scores = sum(len(v) for v in league_score_freq.values())
     print(f'📊 {len(by_date)}天, {summary["total_matches"]}场已开奖, EV={summary["ev_rate"]}%, 概率={summary["prob_rate"]}%')
     print(f'   联赛比分频率: {n_leagues}个联赛, {n_scores}个比分记录')
+
+    # 按联赛白名单过滤看板展示
+    filter_by_league_by_date(by_date)
+    # 过滤后重建统计数据
+    daily_stats = build_daily_stats(by_date)
+    summary = build_summary(daily_stats)
 
     out_base = args.output or REPO_DIR
     # results.json 必须输出到 docs/data/ 下，GitHub Pages 才能访问
