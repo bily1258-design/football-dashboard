@@ -119,21 +119,26 @@ def fetch_1x2(fid, cid):
     """
     url = f'https://odds.500.com/fenxi/json/ouzhi.php?fid={fid}&cid={cid}&type=europe&r=1'
     data = fetch_json(url)
-    if not data or not isinstance(data, list) or len(data) < 2:
+    if not data or not isinstance(data, list) or len(data) < 1:
         return None
     
     try:
+        # data[0] = 最新(收盘), data[-1] = 最初(开盘)
+        # 允许只有1条记录的情况（刚开盘还没收盘）
         close = data[0]
-        open_ = data[-1]
         
         result = {
             'close': {'w': float(close[0]), 'd': float(close[1]), 'l': float(close[2])},
-            'open': {'w': float(open_[0]), 'd': float(open_[1]), 'l': float(open_[2])},
         }
-        for key in ('close', 'open'):
-            odds = result[key]
-            if odds['w'] <= 1 or odds['d'] <= 1 or odds['l'] <= 1:
-                return None
+        
+        # 1条以上时才取开盘
+        if len(data) >= 2:
+            open_ = data[-1]
+            result['open'] = {
+                'w': float(open_[0]), 'd': float(open_[1]), 'l': float(open_[2]),
+            }
+        
+        # 移除了 ≤1 的硬过滤 — 威廉希尔也可能开出非常低的赔率
         return result
     except (IndexError, ValueError, TypeError):
         return None
@@ -520,7 +525,7 @@ def main():
     parser.add_argument('--fid', type=int, help='只抓指定fid')
     parser.add_argument('--limit', type=int, default=100, help='每家公司最多抓取场次数 (默认100)')
     parser.add_argument('--dry-run', action='store_true', help='只显示不写入')
-    parser.add_argument('--delay', type=float, default=0.5, help='请求间隔秒数 (默认0.5)')
+    parser.add_argument('--delay', type=float, default=0.3, help='请求间隔秒数 (默认0.3)')
     parser.add_argument('--save-raw', action='store_true', help='保存原始JSON到data/raw/500com/')
     parser.add_argument('--rebuild', action='store_true', help='重刷所有有fid的记录(含已有赔率)')
     parser.add_argument('--max-days', type=int, default=30,

@@ -64,14 +64,16 @@ def parse_wanchang_html(html):
         if clean_tds[0] in ('赛事', '场次'):
             continue
 
-        status = clean_tds[3] if len(clean_tds) > 3 else ''
-        if status != '完':
-            continue
-
+        # 新格式: 赛事|轮次|时间|主队|比分|客队|数据|直播|分析
+        # 分数列有 '-' 表示未开始/进行中，有数字比分才是完场
         league = clean_tds[0]
-        home_raw = clean_tds[4] if len(clean_tds) > 4 else ''
-        score_raw = clean_tds[5] if len(clean_tds) > 5 else ''
-        away_raw = clean_tds[6] if len(clean_tds) > 6 else ''
+        home_raw = clean_tds[3] if len(clean_tds) > 3 else ''
+        score_raw = clean_tds[4] if len(clean_tds) > 4 else ''
+        away_raw = clean_tds[5] if len(clean_tds) > 5 else ''
+
+        # 比分如果是 '-' 说明没结束，跳过
+        if score_raw.strip() == '-':
+            continue
 
         # 清理队名
         home = re.sub(r'\[\d+\]', '', home_raw).strip()
