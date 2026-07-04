@@ -638,6 +638,12 @@ def generate_results_json(by_date, daily_stats, summary, output_dir=None):
     with open(path, 'w', encoding='utf-8') as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
     print(f'✅ results.json → {path} ({os.path.getsize(path)//1024}KB)')
+    # 前端加载 .gz 版本，同步压缩
+    gz_path = path + '.gz'
+    import gzip
+    with open(path, 'rb') as src, gzip.open(gz_path, 'wb', compresslevel=6) as dst:
+        dst.writelines(src)
+    print(f'✅ results.json.gz → {gz_path} ({os.path.getsize(gz_path)//1024}KB)')
     return path
 
 
