@@ -1,53 +1,53 @@
 {
   "meta": {
-    "generated_at": "2026-07-05 11:15:55",
+    "generated_at": "2026-07-05 17:54:33",
     "total_dates": 10,
-    "total_matches": 90,
+    "total_matches": 88,
     "date_range": {
       "from": "2026-06-28",
       "to": "2026-07-07"
     }
   },
   "summary": {
-    "total_matches": 71,
-    "ev_hits": 46,
-    "prob_hits": 42,
-    "any_hits": 48,
-    "ev_rate": 64.8,
-    "prob_rate": 59.2,
-    "any_rate": 67.6,
+    "total_matches": 69,
+    "ev_hits": 45,
+    "prob_hits": 41,
+    "any_hits": 47,
+    "ev_rate": 65.2,
+    "prob_rate": 59.4,
+    "any_rate": 68.1,
     "days": 10,
     "tiers": {
       "high": {
-        "total": 16,
-        "ev_hits": 12,
-        "prob_hits": 12,
-        "ev_rate": 75.0,
-        "prob_rate": 75.0
+        "total": 15,
+        "ev_hits": 11,
+        "prob_hits": 11,
+        "ev_rate": 73.3,
+        "prob_rate": 73.3
       },
       "medium": {
-        "total": 2,
-        "ev_hits": 1,
-        "prob_hits": 1,
-        "ev_rate": 50.0,
+        "total": 18,
+        "ev_hits": 12,
+        "prob_hits": 9,
+        "ev_rate": 66.7,
         "prob_rate": 50.0
       },
       "low": {
-        "total": 10,
-        "ev_hits": 7,
-        "prob_hits": 7,
-        "ev_rate": 70.0,
-        "prob_rate": 70.0
+        "total": 26,
+        "ev_hits": 17,
+        "prob_hits": 17,
+        "ev_rate": 65.4,
+        "prob_rate": 65.4
       },
       "very_low": {
-        "total": 11,
+        "total": 10,
         "ev_hits": 5,
         "prob_hits": 4,
-        "ev_rate": 45.5,
-        "prob_rate": 36.4
+        "ev_rate": 50.0,
+        "prob_rate": 40.0
       }
     },
-    "last_updated": "2026-07-05 11:15"
+    "last_updated": "2026-07-05 17:54"
   },
   "daily_stats": {
     "2026-07-07": {
@@ -148,18 +148,18 @@
           "prob_rate": 0
         },
         "medium": {
-          "total": 0,
-          "ev_hits": 0,
-          "prob_hits": 0,
-          "ev_rate": 0,
-          "prob_rate": 0
+          "total": 2,
+          "ev_hits": 1,
+          "prob_hits": 1,
+          "ev_rate": 50.0,
+          "prob_rate": 50.0
         },
         "low": {
-          "total": 0,
-          "ev_hits": 0,
-          "prob_hits": 0,
-          "ev_rate": 0,
-          "prob_rate": 0
+          "total": 3,
+          "ev_hits": 2,
+          "prob_hits": 3,
+          "ev_rate": 66.7,
+          "prob_rate": 100.0
         },
         "very_low": {
           "total": 0,
@@ -188,18 +188,18 @@
           "prob_rate": 50.0
         },
         "medium": {
-          "total": 1,
-          "ev_hits": 0,
-          "prob_hits": 0,
-          "ev_rate": 0.0,
-          "prob_rate": 0.0
+          "total": 14,
+          "ev_hits": 9,
+          "prob_hits": 6,
+          "ev_rate": 64.3,
+          "prob_rate": 42.9
         },
         "low": {
-          "total": 0,
-          "ev_hits": 0,
-          "prob_hits": 0,
-          "ev_rate": 0,
-          "prob_rate": 0
+          "total": 12,
+          "ev_hits": 8,
+          "prob_hits": 7,
+          "ev_rate": 66.7,
+          "prob_rate": 58.3
         },
         "very_low": {
           "total": 1,
@@ -228,18 +228,18 @@
           "prob_rate": 83.3
         },
         "medium": {
-          "total": 0,
-          "ev_hits": 0,
-          "prob_hits": 0,
-          "ev_rate": 0,
-          "prob_rate": 0
-        },
-        "low": {
           "total": 1,
           "ev_hits": 1,
           "prob_hits": 1,
           "ev_rate": 100.0,
           "prob_rate": 100.0
+        },
+        "low": {
+          "total": 2,
+          "ev_hits": 1,
+          "prob_hits": 1,
+          "ev_rate": 50.0,
+          "prob_rate": 50.0
         },
         "very_low": {
           "total": 0,
@@ -251,19 +251,19 @@
       }
     },
     "2026-07-02": {
-      "total": 4,
-      "with_result": 4,
-      "ev_hits": 3,
-      "prob_hits": 3,
-      "any_hits": 3,
-      "ev_rate": 75.0,
-      "prob_rate": 75.0,
-      "any_rate": 75.0,
+      "total": 3,
+      "with_result": 3,
+      "ev_hits": 2,
+      "prob_hits": 2,
+      "any_hits": 2,
+      "ev_rate": 66.7,
+      "prob_rate": 66.7,
+      "any_rate": 66.7,
       "tiers": {
         "high": {
-          "total": 3,
-          "ev_hits": 3,
-          "prob_hits": 3,
+          "total": 2,
+          "ev_hits": 2,
+          "prob_hits": 2,
           "ev_rate": 100.0,
           "prob_rate": 100.0
         },
@@ -411,14 +411,14 @@
       }
     },
     "2026-06-28": {
-      "total": 5,
-      "with_result": 5,
+      "total": 4,
+      "with_result": 4,
       "ev_hits": 2,
       "prob_hits": 2,
       "any_hits": 2,
-      "ev_rate": 40.0,
-      "prob_rate": 40.0,
-      "any_rate": 40.0,
+      "ev_rate": 50.0,
+      "prob_rate": 50.0,
+      "any_rate": 50.0,
       "tiers": {
         "high": {
           "total": 1,
@@ -442,11 +442,11 @@
           "prob_rate": 100.0
         },
         "very_low": {
-          "total": 3,
+          "total": 2,
           "ev_hits": 1,
           "prob_hits": 1,
-          "ev_rate": 33.3,
-          "prob_rate": 33.3
+          "ev_rate": 50.0,
+          "prob_rate": 50.0
         }
       }
     }
@@ -675,7 +675,9 @@
             "home_w": 0.97,
             "away_w": 0.82
           }
-        }
+        },
+        "confidence_tier": "medium",
+        "calibrated_prob": 0.378
       },
       {
         "id": 1911,
@@ -887,7 +889,9 @@
             "home_w": 0.9,
             "away_w": 0.9
           }
-        }
+        },
+        "confidence_tier": "medium",
+        "calibrated_prob": 0.36
       },
       {
         "id": 1908,
@@ -897,7 +901,7 @@
         "away": "西班牙",
         "kickoff": "2026-07-07T03:00:00",
         "prediction": null,
-        "prediction_prob": 0.412,
+        "prediction_prob": 0.443,
         "odds": {
           "w": 3.9,
           "d": 3.602,
@@ -909,14 +913,14 @@
           "l": 0.339
         },
         "final_prob": {
-          "w": 0.328,
-          "d": 0.26,
-          "l": 0.412
+          "w": 0.29,
+          "d": 0.267,
+          "l": 0.443
         },
         "fusion_prob": {
-          "w": 0.328,
-          "d": 0.26,
-          "l": 0.412
+          "w": 0.29,
+          "d": 0.267,
+          "l": 0.443
         },
         "result": "",
         "score": "",
@@ -926,19 +930,19 @@
         "prob_hit": false,
         "fusion_direction": "客胜",
         "ev": {
-          "w": 0.3302,
-          "d": 0.005,
-          "l": -0.1783
+          "w": 0.2152,
+          "d": 0.0436,
+          "l": -0.1259
         },
         "kelly": {
-          "w": 0.0481,
+          "w": 0.0226,
           "d": 0,
           "l": 0
         },
         "pinnacle": {
-          "w": 4.12,
-          "d": 3.74,
-          "l": 1.91,
+          "w": 4.1,
+          "d": 3.78,
+          "l": 1.9,
           "open": {
             "w": 3.53,
             "d": 3.5,
@@ -1021,14 +1025,14 @@
           }
         },
         "pin_ah": {
-          "handicap": null,
-          "home_w": 0,
-          "away_w": 0
+          "handicap": -0.5,
+          "home_w": 1.0,
+          "away_w": 0.91
         },
         "pin_ou": {
           "line": 2.75,
-          "over": 1.06,
-          "under": 0.84
+          "over": 1.0,
+          "under": 0.89
         },
         "ou": {
           "over": 0,
@@ -1051,9 +1055,9 @@
           }
         },
         "ms_ou": {
-          "over": 0.88,
+          "over": 0.87,
           "line": 2.5,
-          "under": 1.02,
+          "under": 1.03,
           "open": {
             "over": 0.93,
             "line": 2.5,
@@ -1099,7 +1103,9 @@
             "home_w": 0.98,
             "away_w": 0.88
           }
-        }
+        },
+        "confidence_tier": "medium",
+        "calibrated_prob": 0.443
       },
       {
         "id": 1928,
@@ -1311,7 +1317,9 @@
             "home_w": 0.9,
             "away_w": 0.9
           }
-        }
+        },
+        "confidence_tier": "medium",
+        "calibrated_prob": 0.397
       },
       {
         "id": 1909,
@@ -1523,7 +1531,9 @@
             "home_w": 0.85,
             "away_w": 1.0
           }
-        }
+        },
+        "confidence_tier": "medium",
+        "calibrated_prob": 0.397
       }
     ],
     "2026-07-06": [
@@ -1737,7 +1747,9 @@
             "home_w": 0.95,
             "away_w": 0.9
           }
-        }
+        },
+        "confidence_tier": "low",
+        "calibrated_prob": 0.446
       },
       {
         "id": 1901,
@@ -1747,7 +1759,7 @@
         "away": "英格兰",
         "kickoff": "2026-07-06T08:00:00",
         "prediction": null,
-        "prediction_prob": 0.408,
+        "prediction_prob": 0.4,
         "odds": {
           "w": 3.042,
           "d": 3.144,
@@ -1759,14 +1771,14 @@
           "l": 0.306
         },
         "final_prob": {
-          "w": 0.408,
-          "d": 0.298,
-          "l": 0.294
+          "w": 0.4,
+          "d": 0.297,
+          "l": 0.303
         },
         "fusion_prob": {
-          "w": 0.408,
-          "d": 0.298,
-          "l": 0.294
+          "w": 0.4,
+          "d": 0.297,
+          "l": 0.303
         },
         "result": "",
         "score": "",
@@ -1776,19 +1788,19 @@
         "prob_hit": false,
         "fusion_direction": "主胜",
         "ev": {
-          "w": 0.3054,
-          "d": 0.0044,
-          "l": -0.2459
+          "w": 0.3007,
+          "d": -0.0388,
+          "l": -0.216
         },
         "kelly": {
-          "w": 0.0588,
+          "w": 0.0529,
           "d": 0,
           "l": 0
         },
         "pinnacle": {
-          "w": 3.22,
-          "d": 3.26,
-          "l": 2.41,
+          "w": 3.3,
+          "d": 3.17,
+          "l": 2.48,
           "open": {
             "w": 3.71,
             "d": 3.13,
@@ -1871,14 +1883,14 @@
           }
         },
         "pin_ah": {
-          "handicap": null,
-          "home_w": 0,
-          "away_w": 0
+          "handicap": -0.25,
+          "home_w": 0.84,
+          "away_w": 1.1
         },
         "pin_ou": {
           "line": 2.0,
           "over": 0.81,
-          "under": 1.1
+          "under": 1.11
         },
         "ou": {
           "over": 0,
@@ -1949,7 +1961,9 @@
             "home_w": 1.05,
             "away_w": 0.8
           }
-        }
+        },
+        "confidence_tier": "low",
+        "calibrated_prob": 0.4
       }
     ],
     "2026-07-05": [
@@ -2017,7 +2031,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "1-0",
         "cold_risk": "",
         "source": "future_500",
         "odds_source": "had",
@@ -2163,7 +2177,9 @@
             "home_w": 0.95,
             "away_w": 0.85
           }
-        }
+        },
+        "confidence_tier": "medium",
+        "calibrated_prob": 0.391
       },
       {
         "id": 1920,
@@ -2229,7 +2245,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "1-1",
         "cold_risk": "",
         "source": "future_500",
         "odds_source": "had",
@@ -2375,7 +2391,9 @@
             "home_w": 0.98,
             "away_w": 0.83
           }
-        }
+        },
+        "confidence_tier": "medium",
+        "calibrated_prob": 0.423
       },
       {
         "id": 1893,
@@ -2441,7 +2459,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "0-3",
         "cold_risk": "",
         "source": "future_500",
         "odds_source": "had",
@@ -2587,7 +2605,9 @@
             "home_w": 0.83,
             "away_w": 1.03
           }
-        }
+        },
+        "confidence_tier": "low",
+        "calibrated_prob": 0.424
       },
       {
         "id": 1921,
@@ -2653,7 +2673,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "2-1",
         "cold_risk": "",
         "source": "future_500",
         "odds_source": "had",
@@ -2799,7 +2819,9 @@
             "home_w": 0.9,
             "away_w": 0.9
           }
-        }
+        },
+        "confidence_tier": "low",
+        "calibrated_prob": 0.358
       },
       {
         "id": 1894,
@@ -2865,7 +2887,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "0-1",
         "cold_risk": "",
         "source": "future_500",
         "odds_source": "had",
@@ -3011,7 +3033,9 @@
             "home_w": 0.8,
             "away_w": 1.05
           }
-        }
+        },
+        "confidence_tier": "low",
+        "calibrated_prob": 0.461
       },
       {
         "id": 1902,
@@ -3223,7 +3247,9 @@
             "home_w": 0.88,
             "away_w": 0.93
           }
-        }
+        },
+        "confidence_tier": "medium",
+        "calibrated_prob": 0.426
       },
       {
         "id": 1903,
@@ -3435,7 +3461,9 @@
             "home_w": 0.98,
             "away_w": 0.83
           }
-        }
+        },
+        "confidence_tier": "low",
+        "calibrated_prob": 0.418
       },
       {
         "id": 1904,
@@ -3647,7 +3675,9 @@
             "home_w": 1.05,
             "away_w": 0.75
           }
-        }
+        },
+        "confidence_tier": "medium",
+        "calibrated_prob": 0.386
       },
       {
         "id": 1922,
@@ -3859,7 +3889,9 @@
             "home_w": 0.78,
             "away_w": 1.03
           }
-        }
+        },
+        "confidence_tier": "low",
+        "calibrated_prob": 0.455
       },
       {
         "id": 1923,
@@ -4071,7 +4103,9 @@
             "home_w": 0.9,
             "away_w": 0.9
           }
-        }
+        },
+        "confidence_tier": "medium",
+        "calibrated_prob": 0.476
       },
       {
         "id": 1924,
@@ -4283,7 +4317,9 @@
             "home_w": 1.05,
             "away_w": 0.75
           }
-        }
+        },
+        "confidence_tier": "medium",
+        "calibrated_prob": 0.352
       },
       {
         "id": 1925,
@@ -4495,7 +4531,9 @@
             "home_w": 0.78,
             "away_w": 1.03
           }
-        }
+        },
+        "confidence_tier": "medium",
+        "calibrated_prob": 0.426
       },
       {
         "id": 1905,
@@ -4707,7 +4745,9 @@
             "home_w": 1.0,
             "away_w": 0.8
           }
-        }
+        },
+        "confidence_tier": "low",
+        "calibrated_prob": 0.428
       },
       {
         "id": 1906,
@@ -4919,7 +4959,9 @@
             "home_w": 0.85,
             "away_w": 0.95
           }
-        }
+        },
+        "confidence_tier": "medium",
+        "calibrated_prob": 0.393
       },
       {
         "id": 1926,
@@ -5131,7 +5173,9 @@
             "home_w": 0.98,
             "away_w": 0.83
           }
-        }
+        },
+        "confidence_tier": "medium",
+        "calibrated_prob": 0.374
       },
       {
         "id": 1907,
@@ -5343,7 +5387,9 @@
             "home_w": 0.77,
             "away_w": 1.02
           }
-        }
+        },
+        "confidence_tier": "low",
+        "calibrated_prob": 0.366
       },
       {
         "id": 1927,
@@ -5555,7 +5601,9 @@
             "home_w": 0.85,
             "away_w": 0.95
           }
-        }
+        },
+        "confidence_tier": "medium",
+        "calibrated_prob": 0.407
       }
     ],
     "2026-07-04": [
@@ -5623,7 +5671,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "4-4",
         "cold_risk": "",
         "source": "beidan",
         "odds_source": "pinnacle",
@@ -5837,7 +5885,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "1-1",
         "cold_risk": "",
         "source": "beidan",
         "odds_source": "pinnacle",
@@ -6051,7 +6099,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "1-1",
         "cold_risk": "",
         "source": "beidan",
         "odds_source": "pinnacle",
@@ -6265,7 +6313,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "1-0",
         "cold_risk": "",
         "source": "beidan",
         "odds_source": "pinnacle",
@@ -6479,7 +6527,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "5-1",
         "cold_risk": "",
         "source": "future_500",
         "odds_source": "had",
@@ -6625,7 +6673,9 @@
             "home_w": 0.98,
             "away_w": 0.83
           }
-        }
+        },
+        "confidence_tier": "low",
+        "calibrated_prob": 0.469
       },
       {
         "id": 1932,
@@ -6691,7 +6741,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "1-0",
         "cold_risk": "",
         "source": "future_500",
         "odds_source": "had",
@@ -6837,7 +6887,9 @@
             "home_w": 0.85,
             "away_w": 0.95
           }
-        }
+        },
+        "confidence_tier": "medium",
+        "calibrated_prob": 0.4
       },
       {
         "id": 1933,
@@ -6903,7 +6955,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "2-5",
         "cold_risk": "",
         "source": "future_500",
         "odds_source": "had",
@@ -7049,7 +7101,9 @@
             "home_w": 0.8,
             "away_w": 1.0
           }
-        }
+        },
+        "confidence_tier": "medium",
+        "calibrated_prob": 0.394
       },
       {
         "id": 1934,
@@ -7115,7 +7169,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "0-1",
         "cold_risk": "",
         "source": "future_500",
         "odds_source": "had",
@@ -7261,7 +7315,9 @@
             "home_w": 0.9,
             "away_w": 0.9
           }
-        }
+        },
+        "confidence_tier": "medium",
+        "calibrated_prob": 0.465
       },
       {
         "id": 1935,
@@ -7327,7 +7383,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "1-0",
         "cold_risk": "",
         "source": "future_500",
         "odds_source": "had",
@@ -7473,7 +7529,9 @@
             "home_w": 0.88,
             "away_w": 0.93
           }
-        }
+        },
+        "confidence_tier": "low",
+        "calibrated_prob": 0.433
       },
       {
         "id": 1936,
@@ -7539,7 +7597,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "2-1",
         "cold_risk": "",
         "source": "future_500",
         "odds_source": "had",
@@ -7685,7 +7743,9 @@
             "home_w": 0.78,
             "away_w": 1.03
           }
-        }
+        },
+        "confidence_tier": "medium",
+        "calibrated_prob": 0.361
       },
       {
         "id": 1937,
@@ -7751,7 +7811,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "1-0",
         "cold_risk": "",
         "source": "future_500",
         "odds_source": "had",
@@ -7897,7 +7957,9 @@
             "home_w": 0.85,
             "away_w": 0.95
           }
-        }
+        },
+        "confidence_tier": "low",
+        "calibrated_prob": 0.387
       },
       {
         "id": 1938,
@@ -7963,7 +8025,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "2-2",
         "cold_risk": "",
         "source": "future_500",
         "odds_source": "had",
@@ -8109,7 +8171,9 @@
             "home_w": 0.88,
             "away_w": 0.93
           }
-        }
+        },
+        "confidence_tier": "medium",
+        "calibrated_prob": 0.39
       },
       {
         "id": 1912,
@@ -8175,7 +8239,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "2-3",
         "cold_risk": "",
         "source": "future_500",
         "odds_source": "had",
@@ -8321,7 +8385,9 @@
             "home_w": 1.0,
             "away_w": 0.8
           }
-        }
+        },
+        "confidence_tier": "medium",
+        "calibrated_prob": 0.342
       },
       {
         "id": 1913,
@@ -8387,7 +8453,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "2-2",
         "cold_risk": "",
         "source": "future_500",
         "odds_source": "had",
@@ -8526,14 +8592,16 @@
         },
         "hkjc_ah": {
           "handicap": 0.75,
-          "home_w": 0.93,
-          "away_w": 0.87,
+          "home_w": 0.98,
+          "away_w": 0.83,
           "open": {
             "handicap": 0.75,
-            "home_w": 0.91,
-            "away_w": 0.85
+            "home_w": 1.0,
+            "away_w": 0.8
           }
-        }
+        },
+        "confidence_tier": "low",
+        "calibrated_prob": 0.429
       },
       {
         "id": 1914,
@@ -8599,7 +8667,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "1-2",
         "cold_risk": "",
         "source": "future_500",
         "odds_source": "had",
@@ -8745,7 +8813,9 @@
             "home_w": 0.93,
             "away_w": 0.88
           }
-        }
+        },
+        "confidence_tier": "medium",
+        "calibrated_prob": 0.351
       },
       {
         "id": 1939,
@@ -8811,7 +8881,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "1-5",
         "cold_risk": "",
         "source": "future_500",
         "odds_source": "had",
@@ -8957,7 +9027,9 @@
             "home_w": 0.95,
             "away_w": 0.85
           }
-        }
+        },
+        "confidence_tier": "low",
+        "calibrated_prob": 0.464
       },
       {
         "id": 1940,
@@ -9023,7 +9095,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "1-3",
         "cold_risk": "",
         "source": "future_500",
         "odds_source": "had",
@@ -9169,7 +9241,9 @@
             "home_w": 0.9,
             "away_w": 0.9
           }
-        }
+        },
+        "confidence_tier": "low",
+        "calibrated_prob": 0.433
       },
       {
         "id": 1941,
@@ -9235,7 +9309,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "0-1",
         "cold_risk": "",
         "source": "future_500",
         "odds_source": "had",
@@ -9381,7 +9455,9 @@
             "home_w": 1.03,
             "away_w": 0.78
           }
-        }
+        },
+        "confidence_tier": "medium",
+        "calibrated_prob": 0.401
       },
       {
         "id": 1942,
@@ -9447,7 +9523,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "1-0",
         "cold_risk": "",
         "source": "future_500",
         "odds_source": "had",
@@ -9593,7 +9669,9 @@
             "home_w": 0.78,
             "away_w": 1.03
           }
-        }
+        },
+        "confidence_tier": "low",
+        "calibrated_prob": 0.43
       },
       {
         "id": 1892,
@@ -9659,7 +9737,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "1-0",
         "cold_risk": "",
         "source": "future_500",
         "odds_source": "had",
@@ -9805,7 +9883,9 @@
             "home_w": 1.03,
             "away_w": 0.78
           }
-        }
+        },
+        "confidence_tier": "medium",
+        "calibrated_prob": 0.388
       },
       {
         "id": 1915,
@@ -9871,7 +9951,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "3-0",
         "cold_risk": "",
         "source": "future_500",
         "odds_source": "had",
@@ -10017,7 +10097,9 @@
             "home_w": 1.0,
             "away_w": 0.8
           }
-        }
+        },
+        "confidence_tier": "low",
+        "calibrated_prob": 0.42
       },
       {
         "id": 1895,
@@ -10083,7 +10165,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "1-3",
         "cold_risk": "",
         "source": "future_500",
         "odds_source": "had",
@@ -10229,7 +10311,9 @@
             "home_w": 0.85,
             "away_w": 0.95
           }
-        }
+        },
+        "confidence_tier": "medium",
+        "calibrated_prob": 0.416
       },
       {
         "id": 1896,
@@ -10295,7 +10379,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "0-1",
         "cold_risk": "",
         "source": "future_500",
         "odds_source": "had",
@@ -10441,7 +10525,9 @@
             "home_w": 1.02,
             "away_w": 0.77
           }
-        }
+        },
+        "confidence_tier": "medium",
+        "calibrated_prob": 0.373
       },
       {
         "id": 1916,
@@ -10507,7 +10593,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "0-3",
         "cold_risk": "",
         "source": "future_500",
         "odds_source": "had",
@@ -10653,7 +10739,9 @@
             "home_w": 0.83,
             "away_w": 0.98
           }
-        }
+        },
+        "confidence_tier": "low",
+        "calibrated_prob": 0.375
       },
       {
         "id": 1897,
@@ -10719,7 +10807,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "3-1",
         "cold_risk": "",
         "source": "future_500",
         "odds_source": "had",
@@ -10865,7 +10953,9 @@
             "home_w": 0.93,
             "away_w": 0.88
           }
-        }
+        },
+        "confidence_tier": "medium",
+        "calibrated_prob": 0.435
       },
       {
         "id": 1898,
@@ -10931,7 +11021,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "2-1",
         "cold_risk": "",
         "source": "future_500",
         "odds_source": "had",
@@ -11077,7 +11167,9 @@
             "home_w": 0.8,
             "away_w": 1.0
           }
-        }
+        },
+        "confidence_tier": "low",
+        "calibrated_prob": 0.366
       },
       {
         "id": 1917,
@@ -11143,7 +11235,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "1-2",
         "cold_risk": "",
         "source": "future_500",
         "odds_source": "had",
@@ -11289,7 +11381,9 @@
             "home_w": 0.95,
             "away_w": 0.85
           }
-        }
+        },
+        "confidence_tier": "medium",
+        "calibrated_prob": 0.373
       },
       {
         "id": 1918,
@@ -11355,7 +11449,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "4-3",
         "cold_risk": "",
         "source": "future_500",
         "odds_source": "had",
@@ -11501,7 +11595,9 @@
             "home_w": 0.95,
             "away_w": 0.85
           }
-        }
+        },
+        "confidence_tier": "low",
+        "calibrated_prob": 0.461
       },
       {
         "id": 1899,
@@ -11567,7 +11663,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "4-0",
         "cold_risk": "",
         "source": "future_500",
         "odds_source": "had",
@@ -11713,7 +11809,9 @@
             "home_w": 0.9,
             "away_w": 0.9
           }
-        }
+        },
+        "confidence_tier": "low",
+        "calibrated_prob": 0.458
       }
     ],
     "2026-07-03": [
@@ -11781,7 +11879,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "6-2",
         "cold_risk": "",
         "source": "beidan",
         "odds_source": "pinnacle",
@@ -11995,7 +12093,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "3-3",
         "cold_risk": "",
         "source": "beidan",
         "odds_source": "pinnacle",
@@ -12209,7 +12307,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "3-0",
         "cold_risk": "",
         "source": "beidan",
         "odds_source": "pinnacle",
@@ -12423,7 +12521,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "3-2",
         "cold_risk": "",
         "source": "beidan",
         "odds_source": "pinnacle",
@@ -12637,7 +12735,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "2-1",
         "cold_risk": "",
         "source": "beidan",
         "odds_source": "pinnacle",
@@ -12851,7 +12949,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "2-0",
         "cold_risk": "",
         "source": "beidan",
         "odds_source": "pinnacle",
@@ -13065,7 +13163,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "2-0",
         "cold_risk": "",
         "source": "beidan",
         "odds_source": "pinnacle",
@@ -13279,7 +13377,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "3-3",
         "cold_risk": "",
         "source": "future_500",
         "odds_source": "had",
@@ -13425,7 +13523,9 @@
             "home_w": 1.0,
             "away_w": 0.8
           }
-        }
+        },
+        "confidence_tier": "low",
+        "calibrated_prob": 0.343
       },
       {
         "id": 1930,
@@ -13491,7 +13591,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "1-0",
         "cold_risk": "",
         "source": "future_500",
         "odds_source": "had",
@@ -13637,7 +13737,9 @@
             "home_w": 0.88,
             "away_w": 0.93
           }
-        }
+        },
+        "confidence_tier": "medium",
+        "calibrated_prob": 0.373
       }
     ],
     "2026-07-02": [
@@ -13705,7 +13807,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "2-1",
         "cold_risk": "",
         "source": "beidan",
         "odds_source": "pinnacle",
@@ -13856,220 +13958,6 @@
         "calibrated_prob": 0.768
       },
       {
-        "id": 1880,
-        "date": "2026-07-02",
-        "league": "芬兰杯",
-        "home": "赫尔辛基",
-        "away": "埃尔维斯",
-        "kickoff": "2026-07-02 00:00",
-        "prediction": "主胜",
-        "prediction_prob": 0.54,
-        "odds": {
-          "w": 1.68,
-          "d": 4.32,
-          "l": 4.67
-        },
-        "poisson": {
-          "w": 0.508,
-          "d": 0.262,
-          "l": 0.23
-        },
-        "final_prob": {
-          "w": 0.54,
-          "d": 0.242,
-          "l": 0.218
-        },
-        "fusion_prob": {
-          "w": 0.449,
-          "d": 0.281,
-          "l": 0.27
-        },
-        "result": "主胜",
-        "score": "2-1",
-        "ev_direction": "主胜",
-        "ev_hit": true,
-        "prob_direction": "主胜",
-        "prob_hit": true,
-        "fusion_direction": "主胜",
-        "ev": {
-          "w": -0.2021,
-          "d": 0.2418,
-          "l": 0.276
-        },
-        "kelly": {
-          "w": 0,
-          "d": 0.0323,
-          "l": 0.0353
-        },
-        "pinnacle": {
-          "w": 1.68,
-          "d": 4.32,
-          "l": 4.67,
-          "open": {
-            "w": 0,
-            "d": 0,
-            "l": 0
-          }
-        },
-        "hkjc": {
-          "w": 1.66,
-          "d": 4.33,
-          "l": 4.0
-        },
-        "risk_level": "",
-        "stars": 0,
-        "confidence_index": 0,
-        "reference_score": "",
-        "cold_risk": "",
-        "source": "beidan",
-        "odds_source": "pinnacle",
-        "home_lambda": 1.491,
-        "away_lambda": 0.909,
-        "home_ranking": 0,
-        "away_ranking": 0,
-        "ah": {
-          "handicap": 0.0,
-          "home_w": 0,
-          "away_w": 0,
-          "source": "",
-          "open": {
-            "handicap": null,
-            "home_w": 0,
-            "away_w": 0
-          }
-        },
-        "liji": {
-          "1x2": {
-            "close": {
-              "w": 1.56,
-              "d": 3.9,
-              "l": 4.05
-            },
-            "open": {
-              "w": 1.59,
-              "d": 3.84,
-              "l": 3.98
-            }
-          },
-          "close": {
-            "handicap": -1.0,
-            "home_w": 1.03,
-            "away_w": 0.79
-          },
-          "open": {
-            "handicap": -0.75,
-            "home_w": 0.82,
-            "away_w": 1.0
-          }
-        },
-        "ms": {
-          "1x2": {
-            "close": {
-              "w": 1.62,
-              "d": 4.2,
-              "l": 4.1
-            },
-            "open": {
-              "w": 1.65,
-              "d": 3.9,
-              "l": 3.9
-            }
-          },
-          "close": {
-            "handicap": -1.0,
-            "home_w": 0.97,
-            "away_w": 0.87
-          },
-          "open": {
-            "handicap": -0.75,
-            "home_w": 0.84,
-            "away_w": 1.0
-          }
-        },
-        "pin_ah": {
-          "handicap": 0.0,
-          "home_w": 0.79,
-          "away_w": 0.92
-        },
-        "pin_ou": {
-          "line": 3.25,
-          "over": 0.84,
-          "under": 1.02
-        },
-        "ou": {
-          "over": 0,
-          "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
-        },
-        "liji_ou": {
-          "over": 0,
-          "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
-        },
-        "ms_ou": {
-          "over": 0,
-          "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
-        },
-        "william_1x2": {
-          "w": 2.5,
-          "d": 3.0,
-          "l": 2.5
-        },
-        "william_ah": {
-          "handicap": 0.0,
-          "home_w": 0,
-          "away_w": 0,
-          "open": {
-            "handicap": 0.0,
-            "home_w": 0,
-            "away_w": 0
-          }
-        },
-        "william_ou": {
-          "over": 0.95,
-          "line": 3.5,
-          "under": 0.73
-        },
-        "hkjc_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0,
-          "open": {
-            "line": null,
-            "over": 0,
-            "under": 0
-          }
-        },
-        "hkjc_ah": {
-          "handicap": -0.75,
-          "home_w": 0.82,
-          "away_w": 0.95,
-          "open": {
-            "handicap": null,
-            "home_w": 0,
-            "away_w": 0
-          }
-        },
-        "confidence_tier": "high",
-        "calibrated_prob": 0.557
-      },
-      {
         "id": 1878,
         "date": "2026-07-02",
         "league": "世界杯",
@@ -14133,7 +14021,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "2-2",
         "cold_risk": "",
         "source": "beidan",
         "odds_source": "pinnacle",
@@ -14347,7 +14235,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "2-0",
         "cold_risk": "",
         "source": "beidan",
         "odds_source": "pinnacle",
@@ -14563,7 +14451,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "1-2",
         "cold_risk": "",
         "source": "beidan",
         "odds_source": "Pinnacle",
@@ -14777,7 +14665,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "3-0",
         "cold_risk": "",
         "source": "beidan",
         "odds_source": "Pinnacle",
@@ -14991,7 +14879,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "0-1",
         "cold_risk": "",
         "source": "beidan",
         "odds_source": "无",
@@ -15205,7 +15093,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "2-0",
         "cold_risk": "",
         "source": "beidan",
         "odds_source": "Pinnacle",
@@ -15421,7 +15309,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "2-1",
         "cold_risk": "",
         "source": "beidan",
         "odds_source": "pinnacle",
@@ -15635,7 +15523,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "0-2",
         "cold_risk": "",
         "source": "beidan",
         "odds_source": "pinnacle",
@@ -15849,7 +15737,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "1-1",
         "cold_risk": "",
         "source": "beidan",
         "odds_source": "pinnacle",
@@ -16063,7 +15951,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "1-1",
         "cold_risk": "",
         "source": "beidan",
         "odds_source": "pinnacle",
@@ -16277,7 +16165,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "2-3",
         "cold_risk": "",
         "source": "beidan",
         "odds_source": "Pinnacle",
@@ -16493,7 +16381,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "3-2",
         "cold_risk": "",
         "source": "beidan",
         "odds_source": "pinnacle",
@@ -16707,7 +16595,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "2-4",
         "cold_risk": "",
         "source": "beidan",
         "odds_source": "pinnacle",
@@ -16921,7 +16809,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "1-1",
         "cold_risk": "",
         "source": "beidan",
         "odds_source": "pinnacle",
@@ -17135,7 +17023,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "3-1",
         "cold_risk": "",
         "source": "beidan",
         "odds_source": "pinnacle",
@@ -17349,7 +17237,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "0-1",
         "cold_risk": "",
         "source": "beidan",
         "odds_source": "pinnacle",
@@ -17563,7 +17451,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "2-0",
         "cold_risk": "",
         "source": "beidan",
         "odds_source": "pinnacle",
@@ -17777,7 +17665,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "1-0",
         "cold_risk": "",
         "source": "beidan",
         "odds_source": "pinnacle",
@@ -17991,7 +17879,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "2-0",
         "cold_risk": "",
         "source": "beidan",
         "odds_source": "pinnacle",
@@ -18205,7 +18093,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "2-1",
         "cold_risk": "",
         "source": "beidan",
         "odds_source": "pinnacle",
@@ -18419,7 +18307,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "0-1",
         "cold_risk": "",
         "source": "beidan",
         "odds_source": "pinnacle",
@@ -18635,7 +18523,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "1-0",
         "cold_risk": "",
         "source": "beidan",
         "odds_source": "pinnacle",
@@ -18849,7 +18737,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "0-1",
         "cold_risk": "",
         "source": "beidan",
         "odds_source": "pinnacle",
@@ -19063,7 +18951,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "3-1",
         "cold_risk": "",
         "source": "beidan",
         "odds_source": "pinnacle",
@@ -19214,220 +19102,6 @@
         "calibrated_prob": 0.345
       },
       {
-        "id": 1535,
-        "date": "2026-06-28",
-        "league": "冰岛杯",
-        "home": "贝雷达比历克",
-        "away": "维京古",
-        "kickoff": "2026-06-28 22:00",
-        "prediction": "客胜",
-        "prediction_prob": 0.434,
-        "odds": {
-          "w": 3.59,
-          "d": 4.48,
-          "l": 1.77
-        },
-        "poisson": {
-          "w": 0.385,
-          "d": 0.276,
-          "l": 0.339
-        },
-        "final_prob": {
-          "w": 0.323,
-          "d": 0.243,
-          "l": 0.434
-        },
-        "fusion_prob": {
-          "w": 0.333,
-          "d": 0.282,
-          "l": 0.384
-        },
-        "result": "主胜",
-        "score": "3-0",
-        "ev_direction": "客胜",
-        "ev_hit": false,
-        "prob_direction": "客胜",
-        "prob_hit": false,
-        "fusion_direction": "客胜",
-        "ev": {
-          "w": 0.2519,
-          "d": 0.3012,
-          "l": -0.2496
-        },
-        "kelly": {
-          "w": 0.0381,
-          "d": 0.0379,
-          "l": 0
-        },
-        "pinnacle": {
-          "w": 5.18,
-          "d": 4.67,
-          "l": 1.47,
-          "open": {
-            "w": 3.82,
-            "d": 4.09,
-            "l": 1.68
-          }
-        },
-        "hkjc": {
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "risk_level": "",
-        "stars": 0,
-        "confidence_index": 0,
-        "reference_score": "",
-        "cold_risk": "",
-        "source": "beidan",
-        "odds_source": "pinnacle",
-        "home_lambda": 1.248,
-        "away_lambda": 1.152,
-        "home_ranking": 0,
-        "away_ranking": 0,
-        "ah": {
-          "handicap": 0.75,
-          "home_w": 0.95,
-          "away_w": 0.89,
-          "source": "liji",
-          "open": {
-            "handicap": null,
-            "home_w": 0,
-            "away_w": 0
-          }
-        },
-        "liji": {
-          "1x2": {
-            "close": {
-              "w": 0,
-              "d": 0,
-              "l": 0
-            },
-            "open": {
-              "w": 0,
-              "d": 0,
-              "l": 0
-            }
-          },
-          "close": {
-            "handicap": 0.75,
-            "home_w": 0.95,
-            "away_w": 0.89
-          },
-          "open": {
-            "handicap": 1.25,
-            "home_w": 0.84,
-            "away_w": 1.08
-          }
-        },
-        "ms": {
-          "1x2": {
-            "close": {
-              "w": 0,
-              "d": 0,
-              "l": 0
-            },
-            "open": {
-              "w": 0,
-              "d": 0,
-              "l": 0
-            }
-          },
-          "close": {
-            "handicap": 0.75,
-            "home_w": 0.91,
-            "away_w": 0.97
-          },
-          "open": {
-            "handicap": 1.25,
-            "home_w": 0.81,
-            "away_w": 1.09
-          }
-        },
-        "pin_ah": {
-          "handicap": -0.75,
-          "home_w": 0.87,
-          "away_w": 0.98
-        },
-        "pin_ou": {
-          "line": 3.5,
-          "over": 0.86,
-          "under": 0.97
-        },
-        "ou": {
-          "over": 0,
-          "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
-        },
-        "liji_ou": {
-          "over": 0.87,
-          "line": 3.5,
-          "under": 0.95,
-          "open": {
-            "over": 1.03,
-            "line": 4.0,
-            "under": 0.87
-          }
-        },
-        "ms_ou": {
-          "over": 1.07,
-          "line": 3.75,
-          "under": 0.79,
-          "open": {
-            "over": 0.99,
-            "line": 4.0,
-            "under": 0.89
-          }
-        },
-        "william_1x2": {
-          "w": 3.5,
-          "d": 4.2,
-          "l": 1.7
-        },
-        "william_ah": {
-          "handicap": 0.75,
-          "home_w": 0.84,
-          "away_w": 0.86,
-          "open": {
-            "handicap": 1.0,
-            "home_w": 0.98,
-            "away_w": 0.74
-          }
-        },
-        "william_ou": {
-          "over": 0.8,
-          "line": 3.5,
-          "under": 0.91
-        },
-        "hkjc_ou": {
-          "line": 3.75,
-          "over": 1.0,
-          "under": 0.8,
-          "open": {
-            "line": 4.0,
-            "over": 0.9,
-            "under": 0.9
-          }
-        },
-        "hkjc_ah": {
-          "handicap": -0.75,
-          "home_w": 0.85,
-          "away_w": 0.95,
-          "open": {
-            "handicap": -1.5,
-            "home_w": 0.82,
-            "away_w": 0.97
-          }
-        },
-        "confidence_tier": "very_low",
-        "calibrated_prob": 0.437
-      },
-      {
         "id": 1536,
         "date": "2026-06-28",
         "league": "瑞典超甲",
@@ -19491,7 +19165,7 @@
         "risk_level": "",
         "stars": 0,
         "confidence_index": 0,
-        "reference_score": "",
+        "reference_score": "4-2",
         "cold_risk": "",
         "source": "beidan",
         "odds_source": "pinnacle",

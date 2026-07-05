@@ -234,6 +234,30 @@ def load_from_db(db_path: str, max_days=999) -> dict:
         prob_hit = (prob_dir == result) if result else False
         ci = d.get('confidence_index') or 0
         stars = min(5, max(1, round(ci * 5))) if isinstance(ci, (int, float)) and ci > 0 else 0
+        # 信心分层推算：DB 为空时从 risk_level / ev_signal 衍生
+        _raw_tier = d.get('confidence_tier', '') or ''
+        if not _raw_tier:
+            rl = d.get('risk_level', '') or ''
+            if rl == '高':
+                _raw_tier = 'high'
+            elif rl == '中':
+                _raw_tier = 'medium'
+            elif rl == '低':
+                _raw_tier = 'low'
+            else:
+                es = d.get('ev_signal', '') or ''
+                if '双重确认' in es:
+                    _raw_tier = 'medium'
+                elif '市场优先' in es:
+                    _raw_tier = 'medium'
+                elif '模型' in es or '降级' in es:
+                    _raw_tier = 'low'
+                else:
+                    _raw_tier = 'very_low'
+        # calibrated_prob 推算：DB 为空时用最终/融合概率最大值估算
+        _raw_cp = d.get('calibrated_prob', 0) or 0
+        if _raw_cp == 0:
+            _raw_cp = round(max(fw, fd, fl), 3)
         by_date[date].append({
             'id': d['id'], 'date': date, 'league': d.get('league',''),
             'home': d['home_team'], 'away': d['away_team'],
@@ -273,8 +297,8 @@ def load_from_db(db_path: str, max_days=999) -> dict:
             'confidence_index': round(ci,2), 'reference_score': d.get('reference_score','') or '',
             'cold_risk': d.get('cold_risk','') or '', 'source': 'beidan' if d.get('source') == 'om_only' else (d.get('source') or 'jingcai'),
             'odds_source': d.get('odds_source','had'),
-            'confidence_tier': d.get('confidence_tier', '') or '',
-            'calibrated_prob': round(d.get('calibrated_prob', 0) or 0, 3),
+            'confidence_tier': _raw_tier,
+            'calibrated_prob': _raw_cp,
             'home_lambda': round(d.get('home_lambda',0) or 0,3),
             'away_lambda': round(d.get('away_lambda',0) or 0,3),
             'home_ranking': d.get('home_ranking',0) or 0,
@@ -955,36 +979,40 @@ def main():
     if total_final_alias:
         print(f'📌 别名归一化匹配 {total_final_alias} 条（跨源队名不一致）')
 
-    # 跨日期去重：同一场比赛可能因 source 不同（jingcai vs om_only）出现在两个日期
-    # 优先保留有真实 kickoff 的版本，删掉 kickoff="待定" 的版本
+    # 跨日期去重：同一场比赛可能因 source 不同出现在两个日期（如 future_500 + beidan）
+    # 用 (canonical_home, canonical_away) 做键（不带日期），优先保留日期与开赛时间匹配的版本
+    def _cross_date_score(rec, date):
+        """评分：越高越应该保留。开赛时间匹配日期得3分，有开赛时间得1分。"""
+        ko = rec.get('kickoff', '') or ''
+        score = 0
+        if ko and ko != '待定':
+            score += 1
+            if ko[:10] == date:
+                score += 2
+        return score
+
     cross_date_dedup = 0
     cross_date_kickoff_fixed = 0
-    all_matches = {}  # (canonical_home, canonical_away, kickoff_date) → (date, record)
+    all_matches = {}  # (canonical_home, canonical_away) → (date, record)
     for d_key in sorted(by_date.keys()):
         kept = []
         for r in by_date[d_key]:
-            ko = r.get('kickoff', '') or ''
-            ko_date = ko[:10] if len(ko) >= 10 else d_key
-            mk = _match_key(r.get('home', ''), r.get('away', '')) + (ko_date,)
+            mk = _match_key(r.get('home', ''), r.get('away', ''))
             if mk in all_matches:
                 prev_date, prev_rec = all_matches[mk]
-                prev_kickoff = prev_rec.get('kickoff', '')
-                curr_kickoff = r.get('kickoff', '')
-                # 如果当前版本有真实 kickoff，之前的是"待定"或空，替换
-                if curr_kickoff and curr_kickoff != '待定' and (not prev_kickoff or prev_kickoff == '待定'):
-                    # 从之前日期中删除，但先补数据
+                prev_score = _cross_date_score(prev_rec, prev_date)
+                curr_score = _cross_date_score(r, d_key)
+                if curr_score > prev_score:
+                    # 当前版本更"正确" → 替换之前的
                     _merge_missing(r, prev_rec)
                     by_date[prev_date] = [x for x in by_date[prev_date] if x is not prev_rec]
                     all_matches[mk] = (d_key, r)
+                    if curr_score >= 3 and prev_score < 3:
+                        cross_date_kickoff_fixed += 1
                     cross_date_dedup += 1
-                    cross_date_kickoff_fixed += 1
                     kept.append(r)
-                elif prev_kickoff and prev_kickoff != '待定' and (not curr_kickoff or curr_kickoff == '待定'):
-                    # 之前的有真实 kickoff，当前的是"待定" → 补数据后丢弃当前
-                    _merge_missing(prev_rec, r)
-                    cross_date_dedup += 1
                 else:
-                    # 两个都有真实 kickoff 或都无 → 保留日期更早的，补数据
+                    # 之前的更"正确" → 补数据后丢弃当前
                     _merge_missing(prev_rec, r)
                     cross_date_dedup += 1
             else:
