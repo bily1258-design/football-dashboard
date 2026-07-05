@@ -201,7 +201,8 @@ def load_from_db(db_path: str, max_days=999) -> dict:
         bet365_ah_handicap, bet365_ah_home_water, bet365_ah_away_water, \
         bet365_ah_open_handicap, bet365_ah_open_home_water, bet365_ah_open_away_water, \
         bet365_ou_line, bet365_ou_over, bet365_ou_under, \
-        bet365_ou_open_line, bet365_ou_open_over, bet365_ou_open_under \
+        bet365_ou_open_line, bet365_ou_open_over, bet365_ou_open_under, \
+        avg_margin, ev_value, risk_warning, cold_signals, deviation_analysis \
         FROM poisson_predictions WHERE date >= ? ORDER BY date DESC, kickoff_time, id", (cutoff,))
     by_date = {}
     for r in cur.fetchall():
@@ -296,6 +297,12 @@ def load_from_db(db_path: str, max_days=999) -> dict:
             'risk_level': d.get('risk_level','') or '', 'stars': stars,
             'confidence_index': round(ci,2), 'reference_score': d.get('reference_score','') or '',
             'cold_risk': d.get('cold_risk','') or '', 'source': 'beidan' if d.get('source') == 'om_only' else (d.get('source') or 'jingcai'),
+            'cold_signals': d.get('cold_signals','') or '',
+            'risk_warning': d.get('risk_warning','') or '',
+            'actual_outcome': d.get('actual_outcome','') or '',
+            'avg_margin': round(d.get('avg_margin',0) or 0, 4),
+            'ev_value': round(d.get('ev_value',0) or 0, 4),
+            'deviation_analysis': d.get('deviation_analysis','') or '',
             'odds_source': d.get('odds_source','had'),
             'confidence_tier': _raw_tier,
             'calibrated_prob': _raw_cp,
@@ -882,6 +889,15 @@ def main():
                                 # 补充信心分层字段（processed旧JSON没有confidence_tier/calibrated_prob）
                                 _CONFIDENCE_KEYS = ('confidence_tier', 'calibrated_prob', 'best_direction_cn')
                                 for k in _CONFIDENCE_KEYS:
+                                    if k not in proc_rec or not proc_rec.get(k):
+                                        db_val = db_rec.get(k)
+                                        if db_val:
+                                            proc_rec[k] = db_val
+                                            n_merged += 1
+                                # 补充信号/市场数据字段（processed旧JSON没有cold_signals/avg_margin等）
+                                _SIGNAL_KEYS = ('cold_signals', 'risk_warning', 'actual_outcome',
+                                                'avg_margin', 'ev_value', 'deviation_analysis')
+                                for k in _SIGNAL_KEYS:
                                     if k not in proc_rec or not proc_rec.get(k):
                                         db_val = db_rec.get(k)
                                         if db_val:
