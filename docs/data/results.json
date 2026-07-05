@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2026-07-05 08:32:59",
+    "generated_at": "2026-07-05 10:17:32",
     "total_dates": 10,
     "total_matches": 90,
     "date_range": {
@@ -9,13 +9,13 @@
     }
   },
   "summary": {
-    "total_matches": 56,
-    "ev_hits": 35,
-    "prob_hits": 31,
-    "any_hits": 38,
-    "ev_rate": 62.5,
-    "prob_rate": 55.4,
-    "any_rate": 67.9,
+    "total_matches": 71,
+    "ev_hits": 46,
+    "prob_hits": 39,
+    "any_hits": 51,
+    "ev_rate": 64.8,
+    "prob_rate": 54.9,
+    "any_rate": 71.8,
     "days": 10,
     "tiers": {
       "high": {
@@ -47,7 +47,7 @@
         "prob_rate": 0
       }
     },
-    "last_updated": "2026-07-05 08:32"
+    "last_updated": "2026-07-05 10:17"
   },
   "daily_stats": {
     "2026-07-07": {
@@ -132,13 +132,13 @@
     },
     "2026-07-05": {
       "total": 17,
-      "with_result": 3,
-      "ev_hits": 2,
-      "prob_hits": 1,
-      "any_hits": 3,
-      "ev_rate": 66.7,
-      "prob_rate": 33.3,
-      "any_rate": 100.0,
+      "with_result": 5,
+      "ev_hits": 3,
+      "prob_hits": 2,
+      "any_hits": 4,
+      "ev_rate": 60.0,
+      "prob_rate": 40.0,
+      "any_rate": 80.0,
       "tiers": {
         "high": {
           "total": 0,
@@ -172,13 +172,13 @@
     },
     "2026-07-04": {
       "total": 29,
-      "with_result": 18,
-      "ev_hits": 9,
-      "prob_hits": 7,
-      "any_hits": 11,
-      "ev_rate": 50.0,
-      "prob_rate": 38.9,
-      "any_rate": 61.1,
+      "with_result": 29,
+      "ev_hits": 18,
+      "prob_hits": 13,
+      "any_hits": 22,
+      "ev_rate": 62.1,
+      "prob_rate": 44.8,
+      "any_rate": 75.9,
       "tiers": {
         "high": {
           "total": 0,
@@ -212,13 +212,13 @@
     },
     "2026-07-03": {
       "total": 9,
-      "with_result": 7,
-      "ev_hits": 6,
-      "prob_hits": 6,
-      "any_hits": 6,
-      "ev_rate": 85.7,
-      "prob_rate": 85.7,
-      "any_rate": 85.7,
+      "with_result": 9,
+      "ev_hits": 7,
+      "prob_hits": 7,
+      "any_hits": 7,
+      "ev_rate": 77.8,
+      "prob_rate": 77.8,
+      "any_rate": 77.8,
       "tiers": {
         "high": {
           "total": 0,
@@ -986,14 +986,14 @@
             }
           },
           "close": {
-            "handicap": null,
-            "home_w": 0,
-            "away_w": 0
+            "handicap": -0.5,
+            "home_w": 0.99,
+            "away_w": 0.93
           },
           "open": {
-            "handicap": null,
-            "home_w": 0,
-            "away_w": 0
+            "handicap": -0.5,
+            "home_w": 0.97,
+            "away_w": 0.93
           }
         },
         "ms": {
@@ -1010,14 +1010,14 @@
             }
           },
           "close": {
-            "handicap": null,
-            "home_w": 0,
-            "away_w": 0
+            "handicap": -0.5,
+            "home_w": 0.99,
+            "away_w": 0.93
           },
           "open": {
-            "handicap": null,
-            "home_w": 0,
-            "away_w": 0
+            "handicap": -0.5,
+            "home_w": 0.92,
+            "away_w": 0.92
           }
         },
         "pin_ah": {
@@ -1982,12 +1982,12 @@
           "d": 0.268,
           "l": 0.34
         },
-        "result": "",
-        "score": "",
+        "result": "主胜",
+        "score": "1-0",
         "ev_direction": "主胜",
-        "ev_hit": false,
+        "ev_hit": true,
         "prob_direction": "主胜",
-        "prob_hit": false,
+        "prob_hit": true,
         "fusion_direction": "主胜",
         "ev": {
           "w": -0.0583,
@@ -2194,8 +2194,8 @@
           "d": 0.286,
           "l": 0.29
         },
-        "result": "",
-        "score": "",
+        "result": "平局",
+        "score": "1-1",
         "ev_direction": "主胜",
         "ev_hit": false,
         "prob_direction": "主胜",
@@ -4594,14 +4594,14 @@
             }
           },
           "close": {
-            "handicap": null,
-            "home_w": 0,
-            "away_w": 0
+            "handicap": 1.0,
+            "home_w": 0.87,
+            "away_w": 1.03
           },
           "open": {
-            "handicap": null,
-            "home_w": 0,
-            "away_w": 0
+            "handicap": 1.0,
+            "home_w": 0.87,
+            "away_w": 1.03
           }
         },
         "ms": {
@@ -6436,12 +6436,12 @@
           "d": 0.283,
           "l": 0.249
         },
-        "result": "",
-        "score": "",
+        "result": "主胜",
+        "score": "5-1",
         "ev_direction": "主胜",
-        "ev_hit": false,
+        "ev_hit": true,
         "prob_direction": "主胜",
-        "prob_hit": false,
+        "prob_hit": true,
         "fusion_direction": "主胜",
         "ev": {
           "w": -0.26,
@@ -6648,12 +6648,12 @@
           "d": 0.281,
           "l": 0.319
         },
-        "result": "",
-        "score": "",
+        "result": "主胜",
+        "score": "1-0",
         "ev_direction": "客胜",
         "ev_hit": false,
         "prob_direction": "主胜",
-        "prob_hit": false,
+        "prob_hit": true,
         "fusion_direction": "主胜",
         "ev": {
           "w": 0.1421,
@@ -7072,10 +7072,10 @@
           "d": 0.248,
           "l": 0.465
         },
-        "result": "",
-        "score": "",
+        "result": "客胜",
+        "score": "0-1",
         "ev_direction": "客胜",
-        "ev_hit": false,
+        "ev_hit": true,
         "prob_direction": "主胜",
         "prob_hit": false,
         "fusion_direction": "客胜",
@@ -8980,10 +8980,10 @@
           "d": 0.29,
           "l": 0.433
         },
-        "result": "",
-        "score": "",
+        "result": "客胜",
+        "score": "1-3",
         "ev_direction": "客胜",
-        "ev_hit": false,
+        "ev_hit": true,
         "prob_direction": "主胜",
         "prob_hit": false,
         "fusion_direction": "客胜",
@@ -9192,10 +9192,10 @@
           "d": 0.287,
           "l": 0.312
         },
-        "result": "",
-        "score": "",
+        "result": "客胜",
+        "score": "0-1",
         "ev_direction": "客胜",
-        "ev_hit": false,
+        "ev_hit": true,
         "prob_direction": "主胜",
         "prob_hit": false,
         "fusion_direction": "主胜",
@@ -9616,12 +9616,12 @@
           "d": 0.309,
           "l": 0.303
         },
-        "result": "",
-        "score": "",
+        "result": "主胜",
+        "score": "1-0",
         "ev_direction": "主胜",
-        "ev_hit": false,
+        "ev_hit": true,
         "prob_direction": "主胜",
-        "prob_hit": false,
+        "prob_hit": true,
         "fusion_direction": "主胜",
         "ev": {
           "w": -0.0657,
@@ -9828,12 +9828,12 @@
           "d": 0.3,
           "l": 0.28
         },
-        "result": "",
-        "score": "",
+        "result": "主胜",
+        "score": "3-0",
         "ev_direction": "主胜",
-        "ev_hit": false,
+        "ev_hit": true,
         "prob_direction": "主胜",
-        "prob_hit": false,
+        "prob_hit": true,
         "fusion_direction": "主胜",
         "ev": {
           "w": -0.1493,
@@ -10040,10 +10040,10 @@
           "d": 0.269,
           "l": 0.416
         },
-        "result": "",
-        "score": "",
+        "result": "客胜",
+        "score": "1-3",
         "ev_direction": "客胜",
-        "ev_hit": false,
+        "ev_hit": true,
         "prob_direction": "主胜",
         "prob_hit": false,
         "fusion_direction": "客胜",
@@ -10464,10 +10464,10 @@
           "d": 0.285,
           "l": 0.34
         },
-        "result": "",
-        "score": "",
+        "result": "客胜",
+        "score": "0-3",
         "ev_direction": "客胜",
-        "ev_hit": false,
+        "ev_hit": true,
         "prob_direction": "主胜",
         "prob_hit": false,
         "fusion_direction": "主胜",
@@ -10676,12 +10676,12 @@
           "d": 0.289,
           "l": 0.276
         },
-        "result": "",
-        "score": "",
+        "result": "主胜",
+        "score": "3-1",
         "ev_direction": "主胜",
-        "ev_hit": false,
+        "ev_hit": true,
         "prob_direction": "主胜",
-        "prob_hit": false,
+        "prob_hit": true,
         "fusion_direction": "主胜",
         "ev": {
           "w": -0.1753,
@@ -10888,12 +10888,12 @@
           "d": 0.287,
           "l": 0.366
         },
-        "result": "",
-        "score": "",
+        "result": "主胜",
+        "score": "2-1",
         "ev_direction": "客胜",
         "ev_hit": false,
         "prob_direction": "主胜",
-        "prob_hit": false,
+        "prob_hit": true,
         "fusion_direction": "客胜",
         "ev": {
           "w": 0.2929,
@@ -13222,8 +13222,8 @@
           "d": 0.326,
           "l": 0.343
         },
-        "result": "",
-        "score": "",
+        "result": "平局",
+        "score": "3-3",
         "ev_direction": "主胜",
         "ev_hit": false,
         "prob_direction": "主胜",
@@ -13434,12 +13434,12 @@
           "d": 0.294,
           "l": 0.333
         },
-        "result": "",
-        "score": "",
+        "result": "主胜",
+        "score": "1-0",
         "ev_direction": "主胜",
-        "ev_hit": false,
+        "ev_hit": true,
         "prob_direction": "主胜",
-        "prob_hit": false,
+        "prob_hit": true,
         "fusion_direction": "主胜",
         "ev": {
           "w": -0.1966,
