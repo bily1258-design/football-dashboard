@@ -1,0 +1,41 @@
+#!/data/data/com.termux/files/usr/bin/bash
+# cron_odds_only.sh — 仅赔率/预测/构建/推送
+# 由 Termux crond 调度，每日 15:30 北京时间执行
+
+set -e
+
+cd /data/data/com.termux/files/home/football-dashboard || exit 1
+
+TODAY=$(date +%Y-%m-%d)
+NOW=$(date '+%Y-%m-%d %H:%M:%S')
+
+echo "[${NOW}] 🚀 赔率/预测/构建/推送开始 (${TODAY})"
+
+# Step 0: 同步最新代码
+echo "[$(date '+%H:%M:%S')] Step 0: 同步代码..."
+STASH_MSG="cron-auto-stash-$(date +%s)"
+git stash push -m "$STASH_MSG" 2>&1 || echo "  ℹ️ 无需暂存"
+git pull origin main --rebase 2>&1 || echo "  ⚠️ git pull 失败"
+git stash pop 2>&1 || echo "  ℹ️ 无暂存可恢复"
+
+# Step 0.5: 检查DB完整性
+echo "[$(date '+%H:%M:%S')] Step 0.5: 检查DB完整性..."
+DB="data/football.db"
+if ! sqlite3 "$DB" "PRAGMA integrity_check;" 2>/dev/null | grep -q "ok"; then
+    echo "  ⚠️ DB损坏，从Release下载恢复..."
+    gh release download db-latest --pattern 'football.db' --dir data/ --clobber 2>&1 || {
+        echo "  ❌ 从Release恢复失败，跳过此轮"
+        exit 1
+    }
+    echo "  ✅ DB已恢复 ($(du -h "$DB" | cut -f1))"
+fi
+
+# Step 2: pipeline（赔率/预测/构建/推送，跳过review和比分）
+echo "[$(date '+%H:%M:%S')] Step 2: 运行pipeline（赔率/预测/构建/推送）..."
+python3 scripts/pipeline.py \
+    --date "$TODAY" \
+    --db "$DB" \
+    --skip-review \
+    2>&1 && \
+echo "[$(date '+%H:%M:%S')] 🏁 赔率/预测/构建/推送完成 成功" || \
+echo "[$(date '+%H:%M:%S')] 🏁 赔率/预测/构建/推送完成 失败(exit=$?)"

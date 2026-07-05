@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/bash
-# cron_full_pipeline.sh — 完整流程：同步代码 + 抓比分 + 赔率/预测/看板/推送
-# 由 Termux crond 调度，每日 08:30 / 15:30 北京时间执行
-# 比分和赔率分开做：先抓比分，再跑pipeline（不含review）
+# cron_score_only.sh — 仅抓比分（fid回填）
+# 由 Termux crond 调度，每日 08:30 北京时间执行
 
 set -e
 
@@ -10,7 +9,7 @@ cd /data/data/com.termux/files/home/football-dashboard || exit 1
 TODAY=$(date +%Y-%m-%d)
 NOW=$(date '+%Y-%m-%d %H:%M:%S')
 
-echo "[${NOW}] 🚀 完整流程开始 (${TODAY})"
+echo "[${NOW}] 🚀 比分回填开始 (${TODAY})"
 
 # Step 0: 同步最新代码
 echo "[$(date '+%H:%M:%S')] Step 0: 同步代码..."
@@ -31,26 +30,8 @@ if ! sqlite3 "$DB" "PRAGMA integrity_check;" 2>/dev/null | grep -q "ok"; then
     echo "  ✅ DB已恢复 ($(du -h "$DB" | cut -f1))"
 fi
 
-# ====== 第一部分：抓比分 ======
-echo "[$(date '+%H:%M:%S')] ==== 抓比分 ===="
-
 # Step 1: 补fid + 按fid回填比分
 echo "[$(date '+%H:%M:%S')] Step 1: 补fid+回填比分..."
 python3 scripts/backfill_from_500com.py --db "$DB" 2>&1 || echo "  ⚠️ 回填比分失败"
 
-# Step 1a: 抓赛果缓存（供pipeline review步骤备用）
-echo "[$(date '+%H:%M:%S')] Step 1a: 抓赛果缓存..."
-python3 scripts/fetch_results_cache.py --date "$TODAY" 2>&1 || echo "  ⚠️ 缓存抓取失败"
-
-# ====== 第二部分：赔率/预测/构建/推送 ======
-echo "[$(date '+%H:%M:%S')] ==== 赔率/预测/构建/推送 ===="
-
-# Step 2: pipeline（跳过review，比分已在step1回填）
-echo "[$(date '+%H:%M:%S')] Step 2: 运行pipeline..."
-python3 scripts/pipeline.py \
-    --date "$TODAY" \
-    --db "$DB" \
-    --skip-review \
-    2>&1 && \
-echo "[$(date '+%H:%M:%S')] 🏁 完整流程结束 成功" || \
-echo "[$(date '+%H:%M:%S')] 🏁 完整流程结束 失败(exit=$?)"
+echo "[$(date '+%H:%M:%S')] 🏁 比分回填结束"

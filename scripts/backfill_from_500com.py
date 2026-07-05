@@ -295,38 +295,65 @@ def backfill_db(results, db_path, dry_run=False, fid_only=False):
     updated = 0
     fid_updated = 0
     details = []
+    
+    # 预建索引：500.com 完场结果按 fid 索引（精准匹配）
+    by_fid = {}
+    for res in results:
+        if res.get('fid'):
+            by_fid[res['fid']] = res
+    # 未建索引的（没fid），留到队名模糊匹配
+    unnamed = [r for r in results if not r.get('fid')]
+    
     for rec in db_records:
-        for res in results:
-            if team_match(rec['home_team'], rec['away_team'], res['home'], res['away']):
-                if not dry_run:
-                    sets = []
-                    params = []
-                    
-                    # 写入fid（如果结果有fid且DB记录没有）
-                    if res.get('fid') and not rec.get('fid_500'):
-                        sets.append("fid_500 = ?")
-                        params.append(res['fid'])
-                        fid_updated += 1
-                    
-                    # 写入赛果（非fid_only模式）
-                    if not fid_only:
-                        sets.append("actual_outcome = ?")
-                        params.append(res['outcome'])
-                    
-                    if sets:
-                        params.append(rec['id'])
-                        cursor.execute(
-                            f"UPDATE poisson_predictions SET {', '.join(sets)} WHERE id = ?",
-                            params
-                        )
-                        updated += 1
+        matched_res = None
+        
+        # 优先用 fid_500 精准匹配
+        if rec.get('fid_500') and rec['fid_500'] in by_fid:
+            matched_res = by_fid[rec['fid_500']]
+        # 其次用队名模糊匹配（500.com有fid但DB还没写入的）
+        elif by_fid:
+            for fid, res in by_fid.items():
+                if team_match(rec['home_team'], rec['away_team'], res['home'], res['away']):
+                    matched_res = res
+                    break
+        # 最后用没fid的结果做队名匹配
+        if matched_res is None and unnamed:
+            for res in unnamed:
+                if team_match(rec['home_team'], rec['away_team'], res['home'], res['away']):
+                    matched_res = res
+                    break
+        
+        if matched_res:
+            if not dry_run:
+                sets = []
+                params = []
                 
-                fid_tag = f' fid={res["fid"]}' if res.get('fid') else ''
-                details.append(
-                    f"  ✅ {rec['home_team']} vs {rec['away_team']} ← "
-                    f"[{res['league']}] {res['home']} {res['score']} {res['away']}{fid_tag}"
-                )
-                break
+                # 写入fid（如果结果有fid且DB记录没有）
+                if matched_res.get('fid') and not rec.get('fid_500'):
+                    sets.append("fid_500 = ?")
+                    params.append(matched_res['fid'])
+                    fid_updated += 1
+                
+                # 写入赛果（非fid_only模式）
+                if not fid_only:
+                    sets.append("actual_outcome = ?")
+                    params.append(matched_res['outcome'])
+                    sets.append("reference_score = ?")
+                    params.append(matched_res['score'])
+                
+                if sets:
+                    params.append(rec['id'])
+                    cursor.execute(
+                        f"UPDATE poisson_predictions SET {', '.join(sets)} WHERE id = ?",
+                        params
+                    )
+                    updated += 1
+            
+            fid_tag = f' fid={matched_res["fid"]}' if matched_res.get('fid') else ''
+            details.append(
+                f"  ✅ {rec['home_team']} vs {rec['away_team']} ← "
+                f"[{matched_res['league']}] {matched_res['home']} {matched_res['score']} {matched_res['away']}{fid_tag}"
+            )
     
     if not dry_run and (updated or fid_updated):
         conn.commit()

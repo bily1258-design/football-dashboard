@@ -221,7 +221,16 @@ def load_from_db(db_path: str, max_days=999) -> dict:
         fw = d.get('final_win', 0) or 0
         fd = d.get('final_draw', 0) or 0
         fl = d.get('final_loss', 0) or 0
+        # 如果 final_* 全为0，降级使用 fusion_*（赔率pipeline未运行时 fusion 已有值）
+        if fw == 0 and fd == 0 and fl == 0:
+            fw = d.get('fusion_win', 0) or 0
+            fd = d.get('fusion_draw', 0) or 0
+            fl = d.get('fusion_loss', 0) or 0
         prob_dir = '主胜' if fw >= fd and fw >= fl else ('客胜' if fl >= fw and fl >= fd else '平局')
+        # 如果 prediction_prob 为0但 final_*（或降级的 fusion_*）有值，取最大值作为预测概率
+        raw_pred_prob = d.get('prediction_prob') or 0
+        if raw_pred_prob == 0 and (fw > 0 or fd > 0 or fl > 0):
+            raw_pred_prob = max(fw, fd, fl)
         prob_hit = (prob_dir == result) if result else False
         ci = d.get('confidence_index') or 0
         stars = min(5, max(1, round(ci * 5))) if isinstance(ci, (int, float)) and ci > 0 else 0
@@ -229,7 +238,7 @@ def load_from_db(db_path: str, max_days=999) -> dict:
             'id': d['id'], 'date': date, 'league': d.get('league',''),
             'home': d['home_team'], 'away': d['away_team'],
             'kickoff': d.get('kickoff_time',''), 'prediction': d.get('prediction',''),
-            'prediction_prob': round(d.get('prediction_prob',0) or 0, 3),
+            'prediction_prob': round(raw_pred_prob, 3),
             'odds': {'w': d.get('odds_win',0) or 0, 'd': d.get('odds_draw',0) or 0, 'l': d.get('odds_loss',0) or 0},
             'poisson': {'w': round(d.get('poisson_win',0) or 0, 3), 'd': round(d.get('poisson_draw',0) or 0, 3), 'l': round(d.get('poisson_loss',0) or 0, 3)},
             'final_prob': {'w': round(fw,3), 'd': round(fd,3), 'l': round(fl,3)},
@@ -845,6 +854,37 @@ def main():
                                 for k in _RESULT_KEYS:
                                     if not proc_rec.get(k) and db_rec.get(k):
                                         proc_rec[k] = db_rec[k]
+                                        n_merged += 1
+                                # 补充信心分层字段（processed旧JSON没有confidence_tier/calibrated_prob）
+                                _CONFIDENCE_KEYS = ('confidence_tier', 'calibrated_prob', 'best_direction_cn')
+                                for k in _CONFIDENCE_KEYS:
+                                    if k not in proc_rec or not proc_rec.get(k):
+                                        db_val = db_rec.get(k)
+                                        if db_val:
+                                            proc_rec[k] = db_val
+                                            n_merged += 1
+                                # 补充概率/赔率字段（processed旧JSON中final_prob/fusion_prob/ev/kelly为全0，用DB覆盖）
+                                _PROB_KEYS = ('final_prob', 'fusion_prob', 'ev', 'kelly', 'odds_ev')
+                                for k in _PROB_KEYS:
+                                    p_val = proc_rec.get(k)
+                                    d_val = db_rec.get(k)
+                                    if isinstance(d_val, dict) and isinstance(p_val, dict):
+                                        # 只要DB的字典里至少有一个非零值就覆盖
+                                        if any(v for v in d_val.values() if isinstance(v, (int, float)) and v != 0):
+                                            proc_rec[k] = d_val
+                                            n_merged += 1
+                                # 补充prediction_prob（processed旧JSON中为0，用DB校正后的值覆盖）
+                                if not proc_rec.get('prediction_prob') and db_rec.get('prediction_prob'):
+                                    proc_rec['prediction_prob'] = db_rec['prediction_prob']
+                                    n_merged += 1
+                                # final_prob被DB覆盖后，同步更新prob_direction/prob_hit
+                                fp = proc_rec.get('final_prob')
+                                if isinstance(fp, dict) and any(fp.values()):
+                                    fw, fd_, fl_ = fp.get('w',0), fp.get('d',0), fp.get('l',0)
+                                    new_dir = '主胜' if fw >= fd_ and fw >= fl_ else ('客胜' if fl_ >= fw and fl_ >= fd_ else '平局')
+                                    if new_dir != proc_rec.get('prob_direction'):
+                                        proc_rec['prob_direction'] = new_dir
+                                        proc_rec['prob_hit'] = (new_dir == proc_rec.get('result'))
                                         n_merged += 1
                                 # 补充ah/liji/ms：processed为空/非dict或handicap=0时用DB覆盖
                                 for k in _AH_KEYS:
