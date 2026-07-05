@@ -258,7 +258,72 @@ function openAhModal(record) {
     html += '</div>';
   }
 
+  // ===== 模型信号区（方案B：弹窗底部） =====
+  const sigMargin = record.avg_margin;
+  const sigEv = record.ev_value;
+  const sigEvSignal = record.ev_signal || '';
+  const sigCold = record.cold_signals || '';
+  const sigWarning = record.risk_warning || '';
+  const sigDeviation = record.deviation_analysis || '';
+
+  // 只要有任一字段有值就显示
+  const hasSignal = (sigMargin != null && sigMargin !== 0) ||
+                    (sigEv != null && sigEv !== 0) ||
+                    sigEvSignal || sigCold || sigWarning || sigDeviation;
+  if (hasSignal) {
+    html += '<div class="ah-section-title">🧠 模型信号</div>';
+    html += '<div class="ah-signal-box">';
+
+    // avg_margin / ev_value 同行显示
+    if ((sigMargin != null && sigMargin !== 0) || (sigEv != null && sigEv !== 0)) {
+      const marginStr = (sigMargin != null && sigMargin !== 0)
+        ? `<span class="sig-label">平均边际</span> <span class="sig-val ${parseFloat(sigMargin) < 0 ? 'ev-neg' : 'ev-pos'}">${(parseFloat(sigMargin) * 100).toFixed(1)}%</span>`
+        : '';
+      const evStr = (sigEv != null && sigEv !== 0)
+        ? `<span class="sig-label">EV值</span> <span class="sig-val ${parseFloat(sigEv) > 0 ? 'ev-pos' : 'ev-neg'}">${(parseFloat(sigEv) * 100).toFixed(2)}%</span>`
+        : '';
+      if (marginStr || evStr) {
+        html += `<div class="sig-row">${marginStr}${(marginStr && evStr) ? ' &nbsp;|&nbsp; ' : ''}${evStr}</div>`;
+      }
+    }
+
+    // ev_signal
+    if (sigEvSignal) {
+      const sigClass = sigEvSignal.includes('双重确认') ? 'sig-good' :
+                       sigEvSignal.includes('分歧') ? 'sig-warn' : '';
+      html += `<div class="sig-row">EV方向: <span class="sig-tag ${sigClass}">${escapeHtml(sigEvSignal)}</span></div>`;
+    }
+
+    // cold_signals
+    if (sigCold) {
+      const sigClass = sigCold.includes('双重确认') ? 'sig-good' :
+                       sigCold.includes('分歧') ? 'sig-warn' :
+                       sigCold.includes('冷门') ? 'sig-danger' : '';
+      html += `<div class="sig-row">模型信号: <span class="sig-tag ${sigClass}">${escapeHtml(sigCold)}</span></div>`;
+    }
+
+    // risk_warning
+    if (sigWarning) {
+      html += `<div class="sig-row sig-warn">⚠ ${escapeHtml(sigWarning)}</div>`;
+    }
+
+    // deviation_analysis
+    if (sigDeviation) {
+      html += `<div class="sig-row sig-dev">${escapeHtml(sigDeviation)}</div>`;
+    }
+
+    html += '</div>';
+  }
+
   document.getElementById('ahModalContent').innerHTML = html;
+}
+
+// 辅助：HTML转义
+function escapeHtml(str) {
+  if (!str) return '';
+  const div = document.createElement('div');
+  div.appendChild(document.createTextNode(str));
+  return div.innerHTML;
 }
 
 // ─── 泊松概率计算 ───

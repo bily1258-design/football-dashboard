@@ -329,4 +329,57 @@ tr:hover { background: #161b22; }
   border-bottom: 2px solid #30363d;
 }
 
+/* ── 模型信号区（弹窗底部） ── */
+.ah-signal-box {
+  background: #0d1117;
+  border: 1px solid #21262d;
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-top: 4px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.sig-row {
+  margin: 3px 0;
+}
+.sig-label {
+  color: #8b949e;
+  margin-right: 4px;
+}
+.sig-val {
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+}
+.sig-tag {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  background: #1a2332;
+  color: #c9d1d9;
+}
+.sig-good {
+  background: #0a2e1a;
+  color: #4caf50;
+  border: 1px solid #1a4a2a;
+}
+.sig-warn {
+  background: #3a2a0a;
+  color: #ff9800;
+  border: 1px solid #5a4a0a;
+}
+.sig-danger {
+  background: #3a0a0a;
+  color: #f44336;
+  border: 1px solid #5a1a1a;
+}
+.sig-dev {
+  color: #8b949e;
+  font-size: 12px;
+  font-style: italic;
+  padding: 4px 8px;
+  background: #161b22;
+  border-radius: 4px;
+}
+
 
