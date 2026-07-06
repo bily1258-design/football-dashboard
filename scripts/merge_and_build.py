@@ -896,7 +896,8 @@ def main():
                                             n_merged += 1
                                 # 补充信号/市场数据字段（processed旧JSON没有cold_signals/avg_margin等）
                                 _SIGNAL_KEYS = ('cold_signals', 'risk_warning', 'actual_outcome',
-                                                'avg_margin', 'ev_value', 'deviation_analysis')
+                                                'avg_margin', 'ev_value', 'deviation_analysis',
+                                                'ev_signal')
                                 for k in _SIGNAL_KEYS:
                                     if k not in proc_rec or not proc_rec.get(k):
                                         db_val = db_rec.get(k)
