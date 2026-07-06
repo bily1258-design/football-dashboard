@@ -1,6 +1,6 @@
-// script.js — 竞彩泊松预测看板前端
+// script.js — 泊松预测看板前端
 
-const DATA_URL = 'data/results.json';
+const DATA_URL = 'data/results.json.gz';
 const WEEKDAY_CN = ['周日','周一','周二','周三','周四','周五','周六'];
 let allData = null;
 let currentSource = 'all';
@@ -50,7 +50,7 @@ function openAhModal(record) {
   let html = '<table class="ah-odds-table">';
   html += '<tr><th class="ah-col-label">盘口</th><th>胜(主)</th><th>平</th><th>负(客)</th></tr>';
   html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-pin">平博初盘(Pinnacle初盘)</span></td>`;
-  html += `<td>${pinOpen.w || pin.w || '-'}</td><td>${pinOpen.d || pin.d || '-'}</td><td>${pinOpen.l || pin.l || '-'}</td></tr>`;
+  html += `<td>${pinOpen.w ? pinOpen.w : '-'}</td><td>${pinOpen.d ? pinOpen.d : '-'}</td><td>${pinOpen.l ? pinOpen.l : '-'}</td></tr>`;
   html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-pin">Pinnacle</span></td>`;
   html += `<td>${pin.w || '-'}</td><td>${pin.d || '-'}</td><td>${pin.l || '-'}</td></tr>`;
   html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-bet365">Bet365</span></td>`;
@@ -67,111 +67,77 @@ function openAhModal(record) {
   }
   html += '</table>';
 
-  // ── 各公司紧凑两行表 ──
-  // 足彩网风格: | | 主队 | 让球 | 客队 | 主胜 | 和局 | 客胜 | 大球 | 盘口 | 小球 |
-  //             |初|  hw  |  hc  |  aw  |  w   |  d   |  l   | over | line |under |
-  //             |即|  hw  |  hc  |  aw  |  w   |  d   |  l   | over | line |under |
-  function compactCompany(badge, badgeCls, d1x2, dAh, dOu) {
-    const o1 = (d1x2 && d1x2.open) || {}, c1 = d1x2 || {};
+  // ── 亚盘+大小球 统一对比表（5家合并1表） ──
+  function ahRow(badge, badgeCls, dAh, dOu) {
     const oAh = (dAh && dAh.open) || {}, cAh = dAh || {};
     const oOu = (dOu && dOu.open) || {}, cOu = dOu || {};
-
-    const has1x2 = (c1.w || 0) > 0 || (o1.w || 0) > 0;
     const hasAh = (cAh.handicap !== null && cAh.handicap !== undefined) ||
                   (oAh.handicap !== null && oAh.handicap !== undefined);
     const hasOu = (cOu.line || 0) > 0 || (oOu.line || 0) > 0;
-    if (!has1x2 && !hasAh && !hasOu) return '';
+    if (!hasAh && !hasOu) return '';
 
-    // 检查哪些列有数据
-    const showAh = hasAh, show1x2 = has1x2, showOu = hasOu;
-
-    let s = `<div class="ah-section-title${badgeCls === 'ah-badge-pin' ? ' ah-section-pin' : ''}"><span class="ah-badge ${badgeCls}">${badge}</span></div>`;
-    s += '<table class="ah-odds-table ah-wide">';
-
-    // 表头
-    s += '<tr><th></th>';
-    if (showAh) s += '<th>主队</th><th>让球</th><th>客队</th>';
-    if (show1x2) s += '<th>主胜</th><th>和局</th><th>客胜</th>';
-    if (showOu) s += '<th>大球</th><th>盘口</th><th>小球</th>';
-    s += '</tr>';
-
-    // 有无初盘
-    const hasOpen1x2 = (o1.w || 0) > 0;
     const hasOpenAh = (oAh.handicap !== null && oAh.handicap !== undefined);
     const hasOpenOu = (oOu.line || 0) > 0;
+    const hasOpen = hasOpenAh || hasOpenOu;
 
-    // 格式化单元格（即时行直接显示当前值）
-    function fmt(openV, closeV, hasOpen) {
+    function fmtV(openV, closeV) {
       if (closeV != null && closeV !== 0) return closeV;
       if (openV != null && openV !== 0) return openV;
       return '-';
     }
+    function fmtH(openH, closeH) {
+      const h = (closeH !== null && closeH !== undefined) ? closeH : openH;
+      return (h !== null && h !== undefined) ? handicapToChinese(h) : '-';
+    }
 
+    let s = '';
     // 初盘行
-    if (hasOpen1x2 || hasOpenAh || hasOpenOu) {
-      s += '<tr><td class="ah-col-label">初</td>';
-      if (showAh) {
+    if (hasOpen) {
+      s += `<tr><td class="ah-col-label">初</td>`;
+      s += `<td class="ah-col-label"><span class="ah-badge ${badgeCls}">${badge}</span></td>`;
+      if (hasAh) {
         s += `<td>${hasOpenAh ? (oAh.home_w || '-') : '-'}</td>`;
         s += `<td>${hasOpenAh ? handicapToChinese(oAh.handicap) : '-'}</td>`;
         s += `<td>${hasOpenAh ? (oAh.away_w || '-') : '-'}</td>`;
+      } else {
+        s += '<td>-</td><td>-</td><td>-</td>';
       }
-      if (show1x2) {
-        s += `<td>${hasOpen1x2 ? (o1.w || '-') : '-'}</td>`;
-        s += `<td>${hasOpen1x2 ? (o1.d || '-') : '-'}</td>`;
-        s += `<td>${hasOpen1x2 ? (o1.l || '-') : '-'}</td>`;
-      }
-      if (showOu) {
+      if (hasOu) {
         s += `<td>${hasOpenOu ? (oOu.over || '-') : '-'}</td>`;
         s += `<td>${hasOpenOu ? (oOu.line || '-') : '-'}</td>`;
         s += `<td>${hasOpenOu ? (oOu.under || '-') : '-'}</td>`;
+      } else {
+        s += '<td>-</td><td>-</td><td>-</td>';
       }
       s += '</tr>';
     }
-
-    // 即时行（带初→即时变化颜色）
-    s += '<tr><td class="ah-col-label">即</td>';
-    if (showAh) {
-      s += `<td>${fmt(oAh.home_w, cAh.home_w, hasOpenAh)}</td>`;
-      s += `<td>${handicapToChinese(cAh.handicap !== null && cAh.handicap !== undefined ? cAh.handicap : oAh.handicap)}</td>`;
-      s += `<td>${fmt(oAh.away_w, cAh.away_w, hasOpenAh)}</td>`;
+    // 即时行
+    s += `<tr class="company-end"><td class="ah-col-label">即</td>`;
+    s += `<td class="ah-col-label"><span class="ah-badge ${badgeCls}">${badge}</span></td>`;
+    if (hasAh) {
+      s += `<td>${fmtV(oAh.home_w, cAh.home_w)}</td>`;
+      s += `<td>${fmtH(oAh.handicap, cAh.handicap)}</td>`;
+      s += `<td>${fmtV(oAh.away_w, cAh.away_w)}</td>`;
+    } else {
+      s += '<td>-</td><td>-</td><td>-</td>';
     }
-    if (show1x2) {
-      s += `<td>${fmt(o1.w, c1.w, hasOpen1x2)}</td>`;
-      s += `<td>${fmt(o1.d, c1.d, hasOpen1x2)}</td>`;
-      s += `<td>${fmt(o1.l, c1.l, hasOpen1x2)}</td>`;
+    if (hasOu) {
+      s += `<td>${fmtV(oOu.over, cOu.over)}</td>`;
+      s += `<td>${fmtV(oOu.line, cOu.line)}</td>`;
+      s += `<td>${fmtV(oOu.under, cOu.under)}</td>`;
+    } else {
+      s += '<td>-</td><td>-</td><td>-</td>';
     }
-    if (showOu) {
-      s += `<td>${fmt(oOu.over, cOu.over, hasOpenOu)}</td>`;
-      s += `<td>${fmt(oOu.line, cOu.line, hasOpenOu)}</td>`;
-      s += `<td>${fmt(oOu.under, cOu.under, hasOpenOu)}</td>`;
-    }
-    s += '</tr></table>';
+    s += '</tr>';
     return s;
   }
 
-  // Bet365（1X2已在顶部对比表显示，此处只显示亚盘+大小球）
-  const bet365Ah = bet365.ah_handicap !== null && bet365.ah_handicap !== undefined ? {
-    handicap: bet365.ah_handicap,
-    home_w: bet365.ah_home_w || null,
-    away_w: bet365.ah_away_w || null,
-    open: (bet365.ah_open && bet365.ah_open.handicap !== null && bet365.ah_open.handicap !== undefined)
-      ? { handicap: bet365.ah_open.handicap, home_w: bet365.ah_open.home_w, away_w: bet365.ah_open.away_w }
-      : null
-  } : null;
-  const bet365Ou = (bet365.ou && bet365.ou.over > 0) || (bet365.ou && bet365.ou.open && bet365.ou.open.over > 0) ? {
-    line: bet365.ou.line || null,
-    over: bet365.ou.over || null,
-    under: bet365.ou.under || null,
-    open: bet365.ou.open ? { line: bet365.ou.open.line, over: bet365.ou.open.over, under: bet365.ou.open.under } : {}
-  } : null;
-  if (bet365Ah || bet365Ou) {
-    html += compactCompany('Bet365', 'ah-badge-bet365', null, bet365Ah, bet365Ou);
-  }
-
-  // Pinnacle（1X2已在顶部对比表显示，此处只显示亚盘+大小球）
-  html += compactCompany('Pinnacle', 'ah-badge-pin',
-    null, record.pin_ah, record.pin_ou);
-
+  // 构建统一表
+  let ahRows = '';
+  // Bet365
+  ahRows += ahRow('Bet365', 'ah-badge-bet365', record.hkjc_ah, record.hkjc_ou);
+  // Pinnacle
+  ahRows += ahRow('Pinnacle', 'ah-badge-pin', record.pin_ah, record.pin_ou);
   // 利记
   const liji = record.liji || {};
   const lijiClose = liji.close || {};
@@ -186,13 +152,7 @@ function openAhModal(record) {
     line: lijiOu.line || null, over: lijiOu.over || null, under: lijiOu.under || null,
     open: lijiOuOpen.over ? { line: lijiOuOpen.line, over: lijiOuOpen.over, under: lijiOuOpen.under } : {}
   } : null;
-  // liji1x2 moved to top table only
-  if (lijiAhObj || lijiOuObj) {
-    html += compactCompany('利记', 'ah-badge-liji', null, lijiAhObj, lijiOuObj);
-  }
-
-  // 百家平均已移除，Bet365亚盘已在上方显示
-
+  ahRows += ahRow('利记', 'ah-badge-liji', lijiAhObj, lijiOuObj);
   // 明升
   const ms = record.ms || {};
   const msClose = ms.close || {};
@@ -207,34 +167,35 @@ function openAhModal(record) {
     line: msOu.line || null, over: msOu.over || null, under: msOu.under || null,
     open: msOuOpen.over ? { line: msOuOpen.line, over: msOuOpen.over, under: msOuOpen.under } : {}
   } : null;
-  // ms1x2 moved to top table only
-  if (msAhObj || msOuObj) {
-    html += compactCompany('明升', 'ah-badge-ms', null, msAhObj, msOuObj);
-  }
-
+  ahRows += ahRow('明升', 'ah-badge-ms', msAhObj, msOuObj);
   // 威廉希尔
   const williamAh = record.william_ah || {};
   const williamAhClose = (williamAh.close || (williamAh.handicap !== null && williamAh.handicap !== undefined)) ? williamAh : {};
   const williamAhOpen = (williamAh.open) || {};
   const williamOu = record.william_ou || {};
+  const williamOuOpen = williamOu.open || {};
   const williamAhObj = (williamAhClose.handicap !== null && williamAhClose.handicap !== undefined) ||
                        (williamAhOpen.handicap !== null && williamAhOpen.handicap !== undefined) ? {
     handicap: williamAhClose.handicap !== null && williamAhClose.handicap !== undefined ? williamAhClose.handicap : null, home_w: williamAhClose.home_w || null, away_w: williamAhClose.away_w || null,
     open: (williamAhOpen.handicap !== null && williamAhOpen.handicap !== undefined) ? { handicap: williamAhOpen.handicap, home_w: williamAhOpen.home_w, away_w: williamAhOpen.away_w } : {}
   } : null;
-  const williamOuObj = (williamOu.over || 0) > 0 ? {
+  const williamOuObj = (williamOu.over || 0) > 0 || (williamOuOpen.over || 0) > 0 ? {
     line: williamOu.line || null, over: williamOu.over || null, under: williamOu.under || null,
-    open: {}
+    open: williamOuOpen.over ? { line: williamOuOpen.line, over: williamOuOpen.over, under: williamOuOpen.under } : {}
   } : null;
-  // 威廉希尔（1X2已在顶部对比表显示，此处只显示亚盘+大小球）
-  if (williamAhObj || williamOuObj) {
-    html += compactCompany('威廉希尔', 'ah-badge-will', null, williamAhObj, williamOuObj);
+  ahRows += ahRow('威廉希尔', 'ah-badge-will', williamAhObj, williamOuObj);
+
+  if (ahRows) {
+    html += '<table class="ah-odds-table ah-wide">';
+    html += '<tr><th></th><th>公司</th><th>主队</th><th>让球</th><th>客队</th><th>大球</th><th>盘口</th><th>小球</th></tr>';
+    html += ahRows;
+    html += '</table>';
   }
 
   // ===== HHAD让球 =====
   const hhad = record.hhad || {};
   if (hhad.handicap !== null && hhad.handicap !== undefined) {
-    html += '<div class="ah-section-title">竞彩让球(HHAD)</div>';
+    html += '<div class="ah-section-title">让球(HHAD)</div>';
     html += '<table class="ah-odds-table">';
     html += '<tr><th>让球</th><th>胜</th><th>平</th><th>负</th></tr>';
     html += `<tr><td>${handicapToChinese(hhad.handicap)}</td><td>${hhad.w || '-'}</td><td>${hhad.d || '-'}</td><td>${hhad.l || '-'}</td></tr>`;
@@ -243,13 +204,29 @@ function openAhModal(record) {
 
 
 
-  // ===== Pinnacle vs 竞彩 分歧对比（窗口底部，用即时盘） =====
-  if (record.odds.w > 0 && pin.w > 0 && (pin.w !== record.odds.w || pin.d !== record.odds.d)) {
-    const dW = ((pin.w - record.odds.w) / record.odds.w * 100).toFixed(1);
-    const dD = ((pin.d - record.odds.d) / record.odds.d * 100).toFixed(1);
-    const dL = ((pin.l - record.odds.l) / record.odds.l * 100).toFixed(1);
+  // ===== Pinnacle 初盘 vs 即时盘 分歧对比 =====
+  if (pinOpen.w > 0 && pin.w > 0 && (pinOpen.w !== pin.w || pinOpen.d !== pin.d || pinOpen.l !== pin.l)) {
+    const poW = ((pin.w - pinOpen.w) / pinOpen.w * 100).toFixed(1);
+    const poD = ((pin.d - pinOpen.d) / pinOpen.d * 100).toFixed(1);
+    const poL = ((pin.l - pinOpen.l) / pinOpen.l * 100).toFixed(1);
+    const powarn = Math.abs(parseFloat(poW)) > 8 || Math.abs(parseFloat(poD)) > 8 || Math.abs(parseFloat(poL)) > 8;
+    html += '<div class="ah-section-title">平博初盘 vs 即时盘 分歧</div>';
+    html += `<div class="ah-diff ${powarn ? 'ah-diff-warn' : ''}">`;
+    html += `胜 <span class="${parseFloat(poW) > 0 ? 'ev-pos' : 'ev-neg'}">${poW}%</span> | `;
+    html += `平 <span class="${parseFloat(poD) > 0 ? 'ev-pos' : 'ev-neg'}">${poD}%</span> | `;
+    html += `负 <span class="${parseFloat(poL) > 0 ? 'ev-pos' : 'ev-neg'}">${poL}%</span>`;
+    if (powarn) html += ' <span class="ah-warn-tag">⚠ 分歧大</span>';
+    html += '</div>';
+  }
+
+  // ===== Pinnacle vs 香港马会 分歧对比（窗口底部，用即时盘） =====
+  const hkjcOdds = record.hkjc || {};
+  if (hkjcOdds.w > 0 && pin.w > 0 && (pin.w !== hkjcOdds.w || pin.d !== hkjcOdds.d)) {
+    const dW = ((pin.w - hkjcOdds.w) / hkjcOdds.w * 100).toFixed(1);
+    const dD = ((pin.d - hkjcOdds.d) / hkjcOdds.d * 100).toFixed(1);
+    const dL = ((pin.l - hkjcOdds.l) / hkjcOdds.l * 100).toFixed(1);
     const warn = Math.abs(parseFloat(dW)) > 8 || Math.abs(parseFloat(dD)) > 8 || Math.abs(parseFloat(dL)) > 8;
-    html += '<div class="ah-section-title">Pinnacle vs 竞彩 分歧</div>';
+    html += '<div class="ah-section-title">Pinnacle vs 香港马会 分歧</div>';
     html += `<div class="ah-diff ${warn ? 'ah-diff-warn' : ''}">`;
     html += `胜 <span class="${parseFloat(dW) > 0 ? 'ev-pos' : 'ev-neg'}">${dW}%</span> | `;
     html += `平 <span class="${parseFloat(dD) > 0 ? 'ev-pos' : 'ev-neg'}">${dD}%</span> | `;
@@ -261,7 +238,7 @@ function openAhModal(record) {
   // ===== Pinnacle vs Bet365 分歧对比（用即时盘） =====
   // Pinnacle vs 参考行 分歧（fallback: Bet365 → 威廉希尔 → 利记 → 明升）
   const refChain = [
-    { name: 'Bet365', data: hkjc },
+    { name: 'Bet365', data: bet365 },
     { name: '威廉希尔', data: william },
     { name: '利记', data: liji1x2Top },
     { name: '明升', data: ms1x2Top }
@@ -281,7 +258,72 @@ function openAhModal(record) {
     html += '</div>';
   }
 
+  // ===== 模型信号区（方案B：弹窗底部） =====
+  const sigMargin = record.avg_margin;
+  const sigEv = record.ev_value;
+  const sigEvSignal = record.ev_signal || '';
+  const sigCold = record.cold_signals || '';
+  const sigWarning = record.risk_warning || '';
+  const sigDeviation = record.deviation_analysis || '';
+
+  // 只要有任一字段有值就显示
+  const hasSignal = (sigMargin != null && sigMargin !== 0) ||
+                    (sigEv != null && sigEv !== 0) ||
+                    sigEvSignal || sigCold || sigWarning || sigDeviation;
+  if (hasSignal) {
+    html += '<div class="ah-section-title">🧠 模型信号</div>';
+    html += '<div class="ah-signal-box">';
+
+    // avg_margin / ev_value 同行显示
+    if ((sigMargin != null && sigMargin !== 0) || (sigEv != null && sigEv !== 0)) {
+      const marginStr = (sigMargin != null && sigMargin !== 0)
+        ? `<span class="sig-label">平均边际</span> <span class="sig-val ${parseFloat(sigMargin) < 0 ? 'ev-neg' : 'ev-pos'}">${(parseFloat(sigMargin) * 100).toFixed(1)}%</span>`
+        : '';
+      const evStr = (sigEv != null && sigEv !== 0)
+        ? `<span class="sig-label">EV值</span> <span class="sig-val ${parseFloat(sigEv) > 0 ? 'ev-pos' : 'ev-neg'}">${(parseFloat(sigEv) * 100).toFixed(2)}%</span>`
+        : '';
+      if (marginStr || evStr) {
+        html += `<div class="sig-row">${marginStr}${(marginStr && evStr) ? ' &nbsp;|&nbsp; ' : ''}${evStr}</div>`;
+      }
+    }
+
+    // ev_signal
+    if (sigEvSignal) {
+      const sigClass = sigEvSignal.includes('双重确认') ? 'sig-good' :
+                       sigEvSignal.includes('分歧') ? 'sig-warn' : '';
+      html += `<div class="sig-row">EV方向: <span class="sig-tag ${sigClass}">${escapeHtml(sigEvSignal)}</span></div>`;
+    }
+
+    // cold_signals
+    if (sigCold) {
+      const sigClass = sigCold.includes('双重确认') ? 'sig-good' :
+                       sigCold.includes('分歧') ? 'sig-warn' :
+                       sigCold.includes('冷门') ? 'sig-danger' : '';
+      html += `<div class="sig-row">模型信号: <span class="sig-tag ${sigClass}">${escapeHtml(sigCold)}</span></div>`;
+    }
+
+    // risk_warning
+    if (sigWarning) {
+      html += `<div class="sig-row sig-warn">⚠ ${escapeHtml(sigWarning)}</div>`;
+    }
+
+    // deviation_analysis
+    if (sigDeviation) {
+      html += `<div class="sig-row sig-dev">${escapeHtml(sigDeviation)}</div>`;
+    }
+
+    html += '</div>';
+  }
+
   document.getElementById('ahModalContent').innerHTML = html;
+}
+
+// 辅助：HTML转义
+function escapeHtml(str) {
+  if (!str) return '';
+  const div = document.createElement('div');
+  div.appendChild(document.createTextNode(str));
+  return div.innerHTML;
 }
 
 // ─── 泊松概率计算 ───
@@ -435,7 +477,23 @@ function renderHeatmap(sorted, actualScore) {
 async function init() {
   try {
     const resp = await fetch(DATA_URL);
-    allData = await resp.json();
+    if (DATA_URL.endsWith('.gz')) {
+      const blob = await resp.blob();
+      if (typeof DecompressionStream !== 'undefined') {
+        const ds = new DecompressionStream('gzip');
+        const stream = blob.stream().pipeThrough(ds);
+        const decompressed = await new Response(stream).blob();
+        allData = JSON.parse(await decompressed.text());
+      } else {
+        // 降级: 用 pako.js
+        const buf = await blob.arrayBuffer();
+        const pako = await import('https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js');
+        const text = pako.ungzip(new Uint8Array(buf), { to: 'string' });
+        allData = JSON.parse(text);
+      }
+    } else {
+      allData = await resp.json();
+    }
     renderDateSelector();
     loadDate();
     renderDailyStats();
@@ -484,7 +542,7 @@ function loadDate() {
       : '待定';
     const srcBadge = r.source === 'beidan'
       ? '<span class="badge badge-bd">北单</span>'
-      : '<span class="badge badge-jc">竞彩</span>';
+      : '<span class="badge badge-jc">香港马会</span>';
     const tierColors = {high:'#4caf50', medium:'#ff9800', low:'#8b949e', very_low:'#484f58'};
     const tierLabels = {high:'高', medium:'中', low:'低', very_low:'低'};
     const tier = r.confidence_tier || 'very_low';
@@ -520,7 +578,7 @@ function loadDate() {
       ? `<td class="ah-clickable" data-date="${sel}" data-idx="${i}">${ahDisplayVal}</td>`
       : `<td>${ahDisplayVal}</td>`;
     const poissonStr = `${r.poisson.w}/${r.poisson.d}/${r.poisson.l}`;
-    const finalStr = `${r.final_prob.w}/${r.final_prob.d}/${r.final_prob.l}`;
+    const finalStr = `${r.fusion_prob.w}/${r.fusion_prob.d}/${r.fusion_prob.l}`;
     const evStr = `<span class="${evCls(evW)}">${evW.toFixed(2)}</span>/<span class="${evCls(evD)}">${evD.toFixed(2)}</span>/<span class="${evCls(evL)}">${evL.toFixed(2)}</span>`;
     const kellyStr = `${r.kelly.w}/${r.kelly.d}/${r.kelly.l}`;
     const kickoff = (!r.kickoff || r.kickoff === '待定') ? '-' : r.kickoff.substring(11, 16);
@@ -534,7 +592,7 @@ function loadDate() {
 
     html += `<tr>
 <td>${i + 1} ${srcBadge}${tierBadge}</td>
-<td>${r.source === 'beidan' ? '北单' : '竞彩'}${r.league}</td>
+<td>${r.league}</td>
 <td>${kickoff}</td>
 <td>${r.home}</td>${ahCell}<td>${r.away}</td>
 <td class="${dirClass}">${r.ev_direction || '-'}</td>
@@ -733,7 +791,8 @@ function downloadExcel() {
   const ws2 = XLSX.utils.aoa_to_sheet(dailyRows);
   XLSX.utils.book_append_sheet(wb, ws2, '每日统计');
 
-  XLSX.writeFile(wb, `竞彩预测_${sel}.xlsx`);
+  XLSX.writeFile(wb, `香港马会预测_${sel}.xlsx`);
 }
 
 document.addEventListener('DOMContentLoaded', init);
+
