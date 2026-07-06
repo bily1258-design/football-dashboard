@@ -41,6 +41,7 @@ function openAhModal(record) {
   const pin = record.pinnacle || {};
   const pinOpen = pin.open || {};
   const hkjc = record.hkjc || {};
+  const hkjcOpen = record.hkjc_open || {};
   const bet365 = record.bet365 || {};
   const william = record.william_1x2 || {};
   const liji1x2Top = ((record.liji || {})['1x2'] || {}).close || {};
@@ -55,6 +56,15 @@ function openAhModal(record) {
   html += `<td>${pin.w || '-'}</td><td>${pin.d || '-'}</td><td>${pin.l || '-'}</td></tr>`;
   html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-bet365">Bet365</span></td>`;
   html += `<td>${bet365.w || '-'}</td><td>${bet365.d || '-'}</td><td>${bet365.l || '-'}</td></tr>`;
+  // HKJC 1X2（初盘+即时）
+  if ((hkjc.w || 0) > 0 && (hkjcOpen.w || 0) > 0) {
+    html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-hkjc">HKJC初盘</span></td>`;
+    html += `<td>${hkjcOpen.w || '-'}</td><td>${hkjcOpen.d || '-'}</td><td>${hkjcOpen.l || '-'}</td></tr>`;
+  }
+  if ((hkjc.w || 0) > 0) {
+    html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-hkjc">HKJC</span></td>`;
+    html += `<td>${hkjc.w || '-'}</td><td>${hkjc.d || '-'}</td><td>${hkjc.l || '-'}</td></tr>`;
+  }
   html += `<tr><td class="ah-col-label"><span class="ah-badge ah-badge-will">威廉希尔</span></td>`;
   html += `<td>${william.w || '-'}</td><td>${william.d || '-'}</td><td>${william.l || '-'}</td></tr>`;
   if ((liji1x2Top.w || 0) > 0) {
