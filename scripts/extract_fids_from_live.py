@@ -356,8 +356,8 @@ def main():
                 cur.execute("""
                     INSERT INTO poisson_predictions
                         (fid_500, league, home_team, away_team, date, kickoff_time, source)
-                    VALUES (?, ?, ?, ?, ?, ?, 'future_500')
-                """, (m['fid'], m['league'], m['home'], m['away'], date or '', kickoff_time))
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                """, (m['fid'], m['league'], m['home'], m['away'], date or '', kickoff_time, m['source']))
 
             saved += 1
             if args.verbose:

@@ -296,7 +296,7 @@ def load_from_db(db_path: str, max_days=999) -> dict:
             },
             'risk_level': d.get('risk_level','') or '', 'stars': stars,
             'confidence_index': round(ci,2), 'reference_score': d.get('reference_score','') or '',
-            'cold_risk': d.get('cold_risk','') or '', 'source': 'beidan' if d.get('source') == 'om_only' else (d.get('source') or 'jingcai'),
+            'cold_risk': d.get('cold_risk','') or '', 'source': 'beidan' if d.get('source') == 'om_only' else ('jingcai' if d.get('source') in ('future_500', None, '') else d.get('source')),
             'cold_signals': d.get('cold_signals','') or '',
             'risk_warning': d.get('risk_warning','') or '',
             'actual_outcome': d.get('actual_outcome','') or '',
