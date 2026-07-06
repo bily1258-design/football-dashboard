@@ -11,12 +11,10 @@ NOW=$(date '+%Y-%m-%d %H:%M:%S')
 
 echo "[${NOW}] 🚀 比分回填开始 (${TODAY})"
 
-# Step 0: 同步最新代码
+# Step 0: 同步最新代码（强制覆盖本地，避免stash冲突卡住）
 echo "[$(date '+%H:%M:%S')] Step 0: 同步代码..."
-STASH_MSG="cron-auto-stash-$(date +%s)"
-git stash push -m "$STASH_MSG" 2>&1 || echo "  ℹ️ 无需暂存"
-git pull origin main --rebase 2>&1 || echo "  ⚠️ git pull 失败"
-git stash pop 2>&1 || echo "  ℹ️ 无暂存可恢复"
+git fetch origin 2>&1 || echo "  ⚠️ git fetch 失败"
+git reset --hard origin/main 2>&1 || echo "  ⚠️ git reset 失败"
 
 # Step 0.5: 检查DB完整性
 echo "[$(date '+%H:%M:%S')] Step 0.5: 检查DB完整性..."
