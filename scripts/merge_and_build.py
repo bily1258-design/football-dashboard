@@ -15,19 +15,6 @@ from collections import defaultdict
 
 from team_aliases import canonical as _canonical, match_key as _match_key
 
-# ===== 联赛白名单（与 extract_fids_from_live.py 保持一致） =====
-LEAGUE_WHITELIST = {
-    # 国内
-    '中超', '中甲',
-    # 韩国
-    'K1联赛', 'K2联赛',
-    # 北欧（北单覆盖）
-    '芬超', '芬甲', '冰岛超', '瑞典超', '挪甲', '爱甲',
-    # 美洲
-    '美冠', '巴乙', '厄甲',
-    # 国家队赛事
-    '世界杯',
-}
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 REPO_DIR = os.path.dirname(SCRIPT_DIR)
 PROCESSED_DIR = os.path.join(REPO_DIR, "data", "processed")
@@ -94,6 +81,24 @@ def _merge_missing(kept, discarded):
         dwou = discarded.get('william_ou', {})
         if dwou and dwou.get('over', 0) > 0:
             kept['william_ou'] = dwou
+    # 补bet365 1x2
+    b365 = kept.get('bet365', {})
+    if not b365 or (b365.get('w', 0) == 0 and b365.get('d', 0) == 0 and b365.get('l', 0) == 0):
+        db365 = discarded.get('bet365', {})
+        if db365 and (db365.get('w', 0) > 0 or db365.get('d', 0) > 0 or db365.get('l', 0) > 0):
+            kept['bet365'] = db365
+    # 补bet365 ah
+    b365ah = kept.get('bet365', {}).get('ah_handicap')
+    if b365ah is None or b365ah == 0:
+        db365ah = discarded.get('bet365', {}).get('ah_handicap')
+        if db365ah is not None and db365ah != 0:
+            kept['bet365'] = {**kept.get('bet365', {}), **discarded.get('bet365', {})}
+    # 补bet365 ou
+    b365ou = kept.get('bet365', {}).get('ou', {})
+    if not b365ou or (b365ou.get('over', 0) == 0):
+        db365ou = discarded.get('bet365', {}).get('ou', {})
+        if db365ou and db365ou.get('over', 0) > 0:
+            kept['bet365'] = {**kept.get('bet365', {}), 'ou': db365ou}
     # 补pin_ah
     pah = kept.get('pin_ah', {})
     if not pah or (pah.get('handicap') is None or pah.get('handicap') == 0):
@@ -141,8 +146,8 @@ def load_from_db(db_path: str, max_days=999) -> dict:
         ('william_ah_handicap', 'REAL'), ('william_ah_home_water', 'REAL'), ('william_ah_away_water', 'REAL'),
         ('william_ah_open_handicap', 'REAL'), ('william_ah_open_home_water', 'REAL'), ('william_ah_open_away_water', 'REAL'),
         ('william_ou_over', 'REAL'), ('william_ou_line', 'REAL'), ('william_ou_under', 'REAL'),
-        ('bet365_open_w', 'REAL'), ('bet365_open_d', 'REAL'), ('bet365_open_l', 'REAL'),
         ('bet365_close_w', 'REAL'), ('bet365_close_d', 'REAL'), ('bet365_close_l', 'REAL'),
+        ('bet365_open_w', 'REAL'), ('bet365_open_d', 'REAL'), ('bet365_open_l', 'REAL'),
         ('bet365_ah_handicap', 'REAL'), ('bet365_ah_home_water', 'REAL'), ('bet365_ah_away_water', 'REAL'),
         ('bet365_ah_open_handicap', 'REAL'), ('bet365_ah_open_home_water', 'REAL'), ('bet365_ah_open_away_water', 'REAL'),
         ('bet365_ou_line', 'REAL'), ('bet365_ou_over', 'REAL'), ('bet365_ou_under', 'REAL'),
@@ -196,13 +201,12 @@ def load_from_db(db_path: str, max_days=999) -> dict:
         liji_1x2_open_w, liji_1x2_open_d, liji_1x2_open_l, \
         ms_1x2_w, ms_1x2_d, ms_1x2_l, \
         ms_1x2_open_w, ms_1x2_open_d, ms_1x2_open_l, \
-        bet365_open_w, bet365_open_d, bet365_open_l, \
         bet365_close_w, bet365_close_d, bet365_close_l, \
+        bet365_open_w, bet365_open_d, bet365_open_l, \
         bet365_ah_handicap, bet365_ah_home_water, bet365_ah_away_water, \
         bet365_ah_open_handicap, bet365_ah_open_home_water, bet365_ah_open_away_water, \
         bet365_ou_line, bet365_ou_over, bet365_ou_under, \
-        bet365_ou_open_line, bet365_ou_open_over, bet365_ou_open_under, \
-        avg_margin, ev_value, risk_warning, cold_signals, deviation_analysis \
+        bet365_ou_open_line, bet365_ou_open_over, bet365_ou_open_under \
         FROM poisson_predictions WHERE date >= ? ORDER BY date DESC, kickoff_time, id", (cutoff,))
     by_date = {}
     for r in cur.fetchall():
@@ -222,48 +226,15 @@ def load_from_db(db_path: str, max_days=999) -> dict:
         fw = d.get('final_win', 0) or 0
         fd = d.get('final_draw', 0) or 0
         fl = d.get('final_loss', 0) or 0
-        # 如果 final_* 全为0，降级使用 fusion_*（赔率pipeline未运行时 fusion 已有值）
-        if fw == 0 and fd == 0 and fl == 0:
-            fw = d.get('fusion_win', 0) or 0
-            fd = d.get('fusion_draw', 0) or 0
-            fl = d.get('fusion_loss', 0) or 0
         prob_dir = '主胜' if fw >= fd and fw >= fl else ('客胜' if fl >= fw and fl >= fd else '平局')
-        # 如果 prediction_prob 为0但 final_*（或降级的 fusion_*）有值，取最大值作为预测概率
-        raw_pred_prob = d.get('prediction_prob') or 0
-        if raw_pred_prob == 0 and (fw > 0 or fd > 0 or fl > 0):
-            raw_pred_prob = max(fw, fd, fl)
         prob_hit = (prob_dir == result) if result else False
         ci = d.get('confidence_index') or 0
         stars = min(5, max(1, round(ci * 5))) if isinstance(ci, (int, float)) and ci > 0 else 0
-        # 信心分层推算：DB 为空时从 risk_level / ev_signal 衍生
-        _raw_tier = d.get('confidence_tier', '') or ''
-        if not _raw_tier:
-            rl = d.get('risk_level', '') or ''
-            if rl == '高':
-                _raw_tier = 'high'
-            elif rl == '中':
-                _raw_tier = 'medium'
-            elif rl == '低':
-                _raw_tier = 'low'
-            else:
-                es = d.get('ev_signal', '') or ''
-                if '双重确认' in es:
-                    _raw_tier = 'medium'
-                elif '市场优先' in es:
-                    _raw_tier = 'medium'
-                elif '模型' in es or '降级' in es:
-                    _raw_tier = 'low'
-                else:
-                    _raw_tier = 'very_low'
-        # calibrated_prob 推算：DB 为空时用最终/融合概率最大值估算
-        _raw_cp = d.get('calibrated_prob', 0) or 0
-        if _raw_cp == 0:
-            _raw_cp = round(max(fw, fd, fl), 3)
         by_date[date].append({
             'id': d['id'], 'date': date, 'league': d.get('league',''),
             'home': d['home_team'], 'away': d['away_team'],
             'kickoff': d.get('kickoff_time',''), 'prediction': d.get('prediction',''),
-            'prediction_prob': round(raw_pred_prob, 3),
+            'prediction_prob': round(d.get('prediction_prob',0) or 0, 3),
             'odds': {'w': d.get('odds_win',0) or 0, 'd': d.get('odds_draw',0) or 0, 'l': d.get('odds_loss',0) or 0},
             'poisson': {'w': round(d.get('poisson_win',0) or 0, 3), 'd': round(d.get('poisson_draw',0) or 0, 3), 'l': round(d.get('poisson_loss',0) or 0, 3)},
             'final_prob': {'w': round(fw,3), 'd': round(fd,3), 'l': round(fl,3)},
@@ -280,32 +251,16 @@ def load_from_db(db_path: str, max_days=999) -> dict:
                 'w': d.get('pinnacle_close_w',0) or 0, 'd': d.get('pinnacle_close_d',0) or 0, 'l': d.get('pinnacle_close_l',0) or 0,
                 'open': {'w': d.get('pinnacle_open_w',0) or 0, 'd': d.get('pinnacle_open_d',0) or 0, 'l': d.get('pinnacle_open_l',0) or 0},
             },
-            'bet365': {
-                'w': d.get('bet365_close_w',0) or 0, 'd': d.get('bet365_close_d',0) or 0, 'l': d.get('bet365_close_l',0) or 0,
-                'open': {'w': d.get('bet365_open_w',0) or 0, 'd': d.get('bet365_open_d',0) or 0, 'l': d.get('bet365_open_l',0) or 0},
-            },
             'hkjc': {
-                'w': d.get('hkjc_close_w',0) or 0,
-                'd': d.get('hkjc_close_d',0) or 0,
-                'l': d.get('hkjc_close_l',0) or 0,
-            },
-            'hkjc_open': {
-                'w': d.get('hkjc_open_w',0) or 0,
-                'd': d.get('hkjc_open_d',0) or 0,
-                'l': d.get('hkjc_open_l',0) or 0,
+                'w': d.get('hkjc_close_w',0) or 0, 'd': d.get('hkjc_close_d',0) or 0, 'l': d.get('hkjc_close_l',0) or 0,
+                'open': {'w': d.get('hkjc_open_w',0) or 0, 'd': d.get('hkjc_open_d',0) or 0, 'l': d.get('hkjc_open_l',0) or 0},
             },
             'risk_level': d.get('risk_level','') or '', 'stars': stars,
             'confidence_index': round(ci,2), 'reference_score': d.get('reference_score','') or '',
             'cold_risk': d.get('cold_risk','') or '', 'source': 'beidan' if d.get('source') == 'om_only' else (d.get('source') or 'jingcai'),
-            'cold_signals': d.get('cold_signals','') or '',
-            'risk_warning': d.get('risk_warning','') or '',
-            'actual_outcome': d.get('actual_outcome','') or '',
-            'avg_margin': round(d.get('avg_margin',0) or 0, 4),
-            'ev_value': round(d.get('ev_value',0) or 0, 4),
-            'deviation_analysis': d.get('deviation_analysis','') or '',
             'odds_source': d.get('odds_source','had'),
-            'confidence_tier': _raw_tier,
-            'calibrated_prob': _raw_cp,
+            'confidence_tier': d.get('confidence_tier', '') or '',
+            'calibrated_prob': round(d.get('calibrated_prob', 0) or 0, 3),
             'home_lambda': round(d.get('home_lambda',0) or 0,3),
             'away_lambda': round(d.get('away_lambda',0) or 0,3),
             'home_ranking': d.get('home_ranking',0) or 0,
@@ -426,23 +381,23 @@ def load_from_db(db_path: str, max_days=999) -> dict:
                 },
             },
             'hkjc_ah': {
-                'handicap': d.get('bet365_ah_handicap') if d.get('bet365_ah_handicap') else d.get('hkjc_ah_handicap'),
-                'home_w': (d.get('bet365_ah_home_water', 0) or 0) or (d.get('hkjc_ah_home_water', 0) or 0),
-                'away_w': (d.get('bet365_ah_away_water', 0) or 0) or (d.get('hkjc_ah_away_water', 0) or 0),
+                'handicap': d.get('hkjc_ah_handicap', None),
+                'home_w': d.get('hkjc_ah_home_water', 0) or 0,
+                'away_w': d.get('hkjc_ah_away_water', 0) or 0,
                 'open': {
-                    'handicap': d.get('bet365_ah_open_handicap') if d.get('bet365_ah_open_handicap') else d.get('hkjc_ah_open_handicap'),
-                    'home_w': (d.get('bet365_ah_open_home_water', 0) or 0) or (d.get('hkjc_ah_open_home_water', 0) or 0),
-                    'away_w': (d.get('bet365_ah_open_away_water', 0) or 0) or (d.get('hkjc_ah_open_away_water', 0) or 0),
+                    'handicap': d.get('hkjc_ah_open_handicap', None),
+                    'home_w': d.get('hkjc_ah_open_home_water', 0) or 0,
+                    'away_w': d.get('hkjc_ah_open_away_water', 0) or 0,
                 },
             },
             'hkjc_ou': {
-                'line': d.get('bet365_ou_line') if d.get('bet365_ou_line') else d.get('hkjc_ou_line'),
-                'over': (d.get('bet365_ou_over', 0) or 0) or (d.get('hkjc_ou_over', 0) or 0),
-                'under': (d.get('bet365_ou_under', 0) or 0) or (d.get('hkjc_ou_under', 0) or 0),
+                'line': d.get('hkjc_ou_line', None),
+                'over': d.get('hkjc_ou_over', 0) or 0,
+                'under': d.get('hkjc_ou_under', 0) or 0,
                 'open': {
-                    'line': d.get('bet365_ou_open_line') if d.get('bet365_ou_open_line') else d.get('hkjc_ou_open_line'),
-                    'over': (d.get('bet365_ou_open_over', 0) or 0) or (d.get('hkjc_ou_open_over', 0) or 0),
-                    'under': (d.get('bet365_ou_open_under', 0) or 0) or (d.get('hkjc_ou_open_under', 0) or 0),
+                    'line': d.get('hkjc_ou_open_line', None),
+                    'over': d.get('hkjc_ou_open_over', 0) or 0,
+                    'under': d.get('hkjc_ou_open_under', 0) or 0,
                 },
             },
             'william_1x2': {
@@ -464,10 +419,33 @@ def load_from_db(db_path: str, max_days=999) -> dict:
                 'over': d.get('william_ou_over', 0) or 0,
                 'line': d.get('william_ou_line', None),
                 'under': d.get('william_ou_under', 0) or 0,
+            },
+            'bet365': {
+                'w': d.get('bet365_close_w', 0) or 0,
+                'd': d.get('bet365_close_d', 0) or 0,
+                'l': d.get('bet365_close_l', 0) or 0,
                 'open': {
-                    'over': d.get('william_ou_open_over', 0) or 0,
-                    'line': d.get('william_ou_open_line', None),
-                    'under': d.get('william_ou_open_under', 0) or 0,
+                    'w': d.get('bet365_open_w', 0) or 0,
+                    'd': d.get('bet365_open_d', 0) or 0,
+                    'l': d.get('bet365_open_l', 0) or 0,
+                },
+                'ah_handicap': d.get('bet365_ah_handicap', None),
+                'ah_home_w': d.get('bet365_ah_home_water', 0) or 0,
+                'ah_away_w': d.get('bet365_ah_away_water', 0) or 0,
+                'ah_open': {
+                    'handicap': d.get('bet365_ah_open_handicap', None),
+                    'home_w': d.get('bet365_ah_open_home_water', 0) or 0,
+                    'away_w': d.get('bet365_ah_open_away_water', 0) or 0,
+                },
+                'ou': {
+                    'line': d.get('bet365_ou_line', None),
+                    'over': d.get('bet365_ou_over', 0) or 0,
+                    'under': d.get('bet365_ou_under', 0) or 0,
+                    'open': {
+                        'line': d.get('bet365_ou_open_line', None),
+                        'over': d.get('bet365_ou_open_over', 0) or 0,
+                        'under': d.get('bet365_ou_open_under', 0) or 0,
+                    },
                 },
             },
         })
@@ -547,6 +525,15 @@ def load_from_db(db_path: str, max_days=999) -> dict:
                     rwou = r.get('william_ou', {})
                     if rwou and rwou.get('over', 0) > 0:
                         kept['william_ou'] = rwou
+                        total_william_fixed += 1
+                        break
+            # 补bet365 1x2
+            b365 = kept.get('bet365', {})
+            if not b365 or (b365.get('w', 0) == 0 and b365.get('d', 0) == 0 and b365.get('l', 0) == 0):
+                for r in reversed(groups[key]):
+                    rb365 = r.get('bet365', {})
+                    if rb365 and (rb365.get('w', 0) > 0 or rb365.get('d', 0) > 0 or rb365.get('l', 0) > 0):
+                        kept['bet365'] = rb365
                         total_william_fixed += 1
                         break
         if len(seen) < len(records):
@@ -640,23 +627,6 @@ def build_league_score_freq(db_path: str) -> dict:
     return {lg: dict(scores) for lg, scores in league_scores.items()}
 
 
-def filter_by_league_by_date(by_date, verbose=True, max_days=10):
-    """限制看板天数，避免数据过大。去掉了联赛白名单过滤。"""
-    dates = sorted(by_date.keys(), reverse=True)
-    total_before = sum(len(v) for v in by_date.values())
-    kept = 0
-    if len(dates) > max_days:
-        for date in dates[max_days:]:
-            kept += len(by_date[date])
-            del by_date[date]
-        if verbose:
-            print(f'📅 天数截断: {len(dates)}天 → {max_days}天 (去掉第{max_days+1}天及之后 {kept} 场)')
-    # 不再按联赛过滤
-    total_after = sum(len(v) for v in by_date.values())
-    if verbose and total_before != total_after:
-        print(f'   总场次: {total_before} → {total_after} 场')
-
-
 def generate_results_json(by_date, daily_stats, summary, output_dir=None):
     if not output_dir:
         output_dir = DATA_DIR
@@ -678,12 +648,6 @@ def generate_results_json(by_date, daily_stats, summary, output_dir=None):
     with open(path, 'w', encoding='utf-8') as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
     print(f'✅ results.json → {path} ({os.path.getsize(path)//1024}KB)')
-    # 前端加载 .gz 版本，同步压缩
-    gz_path = path + '.gz'
-    import gzip
-    with open(path, 'rb') as src, gzip.open(gz_path, 'wb', compresslevel=6) as dst:
-        dst.writelines(src)
-    print(f'✅ results.json.gz → {gz_path} ({os.path.getsize(gz_path)//1024}KB)')
     return path
 
 
@@ -713,13 +677,13 @@ def generate_index_html(by_date, daily_stats, summary, league_score_freq=None, o
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>泊松预测看板</title>
+<title>竞彩泊松预测看板</title>
 <link rel="stylesheet" href="style.css">
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 </head>
 <body>
 <div class="header">
-<h1>⚽ 泊松预测看板</h1>
+<h1>⚽ 竞彩泊松预测看板</h1>
 <div class="sub">更新于 {summary['last_updated']} | 共 {summary['total_matches']} 场已开奖 | {summary['days']} 天数据</div>
 </div>
 
@@ -748,7 +712,7 @@ def generate_index_html(by_date, daily_stats, summary, league_score_freq=None, o
 <select id="dateSelect"></select>
 <div class="source-tabs">
 <button class="source-tab active" data-source="all">全部</button>
-<button class="source-tab" data-source="jingcai">香港马会</button>
+<button class="source-tab" data-source="jingcai">竞彩足球</button>
 <button class="source-tab" data-source="beidan">北京单场</button>
 </div>
 <label><input type="checkbox" id="showResulted" checked> 已开奖</label>
@@ -850,7 +814,7 @@ def main():
                 print(f'📌 DB补充{len(missing)}天缺失数据: {sorted(missing.keys())}')
             # DB中同日期记录数更多时也更新（processed可能缺新插入的场次）
             # 同时用DB的新字段（pin_ah/ou等）补充processed旧记录
-            _NEW_KEYS = {'pin_ah', 'pin_ou', 'ou', 'liji_ou', 'ms_ou', 'hkjc_ah', 'hkjc_ou', 'william_1x2', 'william_ah', 'william_ou'}
+            _NEW_KEYS = {'pin_ah', 'pin_ou', 'ou', 'liji_ou', 'ms_ou', 'hkjc_ah', 'hkjc_ou', 'william_1x2', 'william_ah', 'william_ou', 'bet365'}
             # ah/liji/ms字段：processed为空或handicap=0时，用DB非零值覆盖
             _AH_KEYS = {'ah', 'liji', 'ms'}
             # hkjc 1X2初盘同步
@@ -885,47 +849,6 @@ def main():
                                 for k in _RESULT_KEYS:
                                     if not proc_rec.get(k) and db_rec.get(k):
                                         proc_rec[k] = db_rec[k]
-                                        n_merged += 1
-                                # 补充信心分层字段（processed旧JSON没有confidence_tier/calibrated_prob）
-                                _CONFIDENCE_KEYS = ('confidence_tier', 'calibrated_prob', 'best_direction_cn')
-                                for k in _CONFIDENCE_KEYS:
-                                    if k not in proc_rec or not proc_rec.get(k):
-                                        db_val = db_rec.get(k)
-                                        if db_val:
-                                            proc_rec[k] = db_val
-                                            n_merged += 1
-                                # 补充信号/市场数据字段（processed旧JSON没有cold_signals/avg_margin等）
-                                _SIGNAL_KEYS = ('cold_signals', 'risk_warning', 'actual_outcome',
-                                                'avg_margin', 'ev_value', 'deviation_analysis',
-                                                'ev_signal')
-                                for k in _SIGNAL_KEYS:
-                                    if k not in proc_rec or not proc_rec.get(k):
-                                        db_val = db_rec.get(k)
-                                        if db_val:
-                                            proc_rec[k] = db_val
-                                            n_merged += 1
-                                # 补充概率/赔率字段（processed旧JSON中final_prob/fusion_prob/ev/kelly为全0，用DB覆盖）
-                                _PROB_KEYS = ('final_prob', 'fusion_prob', 'ev', 'kelly', 'odds_ev')
-                                for k in _PROB_KEYS:
-                                    p_val = proc_rec.get(k)
-                                    d_val = db_rec.get(k)
-                                    if isinstance(d_val, dict) and isinstance(p_val, dict):
-                                        # 只要DB的字典里至少有一个非零值就覆盖
-                                        if any(v for v in d_val.values() if isinstance(v, (int, float)) and v != 0):
-                                            proc_rec[k] = d_val
-                                            n_merged += 1
-                                # 补充prediction_prob（processed旧JSON中为0，用DB校正后的值覆盖）
-                                if not proc_rec.get('prediction_prob') and db_rec.get('prediction_prob'):
-                                    proc_rec['prediction_prob'] = db_rec['prediction_prob']
-                                    n_merged += 1
-                                # final_prob被DB覆盖后，同步更新prob_direction/prob_hit
-                                fp = proc_rec.get('final_prob')
-                                if isinstance(fp, dict) and any(fp.values()):
-                                    fw, fd_, fl_ = fp.get('w',0), fp.get('d',0), fp.get('l',0)
-                                    new_dir = '主胜' if fw >= fd_ and fw >= fl_ else ('客胜' if fl_ >= fw and fl_ >= fd_ else '平局')
-                                    if new_dir != proc_rec.get('prob_direction'):
-                                        proc_rec['prob_direction'] = new_dir
-                                        proc_rec['prob_hit'] = (new_dir == proc_rec.get('result'))
                                         n_merged += 1
                                 # 补充ah/liji/ms：processed为空/非dict或handicap=0时用DB覆盖
                                 for k in _AH_KEYS:
@@ -996,40 +919,36 @@ def main():
     if total_final_alias:
         print(f'📌 别名归一化匹配 {total_final_alias} 条（跨源队名不一致）')
 
-    # 跨日期去重：同一场比赛可能因 source 不同出现在两个日期（如 future_500 + beidan）
-    # 用 (canonical_home, canonical_away) 做键（不带日期），优先保留日期与开赛时间匹配的版本
-    def _cross_date_score(rec, date):
-        """评分：越高越应该保留。开赛时间匹配日期得3分，有开赛时间得1分。"""
-        ko = rec.get('kickoff', '') or ''
-        score = 0
-        if ko and ko != '待定':
-            score += 1
-            if ko[:10] == date:
-                score += 2
-        return score
-
+    # 跨日期去重：同一场比赛可能因 source 不同（jingcai vs om_only）出现在两个日期
+    # 优先保留有真实 kickoff 的版本，删掉 kickoff="待定" 的版本
     cross_date_dedup = 0
     cross_date_kickoff_fixed = 0
-    all_matches = {}  # (canonical_home, canonical_away) → (date, record)
+    all_matches = {}  # (canonical_home, canonical_away, kickoff_date) → (date, record)
     for d_key in sorted(by_date.keys()):
         kept = []
         for r in by_date[d_key]:
-            mk = _match_key(r.get('home', ''), r.get('away', ''))
+            ko = r.get('kickoff', '') or ''
+            ko_date = ko[:10] if len(ko) >= 10 else d_key
+            mk = _match_key(r.get('home', ''), r.get('away', '')) + (ko_date,)
             if mk in all_matches:
                 prev_date, prev_rec = all_matches[mk]
-                prev_score = _cross_date_score(prev_rec, prev_date)
-                curr_score = _cross_date_score(r, d_key)
-                if curr_score > prev_score:
-                    # 当前版本更"正确" → 替换之前的
+                prev_kickoff = prev_rec.get('kickoff', '')
+                curr_kickoff = r.get('kickoff', '')
+                # 如果当前版本有真实 kickoff，之前的是"待定"或空，替换
+                if curr_kickoff and curr_kickoff != '待定' and (not prev_kickoff or prev_kickoff == '待定'):
+                    # 从之前日期中删除，但先补数据
                     _merge_missing(r, prev_rec)
                     by_date[prev_date] = [x for x in by_date[prev_date] if x is not prev_rec]
                     all_matches[mk] = (d_key, r)
-                    if curr_score >= 3 and prev_score < 3:
-                        cross_date_kickoff_fixed += 1
                     cross_date_dedup += 1
+                    cross_date_kickoff_fixed += 1
                     kept.append(r)
+                elif prev_kickoff and prev_kickoff != '待定' and (not curr_kickoff or curr_kickoff == '待定'):
+                    # 之前的有真实 kickoff，当前的是"待定" → 补数据后丢弃当前
+                    _merge_missing(prev_rec, r)
+                    cross_date_dedup += 1
                 else:
-                    # 之前的更"正确" → 补数据后丢弃当前
+                    # 两个都有真实 kickoff 或都无 → 保留日期更早的，补数据
                     _merge_missing(prev_rec, r)
                     cross_date_dedup += 1
             else:
@@ -1050,12 +969,6 @@ def main():
     n_scores = sum(len(v) for v in league_score_freq.values())
     print(f'📊 {len(by_date)}天, {summary["total_matches"]}场已开奖, EV={summary["ev_rate"]}%, 概率={summary["prob_rate"]}%')
     print(f'   联赛比分频率: {n_leagues}个联赛, {n_scores}个比分记录')
-
-    # 按联赛白名单过滤看板展示
-    filter_by_league_by_date(by_date)
-    # 过滤后重建统计数据
-    daily_stats = build_daily_stats(by_date)
-    summary = build_summary(daily_stats)
 
     out_base = args.output or REPO_DIR
     # results.json 必须输出到 docs/data/ 下，GitHub Pages 才能访问
