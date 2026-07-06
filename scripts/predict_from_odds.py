@@ -197,6 +197,54 @@ def load_om_matches(date_str):
     return merged
 
 
+def load_matches_from_db(db_path, date_str):
+    """从 DB 读取比赛+平博/Bet365赔率，构造 OM 兼容格式给 build_predictions"""
+    conn = sqlite3.connect(db_path)
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT id, home_team, away_team, league, kickoff_time,
+               pinnacle_close_w, pinnacle_close_d, pinnacle_close_l,
+               bet365_close_w, bet365_close_d, bet365_close_l
+        FROM poisson_predictions
+        WHERE date = ?
+          AND (pinnacle_close_w > 0 OR bet365_close_w > 0)
+    """, (date_str,))
+
+    rows = cur.fetchall()
+    conn.close()
+
+    matches = {}
+    for r in rows:
+        mid = str(r[0])
+        pin_w = r[5] or 0
+        pin_d = r[6] or 0
+        pin_l = r[7] or 0
+        b365_w = r[8] or 0
+        b365_d = r[9] or 0
+        b365_l = r[10] or 0
+
+        odds_dict = {}
+        if pin_w and pin_d and pin_l:
+            odds_dict["pinnacle"] = {"odds_w": pin_w, "odds_d": pin_d, "odds_l": pin_l, "margin": 0}
+        if b365_w and b365_d and b365_l:
+            odds_dict["bet365"] = {"odds_w": b365_w, "odds_d": b365_d, "odds_l": b365_l, "margin": 0}
+        if not odds_dict:
+            continue
+
+        matches[mid] = {
+            "info": {
+                "home": r[1],
+                "away": r[2],
+                "league": r[3] or "",
+                "kickoff": r[4] or "",
+            },
+            "odds": odds_dict,
+        }
+
+    return matches
+
+
 def extract_pinnacle_odds(odds_dict):
     """从 OM 单场比赛 odds 抽 Pinnacle/HKJC close"""
     pin = odds_dict.get('pinnacle', {}) or {}
@@ -236,6 +284,7 @@ def build_predictions(om_matches, fetch_date):
     rows = []
     n_avg = 0
     n_pin = 0
+    n_bet365 = 0
     n_hkjc = 0
     n_skip = 0
     
@@ -275,9 +324,24 @@ def build_predictions(om_matches, fetch_date):
                     margin_used = ext['pinnacle_margin']
                     n_pin += 1
                 else:
-                    ext = None  # fall through to hkjc
+                    ext = None  # fall through to bet365
             if p_w is None:
-                # 优先级3: hkjc 赔率反推
+                # 优先级3: bet365 赔率反推（DB 后备）
+                b365 = odds.get('bet365', {}) or {}
+                b365_w = b365.get('odds_w', 0) or 0
+                b365_d = b365.get('odds_d', 0) or 0
+                b365_l = b365.get('odds_l', 0) or 0
+                if b365_w and b365_d and b365_l:
+                    p_w, p_d, p_l = implied_from_odds(b365_w, b365_d, b365_l)
+                    if p_w is not None:
+                        odds_source = 'bet365'
+                        odds_w_used = b365_w
+                        odds_d_used = b365_d
+                        odds_l_used = b365_l
+                        margin_used = 0
+                        n_bet365 += 1
+            if p_w is None:
+                # 优先级4: hkjc 赔率反推
                 hkjc = odds.get('hkjc', {}) or {}
                 hkjc_w = hkjc.get('odds_w', 0) or 0
                 hkjc_d = hkjc.get('odds_d', 0) or 0
@@ -387,8 +451,8 @@ def build_predictions(om_matches, fetch_date):
             'ah_source': '',
         })
     
-    if n_pin or n_hkjc or n_skip:
-        print(f'  📊 赔率源: avg={n_avg} pinnacle={n_pin} hkjc={n_hkjc} skip={n_skip}')
+    if n_pin or n_bet365 or n_hkjc or n_skip:
+        print(f'  📊 赔率源: avg={n_avg} pinnacle={n_pin} bet365={n_bet365} hkjc={n_hkjc} skip={n_skip}')
     return rows
 
 
@@ -689,7 +753,11 @@ def main():
     matches = load_om_matches(args.date)
     print(f'📥 OM matches: {len(matches)} 场')
     if not matches:
-        print('⚠️ 无 OM 数据，跳过')
+        print('⚠️ 无 OM 数据，尝试从 DB 读取平博/Bet365 赔率...')
+        matches = load_matches_from_db(db_path, args.date)
+        print(f'📥 DB matches: {len(matches)} 场')
+    if not matches:
+        print('⚠️ 也无 DB 赔率数据，跳过')
         return 0
 
     rows = build_predictions(matches, args.date)
