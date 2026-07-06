@@ -39,6 +39,23 @@ DB_PATH = os.environ.get('FOOTBALL_DB_PATH',
 WEEKDAY_CN = ['周一','周二','周三','周四','周五','周六','周日']
 
 
+def _window_date(kickoff: str, fallback_date: str) -> str:
+    """竞彩窗口归日：00:00-11:59 归前一天，12:00-23:59 归当天"""
+    if not kickoff or kickoff == '待定':
+        return fallback_date
+    try:
+        dt = datetime.strptime(kickoff[:19], '%Y-%m-%d %H:%M:%S')
+    except ValueError:
+        try:
+            dt = datetime.strptime(kickoff[:19], '%Y-%m-%dT%H:%M:%S')
+        except ValueError:
+            return fallback_date
+    if dt.hour < 12:
+        prev = dt - timedelta(days=1)
+        return prev.strftime('%Y-%m-%d')
+    return dt.strftime('%Y-%m-%d')
+
+
 def load_from_processed(max_days=999) -> dict:
     """从 processed 目录加载数据，并做竞彩窗口调整（凌晨00:00-11:59归前一天）"""
     by_date = {}
@@ -56,9 +73,9 @@ def load_from_processed(max_days=999) -> dict:
             data = json.load(f)
         d = data.get('date', f"{date_key[:4]}-{date_key[4:6]}-{date_key[6:8]}")
         records = data.get('records', [])
-        # 按开赛时间实际日期归日（不用竞彩窗口偏移，窗口仅用于抓数据）
+        # 竞彩窗口归日：凌晨00:00-11:59的比赛归前一天（窗口12:00→次日11:59）
         for rec in records:
-            d_new = rec.get('date', d)
+            d_new = _window_date(rec.get('kickoff', ''), rec.get('date', d))
             # source映射：om_only → beidan
             if rec.get('source') == 'om_only':
                 rec['source'] = 'beidan'
@@ -208,9 +225,10 @@ def load_from_db(db_path: str, max_days=999) -> dict:
     for r in cur.fetchall():
         d = dict(r)
         date = d['date']
-        # 按实际开赛日期归日（不用竞彩窗口偏移，窗口仅用于抓数据）
-        if date not in by_date:
-            by_date[date] = []
+        # 竞彩窗口归日：凌晨00:00-11:59的比赛归前一天
+        wd = _window_date(d.get('kickoff_time', ''), date)
+        if wd not in by_date:
+            by_date[wd] = []
         # 简化序列化
         outcome = d.get('actual_outcome', '') or ''
         m = re.search(r'(\d+-\d+)', outcome)
@@ -259,7 +277,7 @@ def load_from_db(db_path: str, max_days=999) -> dict:
         _raw_cp = d.get('calibrated_prob', 0) or 0
         if _raw_cp == 0:
             _raw_cp = round(max(fw, fd, fl), 3)
-        by_date[date].append({
+        by_date[wd].append({
             'id': d['id'], 'date': date, 'league': d.get('league',''),
             'home': d['home_team'], 'away': d['away_team'],
             'kickoff': d.get('kickoff_time',''), 'prediction': d.get('prediction',''),
