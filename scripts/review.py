@@ -347,13 +347,13 @@ def _backfill_results(results: List[Dict]) -> int:
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     cursor.execute("""
-        SELECT id, home_team, away_team, actual_outcome, kickoff_time
+        SELECT id, home_team, away_team, actual_outcome, kickoff_time, fid_500
         FROM poisson_predictions
     """)
     db_records = [dict(r) for r in cursor.fetchall()]
     updated = 0
     for rec in db_records:
-        if rec['actual_outcome'] and re.search(r'\d+-\d+', rec['actual_outcome']):
+        if rec['actual_outcome'] and re.search(r'\d+-\d+', rec['actual_outcome']) and rec.get('fid_500'):
             continue
         for res in results:
             if team_match(rec['home_team'], res['home']) and team_match(rec['away_team'], res['away']):

@@ -288,7 +288,8 @@ def backfill_db(results, db_path, dry_run=False, fid_only=False):
         cursor.execute("""
             SELECT id, home_team, away_team, kickoff_time, fid_500
             FROM poisson_predictions
-            WHERE actual_outcome IS NULL OR actual_outcome = '' OR actual_outcome NOT GLOB '*[0-9]-[0-9]*'
+            WHERE (actual_outcome IS NULL OR actual_outcome = '' OR actual_outcome NOT GLOB '*[0-9]-[0-9]*')
+               OR fid_500 IS NULL
         """)
     db_records = [dict(r) for r in cursor.fetchall()]
     
