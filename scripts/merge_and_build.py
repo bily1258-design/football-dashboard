@@ -326,14 +326,14 @@ def load_from_db(db_path: str, max_days=999) -> dict:
                 'l': d.get('hhad_loss',0) or 0,
             },
             'ah': {
-                'handicap': d.get('ah_handicap', None),
-                'home_w': d.get('ah_home_water', 0) or 0,
-                'away_w': d.get('ah_away_water', 0) or 0,
-                'source': d.get('ah_source', '') or '',
+                'handicap': d.get('ah_handicap', None) or d.get('pin_ah_handicap', None),
+                'home_w': (d.get('ah_home_water', 0) or 0) or (d.get('pin_ah_home_water', 0) or 0),
+                'away_w': (d.get('ah_away_water', 0) or 0) or (d.get('pin_ah_away_water', 0) or 0),
+                'source': d.get('ah_source', '') or ('pinnacle' if d.get('pin_ah_handicap') else ''),
                 'open': {
-                    'handicap': d.get('ah_open_handicap', None),
-                    'home_w': d.get('ah_open_home_water', 0) or 0,
-                    'away_w': d.get('ah_open_away_water', 0) or 0,
+                    'handicap': d.get('ah_open_handicap', None) or d.get('pin_ah_open_handicap', None),
+                    'home_w': (d.get('ah_open_home_water', 0) or 0) or (d.get('pin_ah_open_home_water', 0) or 0),
+                    'away_w': (d.get('ah_open_away_water', 0) or 0) or (d.get('pin_ah_open_away_water', 0) or 0),
                 },
             },
             'liji': {
@@ -405,13 +405,13 @@ def load_from_db(db_path: str, max_days=999) -> dict:
                 },
             },
             'ou': {
-                'over': d.get('ou_over', 0) or 0,
-                'line': d.get('ou_line', None),
-                'under': d.get('ou_under', 0) or 0,
+                'over': (d.get('ou_over', 0) or 0) or (d.get('pin_ou_over', 0) or 0),
+                'line': d.get('ou_line', None) or d.get('pin_ou_line', None),
+                'under': (d.get('ou_under', 0) or 0) or (d.get('pin_ou_under', 0) or 0),
                 'open': {
-                    'over': d.get('ou_open_over', 0) or 0,
-                    'line': d.get('ou_open_line', None),
-                    'under': d.get('ou_open_under', 0) or 0,
+                    'over': (d.get('ou_open_over', 0) or 0) or (d.get('pin_ou_open_over', 0) or 0),
+                    'line': d.get('ou_open_line', None) or d.get('pin_ou_open_line', None),
+                    'under': (d.get('ou_open_under', 0) or 0) or (d.get('pin_ou_open_under', 0) or 0),
                 },
             },
             'liji_ou': {
