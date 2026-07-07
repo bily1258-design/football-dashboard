@@ -587,10 +587,11 @@ function loadDate() {
     const ahCell = ahClickable
       ? `<td class="ah-clickable" data-date="${sel}" data-idx="${i}">${ahDisplayVal}</td>`
       : `<td>${ahDisplayVal}</td>`;
-    const poissonStr = `${r.poisson.w}/${r.poisson.d}/${r.poisson.l}`;
-    const finalStr = `${r.fusion_prob.w}/${r.fusion_prob.d}/${r.fusion_prob.l}`;
-    const evStr = `<span class="${evCls(evW)}">${evW.toFixed(2)}</span>/<span class="${evCls(evD)}">${evD.toFixed(2)}</span>/<span class="${evCls(evL)}">${evL.toFixed(2)}</span>`;
-    const kellyStr = `${r.kelly.w}/${r.kelly.d}/${r.kelly.l}`;
+    const pct = v => (v * 100).toFixed(1) + '%';
+    const poissonStr = `${pct(r.poisson.w)}/${pct(r.poisson.d)}/${pct(r.poisson.l)}`;
+    const finalStr = `${pct(r.final_prob.w)}/${pct(r.final_prob.d)}/${pct(r.final_prob.l)}`;
+    const evStr = `<span class="${evCls(evW)}">${pct(evW)}</span>/<span class="${evCls(evD)}">${pct(evD)}</span>/<span class="${evCls(evL)}">${pct(evL)}</span>`;
+    const kellyStr = `${pct(r.kelly.w)}/${pct(r.kelly.d)}/${pct(r.kelly.l)}`;
     const kickoff = (!r.kickoff || r.kickoff === '待定') ? '-' : r.kickoff.substring(11, 16);
     const probPct = (r.prediction_prob * 100).toFixed(1) + '%';
     const probLabel = r.prob_direction ? `${r.prob_direction} ${probPct}` : probPct;
