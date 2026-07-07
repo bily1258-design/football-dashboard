@@ -32,4 +32,15 @@ fi
 echo "[$(date '+%H:%M:%S')] Step 1: 补fid+回填比分..."
 python3 scripts/backfill_from_500com.py --db "$DB" 2>&1 || echo "  ⚠️ 回填比分失败"
 
-echo "[$(date '+%H:%M:%S')] 🏁 比分回填结束"
+# Step 2: 重建看板JSON（含比分）
+echo "[$(date '+%H:%M:%S')] Step 2: 重建看板JSON..."
+python3 scripts/merge_and_build.py --db "$DB" 2>&1 || echo "  ⚠️ 重建JSON失败"
+
+# Step 3: 推送docs/到GitHub
+echo "[$(date '+%H:%M:%S')] Step 3: 推送看板..."
+git add docs/ && \
+git commit -m "docs: score backfill $(date +%Y-%m-%d)" 2>/dev/null && \
+git push origin main 2>&1 && \
+echo "  ✅ 推送成功" || echo "  ⏭️ 无变更可推"
+
+echo "[$(date '+%H:%M:%S')] 🏁 比分回填+看板更新结束"
