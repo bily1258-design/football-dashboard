@@ -330,10 +330,35 @@ def main():
                     # 跨日比赛：用 date 的年 + time 的月-日
                     year = date[:4]
                     kickoff_time = f"{year}-{md.group(1)}-{md.group(2)} {md.group(3)}:00"
+                    # 北单/竞彩页的 date 可能不等于 kickoff_time 的日期
+                    # 用 kickoff_time 的真正的日期来覆盖 date
+                    import datetime as _dt
+                    true_date = _dt.datetime.strptime(kickoff_time[:10], '%Y-%m-%d').strftime('%Y-%m-%d')
+                    if true_date != date:
+                        if args.verbose:
+                            print(f"  📅 时间跨日: date={date}, kickoff_time={kickoff_time[:10]}, 用{kickoff_time[:10]}")
+                        date = true_date
                 else:
+                    kickoff_time = f"{date} {kickoff}:00"
+            elif kickoff:
+                # 北单/无 date 的比赛：从 kickoff 的跨日格式推断
+                import re as _re
+                md = _re.match(r'^(\d{2})-(\d{2})\s+(\d{2}:\d{2})$', kickoff)
+                if md:
+                    # 用当天日期 + kickoff 的月日，但如果跨到明天？
+                    import datetime as _dt
+                    now_ym = _dt.datetime.now().strftime('%Y-%m')
+                    candidate = f"{now_ym}-{md.group(1)}-{md.group(2)}"
+                    kickoff_time = f"{candidate} {md.group(3)}:00"
+                    date = candidate
+                else:
+                    # "HH:MM" 当天
+                    import datetime as _dt
+                    date = _dt.datetime.now().strftime('%Y-%m-%d')
                     kickoff_time = f"{date} {kickoff}:00"
             else:
                 kickoff_time = ""
+                date = ""
 
             # 检查是否已存在相同fid的记录
             cur.execute("SELECT id FROM poisson_predictions WHERE fid_500=?", (m['fid'],))
@@ -342,22 +367,32 @@ def main():
                     print(f"  ⏭ fid={m['fid']} 已存在，跳过")
                 continue
 
-            # 检查是否已存在相同球队+日期的记录
-            if date:
-                cur.execute(
-                    "SELECT id FROM poisson_predictions WHERE date=? AND home_team=? AND away_team=?",
-                    (date, m['home'], m['away'])
-                )
-                existing = cur.fetchone()
-                if existing:
-                    if not args.dry_run:
-                        cur.execute("UPDATE poisson_predictions SET fid_500=? WHERE id=?", (m['fid'], existing[0]))
-                    saved += 1
-                    if args.verbose:
-                        print(f"  ✅ 更新fid: ID={existing[0]} {m['home']} vs {m['away']} -> fid={m['fid']}")
-                    continue
+            # 检查是否已存在相同球队+日期的记录（无论date是否为空，都用球队名匹配）
+            cur.execute(
+                "SELECT id, date FROM poisson_predictions WHERE home_team=? AND away_team=?",
+                (m['home'], m['away'])
+            )
+            existing = cur.fetchone()
+            if existing:
+                # 已有记录则只更新 fid_500 和 date（如果当前date更准确）
+                if not args.dry_run:
+                    upd = "UPDATE poisson_predictions SET fid_500=?"
+                    params = [m['fid']]
+                    if date:
+                        upd += ", date=?"
+                        params.append(date)
+                    if kickoff_time:
+                        upd += ", kickoff_time=?"
+                        params.append(kickoff_time)
+                    upd += " WHERE id=?"
+                    params.append(existing[0])
+                    cur.execute(upd, params)
+                saved += 1
+                if args.verbose:
+                    print(f"  ✅ 更新: ID={existing[0]} {m['home']} vs {m['away']} -> fid={m['fid']} date={date or existing[1]}")
+                continue
 
-            # 插入新记录
+            # 插入新记录（只在完全无重复时）
             if not args.dry_run:
                 cur.execute("""
                     INSERT INTO poisson_predictions
