@@ -75,10 +75,14 @@ jobs:
           fi
 
       # Deploy docs to gh-pages branch via gh CLI
+      # WARNING: cd docs 失败时若没有 set -e + 目录检查，
+      # 会误将整个仓库根目录推到 gh-pages → 看板 404
       - name: Deploy to Pages
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          set -euo pipefail
+          if [ ! -d docs ]; then echo "FATAL: docs/ missing, aborting deploy"; exit 1; fi
           cd docs
           git init -b main
           git config user.name 'github-actions[bot]'
