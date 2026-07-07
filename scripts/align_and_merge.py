@@ -74,7 +74,9 @@ def load_db_predictions(db_path: str, date_str: str) -> List[Dict]:
             ms_handicap, ms_home_water, ms_away_water,
             ms_open_handicap, ms_open_home_water, ms_open_away_water,
             pin_ah_handicap, pin_ah_home_water, pin_ah_away_water,
+            pin_ah_open_handicap, pin_ah_open_home_water, pin_ah_open_away_water,
             pin_ou_line, pin_ou_over, pin_ou_under,
+            pin_ou_open_line, pin_ou_open_over, pin_ou_open_under,
             ou_over, ou_line, ou_under,
             ou_open_over, ou_open_line, ou_open_under,
             liji_ou_over, liji_ou_line, liji_ou_under,
@@ -85,6 +87,11 @@ def load_db_predictions(db_path: str, date_str: str) -> List[Dict]:
             william_ah_handicap, william_ah_home_water, william_ah_away_water,
             william_ah_open_handicap, william_ah_open_home_water, william_ah_open_away_water,
             william_ou_over, william_ou_line, william_ou_under,
+            william_ou_open_over, william_ou_open_line, william_ou_open_under,
+            bet365_ah_handicap, bet365_ah_home_water, bet365_ah_away_water,
+            bet365_ah_open_handicap, bet365_ah_open_home_water, bet365_ah_open_away_water,
+            bet365_ou_line, bet365_ou_over, bet365_ou_under,
+            bet365_ou_open_line, bet365_ou_open_over, bet365_ou_open_under,
             liji_1x2_w, liji_1x2_d, liji_1x2_l,
             liji_1x2_open_w, liji_1x2_open_d, liji_1x2_open_l,
             ms_1x2_w, ms_1x2_d, ms_1x2_l,
@@ -151,6 +158,9 @@ def load_db_predictions(db_path: str, date_str: str) -> List[Dict]:
                         kept['william_ou_over'] = r['william_ou_over']
                         kept['william_ou_line'] = r.get('william_ou_line', 0)
                         kept['william_ou_under'] = r.get('william_ou_under', 0)
+                        kept['william_ou_open_over'] = r.get('william_ou_open_over', 0)
+                        kept['william_ou_open_line'] = r.get('william_ou_open_line')
+                        kept['william_ou_open_under'] = r.get('william_ou_open_under', 0)
                         william_fixed += 1
                 # 补AH
                 if kept.get('ah_handicap') is None or kept.get('ah_handicap') == 0:
@@ -178,6 +188,24 @@ def load_db_predictions(db_path: str, date_str: str) -> List[Dict]:
                         kept['pin_ou_open_line'] = r.get('pin_ou_open_line')
                         kept['pin_ou_open_over'] = r.get('pin_ou_open_over', 0)
                         kept['pin_ou_open_under'] = r.get('pin_ou_open_under', 0)
+                # 补Bet365 AH
+                if kept.get('bet365_ah_handicap') is None or kept.get('bet365_ah_handicap') == 0:
+                    if r.get('bet365_ah_handicap') is not None and r.get('bet365_ah_handicap') != 0:
+                        kept['bet365_ah_handicap'] = r['bet365_ah_handicap']
+                        kept['bet365_ah_home_water'] = r.get('bet365_ah_home_water', 0)
+                        kept['bet365_ah_away_water'] = r.get('bet365_ah_away_water', 0)
+                        kept['bet365_ah_open_handicap'] = r.get('bet365_ah_open_handicap')
+                        kept['bet365_ah_open_home_water'] = r.get('bet365_ah_open_home_water', 0)
+                        kept['bet365_ah_open_away_water'] = r.get('bet365_ah_open_away_water', 0)
+                # 补Bet365 OU
+                if kept.get('bet365_ou_line') is None or kept.get('bet365_ou_line') == 0:
+                    if r.get('bet365_ou_line') is not None and r.get('bet365_ou_line') != 0:
+                        kept['bet365_ou_line'] = r['bet365_ou_line']
+                        kept['bet365_ou_over'] = r.get('bet365_ou_over', 0)
+                        kept['bet365_ou_under'] = r.get('bet365_ou_under', 0)
+                        kept['bet365_ou_open_line'] = r.get('bet365_ou_open_line')
+                        kept['bet365_ou_open_over'] = r.get('bet365_ou_open_over', 0)
+                        kept['bet365_ou_open_under'] = r.get('bet365_ou_open_under', 0)
 
         # A3.5: 跨key去重 — 不同译名变体（如"沙特"vs"沙特阿拉伯"）也合并
         keys = list(seen.keys())
@@ -414,11 +442,21 @@ def merge_prediction(rec: Dict, om_match: Optional[Dict]) -> Dict:
             'handicap': rec.get('pin_ah_handicap', None),
             'home_w': rec.get('pin_ah_home_water', 0) or 0,
             'away_w': rec.get('pin_ah_away_water', 0) or 0,
+            'open': {
+                'handicap': rec.get('pin_ah_open_handicap', None),
+                'home_w': rec.get('pin_ah_open_home_water', 0) or 0,
+                'away_w': rec.get('pin_ah_open_away_water', 0) or 0,
+            },
         },
         'pin_ou': {
             'line': rec.get('pin_ou_line', None),
             'over': rec.get('pin_ou_over', 0) or 0,
             'under': rec.get('pin_ou_under', 0) or 0,
+            'open': {
+                'line': rec.get('pin_ou_open_line', None),
+                'over': rec.get('pin_ou_open_over', 0) or 0,
+                'under': rec.get('pin_ou_open_under', 0) or 0,
+            },
         },
         'ou': {
             'over': rec.get('ou_over', 0) or 0,
@@ -469,6 +507,31 @@ def merge_prediction(rec: Dict, om_match: Optional[Dict]) -> Dict:
             'over': rec.get('william_ou_over', 0) or 0,
             'line': rec.get('william_ou_line', None),
             'under': rec.get('william_ou_under', 0) or 0,
+            'open': {
+                'over': rec.get('william_ou_open_over', 0) or 0,
+                'line': rec.get('william_ou_open_line', None),
+                'under': rec.get('william_ou_open_under', 0) or 0,
+            },
+        },
+        'bet365_ah': {
+            'handicap': rec.get('bet365_ah_handicap', None),
+            'home_w': rec.get('bet365_ah_home_water', 0) or 0,
+            'away_w': rec.get('bet365_ah_away_water', 0) or 0,
+            'open': {
+                'handicap': rec.get('bet365_ah_open_handicap', None),
+                'home_w': rec.get('bet365_ah_open_home_water', 0) or 0,
+                'away_w': rec.get('bet365_ah_open_away_water', 0) or 0,
+            },
+        },
+        'bet365_ou': {
+            'line': rec.get('bet365_ou_line', None),
+            'over': rec.get('bet365_ou_over', 0) or 0,
+            'under': rec.get('bet365_ou_under', 0) or 0,
+            'open': {
+                'line': rec.get('bet365_ou_open_line', None),
+                'over': rec.get('bet365_ou_open_over', 0) or 0,
+                'under': rec.get('bet365_ou_open_under', 0) or 0,
+            },
         },
     }
 

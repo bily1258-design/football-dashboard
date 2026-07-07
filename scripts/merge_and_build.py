@@ -1008,6 +1008,33 @@ def main():
                 print(f'📌 DB补充{n_ah_merged}条记录的ah/liji/ms字段')
             if n_hkjc_merged:
                 print(f'📌 DB补充{n_hkjc_merged}条记录的hkjc字段')
+            # 补充已存在dict的open字段：processed已有pin_ou/pin_ah/william_ou等dict
+            # 但缺少open子字段时，从DB版本补充
+            n_open_merged = 0
+            for d_key, db_records in db_data.items():
+                if d_key not in by_date:
+                    continue
+                db_by_id = {r['id']: r for r in db_records}
+                db_by_match = {}
+                for r in db_records:
+                    mk = _match_key(r.get('home',''), r.get('away',''))
+                    db_by_match.setdefault(mk, r)
+                for proc_rec in by_date[d_key]:
+                    db_rec = db_by_id.get(proc_rec.get('id'))
+                    if not db_rec:
+                        match_k = _match_key(proc_rec.get('home',''), proc_rec.get('away',''))
+                        db_rec = db_by_match.get(match_k)
+                    if not db_rec:
+                        continue
+                    for k in _NEW_KEYS:
+                        p_val = proc_rec.get(k)
+                        d_val = db_rec.get(k)
+                        if isinstance(p_val, dict) and isinstance(d_val, dict):
+                            if 'open' not in p_val and 'open' in d_val:
+                                p_val['open'] = d_val['open']
+                                n_open_merged += 1
+            if n_open_merged:
+                print(f'📌 DB补充{n_open_merged}条记录的open初盘字段')
     if not by_date:
         print('[ERROR] 无数据'); sys.exit(1)
 
