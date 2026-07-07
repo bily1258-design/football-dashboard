@@ -320,8 +320,18 @@ def main():
             kickoff = m.get('time', '')
 
             # 构造完整kickoff_time
+            # 500.com 的 time 字段可能是 "MM-DD HH:MM"（跨日比赛）
+            # 或 "HH:MM"（当天比赛），不能简单拼接 date + time
             if date and kickoff:
-                kickoff_time = f"{date} {kickoff}:00"
+                import re as _re
+                # 检查是否是 "MM-DD HH:MM" 格式
+                md = _re.match(r'^(\d{2})-(\d{2})\s+(\d{2}:\d{2})$', kickoff)
+                if md:
+                    # 跨日比赛：用 date 的年 + time 的月-日
+                    year = date[:4]
+                    kickoff_time = f"{year}-{md.group(1)}-{md.group(2)} {md.group(3)}:00"
+                else:
+                    kickoff_time = f"{date} {kickoff}:00"
             else:
                 kickoff_time = ""
 
