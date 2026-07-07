@@ -1,5 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/bash
-# cron_score_only.sh — 仅抓比分（fid回填）
+# cron_score_only.sh — 抓比分 + 赔率 → 重建看板 → 推送
 # 由 Termux crond 调度，每日 08:30 北京时间执行
 
 set -e
@@ -9,7 +9,7 @@ cd /data/data/com.termux/files/home/football-dashboard || exit 1
 TODAY=$(date +%Y-%m-%d)
 NOW=$(date '+%Y-%m-%d %H:%M:%S')
 
-echo "[${NOW}] 🚀 比分回填开始 (${TODAY})"
+echo "[${NOW}] 🚀 数据更新开始 (${TODAY})"
 
 # Step 0: 同步最新代码（强制覆盖本地，避免stash冲突卡住）
 echo "[$(date '+%H:%M:%S')] Step 0: 同步代码..."
@@ -32,7 +32,12 @@ fi
 echo "[$(date '+%H:%M:%S')] Step 1: 补fid+回填比分..."
 python3 scripts/backfill_from_500com.py --db "$DB" 2>&1 || echo "  ⚠️ 回填比分失败"
 
-# Step 2: 重建看板JSON（含比分）
+# Step 1.5: 抓取5家公司赔率（Pinnacle/Bet365/利记/明升/威廉希尔/HKJC）
+echo "[$(date '+%H:%M:%S')] Step 1.5: 抓取赔率... (公司: all)"
+python3 scripts/fetch_500com_odds.py --db "$DB" --company all 2>&1 || echo "  ⚠️ 抓取赔率失败"
+echo ""
+
+# Step 2: 重建看板JSON（含比分+赔率）
 echo "[$(date '+%H:%M:%S')] Step 2: 重建看板JSON..."
 python3 scripts/merge_and_build.py --db "$DB" 2>&1 || echo "  ⚠️ 重建JSON失败"
 
@@ -49,4 +54,4 @@ git commit -m "docs: score backfill $(date +%Y-%m-%d)" 2>/dev/null && \
 git push origin main 2>&1 && \
 echo "  ✅ 推送成功" || echo "  ⏭️ 无变更可推"
 
-echo "[$(date '+%H:%M:%S')] 🏁 比分回填+看板更新结束"
+echo "[$(date '+%H:%M:%S')] 🏁 数据更新结束"
