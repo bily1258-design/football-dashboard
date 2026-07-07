@@ -23,20 +23,7 @@ import sys
 import time
 from datetime import datetime, timedelta
 
-# ===== 竞彩/北单常见联赛白名单 =====
-# 只保留用户确认的约66场，其余过滤掉
-LEAGUE_WHITELIST = {
-    # 国内
-    '中超', '中甲',
-    # 韩国
-    'K1联赛', 'K2联赛',
-    # 北欧（北单覆盖）
-    '芬超', '芬甲', '冰岛超', '瑞典超', '挪甲', '爱甲',
-    # 美洲
-    '美冠', '巴乙', '厄甲',
-    # 国家队赛事
-    '世界杯',
-}
+# 不再按联赛白名单过滤，固定日期页面直接取全部比赛
 
 # ===== 队名别名映射（页面名 → DB名） =====
 TEAM_ALIASES = {
@@ -141,41 +128,59 @@ def fetch_page_raw(url):
 
 
 def extract_fid_rows(raw, source):
-    """通用提取: <tr id=\"aXXXXX\" gy=\"league,home,away\"> → fid列表
+    """提取 <tr id=\"aXXXXX\" ...> 中的 fid/联赛/队名/开赛时间
 
-    wanchang.php 和 weekfixture.php 结构一致，都用 id=\"aXXX\" + gy=\"...\"
+    结构示例:
+      <tr id=\"a1427672\" gy=\"欧冠,克拉克斯,比森阿泰尔\" yy=\"欧冠,拉克斯域克,阿特比森\" ...>
+        <td>...</td><td>联赛</td><td>轮次</td><td align=\"center\">07-08 02:45</td>...
     """
     matches = []
-    pattern = rb'id=\"a(\d+)\"[^>]*gy=\"([^\"]*)\"'
-    rows = re.findall(pattern, raw)
-    for aid_bytes, gy_bytes in rows:
-        fid = aid_bytes.decode()
-        gy = gy_bytes.decode('gbk', errors='replace')
+    # 两段式：先找所有 tr 块（不含捕获组，findall 返回完整匹配文本），再逐块解析
+    tr_pattern = rb'<tr[^>]*id="a\d+"[^>]*>.*?</tr>'
+    tr_blocks = re.findall(tr_pattern, raw, re.DOTALL)
+    for tr_text in tr_blocks:
+
+        # fid = tr id 中的数字
+        fid_m = re.search(rb'id="a(\d+)"', tr_text)
+        if not fid_m:
+            continue
+        fid = fid_m.group(1).decode()
+
+        # gy = 联赛,主队,客队（中文简称）
+        gy_m = re.search(rb'gy="([^"]*)"', tr_text)
+        if not gy_m:
+            continue
+        gy = gy_m.group(1).decode('gbk', errors='replace')
         parts = gy.split(',')
         if len(parts) < 3:
             continue
+
+        # yy = 备选队名（500.com原始/音译名）
+        yy = ''
+        yy_m = re.search(rb'yy="([^"]*)"', tr_text)
+        if yy_m:
+            yy = yy_m.group(1).decode('gbk', errors='replace')
+
+        # 时间：第4个 <td align="center">MM-DD HH:MM</td>
+        time_val = ''
+        time_m = re.search(
+            rb'<td[^>]*align="center"[^>]*>(\d{2}-\d{2}\s+\d{2}:\d{2})</td>',
+            tr_text
+        )
+        if time_m:
+            time_val = time_m.group(1).decode()
+
         matches.append({
-            'fid': fid, 'league': parts[0].strip(),
-            'home': parts[1].strip(), 'away': parts[2].strip(),
+            'fid': fid,
+            'league': parts[0].strip(),
+            'home': parts[1].strip(),
+            'away': parts[2].strip(),
+            'yy_home': yy.split(',')[1].strip() if yy and len(yy.split(',')) > 1 else '',
+            'yy_away': yy.split(',')[2].strip() if yy and len(yy.split(',')) > 2 else '',
+            'time': time_val,
             'source': source
         })
     return matches
-
-
-def filter_by_league(matches, whitelist, verbose=False):
-    """按联赛白名单过滤"""
-    kept = []
-    filtered = 0
-    for m in matches:
-        if m['league'] in whitelist:
-            kept.append(m)
-        else:
-            filtered += 1
-            if verbose:
-                print(f"  🔇 过滤掉 [{m['league']}] {m['home']} vs {m['away']} (fid={m['fid']})")
-    if verbose:
-        print(f"联赛过滤: 保留 {len(kept)} 场, 过滤 {filtered} 场")
-    return kept
 
 
 def main():
@@ -235,15 +240,6 @@ def main():
             seen_fids.add(m['fid'])
             unique_matches.append(m)
     print(f"去重后: {len(unique_matches)}场")
-
-    # === 联赛过滤 ===
-    original_count = len(unique_matches)
-    unique_matches = filter_by_league(unique_matches, LEAGUE_WHITELIST, verbose=args.verbose)
-    print(f"联赛过滤: {original_count} -> {len(unique_matches)}场 (去掉 {original_count - len(unique_matches)} 场)")
-
-    if len(unique_matches) == 0:
-        print("过滤后无比赛，退出")
-        return
 
     # 连接DB
     conn = sqlite3.connect(args.db)
