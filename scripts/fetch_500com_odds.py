@@ -460,11 +460,12 @@ def update_db(db_path, records, company, dry_run=False):
     return updated
 
 
-def get_pending_fids(db_path, company, limit=50, rebuild=False, max_days=30):
+def get_pending_fids(db_path, company, limit=50, rebuild=False, max_days=30, refresh_live=False):
     """获取需要抓取赔率的fid列表
     
     max_days: 默认只返回30天内的比赛（500.com过期旧数据）
     rebuild=True时返回所有有fid的记录
+    refresh_live=True时未开赛的比赛重新抓取（赔率实时变动）
     否则检查1X2+AH+OU三组字段，任一缺失就重新抓取
     """
     cfg = COMPANY_CONFIG[company]
@@ -496,6 +497,7 @@ def get_pending_fids(db_path, company, limit=50, rebuild=False, max_days=30):
         
         # 任一数据组缺失就视为pending（1X2/AH/OU可能有先后上线时间差）
         # 注意: AH让球=0是平手盘(有效数据), OU盘口不会为0, 所以AH/OU只用IS NULL判断
+        live_condition = "OR (kickoff_time IS NOT NULL AND kickoff_time > datetime('now'))" if refresh_live else ""
         c.execute(f"""
             SELECT DISTINCT fid_500, home_team, away_team, kickoff_time
             FROM poisson_predictions
@@ -504,6 +506,7 @@ def get_pending_fids(db_path, company, limit=50, rebuild=False, max_days=30):
                 {check_1x2} = 0 OR {check_1x2} IS NULL
                 OR {check_ah} IS NULL
                 OR {check_ou} IS NULL
+                {live_condition}
               )
             ORDER BY kickoff_time DESC
             LIMIT ?
@@ -530,6 +533,8 @@ def main():
     parser.add_argument('--rebuild', action='store_true', help='重刷所有有fid的记录(含已有赔率)')
     parser.add_argument('--max-days', type=int, default=30,
                        help='只抓取N天内的比赛 (默认30天, 0=不限)')
+    parser.add_argument('--refresh-live', action='store_true',
+                        help='未开赛的比赛重新抓取覆盖旧赔率 (赔率实时变动)')
     args = parser.parse_args()
     
     companies = list(COMPANY_CONFIG.keys()) if args.company == 'all' else [args.company]
@@ -579,7 +584,7 @@ def main():
         cfg = COMPANY_CONFIG[company]
         cid = cfg['cid']
         
-        pending = get_pending_fids(args.db, company, args.limit, args.rebuild, max_days=args.max_days)
+        pending = get_pending_fids(args.db, company, args.limit, args.rebuild, max_days=args.max_days, refresh_live=args.refresh_live)
         if not pending:
             print(f'✅ [{company}] 所有记录已有赔率数据')
             continue
