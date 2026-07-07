@@ -36,8 +36,14 @@ python3 scripts/backfill_from_500com.py --db "$DB" 2>&1 || echo "  ⚠️ 回填
 echo "[$(date '+%H:%M:%S')] Step 2: 重建看板JSON..."
 python3 scripts/merge_and_build.py --db "$DB" 2>&1 || echo "  ⚠️ 重建JSON失败"
 
-# Step 3: 推送docs/到GitHub
-echo "[$(date '+%H:%M:%S')] Step 3: 推送看板..."
+# Step 3: 推DB到Release（供GA使用带比分的DB）
+echo "[$(date '+%H:%M:%S')] Step 3: 推DB到Release..."
+source ~/.bashrc 2>/dev/null && \
+gh release upload db-latest "$DB" --clobber 2>&1 && \
+echo "  ✅ DB推送成功" || echo "  ⚠️ DB推送失败（可忽略）"
+
+# Step 4: 推送docs/到GitHub
+echo "[$(date '+%H:%M:%S')] Step 4: 推送看板..."
 git add docs/ && \
 git commit -m "docs: score backfill $(date +%Y-%m-%d)" 2>/dev/null && \
 git push origin main 2>&1 && \
