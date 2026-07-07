@@ -1,21 +1,21 @@
 {
   "meta": {
-    "generated_at": "2026-07-07 11:43:40",
+    "generated_at": "2026-07-07 16:53:31",
     "total_dates": 10,
-    "total_matches": 123,
+    "total_matches": 126,
     "date_range": {
       "from": "2026-06-27",
       "to": "2026-07-07"
     }
   },
   "summary": {
-    "total_matches": 87,
-    "ev_hits": 53,
-    "prob_hits": 48,
-    "any_hits": 55,
-    "ev_rate": 60.9,
-    "prob_rate": 55.2,
-    "any_rate": 63.2,
+    "total_matches": 88,
+    "ev_hits": 52,
+    "prob_hits": 47,
+    "any_hits": 54,
+    "ev_rate": 59.1,
+    "prob_rate": 53.4,
+    "any_rate": 61.4,
     "days": 10,
     "tiers": {
       "high": {
@@ -26,30 +26,70 @@
         "prob_rate": 73.3
       },
       "medium": {
-        "total": 26,
-        "ev_hits": 14,
-        "prob_hits": 10,
-        "ev_rate": 53.8,
-        "prob_rate": 38.5
+        "total": 27,
+        "ev_hits": 15,
+        "prob_hits": 11,
+        "ev_rate": 55.6,
+        "prob_rate": 40.7
       },
       "low": {
-        "total": 33,
-        "ev_hits": 23,
-        "prob_hits": 23,
-        "ev_rate": 69.7,
-        "prob_rate": 69.7
+        "total": 32,
+        "ev_hits": 21,
+        "prob_hits": 21,
+        "ev_rate": 65.6,
+        "prob_rate": 65.6
       },
       "very_low": {
-        "total": 13,
+        "total": 14,
         "ev_hits": 5,
         "prob_hits": 4,
-        "ev_rate": 38.5,
-        "prob_rate": 30.8
+        "ev_rate": 35.7,
+        "prob_rate": 28.6
       }
     },
-    "last_updated": "2026-07-07 11:43"
+    "last_updated": "2026-07-07 16:53"
   },
   "daily_stats": {
+    "2026-07-07": {
+      "total": 10,
+      "with_result": 7,
+      "ev_hits": 2,
+      "prob_hits": 2,
+      "any_hits": 2,
+      "ev_rate": 28.6,
+      "prob_rate": 28.6,
+      "any_rate": 28.6,
+      "tiers": {
+        "high": {
+          "total": 0,
+          "ev_hits": 0,
+          "prob_hits": 0,
+          "ev_rate": 0,
+          "prob_rate": 0
+        },
+        "medium": {
+          "total": 1,
+          "ev_hits": 1,
+          "prob_hits": 1,
+          "ev_rate": 100.0,
+          "prob_rate": 100.0
+        },
+        "low": {
+          "total": 2,
+          "ev_hits": 1,
+          "prob_hits": 1,
+          "ev_rate": 50.0,
+          "prob_rate": 50.0
+        },
+        "very_low": {
+          "total": 4,
+          "ev_hits": 0,
+          "prob_hits": 0,
+          "ev_rate": 0.0,
+          "prob_rate": 0.0
+        }
+      }
+    },
     "2026-07-04": {
       "total": 26,
       "with_result": 26,
@@ -409,46 +449,6 @@
           "prob_rate": 0
         }
       }
-    },
-    "2026-07-07": {
-      "total": 7,
-      "with_result": 6,
-      "ev_hits": 3,
-      "prob_hits": 3,
-      "any_hits": 3,
-      "ev_rate": 50.0,
-      "prob_rate": 50.0,
-      "any_rate": 50.0,
-      "tiers": {
-        "high": {
-          "total": 0,
-          "ev_hits": 0,
-          "prob_hits": 0,
-          "ev_rate": 0,
-          "prob_rate": 0
-        },
-        "medium": {
-          "total": 0,
-          "ev_hits": 0,
-          "prob_hits": 0,
-          "ev_rate": 0,
-          "prob_rate": 0
-        },
-        "low": {
-          "total": 3,
-          "ev_hits": 3,
-          "prob_hits": 3,
-          "ev_rate": 100.0,
-          "prob_rate": 100.0
-        },
-        "very_low": {
-          "total": 3,
-          "ev_hits": 0,
-          "prob_hits": 0,
-          "ev_rate": 0.0,
-          "prob_rate": 0.0
-        }
-      }
     }
   },
   "dates": [
@@ -464,6 +464,2628 @@
     "2026-06-27"
   ],
   "matches": {
+    "2026-07-07": [
+      {
+        "id": 1966,
+        "date": "2026-07-07",
+        "league": "世界杯",
+        "home": "法国",
+        "away": "摩洛哥",
+        "kickoff": "2026-07-07 00:00",
+        "prediction": "主胜",
+        "prediction_prob": 0.592,
+        "odds": {
+          "w": 1.59,
+          "d": 3.9,
+          "l": 6.55
+        },
+        "poisson": {
+          "w": 0.537,
+          "d": 0.229,
+          "l": 0.235
+        },
+        "final_prob": {
+          "w": 0.592,
+          "d": 0.243,
+          "l": 0.165
+        },
+        "fusion_prob": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "result": "",
+        "score": "",
+        "ev_direction": "主胜",
+        "ev_hit": false,
+        "prob_direction": "主胜",
+        "prob_hit": false,
+        "fusion_direction": "主胜",
+        "ev": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "odds_ev": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "ev_signal": "",
+        "kelly": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "pinnacle": {
+          "w": 1.59,
+          "d": 3.9,
+          "l": 6.55,
+          "open": {
+            "w": 0,
+            "d": 0,
+            "l": 0
+          }
+        },
+        "bet365": {
+          "w": 0,
+          "d": 0,
+          "l": 0,
+          "open": {
+            "w": 0,
+            "d": 0,
+            "l": 0
+          }
+        },
+        "hkjc": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "hkjc_open": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "risk_level": "",
+        "stars": 0,
+        "confidence_index": 0,
+        "reference_score": "",
+        "cold_risk": "",
+        "source": "beidan",
+        "cold_signals": "",
+        "risk_warning": "",
+        "actual_outcome": "",
+        "avg_margin": 0,
+        "ev_value": 0,
+        "deviation_analysis": "",
+        "odds_source": "pinnacle",
+        "confidence_tier": "high",
+        "calibrated_prob": 0.617,
+        "home_lambda": 1.833,
+        "away_lambda": 1.137,
+        "home_ranking": 0,
+        "away_ranking": 0,
+        "hhad": {
+          "handicap": null,
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "ah": {
+          "handicap": 0.0,
+          "home_w": 0,
+          "away_w": 0,
+          "source": "",
+          "open": {
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "liji": {
+          "1x2": {
+            "close": {
+              "w": 0,
+              "d": 0,
+              "l": 0
+            },
+            "open": {
+              "w": 0,
+              "d": 0,
+              "l": 0
+            }
+          },
+          "close": {
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
+          },
+          "open": {
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "ms": {
+          "1x2": {
+            "close": {
+              "w": 0,
+              "d": 0,
+              "l": 0
+            },
+            "open": {
+              "w": 0,
+              "d": 0,
+              "l": 0
+            }
+          },
+          "close": {
+            "handicap": 1.0,
+            "home_w": 1.06,
+            "away_w": 0.84
+          },
+          "open": {
+            "handicap": 1.0,
+            "home_w": 1.11,
+            "away_w": 0.8
+          }
+        },
+        "pin_ah": {
+          "handicap": 1.0,
+          "home_w": 1.05,
+          "away_w": 0.86,
+          "open": {
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "pin_ou": {
+          "line": 2.5,
+          "over": 1.02,
+          "under": 0.87,
+          "open": {
+            "line": null,
+            "over": 0,
+            "under": 0
+          }
+        },
+        "ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
+        "ms_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
+        "hkjc_ah": {
+          "handicap": 0.75,
+          "home_w": 0.77,
+          "away_w": 1.04,
+          "open": {
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "hkjc_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0,
+          "open": {
+            "line": null,
+            "over": 0,
+            "under": 0
+          }
+        },
+        "william_1x2": {
+          "w": 1.57,
+          "d": 3.7,
+          "l": 5.8
+        },
+        "william_ah": {
+          "handicap": 1.0,
+          "home_w": 0.96,
+          "away_w": 0.67,
+          "open": {
+            "handicap": 0.0,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "william_ou": {
+          "over": 0.95,
+          "line": 2.5,
+          "under": 0.8,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        }
+      },
+      {
+        "id": 1967,
+        "date": "2026-07-07",
+        "league": "世界杯",
+        "home": "瑞士",
+        "away": "哥伦比亚",
+        "kickoff": "2026-07-07 00:00",
+        "prediction": "客胜",
+        "prediction_prob": 0.397,
+        "odds": {
+          "w": 3.7,
+          "d": 3.15,
+          "l": 2.3
+        },
+        "poisson": {
+          "w": 0.478,
+          "d": 0.238,
+          "l": 0.284
+        },
+        "final_prob": {
+          "w": 0.307,
+          "d": 0.296,
+          "l": 0.397
+        },
+        "fusion_prob": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "result": "",
+        "score": "",
+        "ev_direction": "客胜",
+        "ev_hit": false,
+        "prob_direction": "客胜",
+        "prob_hit": false,
+        "fusion_direction": "主胜",
+        "ev": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "odds_ev": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "ev_signal": "",
+        "kelly": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "pinnacle": {
+          "w": 3.7,
+          "d": 3.15,
+          "l": 2.3,
+          "open": {
+            "w": 0,
+            "d": 0,
+            "l": 0
+          }
+        },
+        "bet365": {
+          "w": 0,
+          "d": 0,
+          "l": 0,
+          "open": {
+            "w": 0,
+            "d": 0,
+            "l": 0
+          }
+        },
+        "hkjc": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "hkjc_open": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "risk_level": "",
+        "stars": 0,
+        "confidence_index": 0,
+        "reference_score": "",
+        "cold_risk": "",
+        "source": "beidan",
+        "cold_signals": "",
+        "risk_warning": "",
+        "actual_outcome": "",
+        "avg_margin": 0,
+        "ev_value": 0,
+        "deviation_analysis": "",
+        "odds_source": "pinnacle",
+        "confidence_tier": "very_low",
+        "calibrated_prob": 0.384,
+        "home_lambda": 1.707,
+        "away_lambda": 1.263,
+        "home_ranking": 0,
+        "away_ranking": 0,
+        "hhad": {
+          "handicap": null,
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "ah": {
+          "handicap": 0.0,
+          "home_w": 0,
+          "away_w": 0,
+          "source": "",
+          "open": {
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "liji": {
+          "1x2": {
+            "close": {
+              "w": 0,
+              "d": 0,
+              "l": 0
+            },
+            "open": {
+              "w": 0,
+              "d": 0,
+              "l": 0
+            }
+          },
+          "close": {
+            "handicap": -0.25,
+            "home_w": 0.99,
+            "away_w": 0.94
+          },
+          "open": {
+            "handicap": -0.25,
+            "home_w": 0.97,
+            "away_w": 0.93
+          }
+        },
+        "ms": {
+          "1x2": {
+            "close": {
+              "w": 0,
+              "d": 0,
+              "l": 0
+            },
+            "open": {
+              "w": 0,
+              "d": 0,
+              "l": 0
+            }
+          },
+          "close": {
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
+          },
+          "open": {
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "pin_ah": {
+          "handicap": -0.25,
+          "home_w": 0.98,
+          "away_w": 0.94,
+          "open": {
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "pin_ou": {
+          "line": 2.25,
+          "over": 1.01,
+          "under": 0.89,
+          "open": {
+            "line": null,
+            "over": 0,
+            "under": 0
+          }
+        },
+        "ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
+        "ms_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
+        "hkjc_ah": {
+          "handicap": -0.25,
+          "home_w": 0.9,
+          "away_w": 0.9,
+          "open": {
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "hkjc_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0,
+          "open": {
+            "line": null,
+            "over": 0,
+            "under": 0
+          }
+        },
+        "william_1x2": {
+          "w": 3.4,
+          "d": 3.0,
+          "l": 2.25
+        },
+        "william_ah": {
+          "handicap": -0.25,
+          "home_w": 0.79,
+          "away_w": 0.82,
+          "open": {
+            "handicap": 0.0,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "william_ou": {
+          "over": 1.2,
+          "line": 2.5,
+          "under": 0.62,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        }
+      },
+      {
+        "id": 1972,
+        "date": "2026-07-07",
+        "league": "世界杯",
+        "home": "阿根廷",
+        "away": "埃及",
+        "kickoff": "2026-07-07 00:00",
+        "prediction": "主胜",
+        "prediction_prob": 0.685,
+        "odds": {
+          "w": 1.36,
+          "d": 5.05,
+          "l": 11.25
+        },
+        "poisson": {
+          "w": 0.549,
+          "d": 0.226,
+          "l": 0.225
+        },
+        "final_prob": {
+          "w": 0.685,
+          "d": 0.2,
+          "l": 0.115
+        },
+        "fusion_prob": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "result": "",
+        "score": "",
+        "ev_direction": "主胜",
+        "ev_hit": false,
+        "prob_direction": "主胜",
+        "prob_hit": false,
+        "fusion_direction": "主胜",
+        "ev": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "odds_ev": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "ev_signal": "",
+        "kelly": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "pinnacle": {
+          "w": 1.36,
+          "d": 5.05,
+          "l": 11.25,
+          "open": {
+            "w": 0,
+            "d": 0,
+            "l": 0
+          }
+        },
+        "bet365": {
+          "w": 0,
+          "d": 0,
+          "l": 0,
+          "open": {
+            "w": 0,
+            "d": 0,
+            "l": 0
+          }
+        },
+        "hkjc": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "hkjc_open": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "risk_level": "",
+        "stars": 0,
+        "confidence_index": 0,
+        "reference_score": "",
+        "cold_risk": "",
+        "source": "beidan",
+        "cold_signals": "",
+        "risk_warning": "",
+        "actual_outcome": "",
+        "avg_margin": 0,
+        "ev_value": 0,
+        "deviation_analysis": "",
+        "odds_source": "pinnacle",
+        "confidence_tier": "high",
+        "calibrated_prob": 0.745,
+        "home_lambda": 1.86,
+        "away_lambda": 1.11,
+        "home_ranking": 0,
+        "away_ranking": 0,
+        "hhad": {
+          "handicap": null,
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "ah": {
+          "handicap": 0.0,
+          "home_w": 0,
+          "away_w": 0,
+          "source": "",
+          "open": {
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "liji": {
+          "1x2": {
+            "close": {
+              "w": 0,
+              "d": 0,
+              "l": 0
+            },
+            "open": {
+              "w": 0,
+              "d": 0,
+              "l": 0
+            }
+          },
+          "close": {
+            "handicap": 1.5,
+            "home_w": 1.08,
+            "away_w": 0.85
+          },
+          "open": {
+            "handicap": 1.25,
+            "home_w": 0.9,
+            "away_w": 1.0
+          }
+        },
+        "ms": {
+          "1x2": {
+            "close": {
+              "w": 0,
+              "d": 0,
+              "l": 0
+            },
+            "open": {
+              "w": 0,
+              "d": 0,
+              "l": 0
+            }
+          },
+          "close": {
+            "handicap": 1.5,
+            "home_w": 1.07,
+            "away_w": 0.86
+          },
+          "open": {
+            "handicap": 1.5,
+            "home_w": 1.17,
+            "away_w": 0.69
+          }
+        },
+        "pin_ah": {
+          "handicap": 1.5,
+          "home_w": 1.09,
+          "away_w": 0.85,
+          "open": {
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "pin_ou": {
+          "line": 2.5,
+          "over": 0.99,
+          "under": 0.92,
+          "open": {
+            "line": null,
+            "over": 0,
+            "under": 0
+          }
+        },
+        "ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
+        "ms_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
+        "hkjc_ah": {
+          "handicap": 1.25,
+          "home_w": 0.72,
+          "away_w": 1.1,
+          "open": {
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "hkjc_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0,
+          "open": {
+            "line": null,
+            "over": 0,
+            "under": 0
+          }
+        },
+        "william_1x2": {
+          "w": 1.33,
+          "d": 4.6,
+          "l": 9.5
+        },
+        "william_ah": {
+          "handicap": 1.25,
+          "home_w": 0.75,
+          "away_w": 0.9,
+          "open": {
+            "handicap": 0.0,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "william_ou": {
+          "over": 0.91,
+          "line": 2.5,
+          "under": 0.91,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        }
+      },
+      {
+        "id": 1965,
+        "date": "2026-07-07",
+        "league": "瑞典超",
+        "home": "布鲁马波",
+        "away": "盖斯",
+        "kickoff": "2026-07-07 01:00",
+        "prediction": "主胜",
+        "prediction_prob": 0.362,
+        "odds": {
+          "w": 3.09,
+          "d": 3.47,
+          "l": 2.32
+        },
+        "poisson": {
+          "w": 0.414,
+          "d": 0.275,
+          "l": 0.311
+        },
+        "final_prob": {
+          "w": 0.362,
+          "d": 0.275,
+          "l": 0.362
+        },
+        "fusion_prob": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "result": "平局",
+        "score": "1-1",
+        "ev_direction": "主胜",
+        "ev_hit": false,
+        "prob_direction": "主胜",
+        "prob_hit": false,
+        "fusion_direction": "主胜",
+        "ev": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "odds_ev": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "ev_signal": "",
+        "kelly": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "pinnacle": {
+          "w": 3.09,
+          "d": 3.47,
+          "l": 2.32,
+          "open": {
+            "w": 0,
+            "d": 0,
+            "l": 0
+          }
+        },
+        "bet365": {
+          "w": 0,
+          "d": 0,
+          "l": 0,
+          "open": {
+            "w": 0,
+            "d": 0,
+            "l": 0
+          }
+        },
+        "hkjc": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "hkjc_open": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "risk_level": "",
+        "stars": 0,
+        "confidence_index": 0,
+        "reference_score": "",
+        "cold_risk": "",
+        "source": "beidan",
+        "cold_signals": "",
+        "risk_warning": "",
+        "actual_outcome": "平局 1-1",
+        "avg_margin": 0,
+        "ev_value": 0,
+        "deviation_analysis": "",
+        "odds_source": "pinnacle",
+        "confidence_tier": "very_low",
+        "calibrated_prob": 0.325,
+        "home_lambda": 1.307,
+        "away_lambda": 1.093,
+        "home_ranking": 0,
+        "away_ranking": 0,
+        "hhad": {
+          "handicap": null,
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "ah": {
+          "handicap": 0.0,
+          "home_w": 0,
+          "away_w": 0,
+          "source": "",
+          "open": {
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "liji": {
+          "1x2": {
+            "close": {
+              "w": 0,
+              "d": 0,
+              "l": 0
+            },
+            "open": {
+              "w": 0,
+              "d": 0,
+              "l": 0
+            }
+          },
+          "close": {
+            "handicap": -0.25,
+            "home_w": 0.88,
+            "away_w": 1.04
+          },
+          "open": {
+            "handicap": -0.25,
+            "home_w": 1.01,
+            "away_w": 0.89
+          }
+        },
+        "ms": {
+          "1x2": {
+            "close": {
+              "w": 0,
+              "d": 0,
+              "l": 0
+            },
+            "open": {
+              "w": 0,
+              "d": 0,
+              "l": 0
+            }
+          },
+          "close": {
+            "handicap": -0.25,
+            "home_w": 0.9,
+            "away_w": 1.02
+          },
+          "open": {
+            "handicap": -0.25,
+            "home_w": 1.0,
+            "away_w": 0.88
+          }
+        },
+        "pin_ah": {
+          "handicap": -0.25,
+          "home_w": 0.86,
+          "away_w": 1.01,
+          "open": {
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "pin_ou": {
+          "line": 2.5,
+          "over": 0.81,
+          "under": 1.02,
+          "open": {
+            "line": null,
+            "over": 0,
+            "under": 0
+          }
+        },
+        "ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
+        "ms_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
+        "hkjc_ah": {
+          "handicap": -0.25,
+          "home_w": 0.82,
+          "away_w": 0.98,
+          "open": {
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "hkjc_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0,
+          "open": {
+            "line": null,
+            "over": 0,
+            "under": 0
+          }
+        },
+        "william_1x2": {
+          "w": 2.9,
+          "d": 3.25,
+          "l": 2.25
+        },
+        "william_ah": {
+          "handicap": -0.25,
+          "home_w": 0.71,
+          "away_w": 0.94,
+          "open": {
+            "handicap": 0.0,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "william_ou": {
+          "over": 0.75,
+          "line": 2.5,
+          "under": 0.95,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        }
+      },
+      {
+        "id": 1971,
+        "date": "2026-07-07",
+        "league": "瑞典超",
+        "home": "赫根",
+        "away": "佐加顿斯",
+        "kickoff": "2026-07-07 01:00",
+        "prediction": "主胜",
+        "prediction_prob": 0.407,
+        "odds": {
+          "w": 2.55,
+          "d": 3.8,
+          "l": 2.59
+        },
+        "poisson": {
+          "w": 0.437,
+          "d": 0.273,
+          "l": 0.29
+        },
+        "final_prob": {
+          "w": 0.407,
+          "d": 0.263,
+          "l": 0.33
+        },
+        "fusion_prob": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "result": "客胜",
+        "score": "1-2",
+        "ev_direction": "主胜",
+        "ev_hit": false,
+        "prob_direction": "主胜",
+        "prob_hit": false,
+        "fusion_direction": "主胜",
+        "ev": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "odds_ev": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "ev_signal": "",
+        "kelly": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "pinnacle": {
+          "w": 2.55,
+          "d": 3.8,
+          "l": 2.59,
+          "open": {
+            "w": 0,
+            "d": 0,
+            "l": 0
+          }
+        },
+        "bet365": {
+          "w": 0,
+          "d": 0,
+          "l": 0,
+          "open": {
+            "w": 0,
+            "d": 0,
+            "l": 0
+          }
+        },
+        "hkjc": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "hkjc_open": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "risk_level": "",
+        "stars": 0,
+        "confidence_index": 0,
+        "reference_score": "",
+        "cold_risk": "",
+        "source": "beidan",
+        "cold_signals": "",
+        "risk_warning": "",
+        "actual_outcome": "客胜 1-2",
+        "avg_margin": 0,
+        "ev_value": 0,
+        "deviation_analysis": "",
+        "odds_source": "pinnacle",
+        "confidence_tier": "very_low",
+        "calibrated_prob": 0.394,
+        "home_lambda": 1.352,
+        "away_lambda": 1.048,
+        "home_ranking": 0,
+        "away_ranking": 0,
+        "hhad": {
+          "handicap": null,
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "ah": {
+          "handicap": 0.0,
+          "home_w": 0,
+          "away_w": 0,
+          "source": "",
+          "open": {
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "liji": {
+          "1x2": {
+            "close": {
+              "w": 0,
+              "d": 0,
+              "l": 0
+            },
+            "open": {
+              "w": 0,
+              "d": 0,
+              "l": 0
+            }
+          },
+          "close": {
+            "handicap": 0.0,
+            "home_w": 0.91,
+            "away_w": 1.01
+          },
+          "open": {
+            "handicap": 0.0,
+            "home_w": 0.92,
+            "away_w": 0.98
+          }
+        },
+        "ms": {
+          "1x2": {
+            "close": {
+              "w": 0,
+              "d": 0,
+              "l": 0
+            },
+            "open": {
+              "w": 0,
+              "d": 0,
+              "l": 0
+            }
+          },
+          "close": {
+            "handicap": 0.0,
+            "home_w": 0.87,
+            "away_w": 1.05
+          },
+          "open": {
+            "handicap": 0.0,
+            "home_w": 0.91,
+            "away_w": 0.97
+          }
+        },
+        "pin_ah": {
+          "handicap": 0.0,
+          "home_w": 0.9,
+          "away_w": 0.97,
+          "open": {
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "pin_ou": {
+          "line": 3.25,
+          "over": 0.91,
+          "under": 0.94,
+          "open": {
+            "line": null,
+            "over": 0,
+            "under": 0
+          }
+        },
+        "ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
+        "ms_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
+        "hkjc_ah": {
+          "handicap": 0.25,
+          "home_w": 1.1,
+          "away_w": 0.72,
+          "open": {
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "hkjc_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0,
+          "open": {
+            "line": null,
+            "over": 0,
+            "under": 0
+          }
+        },
+        "william_1x2": {
+          "w": 2.45,
+          "d": 3.5,
+          "l": 2.5
+        },
+        "william_ah": {
+          "handicap": 0.0,
+          "home_w": 0.78,
+          "away_w": 0.85,
+          "open": {
+            "handicap": 0.0,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "william_ou": {
+          "over": 1.05,
+          "line": 3.5,
+          "under": 0.73,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        }
+      },
+      {
+        "id": 1970,
+        "date": "2026-07-07",
+        "league": "世界杯",
+        "home": "葡萄牙",
+        "away": "西班牙",
+        "kickoff": "2026-07-07 03:00",
+        "prediction": "客胜",
+        "prediction_prob": 0.447,
+        "odds": {
+          "w": 4.07,
+          "d": 3.57,
+          "l": 2.01
+        },
+        "poisson": {
+          "w": 0.471,
+          "d": 0.239,
+          "l": 0.29
+        },
+        "final_prob": {
+          "w": 0.286,
+          "d": 0.267,
+          "l": 0.447
+        },
+        "fusion_prob": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "result": "平局",
+        "score": "0-0",
+        "ev_direction": "客胜",
+        "ev_hit": false,
+        "prob_direction": "客胜",
+        "prob_hit": false,
+        "fusion_direction": "主胜",
+        "ev": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "odds_ev": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "ev_signal": "",
+        "kelly": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "pinnacle": {
+          "w": 4.07,
+          "d": 3.57,
+          "l": 2.01,
+          "open": {
+            "w": 0,
+            "d": 0,
+            "l": 0
+          }
+        },
+        "bet365": {
+          "w": 0,
+          "d": 0,
+          "l": 0,
+          "open": {
+            "w": 0,
+            "d": 0,
+            "l": 0
+          }
+        },
+        "hkjc": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "hkjc_open": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "risk_level": "",
+        "stars": 0,
+        "confidence_index": 0,
+        "reference_score": "",
+        "cold_risk": "",
+        "source": "beidan",
+        "cold_signals": "",
+        "risk_warning": "",
+        "actual_outcome": "平局 0-0",
+        "avg_margin": 0,
+        "ev_value": 0,
+        "deviation_analysis": "",
+        "odds_source": "pinnacle",
+        "confidence_tier": "low",
+        "calibrated_prob": 0.451,
+        "home_lambda": 1.691,
+        "away_lambda": 1.279,
+        "home_ranking": 0,
+        "away_ranking": 0,
+        "hhad": {
+          "handicap": null,
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "ah": {
+          "handicap": 0.0,
+          "home_w": 0,
+          "away_w": 0,
+          "source": "",
+          "open": {
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "liji": {
+          "1x2": {
+            "close": {
+              "w": 0,
+              "d": 0,
+              "l": 0
+            },
+            "open": {
+              "w": 0,
+              "d": 0,
+              "l": 0
+            }
+          },
+          "close": {
+            "handicap": -0.5,
+            "home_w": 0.9,
+            "away_w": 1.04
+          },
+          "open": {
+            "handicap": -0.5,
+            "home_w": 0.97,
+            "away_w": 0.93
+          }
+        },
+        "ms": {
+          "1x2": {
+            "close": {
+              "w": 0,
+              "d": 0,
+              "l": 0
+            },
+            "open": {
+              "w": 0,
+              "d": 0,
+              "l": 0
+            }
+          },
+          "close": {
+            "handicap": -0.5,
+            "home_w": 0.86,
+            "away_w": 1.06
+          },
+          "open": {
+            "handicap": -0.5,
+            "home_w": 0.92,
+            "away_w": 0.92
+          }
+        },
+        "pin_ah": {
+          "handicap": -0.5,
+          "home_w": 0.92,
+          "away_w": 1.01,
+          "open": {
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "pin_ou": {
+          "line": 2.75,
+          "over": 0.97,
+          "under": 0.9,
+          "open": {
+            "line": null,
+            "over": 0,
+            "under": 0
+          }
+        },
+        "ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
+        "ms_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
+        "hkjc_ah": {
+          "handicap": -0.25,
+          "home_w": 1.16,
+          "away_w": 0.68,
+          "open": {
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "hkjc_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0,
+          "open": {
+            "line": null,
+            "over": 0,
+            "under": 0
+          }
+        },
+        "william_1x2": {
+          "w": 3.75,
+          "d": 3.4,
+          "l": 1.95
+        },
+        "william_ah": {
+          "handicap": -0.5,
+          "home_w": 0.8,
+          "away_w": 0.95,
+          "open": {
+            "handicap": 0.0,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "william_ou": {
+          "over": 0.8,
+          "line": 2.5,
+          "under": 0.95,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        }
+      },
+      {
+        "id": 1963,
+        "date": "2026-07-07",
+        "league": "冰岛超",
+        "home": "凯夫拉维克",
+        "away": "弗拉姆",
+        "kickoff": "2026-07-07 03:15",
+        "prediction": "客胜",
+        "prediction_prob": 0.405,
+        "odds": {
+          "w": 3.13,
+          "d": 4.38,
+          "l": 1.93
+        },
+        "poisson": {
+          "w": 0.401,
+          "d": 0.276,
+          "l": 0.324
+        },
+        "final_prob": {
+          "w": 0.35,
+          "d": 0.245,
+          "l": 0.405
+        },
+        "fusion_prob": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "result": "平局",
+        "score": "0-0",
+        "ev_direction": "客胜",
+        "ev_hit": false,
+        "prob_direction": "客胜",
+        "prob_hit": false,
+        "fusion_direction": "主胜",
+        "ev": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "odds_ev": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "ev_signal": "",
+        "kelly": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "pinnacle": {
+          "w": 3.13,
+          "d": 4.38,
+          "l": 1.93,
+          "open": {
+            "w": 0,
+            "d": 0,
+            "l": 0
+          }
+        },
+        "bet365": {
+          "w": 0,
+          "d": 0,
+          "l": 0,
+          "open": {
+            "w": 0,
+            "d": 0,
+            "l": 0
+          }
+        },
+        "hkjc": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "hkjc_open": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "risk_level": "",
+        "stars": 0,
+        "confidence_index": 0,
+        "reference_score": "",
+        "cold_risk": "",
+        "source": "beidan",
+        "cold_signals": "",
+        "risk_warning": "",
+        "actual_outcome": "平局 0-0",
+        "avg_margin": 0,
+        "ev_value": 0,
+        "deviation_analysis": "",
+        "odds_source": "pinnacle",
+        "confidence_tier": "very_low",
+        "calibrated_prob": 0.392,
+        "home_lambda": 1.279,
+        "away_lambda": 1.121,
+        "home_ranking": 0,
+        "away_ranking": 0,
+        "hhad": {
+          "handicap": null,
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "ah": {
+          "handicap": 0.0,
+          "home_w": 0,
+          "away_w": 0,
+          "source": "",
+          "open": {
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "liji": {
+          "1x2": {
+            "close": {
+              "w": 0,
+              "d": 0,
+              "l": 0
+            },
+            "open": {
+              "w": 0,
+              "d": 0,
+              "l": 0
+            }
+          },
+          "close": {
+            "handicap": -0.5,
+            "home_w": 0.99,
+            "away_w": 0.93
+          },
+          "open": {
+            "handicap": -0.25,
+            "home_w": 0.93,
+            "away_w": 0.97
+          }
+        },
+        "ms": {
+          "1x2": {
+            "close": {
+              "w": 0,
+              "d": 0,
+              "l": 0
+            },
+            "open": {
+              "w": 0,
+              "d": 0,
+              "l": 0
+            }
+          },
+          "close": {
+            "handicap": -0.5,
+            "home_w": 0.97,
+            "away_w": 0.93
+          },
+          "open": {
+            "handicap": -0.25,
+            "home_w": 0.9,
+            "away_w": 0.94
+          }
+        },
+        "pin_ah": {
+          "handicap": -0.5,
+          "home_w": 0.91,
+          "away_w": 0.93,
+          "open": {
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "pin_ou": {
+          "line": 3.75,
+          "over": 0.93,
+          "under": 0.9,
+          "open": {
+            "line": null,
+            "over": 0,
+            "under": 0
+          }
+        },
+        "ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
+        "ms_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
+        "hkjc_ah": {
+          "handicap": null,
+          "home_w": 0,
+          "away_w": 0,
+          "open": {
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "hkjc_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0,
+          "open": {
+            "line": null,
+            "over": 0,
+            "under": 0
+          }
+        },
+        "william_1x2": {
+          "w": 3.0,
+          "d": 4.0,
+          "l": 1.85
+        },
+        "william_ah": {
+          "handicap": -0.5,
+          "home_w": 0.85,
+          "away_w": 0.85,
+          "open": {
+            "handicap": 0.0,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "william_ou": {
+          "over": 0.75,
+          "line": 3.5,
+          "under": 0.95,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        }
+      },
+      {
+        "id": 1964,
+        "date": "2026-07-07",
+        "league": "巴西乙",
+        "home": "博塔弗戈SP",
+        "away": "阿瓦伊",
+        "kickoff": "2026-07-07 06:00",
+        "prediction": "主胜",
+        "prediction_prob": 0.519,
+        "odds": {
+          "w": 1.72,
+          "d": 3.55,
+          "l": 5.59
+        },
+        "poisson": {
+          "w": 0.361,
+          "d": 0.275,
+          "l": 0.363
+        },
+        "final_prob": {
+          "w": 0.519,
+          "d": 0.271,
+          "l": 0.21
+        },
+        "fusion_prob": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "result": "主胜",
+        "score": "1-0",
+        "ev_direction": "主胜",
+        "ev_hit": true,
+        "prob_direction": "主胜",
+        "prob_hit": true,
+        "fusion_direction": "主胜",
+        "ev": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "odds_ev": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "ev_signal": "",
+        "kelly": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "pinnacle": {
+          "w": 1.72,
+          "d": 3.55,
+          "l": 5.59,
+          "open": {
+            "w": 0,
+            "d": 0,
+            "l": 0
+          }
+        },
+        "bet365": {
+          "w": 0,
+          "d": 0,
+          "l": 0,
+          "open": {
+            "w": 0,
+            "d": 0,
+            "l": 0
+          }
+        },
+        "hkjc": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "hkjc_open": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "risk_level": "",
+        "stars": 0,
+        "confidence_index": 0,
+        "reference_score": "",
+        "cold_risk": "",
+        "source": "beidan",
+        "cold_signals": "",
+        "risk_warning": "",
+        "actual_outcome": "主胜 1-0",
+        "avg_margin": 0,
+        "ev_value": 0,
+        "deviation_analysis": "",
+        "odds_source": "pinnacle",
+        "confidence_tier": "medium",
+        "calibrated_prob": 0.533,
+        "home_lambda": 1.208,
+        "away_lambda": 1.212,
+        "home_ranking": 0,
+        "away_ranking": 0,
+        "hhad": {
+          "handicap": null,
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "ah": {
+          "handicap": 0.0,
+          "home_w": 0,
+          "away_w": 0,
+          "source": "",
+          "open": {
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "liji": {
+          "1x2": {
+            "close": {
+              "w": 0,
+              "d": 0,
+              "l": 0
+            },
+            "open": {
+              "w": 0,
+              "d": 0,
+              "l": 0
+            }
+          },
+          "close": {
+            "handicap": 0.75,
+            "home_w": 1.0,
+            "away_w": 0.9
+          },
+          "open": {
+            "handicap": 0.5,
+            "home_w": 0.94,
+            "away_w": 0.94
+          }
+        },
+        "ms": {
+          "1x2": {
+            "close": {
+              "w": 0,
+              "d": 0,
+              "l": 0
+            },
+            "open": {
+              "w": 0,
+              "d": 0,
+              "l": 0
+            }
+          },
+          "close": {
+            "handicap": 0.75,
+            "home_w": 0.95,
+            "away_w": 0.95
+          },
+          "open": {
+            "handicap": 0.5,
+            "home_w": 0.93,
+            "away_w": 0.91
+          }
+        },
+        "pin_ah": {
+          "handicap": 0.75,
+          "home_w": 0.97,
+          "away_w": 0.92,
+          "open": {
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "pin_ou": {
+          "line": 2.25,
+          "over": 1.03,
+          "under": 0.85,
+          "open": {
+            "line": null,
+            "over": 0,
+            "under": 0
+          }
+        },
+        "ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
+        "ms_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
+        "hkjc_ah": {
+          "handicap": 0.75,
+          "home_w": 0.97,
+          "away_w": 0.8,
+          "open": {
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "hkjc_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0,
+          "open": {
+            "line": null,
+            "over": 0,
+            "under": 0
+          }
+        },
+        "william_1x2": {
+          "w": 1.7,
+          "d": 3.25,
+          "l": 5.0
+        },
+        "william_ah": {
+          "handicap": 0.75,
+          "home_w": 0.91,
+          "away_w": 0.74,
+          "open": {
+            "handicap": 0.0,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "william_ou": {
+          "over": 1.2,
+          "line": 2.5,
+          "under": 0.62,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        }
+      },
+      {
+        "id": 1968,
+        "date": "2026-07-07",
+        "league": "巴西乙",
+        "home": "维拉诺瓦",
+        "away": "圣贝尔纳多",
+        "kickoff": "2026-07-07 06:00",
+        "prediction": "主胜",
+        "prediction_prob": 0.457,
+        "odds": {
+          "w": 1.99,
+          "d": 3.22,
+          "l": 4.41
+        },
+        "poisson": {
+          "w": 0.351,
+          "d": 0.275,
+          "l": 0.374
+        },
+        "final_prob": {
+          "w": 0.457,
+          "d": 0.294,
+          "l": 0.249
+        },
+        "fusion_prob": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "result": "主胜",
+        "score": "1-0",
+        "ev_direction": "主胜",
+        "ev_hit": true,
+        "prob_direction": "主胜",
+        "prob_hit": true,
+        "fusion_direction": "主胜",
+        "ev": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "odds_ev": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "ev_signal": "",
+        "kelly": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "pinnacle": {
+          "w": 1.99,
+          "d": 3.22,
+          "l": 4.41,
+          "open": {
+            "w": 0,
+            "d": 0,
+            "l": 0
+          }
+        },
+        "bet365": {
+          "w": 0,
+          "d": 0,
+          "l": 0,
+          "open": {
+            "w": 0,
+            "d": 0,
+            "l": 0
+          }
+        },
+        "hkjc": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "hkjc_open": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "risk_level": "",
+        "stars": 0,
+        "confidence_index": 0,
+        "reference_score": "",
+        "cold_risk": "",
+        "source": "beidan",
+        "cold_signals": "",
+        "risk_warning": "",
+        "actual_outcome": "主胜 1-0",
+        "avg_margin": 0,
+        "ev_value": 0,
+        "deviation_analysis": "",
+        "odds_source": "pinnacle",
+        "confidence_tier": "low",
+        "calibrated_prob": 0.461,
+        "home_lambda": 1.186,
+        "away_lambda": 1.234,
+        "home_ranking": 0,
+        "away_ranking": 0,
+        "hhad": {
+          "handicap": null,
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "ah": {
+          "handicap": 0.0,
+          "home_w": 0,
+          "away_w": 0,
+          "source": "",
+          "open": {
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "liji": {
+          "1x2": {
+            "close": {
+              "w": 0,
+              "d": 0,
+              "l": 0
+            },
+            "open": {
+              "w": 0,
+              "d": 0,
+              "l": 0
+            }
+          },
+          "close": {
+            "handicap": 0.5,
+            "home_w": 1.0,
+            "away_w": 0.9
+          },
+          "open": {
+            "handicap": 0.5,
+            "home_w": 1.06,
+            "away_w": 0.82
+          }
+        },
+        "ms": {
+          "1x2": {
+            "close": {
+              "w": 0,
+              "d": 0,
+              "l": 0
+            },
+            "open": {
+              "w": 0,
+              "d": 0,
+              "l": 0
+            }
+          },
+          "close": {
+            "handicap": 0.5,
+            "home_w": 0.97,
+            "away_w": 0.93
+          },
+          "open": {
+            "handicap": 0.5,
+            "home_w": 1.02,
+            "away_w": 0.82
+          }
+        },
+        "pin_ah": {
+          "handicap": 0.5,
+          "home_w": 0.99,
+          "away_w": 0.89,
+          "open": {
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "pin_ou": {
+          "line": 2.25,
+          "over": 0.99,
+          "under": 0.88,
+          "open": {
+            "line": null,
+            "over": 0,
+            "under": 0
+          }
+        },
+        "ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
+        "ms_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
+        "hkjc_ah": {
+          "handicap": null,
+          "home_w": 0,
+          "away_w": 0,
+          "open": {
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "hkjc_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0,
+          "open": {
+            "line": null,
+            "over": 0,
+            "under": 0
+          }
+        },
+        "william_1x2": {
+          "w": 1.95,
+          "d": 3.0,
+          "l": 4.0
+        },
+        "william_ah": {
+          "handicap": 0.25,
+          "home_w": 0.68,
+          "away_w": 0.96,
+          "open": {
+            "handicap": 0.0,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "william_ou": {
+          "over": 1.2,
+          "line": 2.5,
+          "under": 0.62,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        }
+      },
+      {
+        "id": 1969,
+        "date": "2026-07-07",
+        "league": "世界杯",
+        "home": "美国",
+        "away": "比利时",
+        "kickoff": "2026-07-07 08:00",
+        "prediction": "主胜",
+        "prediction_prob": 0.378,
+        "odds": {
+          "w": 2.77,
+          "d": 3.43,
+          "l": 2.63
+        },
+        "poisson": {
+          "w": 0.493,
+          "d": 0.236,
+          "l": 0.271
+        },
+        "final_prob": {
+          "w": 0.378,
+          "d": 0.273,
+          "l": 0.349
+        },
+        "fusion_prob": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "result": "客胜",
+        "score": "1-2",
+        "ev_direction": "主胜",
+        "ev_hit": false,
+        "prob_direction": "主胜",
+        "prob_hit": false,
+        "fusion_direction": "主胜",
+        "ev": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "odds_ev": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "ev_signal": "",
+        "kelly": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "pinnacle": {
+          "w": 2.77,
+          "d": 3.43,
+          "l": 2.63,
+          "open": {
+            "w": 0,
+            "d": 0,
+            "l": 0
+          }
+        },
+        "bet365": {
+          "w": 0,
+          "d": 0,
+          "l": 0,
+          "open": {
+            "w": 0,
+            "d": 0,
+            "l": 0
+          }
+        },
+        "hkjc": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "hkjc_open": {
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "risk_level": "",
+        "stars": 0,
+        "confidence_index": 0,
+        "reference_score": "",
+        "cold_risk": "",
+        "source": "beidan",
+        "cold_signals": "",
+        "risk_warning": "",
+        "actual_outcome": "客胜 1-2",
+        "avg_margin": 0,
+        "ev_value": 0,
+        "deviation_analysis": "",
+        "odds_source": "pinnacle",
+        "confidence_tier": "very_low",
+        "calibrated_prob": 0.375,
+        "home_lambda": 1.738,
+        "away_lambda": 1.232,
+        "home_ranking": 0,
+        "away_ranking": 0,
+        "hhad": {
+          "handicap": null,
+          "w": 0,
+          "d": 0,
+          "l": 0
+        },
+        "ah": {
+          "handicap": 0.0,
+          "home_w": 0,
+          "away_w": 0,
+          "source": "",
+          "open": {
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "liji": {
+          "1x2": {
+            "close": {
+              "w": 0,
+              "d": 0,
+              "l": 0
+            },
+            "open": {
+              "w": 0,
+              "d": 0,
+              "l": 0
+            }
+          },
+          "close": {
+            "handicap": 0.0,
+            "home_w": 1.0,
+            "away_w": 0.9
+          },
+          "open": {
+            "handicap": 0.0,
+            "home_w": 0.85,
+            "away_w": 1.05
+          }
+        },
+        "ms": {
+          "1x2": {
+            "close": {
+              "w": 0,
+              "d": 0,
+              "l": 0
+            },
+            "open": {
+              "w": 0,
+              "d": 0,
+              "l": 0
+            }
+          },
+          "close": {
+            "handicap": 0.0,
+            "home_w": 0.96,
+            "away_w": 0.94
+          },
+          "open": {
+            "handicap": 0.0,
+            "home_w": 0.97,
+            "away_w": 0.87
+          }
+        },
+        "pin_ah": {
+          "handicap": 0.0,
+          "home_w": 1.0,
+          "away_w": 0.9,
+          "open": {
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "pin_ou": {
+          "line": 2.75,
+          "over": 0.99,
+          "under": 0.89,
+          "open": {
+            "line": null,
+            "over": 0,
+            "under": 0
+          }
+        },
+        "ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
+        "liji_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
+        "ms_ou": {
+          "over": 0,
+          "line": null,
+          "under": 0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        },
+        "hkjc_ah": {
+          "handicap": 0.0,
+          "home_w": 0.92,
+          "away_w": 0.88,
+          "open": {
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "hkjc_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0,
+          "open": {
+            "line": null,
+            "over": 0,
+            "under": 0
+          }
+        },
+        "william_1x2": {
+          "w": 2.7,
+          "d": 3.25,
+          "l": 2.5
+        },
+        "william_ah": {
+          "handicap": 0.0,
+          "home_w": 0.87,
+          "away_w": 0.75,
+          "open": {
+            "handicap": 0.0,
+            "home_w": 0,
+            "away_w": 0
+          }
+        },
+        "william_ou": {
+          "over": 0.73,
+          "line": 2.5,
+          "under": 1.0,
+          "open": {
+            "over": 0,
+            "line": null,
+            "under": 0
+          }
+        }
+      }
+    ],
     "2026-07-04": [
       {
         "id": 1919,
@@ -656,14 +3278,14 @@
           "line": 3.5,
           "under": 0.75
         },
-        "hkjc_ah": {
-          "handicap": null,
-          "home_w": 0.75,
-          "away_w": 1.05,
+        "hkjc_ou": {
+          "line": 3.25,
+          "over": 0.83,
+          "under": 0.98,
           "open": {
-            "handicap": 0.25,
-            "home_w": 0.95,
-            "away_w": 0.85
+            "line": 3.25,
+            "over": 0.85,
+            "under": 0.95
           }
         },
         "bet365": {
@@ -676,14 +3298,14 @@
             "l": 2.75
           }
         },
-        "hkjc_ou": {
-          "line": 3.25,
-          "over": 0.83,
-          "under": 0.98,
+        "hkjc_ah": {
+          "handicap": null,
+          "home_w": 0.75,
+          "away_w": 1.05,
           "open": {
-            "line": 3.25,
-            "over": 0.85,
-            "under": 0.95
+            "handicap": 0.25,
+            "home_w": 0.95,
+            "away_w": 0.85
           }
         },
         "confidence_tier": "medium",
@@ -885,14 +3507,14 @@
           "line": 2.5,
           "under": 1.15
         },
-        "hkjc_ah": {
-          "handicap": 0.5,
-          "home_w": 0.92,
-          "away_w": 0.87,
+        "hkjc_ou": {
+          "line": 2.75,
+          "over": 0.8,
+          "under": 1.0,
           "open": {
-            "handicap": 0.5,
-            "home_w": 0.98,
-            "away_w": 0.83
+            "line": 3.0,
+            "over": 0.93,
+            "under": 0.88
           }
         },
         "bet365": {
@@ -905,14 +3527,14 @@
             "l": 3.25
           }
         },
-        "hkjc_ou": {
-          "line": 2.75,
-          "over": 0.8,
-          "under": 1.0,
+        "hkjc_ah": {
+          "handicap": 0.5,
+          "home_w": 0.92,
+          "away_w": 0.87,
           "open": {
-            "line": 3.0,
-            "over": 0.93,
-            "under": 0.88
+            "handicap": 0.5,
+            "home_w": 0.98,
+            "away_w": 0.83
           }
         },
         "confidence_tier": "medium",
@@ -1114,14 +3736,14 @@
           "line": 2.5,
           "under": 0.67
         },
-        "hkjc_ah": {
-          "handicap": -0.75,
-          "home_w": 0.93,
-          "away_w": 0.93,
+        "hkjc_ou": {
+          "line": 2.25,
+          "over": 0.92,
+          "under": 0.92,
           "open": {
-            "handicap": -0.5,
-            "home_w": 0.83,
-            "away_w": 1.03
+            "line": 2.25,
+            "over": 1.03,
+            "under": 0.83
           }
         },
         "bet365": {
@@ -1134,14 +3756,14 @@
             "l": 2.0
           }
         },
-        "hkjc_ou": {
-          "line": 2.25,
-          "over": 0.92,
-          "under": 0.92,
+        "hkjc_ah": {
+          "handicap": -0.75,
+          "home_w": 0.93,
+          "away_w": 0.93,
           "open": {
-            "line": 2.25,
-            "over": 1.03,
-            "under": 0.83
+            "handicap": -0.5,
+            "home_w": 0.83,
+            "away_w": 1.03
           }
         },
         "confidence_tier": "low",
@@ -1343,14 +3965,14 @@
           "line": 2.5,
           "under": 0.95
         },
-        "hkjc_ah": {
-          "handicap": -0.5,
-          "home_w": 0.9,
-          "away_w": 0.9,
+        "hkjc_ou": {
+          "line": 2.75,
+          "over": 0.98,
+          "under": 0.83,
           "open": {
-            "handicap": -0.5,
-            "home_w": 0.9,
-            "away_w": 0.9
+            "line": 2.75,
+            "over": 0.95,
+            "under": 0.85
           }
         },
         "bet365": {
@@ -1363,14 +3985,14 @@
             "l": 1.83
           }
         },
-        "hkjc_ou": {
-          "line": 2.75,
-          "over": 0.98,
-          "under": 0.83,
+        "hkjc_ah": {
+          "handicap": -0.5,
+          "home_w": 0.9,
+          "away_w": 0.9,
           "open": {
-            "line": 2.75,
-            "over": 0.95,
-            "under": 0.85
+            "handicap": -0.5,
+            "home_w": 0.9,
+            "away_w": 0.9
           }
         },
         "confidence_tier": "low",
@@ -1572,14 +4194,14 @@
           "line": 2.5,
           "under": 1.3
         },
-        "hkjc_ah": {
-          "handicap": -1.75,
-          "home_w": 1.05,
-          "away_w": 0.8,
+        "hkjc_ou": {
+          "line": 3.0,
+          "over": 1.05,
+          "under": 0.8,
           "open": {
-            "handicap": -2.0,
-            "home_w": 0.8,
-            "away_w": 1.05
+            "line": 3.0,
+            "over": 0.97,
+            "under": 0.87
           }
         },
         "bet365": {
@@ -1592,14 +4214,14 @@
             "l": 1.2
           }
         },
-        "hkjc_ou": {
-          "line": 3.0,
-          "over": 1.05,
-          "under": 0.8,
+        "hkjc_ah": {
+          "handicap": -1.75,
+          "home_w": 1.05,
+          "away_w": 0.8,
           "open": {
-            "line": 3.0,
-            "over": 0.97,
-            "under": 0.87
+            "handicap": -2.0,
+            "home_w": 0.8,
+            "away_w": 1.05
           }
         },
         "confidence_tier": "low",
@@ -1801,14 +4423,14 @@
           "line": 3.5,
           "under": 0.6
         },
-        "hkjc_ah": {
-          "handicap": 0.75,
-          "home_w": 0.82,
-          "away_w": 0.97,
+        "hkjc_ou": {
+          "line": 3.25,
+          "over": 0.97,
+          "under": 0.82,
           "open": {
-            "handicap": 1.0,
-            "home_w": 0.97,
-            "away_w": 0.82
+            "line": 2.75,
+            "over": 0.8,
+            "under": 1.0
           }
         },
         "bet365": {
@@ -1821,14 +4443,14 @@
             "l": 5.0
           }
         },
-        "hkjc_ou": {
-          "line": 3.25,
-          "over": 0.97,
-          "under": 0.82,
+        "hkjc_ah": {
+          "handicap": 0.75,
+          "home_w": 0.82,
+          "away_w": 0.97,
           "open": {
-            "line": 2.75,
-            "over": 0.8,
-            "under": 1.0
+            "handicap": 1.0,
+            "home_w": 0.97,
+            "away_w": 0.82
           }
         },
         "confidence_tier": "medium",
@@ -2030,14 +4652,14 @@
           "line": 1.5,
           "under": 1.3
         },
-        "hkjc_ah": {
-          "handicap": -0.25,
-          "home_w": 0.8,
-          "away_w": 1.05,
+        "hkjc_ou": {
+          "line": 2.0,
+          "over": 1.07,
+          "under": 0.72,
           "open": {
-            "handicap": -0.25,
-            "home_w": 1.0,
-            "away_w": 0.85
+            "line": 2.0,
+            "over": 0.98,
+            "under": 0.88
           }
         },
         "bet365": {
@@ -2050,14 +4672,14 @@
             "l": 2.15
           }
         },
-        "hkjc_ou": {
-          "line": 2.0,
-          "over": 1.07,
-          "under": 0.72,
+        "hkjc_ah": {
+          "handicap": -0.25,
+          "home_w": 0.8,
+          "away_w": 1.05,
           "open": {
-            "line": 2.0,
-            "over": 0.98,
-            "under": 0.88
+            "handicap": -0.25,
+            "home_w": 1.0,
+            "away_w": 0.85
           }
         },
         "confidence_tier": "very_low",
@@ -2259,14 +4881,14 @@
           "line": 2.5,
           "under": 1.25
         },
-        "hkjc_ah": {
-          "handicap": 2.0,
-          "home_w": 0.77,
-          "away_w": 1.02,
+        "hkjc_ou": {
+          "line": 2.75,
+          "over": 0.77,
+          "under": 1.02,
           "open": {
-            "handicap": 2.25,
-            "home_w": 1.0,
-            "away_w": 0.85
+            "line": 3.0,
+            "over": 0.93,
+            "under": 0.93
           }
         },
         "bet365": {
@@ -2279,14 +4901,14 @@
             "l": 17.0
           }
         },
-        "hkjc_ou": {
-          "line": 2.75,
-          "over": 0.77,
-          "under": 1.02,
+        "hkjc_ah": {
+          "handicap": 2.0,
+          "home_w": 0.77,
+          "away_w": 1.02,
           "open": {
-            "line": 3.0,
-            "over": 0.93,
-            "under": 0.93
+            "handicap": 2.25,
+            "home_w": 1.0,
+            "away_w": 0.85
           }
         },
         "confidence_tier": "high",
@@ -2488,14 +5110,14 @@
           "line": 2.5,
           "under": 0.73
         },
-        "hkjc_ah": {
-          "handicap": 1.0,
-          "home_w": 0.72,
-          "away_w": 1.07,
+        "hkjc_ou": {
+          "line": 2.5,
+          "over": 1.15,
+          "under": 0.67,
           "open": {
-            "handicap": 0.25,
-            "home_w": 0.88,
-            "away_w": 0.98
+            "line": 2.0,
+            "over": 0.85,
+            "under": 1.0
           }
         },
         "bet365": {
@@ -2508,14 +5130,14 @@
             "l": 3.6
           }
         },
-        "hkjc_ou": {
-          "line": 2.5,
-          "over": 1.15,
-          "under": 0.67,
+        "hkjc_ah": {
+          "handicap": 1.0,
+          "home_w": 0.72,
+          "away_w": 1.07,
           "open": {
-            "line": 2.0,
-            "over": 0.85,
-            "under": 1.0
+            "handicap": 0.25,
+            "home_w": 0.88,
+            "away_w": 0.98
           }
         },
         "confidence_tier": "high",
@@ -2717,14 +5339,14 @@
           "line": 2.5,
           "under": 0.5
         },
-        "hkjc_ah": {
-          "handicap": -0.25,
-          "home_w": 0.77,
-          "away_w": 1.02,
+        "hkjc_ou": {
+          "line": 2.0,
+          "over": 0.87,
+          "under": 0.92,
           "open": {
-            "handicap": 0.0,
-            "home_w": 1.0,
-            "away_w": 0.8
+            "line": 2.0,
+            "over": 0.85,
+            "under": 0.95
           }
         },
         "bet365": {
@@ -2737,14 +5359,14 @@
             "l": 2.5
           }
         },
-        "hkjc_ou": {
-          "line": 2.0,
-          "over": 0.87,
-          "under": 0.92,
+        "hkjc_ah": {
+          "handicap": -0.25,
+          "home_w": 0.77,
+          "away_w": 1.02,
           "open": {
-            "line": 2.0,
-            "over": 0.85,
-            "under": 0.95
+            "handicap": 0.0,
+            "home_w": 1.0,
+            "away_w": 0.8
           }
         },
         "confidence_tier": "medium",
@@ -2946,14 +5568,14 @@
           "line": 2.5,
           "under": 0.67
         },
-        "hkjc_ah": {
-          "handicap": 0.75,
-          "home_w": 0.98,
-          "away_w": 0.83,
+        "hkjc_ou": {
+          "line": 2.25,
+          "over": 0.93,
+          "under": 0.88,
           "open": {
-            "handicap": 0.75,
-            "home_w": 1.0,
-            "away_w": 0.8
+            "line": 2.25,
+            "over": 0.9,
+            "under": 0.9
           }
         },
         "bet365": {
@@ -2966,14 +5588,14 @@
             "l": 4.5
           }
         },
-        "hkjc_ou": {
-          "line": 2.25,
-          "over": 0.93,
-          "under": 0.88,
+        "hkjc_ah": {
+          "handicap": 0.75,
+          "home_w": 0.98,
+          "away_w": 0.83,
           "open": {
-            "line": 2.25,
-            "over": 0.9,
-            "under": 0.9
+            "handicap": 0.75,
+            "home_w": 1.0,
+            "away_w": 0.8
           }
         },
         "confidence_tier": "low",
@@ -3175,14 +5797,14 @@
           "line": 2.5,
           "under": 0.57
         },
-        "hkjc_ah": {
-          "handicap": 0.0,
-          "home_w": 0.87,
-          "away_w": 0.92,
+        "hkjc_ou": {
+          "line": 2.0,
+          "over": 0.75,
+          "under": 1.05,
           "open": {
-            "handicap": 0.25,
-            "home_w": 0.93,
-            "away_w": 0.88
+            "line": 2.0,
+            "over": 0.78,
+            "under": 1.03
           }
         },
         "bet365": {
@@ -3195,14 +5817,14 @@
             "l": 3.3
           }
         },
-        "hkjc_ou": {
-          "line": 2.0,
-          "over": 0.75,
-          "under": 1.05,
+        "hkjc_ah": {
+          "handicap": 0.0,
+          "home_w": 0.87,
+          "away_w": 0.92,
           "open": {
-            "line": 2.0,
-            "over": 0.78,
-            "under": 1.03
+            "handicap": 0.25,
+            "home_w": 0.93,
+            "away_w": 0.88
           }
         },
         "confidence_tier": "medium",
@@ -3404,14 +6026,14 @@
           "line": 2.5,
           "under": 0.85
         },
-        "hkjc_ah": {
-          "handicap": -0.75,
-          "home_w": 0.85,
-          "away_w": 0.95,
+        "hkjc_ou": {
+          "line": 2.5,
+          "over": 0.85,
+          "under": 0.95,
           "open": {
-            "handicap": -0.75,
-            "home_w": 0.95,
-            "away_w": 0.85
+            "line": 2.75,
+            "over": 1.0,
+            "under": 0.8
           }
         },
         "bet365": {
@@ -3424,14 +6046,14 @@
             "l": 1.62
           }
         },
-        "hkjc_ou": {
-          "line": 2.5,
-          "over": 0.85,
-          "under": 0.95,
+        "hkjc_ah": {
+          "handicap": -0.75,
+          "home_w": 0.85,
+          "away_w": 0.95,
           "open": {
-            "line": 2.75,
-            "over": 1.0,
-            "under": 0.8
+            "handicap": -0.75,
+            "home_w": 0.95,
+            "away_w": 0.85
           }
         },
         "confidence_tier": "low",
@@ -3633,14 +6255,14 @@
           "line": 2.5,
           "under": 1.2
         },
-        "hkjc_ah": {
-          "handicap": -0.75,
-          "home_w": 1.02,
-          "away_w": 0.77,
+        "hkjc_ou": {
+          "line": 3.0,
+          "over": 1.02,
+          "under": 0.77,
           "open": {
-            "handicap": -1.0,
-            "home_w": 0.9,
-            "away_w": 0.9
+            "line": 2.75,
+            "over": 0.88,
+            "under": 0.93
           }
         },
         "bet365": {
@@ -3653,14 +6275,14 @@
             "l": 1.5
           }
         },
-        "hkjc_ou": {
-          "line": 3.0,
-          "over": 1.02,
-          "under": 0.77,
+        "hkjc_ah": {
+          "handicap": -0.75,
+          "home_w": 1.02,
+          "away_w": 0.77,
           "open": {
-            "line": 2.75,
-            "over": 0.88,
-            "under": 0.93
+            "handicap": -1.0,
+            "home_w": 0.9,
+            "away_w": 0.9
           }
         },
         "confidence_tier": "low",
@@ -3862,14 +6484,14 @@
           "line": 2.5,
           "under": 0.67
         },
-        "hkjc_ah": {
-          "handicap": null,
-          "home_w": 0.95,
-          "away_w": 0.85,
+        "hkjc_ou": {
+          "line": 2.25,
+          "over": 0.87,
+          "under": 0.92,
           "open": {
-            "handicap": null,
-            "home_w": 1.03,
-            "away_w": 0.78
+            "line": 2.25,
+            "over": 0.85,
+            "under": 0.95
           }
         },
         "bet365": {
@@ -3882,14 +6504,14 @@
             "l": 2.35
           }
         },
-        "hkjc_ou": {
-          "line": 2.25,
-          "over": 0.87,
-          "under": 0.92,
+        "hkjc_ah": {
+          "handicap": null,
+          "home_w": 0.95,
+          "away_w": 0.85,
           "open": {
-            "line": 2.25,
-            "over": 0.85,
-            "under": 0.95
+            "handicap": null,
+            "home_w": 1.03,
+            "away_w": 0.78
           }
         },
         "confidence_tier": "medium",
@@ -4091,14 +6713,14 @@
           "line": 2.5,
           "under": 0.65
         },
-        "hkjc_ah": {
-          "handicap": 0.5,
-          "home_w": 0.83,
-          "away_w": 0.98,
+        "hkjc_ou": {
+          "line": 2.25,
+          "over": 0.92,
+          "under": 0.87,
           "open": {
-            "handicap": 0.25,
-            "home_w": 0.78,
-            "away_w": 1.03
+            "line": 2.25,
+            "over": 1.03,
+            "under": 0.78
           }
         },
         "bet365": {
@@ -4111,14 +6733,14 @@
             "l": 3.4
           }
         },
-        "hkjc_ou": {
-          "line": 2.25,
-          "over": 0.92,
-          "under": 0.87,
+        "hkjc_ah": {
+          "handicap": 0.5,
+          "home_w": 0.83,
+          "away_w": 0.98,
           "open": {
-            "line": 2.25,
-            "over": 1.03,
-            "under": 0.78
+            "handicap": 0.25,
+            "home_w": 0.78,
+            "away_w": 1.03
           }
         },
         "confidence_tier": "low",
@@ -4320,14 +6942,14 @@
           "line": 2.5,
           "under": 1.0
         },
-        "hkjc_ah": {
-          "handicap": 0.25,
-          "home_w": 0.95,
-          "away_w": 0.85,
+        "hkjc_ou": {
+          "line": 2.75,
+          "over": 0.95,
+          "under": 0.85,
           "open": {
-            "handicap": 0.25,
-            "home_w": 1.03,
-            "away_w": 0.78
+            "line": 2.75,
+            "over": 1.0,
+            "under": 0.8
           }
         },
         "bet365": {
@@ -4340,14 +6962,14 @@
             "l": 2.8
           }
         },
-        "hkjc_ou": {
-          "line": 2.75,
-          "over": 0.95,
-          "under": 0.85,
+        "hkjc_ah": {
+          "handicap": 0.25,
+          "home_w": 0.95,
+          "away_w": 0.85,
           "open": {
-            "line": 2.75,
-            "over": 1.0,
-            "under": 0.8
+            "handicap": 0.25,
+            "home_w": 1.03,
+            "away_w": 0.78
           }
         },
         "confidence_tier": "medium",
@@ -4549,14 +7171,14 @@
           "line": 3.5,
           "under": 0.8
         },
-        "hkjc_ah": {
-          "handicap": 0.5,
-          "home_w": 0.87,
-          "away_w": 0.92,
+        "hkjc_ou": {
+          "line": 3.5,
+          "over": 1.0,
+          "under": 0.8,
           "open": {
-            "handicap": 0.5,
-            "home_w": 1.0,
-            "away_w": 0.8
+            "line": 3.5,
+            "over": 0.98,
+            "under": 0.83
           }
         },
         "bet365": {
@@ -4569,14 +7191,14 @@
             "l": 3.1
           }
         },
-        "hkjc_ou": {
-          "line": 3.5,
-          "over": 1.0,
-          "under": 0.8,
+        "hkjc_ah": {
+          "handicap": 0.5,
+          "home_w": 0.87,
+          "away_w": 0.92,
           "open": {
-            "line": 3.5,
-            "over": 0.98,
-            "under": 0.83
+            "handicap": 0.5,
+            "home_w": 1.0,
+            "away_w": 0.8
           }
         },
         "confidence_tier": "low",
@@ -4778,14 +7400,14 @@
           "line": 2.5,
           "under": 0.75
         },
-        "hkjc_ah": {
-          "handicap": 0.0,
-          "home_w": 1.03,
-          "away_w": 0.78,
+        "hkjc_ou": {
+          "line": 2.5,
+          "over": 0.98,
+          "under": 0.83,
           "open": {
-            "handicap": 0.0,
-            "home_w": 0.85,
-            "away_w": 0.95
+            "line": 2.5,
+            "over": 0.85,
+            "under": 0.95
           }
         },
         "bet365": {
@@ -4798,14 +7420,14 @@
             "l": 2.63
           }
         },
-        "hkjc_ou": {
-          "line": 2.5,
-          "over": 0.98,
-          "under": 0.83,
+        "hkjc_ah": {
+          "handicap": 0.0,
+          "home_w": 1.03,
+          "away_w": 0.78,
           "open": {
-            "line": 2.5,
-            "over": 0.85,
-            "under": 0.95
+            "handicap": 0.0,
+            "home_w": 0.85,
+            "away_w": 0.95
           }
         },
         "confidence_tier": "medium",
@@ -5007,14 +7629,14 @@
           "line": 2.5,
           "under": 0.75
         },
-        "hkjc_ah": {
-          "handicap": -0.25,
-          "home_w": 1.05,
-          "away_w": 0.75,
+        "hkjc_ou": {
+          "line": 2.5,
+          "over": 0.98,
+          "under": 0.83,
           "open": {
-            "handicap": -0.25,
-            "home_w": 1.02,
-            "away_w": 0.77
+            "line": 2.5,
+            "over": 0.8,
+            "under": 1.0
           }
         },
         "bet365": {
@@ -5027,14 +7649,14 @@
             "l": 2.4
           }
         },
-        "hkjc_ou": {
-          "line": 2.5,
-          "over": 0.98,
-          "under": 0.83,
+        "hkjc_ah": {
+          "handicap": -0.25,
+          "home_w": 1.05,
+          "away_w": 0.75,
           "open": {
-            "line": 2.5,
-            "over": 0.8,
-            "under": 1.0
+            "handicap": -0.25,
+            "home_w": 1.02,
+            "away_w": 0.77
           }
         },
         "confidence_tier": "medium",
@@ -5236,14 +7858,14 @@
           "line": 2.5,
           "under": 0.91
         },
-        "hkjc_ah": {
-          "handicap": -0.25,
-          "home_w": 0.95,
-          "away_w": 0.85,
+        "hkjc_ou": {
+          "line": 2.5,
+          "over": 0.85,
+          "under": 0.95,
           "open": {
-            "handicap": -0.25,
-            "home_w": 0.83,
-            "away_w": 0.98
+            "line": 2.25,
+            "over": 0.83,
+            "under": 0.98
           }
         },
         "bet365": {
@@ -5256,14 +7878,14 @@
             "l": 2.15
           }
         },
-        "hkjc_ou": {
-          "line": 2.5,
-          "over": 0.85,
-          "under": 0.95,
+        "hkjc_ah": {
+          "handicap": -0.25,
+          "home_w": 0.95,
+          "away_w": 0.85,
           "open": {
-            "line": 2.25,
-            "over": 0.83,
-            "under": 0.98
+            "handicap": -0.25,
+            "home_w": 0.83,
+            "away_w": 0.98
           }
         },
         "confidence_tier": "low",
@@ -5465,14 +8087,14 @@
           "line": 2.5,
           "under": 1.25
         },
-        "hkjc_ah": {
-          "handicap": 0.75,
-          "home_w": 0.98,
-          "away_w": 0.83,
+        "hkjc_ou": {
+          "line": 3.0,
+          "over": 1.03,
+          "under": 0.78,
           "open": {
-            "handicap": 0.75,
-            "home_w": 0.93,
-            "away_w": 0.88
+            "line": 2.75,
+            "over": 0.85,
+            "under": 0.95
           }
         },
         "bet365": {
@@ -5485,14 +8107,14 @@
             "l": 4.33
           }
         },
-        "hkjc_ou": {
-          "line": 3.0,
-          "over": 1.03,
-          "under": 0.78,
+        "hkjc_ah": {
+          "handicap": 0.75,
+          "home_w": 0.98,
+          "away_w": 0.83,
           "open": {
-            "line": 2.75,
-            "over": 0.85,
-            "under": 0.95
+            "handicap": 0.75,
+            "home_w": 0.93,
+            "away_w": 0.88
           }
         },
         "confidence_tier": "medium",
@@ -5694,14 +8316,14 @@
           "line": 3.5,
           "under": 0.57
         },
-        "hkjc_ah": {
-          "handicap": -0.5,
-          "home_w": 0.93,
-          "away_w": 0.88,
+        "hkjc_ou": {
+          "line": 3.0,
+          "over": 0.83,
+          "under": 0.98,
           "open": {
-            "handicap": -0.5,
-            "home_w": 0.8,
-            "away_w": 1.0
+            "line": 3.0,
+            "over": 1.0,
+            "under": 0.8
           }
         },
         "bet365": {
@@ -5714,14 +8336,14 @@
             "l": 1.95
           }
         },
-        "hkjc_ou": {
-          "line": 3.0,
-          "over": 0.83,
-          "under": 0.98,
+        "hkjc_ah": {
+          "handicap": -0.5,
+          "home_w": 0.93,
+          "away_w": 0.88,
           "open": {
-            "line": 3.0,
-            "over": 1.0,
-            "under": 0.8
+            "handicap": -0.5,
+            "home_w": 0.8,
+            "away_w": 1.0
           }
         },
         "confidence_tier": "low",
@@ -5923,14 +8545,14 @@
           "line": 3.5,
           "under": 1.0
         },
-        "hkjc_ah": {
-          "handicap": null,
-          "home_w": 0.9,
-          "away_w": 0.9,
+        "hkjc_ou": {
+          "line": 3.75,
+          "over": 0.8,
+          "under": 1.0,
           "open": {
-            "handicap": null,
-            "home_w": 0.95,
-            "away_w": 0.85
+            "line": 3.75,
+            "over": 0.85,
+            "under": 0.95
           }
         },
         "bet365": {
@@ -5943,14 +8565,14 @@
             "l": 2.3
           }
         },
-        "hkjc_ou": {
-          "line": 3.75,
-          "over": 0.8,
-          "under": 1.0,
+        "hkjc_ah": {
+          "handicap": null,
+          "home_w": 0.9,
+          "away_w": 0.9,
           "open": {
-            "line": 3.75,
-            "over": 0.85,
-            "under": 0.95
+            "handicap": null,
+            "home_w": 0.95,
+            "away_w": 0.85
           }
         },
         "confidence_tier": "medium",
@@ -6152,14 +8774,14 @@
           "line": 3.5,
           "under": 0.85
         },
-        "hkjc_ah": {
-          "handicap": -1.25,
-          "home_w": 0.85,
-          "away_w": 0.95,
+        "hkjc_ou": {
+          "line": 3.5,
+          "over": 0.85,
+          "under": 0.95,
           "open": {
-            "handicap": -1.25,
-            "home_w": 0.95,
-            "away_w": 0.85
+            "line": 3.5,
+            "over": 0.95,
+            "under": 0.85
           }
         },
         "bet365": {
@@ -6172,14 +8794,14 @@
             "l": 1.4
           }
         },
-        "hkjc_ou": {
-          "line": 3.5,
-          "over": 0.85,
-          "under": 0.95,
+        "hkjc_ah": {
+          "handicap": -1.25,
+          "home_w": 0.85,
+          "away_w": 0.95,
           "open": {
-            "line": 3.5,
-            "over": 0.95,
-            "under": 0.85
+            "handicap": -1.25,
+            "home_w": 0.95,
+            "away_w": 0.85
           }
         },
         "confidence_tier": "low",
@@ -6381,14 +9003,14 @@
           "line": 2.5,
           "under": 1.38
         },
-        "hkjc_ah": {
-          "handicap": 1.5,
-          "home_w": 0.8,
-          "away_w": 1.0,
+        "hkjc_ou": {
+          "line": 3.0,
+          "over": 0.85,
+          "under": 0.95,
           "open": {
-            "handicap": 1.5,
-            "home_w": 0.9,
-            "away_w": 0.9
+            "line": 2.75,
+            "over": 0.78,
+            "under": 1.03
           }
         },
         "bet365": {
@@ -6401,14 +9023,14 @@
             "l": 8.0
           }
         },
-        "hkjc_ou": {
-          "line": 3.0,
-          "over": 0.85,
-          "under": 0.95,
+        "hkjc_ah": {
+          "handicap": 1.5,
+          "home_w": 0.8,
+          "away_w": 1.0,
           "open": {
-            "line": 2.75,
-            "over": 0.78,
-            "under": 1.03
+            "handicap": 1.5,
+            "home_w": 0.9,
+            "away_w": 0.9
           }
         },
         "confidence_tier": "low",
@@ -6612,14 +9234,14 @@
           "line": 2.5,
           "under": 0.7
         },
-        "hkjc_ah": {
-          "handicap": 0.5,
-          "home_w": 0.92,
-          "away_w": 0.87,
+        "hkjc_ou": {
+          "line": 2.25,
+          "over": 0.82,
+          "under": 0.97,
           "open": {
-            "handicap": 0.5,
-            "home_w": 0.88,
-            "away_w": 0.93
+            "line": 2.25,
+            "over": 0.9,
+            "under": 0.9
           }
         },
         "bet365": {
@@ -6632,14 +9254,14 @@
             "l": 4.0
           }
         },
-        "hkjc_ou": {
-          "line": 2.25,
-          "over": 0.82,
-          "under": 0.97,
+        "hkjc_ah": {
+          "handicap": 0.5,
+          "home_w": 0.92,
+          "away_w": 0.87,
           "open": {
-            "line": 2.25,
-            "over": 0.9,
-            "under": 0.9
+            "handicap": 0.5,
+            "home_w": 0.88,
+            "away_w": 0.93
           }
         },
         "confidence_tier": "medium",
@@ -6841,14 +9463,14 @@
           "line": 2.5,
           "under": 0.85
         },
-        "hkjc_ah": {
-          "handicap": -1.0,
-          "home_w": 1.02,
-          "away_w": 0.77,
+        "hkjc_ou": {
+          "line": 2.5,
+          "over": 0.9,
+          "under": 0.9,
           "open": {
-            "handicap": -1.0,
-            "home_w": 0.98,
-            "away_w": 0.83
+            "line": 2.5,
+            "over": 0.95,
+            "under": 0.85
           }
         },
         "bet365": {
@@ -6861,14 +9483,14 @@
             "l": 0
           }
         },
-        "hkjc_ou": {
-          "line": 2.5,
-          "over": 0.9,
-          "under": 0.9,
+        "hkjc_ah": {
+          "handicap": -1.0,
+          "home_w": 1.02,
+          "away_w": 0.77,
           "open": {
-            "line": 2.5,
-            "over": 0.95,
-            "under": 0.85
+            "handicap": -1.0,
+            "home_w": 0.98,
+            "away_w": 0.83
           }
         },
         "confidence_tier": "low",
@@ -7070,14 +9692,14 @@
           "line": 2.5,
           "under": 0.7
         },
-        "hkjc_ah": {
-          "handicap": 0.25,
-          "home_w": 1.05,
-          "away_w": 0.75,
+        "hkjc_ou": {
+          "line": 2.25,
+          "over": 0.8,
+          "under": 1.0,
           "open": {
-            "handicap": 0.25,
-            "home_w": 1.05,
-            "away_w": 0.75
+            "line": 2.25,
+            "over": 0.83,
+            "under": 0.98
           }
         },
         "bet365": {
@@ -7090,14 +9712,14 @@
             "l": 0
           }
         },
-        "hkjc_ou": {
-          "line": 2.25,
-          "over": 0.8,
-          "under": 1.0,
+        "hkjc_ah": {
+          "handicap": 0.25,
+          "home_w": 1.05,
+          "away_w": 0.75,
           "open": {
-            "line": 2.25,
-            "over": 0.83,
-            "under": 0.98
+            "handicap": 0.25,
+            "home_w": 1.05,
+            "away_w": 0.75
           }
         },
         "confidence_tier": "medium",
@@ -7299,14 +9921,14 @@
           "line": 2.5,
           "under": 0.95
         },
-        "hkjc_ah": {
-          "handicap": -1.0,
-          "home_w": 0.77,
-          "away_w": 1.02,
+        "hkjc_ou": {
+          "line": 2.5,
+          "over": 0.8,
+          "under": 1.0,
           "open": {
-            "handicap": -1.0,
-            "home_w": 0.78,
-            "away_w": 1.03
+            "line": 2.5,
+            "over": 0.85,
+            "under": 0.95
           }
         },
         "bet365": {
@@ -7319,14 +9941,14 @@
             "l": 0
           }
         },
-        "hkjc_ou": {
-          "line": 2.5,
-          "over": 0.8,
-          "under": 1.0,
+        "hkjc_ah": {
+          "handicap": -1.0,
+          "home_w": 0.77,
+          "away_w": 1.02,
           "open": {
-            "line": 2.5,
-            "over": 0.85,
-            "under": 0.95
+            "handicap": -1.0,
+            "home_w": 0.78,
+            "away_w": 1.03
           }
         },
         "confidence_tier": "low",
@@ -7528,14 +10150,14 @@
           "line": 2.5,
           "under": 0.8
         },
-        "hkjc_ah": {
-          "handicap": 0.5,
-          "home_w": 0.8,
-          "away_w": 1.0,
+        "hkjc_ou": {
+          "line": 2.5,
+          "over": 0.95,
+          "under": 0.85,
           "open": {
-            "handicap": 0.5,
-            "home_w": 0.9,
-            "away_w": 0.9
+            "line": 2.5,
+            "over": 1.0,
+            "under": 0.8
           }
         },
         "bet365": {
@@ -7548,14 +10170,14 @@
             "l": 3.8
           }
         },
-        "hkjc_ou": {
-          "line": 2.5,
-          "over": 0.95,
-          "under": 0.85,
+        "hkjc_ah": {
+          "handicap": 0.5,
+          "home_w": 0.8,
+          "away_w": 1.0,
           "open": {
-            "line": 2.5,
-            "over": 1.0,
-            "under": 0.8
+            "handicap": 0.5,
+            "home_w": 0.9,
+            "away_w": 0.9
           }
         },
         "confidence_tier": "medium",
@@ -7757,14 +10379,14 @@
           "line": 2.5,
           "under": 0.62
         },
-        "hkjc_ah": {
-          "handicap": null,
-          "home_w": 0.85,
-          "away_w": 0.95,
+        "hkjc_ou": {
+          "line": 2.25,
+          "over": 0.95,
+          "under": 0.85,
           "open": {
-            "handicap": 0.25,
-            "home_w": 1.05,
-            "away_w": 0.75
+            "line": 2.25,
+            "over": 0.95,
+            "under": 0.85
           }
         },
         "bet365": {
@@ -7777,14 +10399,14 @@
             "l": 2.75
           }
         },
-        "hkjc_ou": {
-          "line": 2.25,
-          "over": 0.95,
-          "under": 0.85,
+        "hkjc_ah": {
+          "handicap": null,
+          "home_w": 0.85,
+          "away_w": 0.95,
           "open": {
-            "line": 2.25,
-            "over": 0.95,
-            "under": 0.85
+            "handicap": 0.25,
+            "home_w": 1.05,
+            "away_w": 0.75
           }
         },
         "confidence_tier": "medium",
@@ -7986,14 +10608,14 @@
           "line": 2.5,
           "under": 0.95
         },
-        "hkjc_ah": {
-          "handicap": -0.25,
-          "home_w": 1.0,
-          "away_w": 0.8,
+        "hkjc_ou": {
+          "line": 2.75,
+          "over": 1.0,
+          "under": 0.8,
           "open": {
-            "handicap": -0.25,
-            "home_w": 0.78,
-            "away_w": 1.03
+            "line": 2.5,
+            "over": 0.83,
+            "under": 0.98
           }
         },
         "bet365": {
@@ -8006,14 +10628,14 @@
             "l": 2.25
           }
         },
-        "hkjc_ou": {
-          "line": 2.75,
-          "over": 1.0,
-          "under": 0.8,
+        "hkjc_ah": {
+          "handicap": -0.25,
+          "home_w": 1.0,
+          "away_w": 0.8,
           "open": {
-            "line": 2.5,
-            "over": 0.83,
-            "under": 0.98
+            "handicap": -0.25,
+            "home_w": 0.78,
+            "away_w": 1.03
           }
         },
         "confidence_tier": "medium",
@@ -8215,14 +10837,14 @@
           "line": 2.5,
           "under": 1.15
         },
-        "hkjc_ah": {
-          "handicap": 1.0,
-          "home_w": 0.82,
-          "away_w": 0.97,
+        "hkjc_ou": {
+          "line": 2.75,
+          "over": 0.8,
+          "under": 1.0,
           "open": {
-            "handicap": 1.25,
-            "home_w": 1.0,
-            "away_w": 0.8
+            "line": 3.0,
+            "over": 1.0,
+            "under": 0.8
           }
         },
         "bet365": {
@@ -8235,14 +10857,14 @@
             "l": 6.0
           }
         },
-        "hkjc_ou": {
-          "line": 2.75,
-          "over": 0.8,
-          "under": 1.0,
+        "hkjc_ah": {
+          "handicap": 1.0,
+          "home_w": 0.82,
+          "away_w": 0.97,
           "open": {
-            "line": 3.0,
-            "over": 1.0,
-            "under": 0.8
+            "handicap": 1.25,
+            "home_w": 1.0,
+            "away_w": 0.8
           }
         },
         "confidence_tier": "low",
@@ -8444,14 +11066,14 @@
           "line": 2.5,
           "under": 1.1
         },
-        "hkjc_ah": {
-          "handicap": 0.25,
-          "home_w": 0.88,
-          "away_w": 0.93,
+        "hkjc_ou": {
+          "line": 2.75,
+          "over": 0.85,
+          "under": 0.95,
           "open": {
-            "handicap": 0.25,
-            "home_w": 0.85,
-            "away_w": 0.95
+            "line": 2.5,
+            "over": 0.82,
+            "under": 0.97
           }
         },
         "bet365": {
@@ -8464,14 +11086,14 @@
             "l": 2.63
           }
         },
-        "hkjc_ou": {
-          "line": 2.75,
-          "over": 0.85,
-          "under": 0.95,
+        "hkjc_ah": {
+          "handicap": 0.25,
+          "home_w": 0.88,
+          "away_w": 0.93,
           "open": {
-            "line": 2.5,
-            "over": 0.82,
-            "under": 0.97
+            "handicap": 0.25,
+            "home_w": 0.85,
+            "away_w": 0.95
           }
         },
         "confidence_tier": "medium",
@@ -8673,14 +11295,14 @@
           "line": 3.5,
           "under": 0.85
         },
-        "hkjc_ah": {
-          "handicap": 0.25,
-          "home_w": 0.97,
-          "away_w": 0.82,
+        "hkjc_ou": {
+          "line": 3.5,
+          "over": 0.83,
+          "under": 0.83,
           "open": {
-            "handicap": 0.25,
-            "home_w": 0.98,
-            "away_w": 0.83
+            "line": 3.5,
+            "over": 0.88,
+            "under": 0.93
           }
         },
         "bet365": {
@@ -8693,14 +11315,14 @@
             "l": 2.63
           }
         },
-        "hkjc_ou": {
-          "line": 3.5,
-          "over": 0.83,
-          "under": 0.83,
+        "hkjc_ah": {
+          "handicap": 0.25,
+          "home_w": 0.97,
+          "away_w": 0.82,
           "open": {
-            "line": 3.5,
-            "over": 0.88,
-            "under": 0.93
+            "handicap": 0.25,
+            "home_w": 0.98,
+            "away_w": 0.83
           }
         },
         "confidence_tier": "medium",
@@ -8902,14 +11524,14 @@
           "line": 2.5,
           "under": 1.05
         },
-        "hkjc_ah": {
-          "handicap": -0.5,
-          "home_w": 0.95,
-          "away_w": 0.85,
+        "hkjc_ou": {
+          "line": 2.75,
+          "over": 0.9,
+          "under": 0.9,
           "open": {
-            "handicap": -0.5,
-            "home_w": 0.77,
-            "away_w": 1.02
+            "line": 2.75,
+            "over": 0.95,
+            "under": 0.85
           }
         },
         "bet365": {
@@ -8922,14 +11544,14 @@
             "l": 2.0
           }
         },
-        "hkjc_ou": {
-          "line": 2.75,
-          "over": 0.9,
-          "under": 0.9,
+        "hkjc_ah": {
+          "handicap": -0.5,
+          "home_w": 0.95,
+          "away_w": 0.85,
           "open": {
-            "line": 2.75,
-            "over": 0.95,
-            "under": 0.85
+            "handicap": -0.5,
+            "home_w": 0.77,
+            "away_w": 1.02
           }
         },
         "confidence_tier": "low",
@@ -9131,14 +11753,14 @@
           "line": 2.5,
           "under": 1.0
         },
-        "hkjc_ah": {
-          "handicap": -0.5,
-          "home_w": 0.95,
-          "away_w": 0.85,
+        "hkjc_ou": {
+          "line": 2.75,
+          "over": 0.95,
+          "under": 0.85,
           "open": {
-            "handicap": -0.75,
-            "home_w": 0.85,
-            "away_w": 0.95
+            "line": 2.75,
+            "over": 0.95,
+            "under": 0.85
           }
         },
         "bet365": {
@@ -9151,14 +11773,14 @@
             "l": 1.7
           }
         },
-        "hkjc_ou": {
-          "line": 2.75,
-          "over": 0.95,
-          "under": 0.85,
+        "hkjc_ah": {
+          "handicap": -0.5,
+          "home_w": 0.95,
+          "away_w": 0.85,
           "open": {
-            "line": 2.75,
-            "over": 0.95,
-            "under": 0.85
+            "handicap": -0.75,
+            "home_w": 0.85,
+            "away_w": 0.95
           }
         },
         "confidence_tier": "medium",
@@ -9362,14 +11984,14 @@
           "line": 4.5,
           "under": 0.57
         },
-        "hkjc_ah": {
-          "handicap": 1.25,
-          "home_w": 0.82,
-          "away_w": 0.97,
+        "hkjc_ou": {
+          "line": 4.25,
+          "over": 1.0,
+          "under": 0.8,
           "open": {
-            "handicap": 1.0,
-            "home_w": 0.98,
-            "away_w": 0.83
+            "line": 3.5,
+            "over": 0.8,
+            "under": 1.0
           }
         },
         "bet365": {
@@ -9382,14 +12004,14 @@
             "l": 4.2
           }
         },
-        "hkjc_ou": {
-          "line": 4.25,
-          "over": 1.0,
-          "under": 0.8,
+        "hkjc_ah": {
+          "handicap": 1.25,
+          "home_w": 0.82,
+          "away_w": 0.97,
           "open": {
-            "line": 3.5,
-            "over": 0.8,
-            "under": 1.0
+            "handicap": 1.0,
+            "home_w": 0.98,
+            "away_w": 0.83
           }
         },
         "confidence_tier": "low",
@@ -9591,14 +12213,14 @@
           "line": 3.5,
           "under": 0.55
         },
-        "hkjc_ah": {
-          "handicap": null,
-          "home_w": 0.97,
-          "away_w": 0.82,
+        "hkjc_ou": {
+          "line": 3.0,
+          "over": 0.9,
+          "under": 0.9,
           "open": {
-            "handicap": null,
-            "home_w": 0.85,
-            "away_w": 0.95
+            "line": 3.25,
+            "over": 1.03,
+            "under": 0.78
           }
         },
         "bet365": {
@@ -9611,14 +12233,14 @@
             "l": 2.5
           }
         },
-        "hkjc_ou": {
-          "line": 3.0,
-          "over": 0.9,
-          "under": 0.9,
+        "hkjc_ah": {
+          "handicap": null,
+          "home_w": 0.97,
+          "away_w": 0.82,
           "open": {
-            "line": 3.25,
-            "over": 1.03,
-            "under": 0.78
+            "handicap": null,
+            "home_w": 0.85,
+            "away_w": 0.95
           }
         },
         "confidence_tier": "medium",
@@ -9820,14 +12442,14 @@
           "line": 3.5,
           "under": 0.95
         },
-        "hkjc_ah": {
-          "handicap": null,
-          "home_w": 0.92,
-          "away_w": 0.87,
+        "hkjc_ou": {
+          "line": 3.5,
+          "over": 0.82,
+          "under": 0.97,
           "open": {
-            "handicap": -0.25,
-            "home_w": 0.8,
-            "away_w": 1.0
+            "line": 3.5,
+            "over": 0.85,
+            "under": 0.95
           }
         },
         "bet365": {
@@ -9840,14 +12462,14 @@
             "l": 2.2
           }
         },
-        "hkjc_ou": {
-          "line": 3.5,
-          "over": 0.82,
-          "under": 0.97,
+        "hkjc_ah": {
+          "handicap": null,
+          "home_w": 0.92,
+          "away_w": 0.87,
           "open": {
-            "line": 3.5,
-            "over": 0.85,
-            "under": 0.95
+            "handicap": -0.25,
+            "home_w": 0.8,
+            "away_w": 1.0
           }
         },
         "confidence_tier": "medium",
@@ -10049,14 +12671,14 @@
           "line": 2.5,
           "under": 0.95
         },
-        "hkjc_ah": {
-          "handicap": -0.75,
-          "home_w": 0.85,
-          "away_w": 0.95,
+        "hkjc_ou": {
+          "line": 2.75,
+          "over": 1.0,
+          "under": 0.8,
           "open": {
-            "handicap": -0.75,
-            "home_w": 0.9,
-            "away_w": 0.9
+            "line": 2.75,
+            "over": 1.0,
+            "under": 0.8
           }
         },
         "bet365": {
@@ -10069,14 +12691,14 @@
             "l": 1.67
           }
         },
-        "hkjc_ou": {
-          "line": 2.75,
-          "over": 1.0,
-          "under": 0.8,
+        "hkjc_ah": {
+          "handicap": -0.75,
+          "home_w": 0.85,
+          "away_w": 0.95,
           "open": {
-            "line": 2.75,
-            "over": 1.0,
-            "under": 0.8
+            "handicap": -0.75,
+            "home_w": 0.9,
+            "away_w": 0.9
           }
         },
         "confidence_tier": "medium",
@@ -10278,14 +12900,14 @@
           "line": 2.5,
           "under": 1.2
         },
-        "hkjc_ah": {
-          "handicap": 0.75,
-          "home_w": 0.9,
-          "away_w": 0.9,
+        "hkjc_ou": {
+          "line": 3.0,
+          "over": 0.97,
+          "under": 0.82,
           "open": {
-            "handicap": 0.75,
-            "home_w": 0.88,
-            "away_w": 0.93
+            "line": 3.0,
+            "over": 1.0,
+            "under": 0.8
           }
         },
         "bet365": {
@@ -10298,14 +12920,14 @@
             "l": 4.2
           }
         },
-        "hkjc_ou": {
-          "line": 3.0,
-          "over": 0.97,
-          "under": 0.82,
+        "hkjc_ah": {
+          "handicap": 0.75,
+          "home_w": 0.9,
+          "away_w": 0.9,
           "open": {
-            "line": 3.0,
-            "over": 1.0,
-            "under": 0.8
+            "handicap": 0.75,
+            "home_w": 0.88,
+            "away_w": 0.93
           }
         },
         "confidence_tier": "low",
@@ -10507,14 +13129,14 @@
           "line": 2.5,
           "under": 0.65
         },
-        "hkjc_ah": {
-          "handicap": null,
-          "home_w": 0.77,
-          "away_w": 1.02,
+        "hkjc_ou": {
+          "line": 2.25,
+          "over": 0.87,
+          "under": 0.92,
           "open": {
-            "handicap": null,
-            "home_w": 0.78,
-            "away_w": 1.03
+            "line": 2.25,
+            "over": 0.85,
+            "under": 0.95
           }
         },
         "bet365": {
@@ -10527,14 +13149,14 @@
             "l": 2.7
           }
         },
-        "hkjc_ou": {
-          "line": 2.25,
-          "over": 0.87,
-          "under": 0.92,
+        "hkjc_ah": {
+          "handicap": null,
+          "home_w": 0.77,
+          "away_w": 1.02,
           "open": {
-            "line": 2.25,
-            "over": 0.85,
-            "under": 0.95
+            "handicap": null,
+            "home_w": 0.78,
+            "away_w": 1.03
           }
         },
         "confidence_tier": "medium",
@@ -10736,14 +13358,14 @@
           "line": 2.5,
           "under": 1.05
         },
-        "hkjc_ah": {
-          "handicap": -0.5,
-          "home_w": 0.92,
-          "away_w": 0.87,
+        "hkjc_ou": {
+          "line": 2.75,
+          "over": 0.87,
+          "under": 0.92,
           "open": {
-            "handicap": -0.75,
-            "home_w": 0.85,
-            "away_w": 0.95
+            "line": 2.75,
+            "over": 0.9,
+            "under": 0.9
           }
         },
         "bet365": {
@@ -10756,14 +13378,14 @@
             "l": 1.67
           }
         },
-        "hkjc_ou": {
-          "line": 2.75,
-          "over": 0.87,
-          "under": 0.92,
+        "hkjc_ah": {
+          "handicap": -0.5,
+          "home_w": 0.92,
+          "away_w": 0.87,
           "open": {
-            "line": 2.75,
-            "over": 0.9,
-            "under": 0.9
+            "handicap": -0.75,
+            "home_w": 0.85,
+            "away_w": 0.95
           }
         },
         "confidence_tier": "low",
@@ -10965,14 +13587,14 @@
           "line": 3.5,
           "under": 1.0
         },
-        "hkjc_ah": {
-          "handicap": -0.5,
-          "home_w": 0.82,
-          "away_w": 0.97,
+        "hkjc_ou": {
+          "line": 3.75,
+          "over": 0.92,
+          "under": 0.87,
           "open": {
-            "handicap": null,
-            "home_w": 0.88,
-            "away_w": 0.93
+            "line": 3.75,
+            "over": 0.95,
+            "under": 0.85
           }
         },
         "bet365": {
@@ -10985,14 +13607,14 @@
             "l": 2.38
           }
         },
-        "hkjc_ou": {
-          "line": 3.75,
-          "over": 0.92,
-          "under": 0.87,
+        "hkjc_ah": {
+          "handicap": -0.5,
+          "home_w": 0.82,
+          "away_w": 0.97,
           "open": {
-            "line": 3.75,
-            "over": 0.95,
-            "under": 0.85
+            "handicap": null,
+            "home_w": 0.88,
+            "away_w": 0.93
           }
         },
         "confidence_tier": "medium",
@@ -11194,14 +13816,14 @@
           "line": null,
           "under": 0
         },
-        "hkjc_ah": {
-          "handicap": null,
-          "home_w": 0,
-          "away_w": 0,
+        "hkjc_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0,
           "open": {
-            "handicap": null,
-            "home_w": 0,
-            "away_w": 0
+            "line": null,
+            "over": 0,
+            "under": 0
           }
         },
         "bet365": {
@@ -11214,14 +13836,14 @@
             "l": 0
           }
         },
-        "hkjc_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0,
+        "hkjc_ah": {
+          "handicap": null,
+          "home_w": 0,
+          "away_w": 0,
           "open": {
-            "line": null,
-            "over": 0,
-            "under": 0
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
           }
         },
         "confidence_tier": "high",
@@ -11423,14 +14045,14 @@
           "line": null,
           "under": 0
         },
-        "hkjc_ah": {
-          "handicap": null,
-          "home_w": 0,
-          "away_w": 0,
+        "hkjc_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0,
           "open": {
-            "handicap": null,
-            "home_w": 0,
-            "away_w": 0
+            "line": null,
+            "over": 0,
+            "under": 0
           }
         },
         "bet365": {
@@ -11443,14 +14065,14 @@
             "l": 0
           }
         },
-        "hkjc_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0,
+        "hkjc_ah": {
+          "handicap": null,
+          "home_w": 0,
+          "away_w": 0,
           "open": {
-            "line": null,
-            "over": 0,
-            "under": 0
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
           }
         },
         "confidence_tier": "high",
@@ -11652,14 +14274,14 @@
           "line": null,
           "under": 0
         },
-        "hkjc_ah": {
-          "handicap": null,
-          "home_w": 0,
-          "away_w": 0,
+        "hkjc_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0,
           "open": {
-            "handicap": null,
-            "home_w": 0,
-            "away_w": 0
+            "line": null,
+            "over": 0,
+            "under": 0
           }
         },
         "bet365": {
@@ -11672,14 +14294,14 @@
             "l": 0
           }
         },
-        "hkjc_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0,
+        "hkjc_ah": {
+          "handicap": null,
+          "home_w": 0,
+          "away_w": 0,
           "open": {
-            "line": null,
-            "over": 0,
-            "under": 0
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
           }
         },
         "confidence_tier": "high",
@@ -11881,14 +14503,14 @@
           "line": null,
           "under": 0
         },
-        "hkjc_ah": {
-          "handicap": null,
-          "home_w": 0,
-          "away_w": 0,
+        "hkjc_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0,
           "open": {
-            "handicap": null,
-            "home_w": 0,
-            "away_w": 0
+            "line": null,
+            "over": 0,
+            "under": 0
           }
         },
         "bet365": {
@@ -11901,14 +14523,14 @@
             "l": 0
           }
         },
-        "hkjc_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0,
+        "hkjc_ah": {
+          "handicap": null,
+          "home_w": 0,
+          "away_w": 0,
           "open": {
-            "line": null,
-            "over": 0,
-            "under": 0
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
           }
         },
         "confidence_tier": "high",
@@ -12110,14 +14732,14 @@
           "line": null,
           "under": 0
         },
-        "hkjc_ah": {
-          "handicap": null,
-          "home_w": 0,
-          "away_w": 0,
+        "hkjc_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0,
           "open": {
-            "handicap": null,
-            "home_w": 0,
-            "away_w": 0
+            "line": null,
+            "over": 0,
+            "under": 0
           }
         },
         "bet365": {
@@ -12130,14 +14752,14 @@
             "l": 0
           }
         },
-        "hkjc_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0,
+        "hkjc_ah": {
+          "handicap": null,
+          "home_w": 0,
+          "away_w": 0,
           "open": {
-            "line": null,
-            "over": 0,
-            "under": 0
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
           }
         },
         "confidence_tier": "high",
@@ -12339,14 +14961,14 @@
           "line": null,
           "under": 0
         },
-        "hkjc_ah": {
-          "handicap": null,
-          "home_w": 0,
-          "away_w": 0,
+        "hkjc_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0,
           "open": {
-            "handicap": null,
-            "home_w": 0,
-            "away_w": 0
+            "line": null,
+            "over": 0,
+            "under": 0
           }
         },
         "bet365": {
@@ -12359,14 +14981,14 @@
             "l": 0
           }
         },
-        "hkjc_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0,
+        "hkjc_ah": {
+          "handicap": null,
+          "home_w": 0,
+          "away_w": 0,
           "open": {
-            "line": null,
-            "over": 0,
-            "under": 0
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
           }
         },
         "confidence_tier": "high",
@@ -12568,14 +15190,14 @@
           "line": null,
           "under": 0
         },
-        "hkjc_ah": {
-          "handicap": null,
-          "home_w": 0,
-          "away_w": 0,
+        "hkjc_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0,
           "open": {
-            "handicap": null,
-            "home_w": 0,
-            "away_w": 0
+            "line": null,
+            "over": 0,
+            "under": 0
           }
         },
         "bet365": {
@@ -12588,14 +15210,14 @@
             "l": 0
           }
         },
-        "hkjc_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0,
+        "hkjc_ah": {
+          "handicap": null,
+          "home_w": 0,
+          "away_w": 0,
           "open": {
-            "line": null,
-            "over": 0,
-            "under": 0
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
           }
         },
         "confidence_tier": "low",
@@ -12797,14 +15419,14 @@
           "line": 2.5,
           "under": 0.75
         },
-        "hkjc_ah": {
-          "handicap": 0.5,
-          "home_w": 0.82,
-          "away_w": 0.97,
+        "hkjc_ou": {
+          "line": 2.5,
+          "over": 1.0,
+          "under": 0.8,
           "open": {
-            "handicap": 0.5,
-            "home_w": 1.0,
-            "away_w": 0.8
+            "line": 2.25,
+            "over": 0.9,
+            "under": 0.9
           }
         },
         "bet365": {
@@ -12817,14 +15439,14 @@
             "l": 3.7
           }
         },
-        "hkjc_ou": {
-          "line": 2.5,
-          "over": 1.0,
-          "under": 0.8,
+        "hkjc_ah": {
+          "handicap": 0.5,
+          "home_w": 0.82,
+          "away_w": 0.97,
           "open": {
-            "line": 2.25,
-            "over": 0.9,
-            "under": 0.9
+            "handicap": 0.5,
+            "home_w": 1.0,
+            "away_w": 0.8
           }
         },
         "confidence_tier": "low",
@@ -13026,14 +15648,14 @@
           "line": 2.5,
           "under": 1.15
         },
-        "hkjc_ah": {
-          "handicap": 0.5,
-          "home_w": 1.0,
-          "away_w": 0.8,
+        "hkjc_ou": {
+          "line": 2.75,
+          "over": 0.77,
+          "under": 1.02,
           "open": {
-            "handicap": 0.5,
-            "home_w": 0.88,
-            "away_w": 0.93
+            "line": 2.75,
+            "over": 0.85,
+            "under": 0.95
           }
         },
         "bet365": {
@@ -13046,14 +15668,14 @@
             "l": 3.75
           }
         },
-        "hkjc_ou": {
-          "line": 2.75,
-          "over": 0.77,
-          "under": 1.02,
+        "hkjc_ah": {
+          "handicap": 0.5,
+          "home_w": 1.0,
+          "away_w": 0.8,
           "open": {
-            "line": 2.75,
-            "over": 0.85,
-            "under": 0.95
+            "handicap": 0.5,
+            "home_w": 0.88,
+            "away_w": 0.93
           }
         },
         "confidence_tier": "medium",
@@ -13257,14 +15879,14 @@
           "line": 2.5,
           "under": 0.8
         },
-        "hkjc_ah": {
-          "handicap": -1.75,
-          "home_w": 1.06,
-          "away_w": 0.76,
+        "hkjc_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0,
           "open": {
-            "handicap": null,
-            "home_w": 0,
-            "away_w": 0
+            "line": null,
+            "over": 0,
+            "under": 0
           }
         },
         "bet365": {
@@ -13277,14 +15899,14 @@
             "l": 0
           }
         },
-        "hkjc_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0,
+        "hkjc_ah": {
+          "handicap": -1.75,
+          "home_w": 1.06,
+          "away_w": 0.76,
           "open": {
-            "line": null,
-            "over": 0,
-            "under": 0
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
           }
         },
         "confidence_tier": "high",
@@ -13486,14 +16108,14 @@
           "line": 2.5,
           "under": 0.8
         },
-        "hkjc_ah": {
-          "handicap": -0.25,
-          "home_w": 0.83,
-          "away_w": 0.97,
+        "hkjc_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0,
           "open": {
-            "handicap": null,
-            "home_w": 0,
-            "away_w": 0
+            "line": null,
+            "over": 0,
+            "under": 0
           }
         },
         "bet365": {
@@ -13506,14 +16128,14 @@
             "l": 0
           }
         },
-        "hkjc_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0,
+        "hkjc_ah": {
+          "handicap": -0.25,
+          "home_w": 0.83,
+          "away_w": 0.97,
           "open": {
-            "line": null,
-            "over": 0,
-            "under": 0
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
           }
         },
         "confidence_tier": "low",
@@ -13715,14 +16337,14 @@
           "line": 2.5,
           "under": 1.05
         },
-        "hkjc_ah": {
-          "handicap": -1.25,
-          "home_w": 0.85,
-          "away_w": 0.95,
+        "hkjc_ou": {
+          "line": null,
+          "over": 0,
+          "under": 0,
           "open": {
-            "handicap": null,
-            "home_w": 0,
-            "away_w": 0
+            "line": null,
+            "over": 0,
+            "under": 0
           }
         },
         "bet365": {
@@ -13735,14 +16357,14 @@
             "l": 0
           }
         },
-        "hkjc_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0,
+        "hkjc_ah": {
+          "handicap": -1.25,
+          "home_w": 0.85,
+          "away_w": 0.95,
           "open": {
-            "line": null,
-            "over": 0,
-            "under": 0
+            "handicap": null,
+            "home_w": 0,
+            "away_w": 0
           }
         },
         "confidence_tier": "high",
@@ -13946,14 +16568,14 @@
           "line": 2.5,
           "under": 0.95
         },
-        "hkjc_ah": {
-          "handicap": -0.25,
-          "home_w": 1.05,
-          "away_w": 0.8,
+        "hkjc_ou": {
+          "line": 2.5,
+          "over": 0.85,
+          "under": 1.0,
           "open": {
-            "handicap": -0.5,
-            "home_w": 0.93,
-            "away_w": 0.93
+            "line": 2.5,
+            "over": 0.98,
+            "under": 0.88
           }
         },
         "bet365": {
@@ -13966,14 +16588,14 @@
             "l": 1.91
           }
         },
-        "hkjc_ou": {
-          "line": 2.5,
-          "over": 0.85,
-          "under": 1.0,
+        "hkjc_ah": {
+          "handicap": -0.25,
+          "home_w": 1.05,
+          "away_w": 0.8,
           "open": {
-            "line": 2.5,
-            "over": 0.98,
-            "under": 0.88
+            "handicap": -0.5,
+            "home_w": 0.93,
+            "away_w": 0.93
           }
         },
         "confidence_tier": "very_low",
@@ -14175,14 +16797,14 @@
           "line": 3.5,
           "under": 0.73
         },
-        "hkjc_ah": {
-          "handicap": 1.75,
-          "home_w": 1.02,
-          "away_w": 0.77,
+        "hkjc_ou": {
+          "line": 3.25,
+          "over": 0.88,
+          "under": 0.98,
           "open": {
-            "handicap": 1.25,
-            "home_w": 0.95,
-            "away_w": 0.9
+            "line": 2.5,
+            "over": 0.85,
+            "under": 1.0
           }
         },
         "bet365": {
@@ -14195,14 +16817,14 @@
             "l": 10.0
           }
         },
-        "hkjc_ou": {
-          "line": 3.25,
-          "over": 0.88,
-          "under": 0.98,
+        "hkjc_ah": {
+          "handicap": 1.75,
+          "home_w": 1.02,
+          "away_w": 0.77,
           "open": {
-            "line": 2.5,
-            "over": 0.85,
-            "under": 1.0
+            "handicap": 1.25,
+            "home_w": 0.95,
+            "away_w": 0.9
           }
         },
         "confidence_tier": "high",
@@ -14404,14 +17026,14 @@
           "line": 2.5,
           "under": 0.7
         },
-        "hkjc_ah": {
-          "handicap": 0.25,
-          "home_w": 1.07,
-          "away_w": 0.72,
+        "hkjc_ou": {
+          "line": 2.25,
+          "over": 0.8,
+          "under": 1.0,
           "open": {
-            "handicap": 0.25,
-            "home_w": 1.0,
-            "away_w": 0.8
+            "line": 2.25,
+            "over": 1.0,
+            "under": 0.8
           }
         },
         "bet365": {
@@ -14424,14 +17046,14 @@
             "l": 3.1
           }
         },
-        "hkjc_ou": {
-          "line": 2.25,
-          "over": 0.8,
-          "under": 1.0,
+        "hkjc_ah": {
+          "handicap": 0.25,
+          "home_w": 1.07,
+          "away_w": 0.72,
           "open": {
-            "line": 2.25,
-            "over": 1.0,
-            "under": 0.8
+            "handicap": 0.25,
+            "home_w": 1.0,
+            "away_w": 0.8
           }
         },
         "confidence_tier": "very_low",
@@ -14633,14 +17255,14 @@
           "line": 1.5,
           "under": 1.0
         },
-        "hkjc_ah": {
-          "handicap": -0.25,
-          "home_w": 0.83,
-          "away_w": 0.97,
+        "hkjc_ou": {
+          "line": 1.75,
+          "over": 0.81,
+          "under": 0.89,
           "open": {
-            "handicap": -0.25,
-            "home_w": 0.85,
-            "away_w": 0.91
+            "line": 1.75,
+            "over": 0.66,
+            "under": 1.08
           }
         },
         "bet365": {
@@ -14653,14 +17275,14 @@
             "l": 0
           }
         },
-        "hkjc_ou": {
-          "line": 1.75,
-          "over": 0.81,
-          "under": 0.89,
+        "hkjc_ah": {
+          "handicap": -0.25,
+          "home_w": 0.83,
+          "away_w": 0.97,
           "open": {
-            "line": 1.75,
-            "over": 0.66,
-            "under": 1.08
+            "handicap": -0.25,
+            "home_w": 0.85,
+            "away_w": 0.91
           }
         },
         "confidence_tier": "very_low",
@@ -14864,14 +17486,14 @@
           "line": 2.5,
           "under": 0.67
         },
-        "hkjc_ah": {
-          "handicap": 0.75,
-          "home_w": 1.03,
-          "away_w": 0.83,
+        "hkjc_ou": {
+          "line": 2.5,
+          "over": 1.15,
+          "under": 0.67,
           "open": {
-            "handicap": 0.75,
-            "home_w": 1.0,
-            "away_w": 0.85
+            "line": 2.5,
+            "over": 1.03,
+            "under": 0.83
           }
         },
         "bet365": {
@@ -14884,14 +17506,14 @@
             "l": 4.33
           }
         },
-        "hkjc_ou": {
-          "line": 2.5,
-          "over": 1.15,
-          "under": 0.67,
+        "hkjc_ah": {
+          "handicap": 0.75,
+          "home_w": 1.03,
+          "away_w": 0.83,
           "open": {
-            "line": 2.5,
-            "over": 1.03,
-            "under": 0.83
+            "handicap": 0.75,
+            "home_w": 1.0,
+            "away_w": 0.85
           }
         },
         "confidence_tier": "high",
@@ -15093,14 +17715,14 @@
           "line": 3.5,
           "under": 0.83
         },
-        "hkjc_ah": {
-          "handicap": 0.0,
-          "home_w": 0.97,
-          "away_w": 0.82,
+        "hkjc_ou": {
+          "line": 3.5,
+          "over": 0.92,
+          "under": 0.87,
           "open": {
-            "handicap": -0.25,
-            "home_w": 0.83,
-            "away_w": 0.98
+            "line": 3.75,
+            "over": 1.0,
+            "under": 0.8
           }
         },
         "bet365": {
@@ -15113,14 +17735,14 @@
             "l": 2.15
           }
         },
-        "hkjc_ou": {
-          "line": 3.5,
-          "over": 0.92,
-          "under": 0.87,
+        "hkjc_ah": {
+          "handicap": 0.0,
+          "home_w": 0.97,
+          "away_w": 0.82,
           "open": {
-            "line": 3.75,
-            "over": 1.0,
-            "under": 0.8
+            "handicap": -0.25,
+            "home_w": 0.83,
+            "away_w": 0.98
           }
         },
         "confidence_tier": "very_low",
@@ -15322,14 +17944,14 @@
           "line": 2.5,
           "under": 1.2
         },
-        "hkjc_ah": {
-          "handicap": 1.25,
-          "home_w": 0.77,
-          "away_w": 1.02,
+        "hkjc_ou": {
+          "line": 3.0,
+          "over": 1.1,
+          "under": 0.7,
           "open": {
-            "handicap": 1.5,
-            "home_w": 0.95,
-            "away_w": 0.9
+            "line": 2.5,
+            "over": 0.85,
+            "under": 1.0
           }
         },
         "bet365": {
@@ -15342,14 +17964,14 @@
             "l": 7.0
           }
         },
-        "hkjc_ou": {
-          "line": 3.0,
-          "over": 1.1,
-          "under": 0.7,
+        "hkjc_ah": {
+          "handicap": 1.25,
+          "home_w": 0.77,
+          "away_w": 1.02,
           "open": {
-            "line": 2.5,
-            "over": 0.85,
-            "under": 1.0
+            "handicap": 1.5,
+            "home_w": 0.95,
+            "away_w": 0.9
           }
         },
         "confidence_tier": "high",
@@ -15551,14 +18173,14 @@
           "line": 2.5,
           "under": 0.67
         },
-        "hkjc_ah": {
-          "handicap": 0.25,
-          "home_w": 1.02,
-          "away_w": 0.82,
+        "hkjc_ou": {
+          "line": 2.5,
+          "over": 1.15,
+          "under": 0.67,
           "open": {
-            "handicap": 0.5,
-            "home_w": 1.05,
-            "away_w": 0.8
+            "line": 2.25,
+            "over": 1.0,
+            "under": 0.85
           }
         },
         "bet365": {
@@ -15571,14 +18193,14 @@
             "l": 3.8
           }
         },
-        "hkjc_ou": {
-          "line": 2.5,
-          "over": 1.15,
-          "under": 0.67,
+        "hkjc_ah": {
+          "handicap": 0.25,
+          "home_w": 1.02,
+          "away_w": 0.82,
           "open": {
-            "line": 2.25,
-            "over": 1.0,
-            "under": 0.85
+            "handicap": 0.5,
+            "home_w": 1.05,
+            "away_w": 0.8
           }
         },
         "confidence_tier": "very_low",
@@ -15780,14 +18402,14 @@
           "line": 2.5,
           "under": 0.75
         },
-        "hkjc_ah": {
-          "handicap": -0.25,
-          "home_w": 0.95,
-          "away_w": 0.85,
+        "hkjc_ou": {
+          "line": 2.25,
+          "over": 0.82,
+          "under": 0.97,
           "open": {
-            "handicap": -0.5,
-            "home_w": 0.8,
-            "away_w": 1.0
+            "line": 2.25,
+            "over": 0.8,
+            "under": 1.0
           }
         },
         "bet365": {
@@ -15800,14 +18422,14 @@
             "l": 2.0
           }
         },
-        "hkjc_ou": {
-          "line": 2.25,
-          "over": 0.82,
-          "under": 0.97,
+        "hkjc_ah": {
+          "handicap": -0.25,
+          "home_w": 0.95,
+          "away_w": 0.85,
           "open": {
-            "line": 2.25,
-            "over": 0.8,
-            "under": 1.0
+            "handicap": -0.5,
+            "home_w": 0.8,
+            "away_w": 1.0
           }
         },
         "confidence_tier": "very_low",
@@ -16011,14 +18633,14 @@
           "line": 4.5,
           "under": 0.62
         },
-        "hkjc_ah": {
-          "handicap": -0.75,
-          "home_w": 1.0,
-          "away_w": 0.8,
+        "hkjc_ou": {
+          "line": 4.0,
+          "over": 0.8,
+          "under": 1.0,
           "open": {
-            "handicap": -0.75,
-            "home_w": 0.95,
-            "away_w": 0.85
+            "line": 4.0,
+            "over": 0.92,
+            "under": 0.87
           }
         },
         "bet365": {
@@ -16031,14 +18653,14 @@
             "l": 1.67
           }
         },
-        "hkjc_ou": {
-          "line": 4.0,
-          "over": 0.8,
-          "under": 1.0,
+        "hkjc_ah": {
+          "handicap": -0.75,
+          "home_w": 1.0,
+          "away_w": 0.8,
           "open": {
-            "line": 4.0,
-            "over": 0.92,
-            "under": 0.87
+            "handicap": -0.75,
+            "home_w": 0.95,
+            "away_w": 0.85
           }
         },
         "confidence_tier": "low",
@@ -16240,14 +18862,14 @@
           "line": 3.5,
           "under": 0.91
         },
-        "hkjc_ah": {
-          "handicap": -0.75,
-          "home_w": 0.9,
-          "away_w": 0.9,
+        "hkjc_ou": {
+          "line": 3.5,
+          "over": 0.9,
+          "under": 0.9,
           "open": {
-            "handicap": -0.5,
-            "home_w": 0.97,
-            "away_w": 0.82
+            "line": 3.5,
+            "over": 0.9,
+            "under": 0.9
           }
         },
         "bet365": {
@@ -16260,14 +18882,14 @@
             "l": 1.8
           }
         },
-        "hkjc_ou": {
-          "line": 3.5,
-          "over": 0.9,
-          "under": 0.9,
+        "hkjc_ah": {
+          "handicap": -0.75,
+          "home_w": 0.9,
+          "away_w": 0.9,
           "open": {
-            "line": 3.5,
-            "over": 0.9,
-            "under": 0.9
+            "handicap": -0.5,
+            "home_w": 0.97,
+            "away_w": 0.82
           }
         },
         "confidence_tier": "low",
@@ -16469,14 +19091,14 @@
           "line": 2.5,
           "under": 1.3
         },
-        "hkjc_ah": {
-          "handicap": 0.0,
-          "home_w": 0.8,
-          "away_w": 1.0,
+        "hkjc_ou": {
+          "line": 3.0,
+          "over": 0.95,
+          "under": 0.85,
           "open": {
-            "handicap": null,
-            "home_w": 0.8,
-            "away_w": 1.0
+            "line": 3.25,
+            "over": 0.87,
+            "under": 0.92
           }
         },
         "bet365": {
@@ -16489,14 +19111,14 @@
             "l": 2.5
           }
         },
-        "hkjc_ou": {
-          "line": 3.0,
-          "over": 0.95,
-          "under": 0.85,
+        "hkjc_ah": {
+          "handicap": 0.0,
+          "home_w": 0.8,
+          "away_w": 1.0,
           "open": {
-            "line": 3.25,
-            "over": 0.87,
-            "under": 0.92
+            "handicap": null,
+            "home_w": 0.8,
+            "away_w": 1.0
           }
         },
         "confidence_tier": "very_low",
@@ -16698,14 +19320,14 @@
           "line": 3.5,
           "under": 1.2
         },
-        "hkjc_ah": {
-          "handicap": 0.75,
-          "home_w": 0.92,
-          "away_w": 0.87,
+        "hkjc_ou": {
+          "line": 4.0,
+          "over": 0.95,
+          "under": 0.85,
           "open": {
-            "handicap": 0.5,
-            "home_w": 0.95,
-            "away_w": 0.85
+            "line": 3.5,
+            "over": 0.87,
+            "under": 0.92
           }
         },
         "bet365": {
@@ -16718,14 +19340,14 @@
             "l": 3.1
           }
         },
-        "hkjc_ou": {
-          "line": 4.0,
-          "over": 0.95,
-          "under": 0.85,
+        "hkjc_ah": {
+          "handicap": 0.75,
+          "home_w": 0.92,
+          "away_w": 0.87,
           "open": {
-            "line": 3.5,
-            "over": 0.87,
-            "under": 0.92
+            "handicap": 0.5,
+            "home_w": 0.95,
+            "away_w": 0.85
           }
         },
         "confidence_tier": "medium",
@@ -16927,14 +19549,14 @@
           "line": 2.5,
           "under": 0.62
         },
-        "hkjc_ah": {
-          "handicap": -0.75,
-          "home_w": 0.72,
-          "away_w": 1.07,
+        "hkjc_ou": {
+          "line": 2.25,
+          "over": 0.97,
+          "under": 0.87,
           "open": {
-            "handicap": -0.75,
-            "home_w": 0.98,
-            "away_w": 0.88
+            "line": 2.5,
+            "over": 0.93,
+            "under": 0.93
           }
         },
         "bet365": {
@@ -16947,14 +19569,14 @@
             "l": 1.67
           }
         },
-        "hkjc_ou": {
-          "line": 2.25,
-          "over": 0.97,
-          "under": 0.87,
+        "hkjc_ah": {
+          "handicap": -0.75,
+          "home_w": 0.72,
+          "away_w": 1.07,
           "open": {
-            "line": 2.5,
-            "over": 0.93,
-            "under": 0.93
+            "handicap": -0.75,
+            "home_w": 0.98,
+            "away_w": 0.88
           }
         },
         "confidence_tier": "low",
@@ -17156,14 +19778,14 @@
           "line": 2.5,
           "under": 0.8
         },
-        "hkjc_ah": {
-          "handicap": 1.5,
-          "home_w": 1.03,
-          "away_w": 0.78,
+        "hkjc_ou": {
+          "line": 2.5,
+          "over": 0.95,
+          "under": 0.85,
           "open": {
-            "handicap": 1.0,
-            "home_w": 0.8,
-            "away_w": 1.0
+            "line": 2.25,
+            "over": 0.8,
+            "under": 1.0
           }
         },
         "bet365": {
@@ -17176,14 +19798,14 @@
             "l": 7.0
           }
         },
-        "hkjc_ou": {
-          "line": 2.5,
-          "over": 0.95,
-          "under": 0.85,
+        "hkjc_ah": {
+          "handicap": 1.5,
+          "home_w": 1.03,
+          "away_w": 0.78,
           "open": {
-            "line": 2.25,
-            "over": 0.8,
-            "under": 1.0
+            "handicap": 1.0,
+            "home_w": 0.8,
+            "away_w": 1.0
           }
         },
         "confidence_tier": "high",
@@ -17385,14 +20007,14 @@
           "line": 2.5,
           "under": 0.55
         },
-        "hkjc_ah": {
-          "handicap": 0.5,
-          "home_w": 0.92,
-          "away_w": 0.87,
+        "hkjc_ou": {
+          "line": 2.0,
+          "over": 0.77,
+          "under": 1.02,
           "open": {
-            "handicap": 0.5,
-            "home_w": 0.95,
-            "away_w": 0.85
+            "line": 2.25,
+            "over": 1.05,
+            "under": 0.75
           }
         },
         "bet365": {
@@ -17405,14 +20027,14 @@
             "l": 4.1
           }
         },
-        "hkjc_ou": {
-          "line": 2.0,
-          "over": 0.77,
-          "under": 1.02,
+        "hkjc_ah": {
+          "handicap": 0.5,
+          "home_w": 0.92,
+          "away_w": 0.87,
           "open": {
-            "line": 2.25,
-            "over": 1.05,
-            "under": 0.75
+            "handicap": 0.5,
+            "home_w": 0.95,
+            "away_w": 0.85
           }
         },
         "confidence_tier": "low",
@@ -17614,14 +20236,14 @@
           "line": 1.5,
           "under": 1.4
         },
-        "hkjc_ah": {
-          "handicap": 0.5,
-          "home_w": 0.87,
-          "away_w": 0.92,
+        "hkjc_ou": {
+          "line": 2.0,
+          "over": 0.95,
+          "under": 0.85,
           "open": {
-            "handicap": 0.5,
-            "home_w": 1.0,
-            "away_w": 0.8
+            "line": 2.0,
+            "over": 0.78,
+            "under": 1.03
           }
         },
         "bet365": {
@@ -17634,14 +20256,14 @@
             "l": 3.9
           }
         },
-        "hkjc_ou": {
-          "line": 2.0,
-          "over": 0.95,
-          "under": 0.85,
+        "hkjc_ah": {
+          "handicap": 0.5,
+          "home_w": 0.87,
+          "away_w": 0.92,
           "open": {
-            "line": 2.0,
-            "over": 0.78,
-            "under": 1.03
+            "handicap": 0.5,
+            "home_w": 1.0,
+            "away_w": 0.8
           }
         },
         "confidence_tier": "low",
@@ -17843,14 +20465,14 @@
           "line": 2.5,
           "under": 0.67
         },
-        "hkjc_ah": {
-          "handicap": 0.5,
-          "home_w": 0.9,
-          "away_w": 0.9,
+        "hkjc_ou": {
+          "line": 2.25,
+          "over": 0.87,
+          "under": 0.92,
           "open": {
-            "handicap": 0.5,
-            "home_w": 0.98,
-            "away_w": 0.83
+            "line": 2.25,
+            "over": 1.05,
+            "under": 0.75
           }
         },
         "bet365": {
@@ -17863,14 +20485,14 @@
             "l": 4.0
           }
         },
-        "hkjc_ou": {
-          "line": 2.25,
-          "over": 0.87,
-          "under": 0.92,
+        "hkjc_ah": {
+          "handicap": 0.5,
+          "home_w": 0.9,
+          "away_w": 0.9,
           "open": {
-            "line": 2.25,
-            "over": 1.05,
-            "under": 0.75
+            "handicap": 0.5,
+            "home_w": 0.98,
+            "away_w": 0.83
           }
         },
         "confidence_tier": "low",
@@ -18072,14 +20694,14 @@
           "line": 2.5,
           "under": 0.75
         },
-        "hkjc_ah": {
-          "handicap": 0.5,
-          "home_w": 0.82,
-          "away_w": 0.97,
+        "hkjc_ou": {
+          "line": 2.25,
+          "over": 0.85,
+          "under": 0.95,
           "open": {
-            "handicap": 0.5,
-            "home_w": 0.8,
-            "away_w": 1.0
+            "line": 2.5,
+            "over": 1.03,
+            "under": 0.78
           }
         },
         "bet365": {
@@ -18092,14 +20714,14 @@
             "l": 4.33
           }
         },
-        "hkjc_ou": {
-          "line": 2.25,
-          "over": 0.85,
-          "under": 0.95,
+        "hkjc_ah": {
+          "handicap": 0.5,
+          "home_w": 0.82,
+          "away_w": 0.97,
           "open": {
-            "line": 2.5,
-            "over": 1.03,
-            "under": 0.78
+            "handicap": 0.5,
+            "home_w": 0.8,
+            "away_w": 1.0
           }
         },
         "confidence_tier": "low",
@@ -18303,14 +20925,14 @@
           "line": 2.5,
           "under": 1.15
         },
-        "hkjc_ah": {
-          "handicap": 0.5,
-          "home_w": 0.98,
-          "away_w": 0.83,
+        "hkjc_ou": {
+          "line": 3.0,
+          "over": 1.03,
+          "under": 0.78,
           "open": {
-            "handicap": 0.5,
-            "home_w": 0.8,
-            "away_w": 1.0
+            "line": 2.75,
+            "over": 0.85,
+            "under": 0.95
           }
         },
         "bet365": {
@@ -18323,14 +20945,14 @@
             "l": 3.9
           }
         },
-        "hkjc_ou": {
-          "line": 3.0,
-          "over": 1.03,
-          "under": 0.78,
+        "hkjc_ah": {
+          "handicap": 0.5,
+          "home_w": 0.98,
+          "away_w": 0.83,
           "open": {
-            "line": 2.75,
-            "over": 0.85,
-            "under": 0.95
+            "handicap": 0.5,
+            "home_w": 0.8,
+            "away_w": 1.0
           }
         },
         "confidence_tier": "low",
@@ -18532,14 +21154,14 @@
           "line": 3.5,
           "under": 0.57
         },
-        "hkjc_ah": {
-          "handicap": 1.25,
-          "home_w": 1.0,
-          "away_w": 0.8,
+        "hkjc_ou": {
+          "line": 3.0,
+          "over": 0.82,
+          "under": 0.97,
           "open": {
-            "handicap": 1.0,
-            "home_w": 0.8,
-            "away_w": 1.0
+            "line": 3.0,
+            "over": 0.8,
+            "under": 1.0
           }
         },
         "bet365": {
@@ -18552,14 +21174,14 @@
             "l": 5.5
           }
         },
-        "hkjc_ou": {
-          "line": 3.0,
-          "over": 0.82,
-          "under": 0.97,
+        "hkjc_ah": {
+          "handicap": 1.25,
+          "home_w": 1.0,
+          "away_w": 0.8,
           "open": {
-            "line": 3.0,
-            "over": 0.8,
-            "under": 1.0
+            "handicap": 1.0,
+            "home_w": 0.8,
+            "away_w": 1.0
           }
         },
         "confidence_tier": "high",
@@ -18761,14 +21383,14 @@
           "line": 2.5,
           "under": 0.75
         },
-        "hkjc_ah": {
-          "handicap": 0.0,
-          "home_w": 1.03,
-          "away_w": 0.78,
+        "hkjc_ou": {
+          "line": 2.5,
+          "over": 0.92,
+          "under": 0.87,
           "open": {
-            "handicap": null,
-            "home_w": 0.83,
-            "away_w": 0.98
+            "line": 2.5,
+            "over": 0.85,
+            "under": 0.95
           }
         },
         "bet365": {
@@ -18781,14 +21403,14 @@
             "l": 2.55
           }
         },
-        "hkjc_ou": {
-          "line": 2.5,
-          "over": 0.92,
-          "under": 0.87,
+        "hkjc_ah": {
+          "handicap": 0.0,
+          "home_w": 1.03,
+          "away_w": 0.78,
           "open": {
-            "line": 2.5,
-            "over": 0.85,
-            "under": 0.95
+            "handicap": null,
+            "home_w": 0.83,
+            "away_w": 0.98
           }
         },
         "confidence_tier": "very_low",
@@ -18990,14 +21612,14 @@
           "line": 2.5,
           "under": 1.2
         },
-        "hkjc_ah": {
-          "handicap": 0.0,
-          "home_w": 0.75,
-          "away_w": 1.05,
+        "hkjc_ou": {
+          "line": 3.0,
+          "over": 0.95,
+          "under": 0.85,
           "open": {
-            "handicap": -0.25,
-            "home_w": 0.83,
-            "away_w": 0.98
+            "line": 3.0,
+            "over": 1.0,
+            "under": 0.8
           }
         },
         "bet365": {
@@ -19010,14 +21632,14 @@
             "l": 3.1
           }
         },
-        "hkjc_ou": {
-          "line": 3.0,
-          "over": 0.95,
-          "under": 0.85,
+        "hkjc_ah": {
+          "handicap": 0.0,
+          "home_w": 0.75,
+          "away_w": 1.05,
           "open": {
-            "line": 3.0,
-            "over": 1.0,
-            "under": 0.8
+            "handicap": -0.25,
+            "home_w": 0.83,
+            "away_w": 0.98
           }
         },
         "confidence_tier": "very_low",
@@ -24908,1842 +27530,6 @@
           "over": 0,
           "line": null,
           "under": 0
-        }
-      }
-    ],
-    "2026-07-07": [
-      {
-        "id": 1948,
-        "date": "2026-07-07",
-        "league": "瑞典超",
-        "home": "布鲁马波",
-        "away": "盖斯",
-        "kickoff": "2026-07-07 01:00",
-        "prediction": "客胜",
-        "prediction_prob": 0.382,
-        "odds": {
-          "w": 3.3,
-          "d": 3.49,
-          "l": 2.13
-        },
-        "poisson": {
-          "w": 0.403,
-          "d": 0.275,
-          "l": 0.321
-        },
-        "final_prob": {
-          "w": 0.345,
-          "d": 0.273,
-          "l": 0.382
-        },
-        "fusion_prob": {
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "result": "平局",
-        "score": "1-1",
-        "ev_direction": "客胜",
-        "ev_hit": false,
-        "prob_direction": "客胜",
-        "prob_hit": false,
-        "fusion_direction": "主胜",
-        "ev": {
-          "w": 0.195,
-          "d": 0.0089,
-          "l": -0.1349
-        },
-        "odds_ev": {
-          "w": -0.0472,
-          "d": -0.0627,
-          "l": 0.11
-        },
-        "ev_signal": "市场优先(模型分歧)",
-        "kelly": {
-          "w": 0.0301,
-          "d": 0,
-          "l": 0
-        },
-        "pinnacle": {
-          "w": 3.09,
-          "d": 3.47,
-          "l": 2.32,
-          "open": {
-            "w": 3.3,
-            "d": 3.42,
-            "l": 2.12
-          }
-        },
-        "bet365": {
-          "w": 3.0,
-          "d": 3.4,
-          "l": 2.25,
-          "open": {
-            "w": 3.1,
-            "d": 3.4,
-            "l": 2.15
-          }
-        },
-        "hkjc": {
-          "w": 2.9,
-          "d": 3.1,
-          "l": 2.14
-        },
-        "hkjc_open": {
-          "w": 2.86,
-          "d": 3.15,
-          "l": 2.15
-        },
-        "risk_level": "",
-        "stars": 0,
-        "confidence_index": 0,
-        "reference_score": "1-1",
-        "cold_risk": "",
-        "source": "beidan",
-        "cold_signals": "无LGBM(用final降级)|市场优先(模型分歧)|市场客胜",
-        "risk_warning": "",
-        "actual_outcome": "平局 1-1",
-        "avg_margin": 0.059,
-        "ev_value": -0.1349,
-        "deviation_analysis": "",
-        "odds_source": "pinnacle",
-        "confidence_tier": "very_low",
-        "calibrated_prob": 0.377,
-        "home_lambda": 1.285,
-        "away_lambda": 1.115,
-        "home_ranking": 0,
-        "away_ranking": 0,
-        "hhad": {
-          "handicap": null,
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "ah": {
-          "handicap": 0.0,
-          "home_w": 0,
-          "away_w": 0,
-          "source": "",
-          "open": {
-            "handicap": null,
-            "home_w": 0,
-            "away_w": 0
-          }
-        },
-        "liji": {
-          "1x2": {
-            "close": {
-              "w": 0,
-              "d": 0,
-              "l": 0
-            },
-            "open": {
-              "w": 0,
-              "d": 0,
-              "l": 0
-            }
-          },
-          "close": {
-            "handicap": -0.25,
-            "home_w": 0.88,
-            "away_w": 1.04
-          },
-          "open": {
-            "handicap": -0.25,
-            "home_w": 1.01,
-            "away_w": 0.89
-          }
-        },
-        "ms": {
-          "1x2": {
-            "close": {
-              "w": 0,
-              "d": 0,
-              "l": 0
-            },
-            "open": {
-              "w": 0,
-              "d": 0,
-              "l": 0
-            }
-          },
-          "close": {
-            "handicap": -0.25,
-            "home_w": 0.9,
-            "away_w": 1.02
-          },
-          "open": {
-            "handicap": -0.25,
-            "home_w": 1.0,
-            "away_w": 0.88
-          }
-        },
-        "pin_ah": {
-          "handicap": -0.25,
-          "home_w": 0.86,
-          "away_w": 1.01,
-          "open": {
-            "handicap": -0.25,
-            "home_w": 0.95,
-            "away_w": 0.83
-          }
-        },
-        "pin_ou": {
-          "line": 2.5,
-          "over": 0.81,
-          "under": 1.02,
-          "open": {
-            "line": 2.5,
-            "over": 0.84,
-            "under": 0.93
-          }
-        },
-        "ou": {
-          "over": 0,
-          "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
-        },
-        "liji_ou": {
-          "over": 1.02,
-          "line": 2.75,
-          "under": 0.88,
-          "open": {
-            "over": 0.9,
-            "line": 2.5,
-            "under": 0.98
-          }
-        },
-        "ms_ou": {
-          "over": 1.02,
-          "line": 2.75,
-          "under": 0.88,
-          "open": {
-            "over": 0.89,
-            "line": 2.5,
-            "under": 0.97
-          }
-        },
-        "hkjc_ah": {
-          "handicap": -0.25,
-          "home_w": 0.83,
-          "away_w": 0.98,
-          "open": {
-            "handicap": -0.25,
-            "home_w": 0.9,
-            "away_w": 0.9
-          }
-        },
-        "hkjc_ou": {
-          "line": 2.5,
-          "over": 0.8,
-          "under": 1.0,
-          "open": {
-            "line": 2.5,
-            "over": 0.8,
-            "under": 1.0
-          }
-        },
-        "william_1x2": {
-          "w": 2.9,
-          "d": 3.25,
-          "l": 2.25
-        },
-        "william_ah": {
-          "handicap": -0.25,
-          "home_w": 0.71,
-          "away_w": 0.94,
-          "open": {
-            "handicap": -0.25,
-            "home_w": 0.9,
-            "away_w": 0.86
-          }
-        },
-        "william_ou": {
-          "over": 0.75,
-          "line": 2.5,
-          "under": 0.95,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
-        }
-      },
-      {
-        "id": 1952,
-        "date": "2026-07-07",
-        "league": "瑞典超",
-        "home": "赫根",
-        "away": "佐加顿斯",
-        "kickoff": "2026-07-07 01:00",
-        "prediction": "主胜",
-        "prediction_prob": 0.411,
-        "odds": {
-          "w": 2.48,
-          "d": 3.59,
-          "l": 2.65
-        },
-        "poisson": {
-          "w": 0.441,
-          "d": 0.272,
-          "l": 0.287
-        },
-        "final_prob": {
-          "w": 0.411,
-          "d": 0.268,
-          "l": 0.321
-        },
-        "fusion_prob": {
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "result": "客胜",
-        "score": "2-4",
-        "ev_direction": "主胜",
-        "ev_hit": false,
-        "prob_direction": "主胜",
-        "prob_hit": false,
-        "fusion_direction": "主胜",
-        "ev": {
-          "w": 0.0789,
-          "d": 0.019,
-          "l": -0.0978
-        },
-        "odds_ev": {
-          "w": 0.0474,
-          "d": -0.0703,
-          "l": 0.023
-        },
-        "ev_signal": "双重确认",
-        "kelly": {
-          "w": 0.0065,
-          "d": 0,
-          "l": 0
-        },
-        "pinnacle": {
-          "w": 2.55,
-          "d": 3.8,
-          "l": 2.59,
-          "open": {
-            "w": 2.28,
-            "d": 3.64,
-            "l": 2.84
-          }
-        },
-        "bet365": {
-          "w": 2.4,
-          "d": 3.75,
-          "l": 2.63,
-          "open": {
-            "w": 2.2,
-            "d": 3.6,
-            "l": 2.88
-          }
-        },
-        "hkjc": {
-          "w": 2.26,
-          "d": 3.6,
-          "l": 2.42
-        },
-        "hkjc_open": {
-          "w": 2.2,
-          "d": 3.4,
-          "l": 2.6
-        },
-        "risk_level": "",
-        "stars": 0,
-        "confidence_index": 0,
-        "reference_score": "2-4",
-        "cold_risk": "",
-        "source": "beidan",
-        "cold_signals": "无LGBM(用final降级)|双重确认|市场主胜|概率优势8%",
-        "risk_warning": "",
-        "actual_outcome": "客胜 2-4",
-        "avg_margin": 0.0591,
-        "ev_value": 0.0789,
-        "deviation_analysis": "",
-        "odds_source": "pinnacle",
-        "confidence_tier": "very_low",
-        "calibrated_prob": 0.4,
-        "home_lambda": 1.36,
-        "away_lambda": 1.04,
-        "home_ranking": 0,
-        "away_ranking": 0,
-        "hhad": {
-          "handicap": null,
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "ah": {
-          "handicap": 0.0,
-          "home_w": 0,
-          "away_w": 0,
-          "source": "",
-          "open": {
-            "handicap": null,
-            "home_w": 0,
-            "away_w": 0
-          }
-        },
-        "liji": {
-          "1x2": {
-            "close": {
-              "w": 0,
-              "d": 0,
-              "l": 0
-            },
-            "open": {
-              "w": 0,
-              "d": 0,
-              "l": 0
-            }
-          },
-          "close": {
-            "handicap": 0.0,
-            "home_w": 0.91,
-            "away_w": 1.01
-          },
-          "open": {
-            "handicap": 0.0,
-            "home_w": 0.92,
-            "away_w": 0.98
-          }
-        },
-        "ms": {
-          "1x2": {
-            "close": {
-              "w": 0,
-              "d": 0,
-              "l": 0
-            },
-            "open": {
-              "w": 0,
-              "d": 0,
-              "l": 0
-            }
-          },
-          "close": {
-            "handicap": 0.0,
-            "home_w": 0.87,
-            "away_w": 1.05
-          },
-          "open": {
-            "handicap": 0.0,
-            "home_w": 0.91,
-            "away_w": 0.97
-          }
-        },
-        "pin_ah": {
-          "handicap": 0.0,
-          "home_w": 0.9,
-          "away_w": 0.97,
-          "open": {
-            "handicap": 0.25,
-            "home_w": 0.99,
-            "away_w": 0.81
-          }
-        },
-        "pin_ou": {
-          "line": 3.25,
-          "over": 0.91,
-          "under": 0.94,
-          "open": {
-            "line": 3.0,
-            "over": 0.83,
-            "under": 0.95
-          }
-        },
-        "ou": {
-          "over": 0,
-          "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
-        },
-        "liji_ou": {
-          "over": 0.92,
-          "line": 3.25,
-          "under": 0.98,
-          "open": {
-            "over": 0.88,
-            "line": 3.0,
-            "under": 1.0
-          }
-        },
-        "ms_ou": {
-          "over": 0.91,
-          "line": 3.25,
-          "under": 0.99,
-          "open": {
-            "over": 0.87,
-            "line": 3.0,
-            "under": 0.99
-          }
-        },
-        "hkjc_ah": {
-          "handicap": 0.25,
-          "home_w": 0.83,
-          "away_w": 0.98,
-          "open": {
-            "handicap": 0.25,
-            "home_w": 0.97,
-            "away_w": 0.82
-          }
-        },
-        "hkjc_ou": {
-          "line": 3.25,
-          "over": 0.85,
-          "under": 0.95,
-          "open": {
-            "line": 3.0,
-            "over": 0.9,
-            "under": 0.9
-          }
-        },
-        "william_1x2": {
-          "w": 2.45,
-          "d": 3.5,
-          "l": 2.5
-        },
-        "william_ah": {
-          "handicap": 0.0,
-          "home_w": 0.78,
-          "away_w": 0.85,
-          "open": {
-            "handicap": 0.0,
-            "home_w": 0.84,
-            "away_w": 0.91
-          }
-        },
-        "william_ou": {
-          "over": 1.05,
-          "line": 3.5,
-          "under": 0.73,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
-        }
-      },
-      {
-        "id": 1951,
-        "date": "2026-07-07",
-        "league": "世界杯",
-        "home": "葡萄牙",
-        "away": "西班牙",
-        "kickoff": "2026-07-07 03:00",
-        "prediction": "客胜",
-        "prediction_prob": 0.465,
-        "odds": {
-          "w": 4.1,
-          "d": 3.78,
-          "l": 1.9
-        },
-        "poisson": {
-          "w": 0.469,
-          "d": 0.239,
-          "l": 0.292
-        },
-        "final_prob": {
-          "w": 0.282,
-          "d": 0.252,
-          "l": 0.465
-        },
-        "fusion_prob": {
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "result": "客胜",
-        "score": "0-1",
-        "ev_direction": "客胜",
-        "ev_hit": true,
-        "prob_direction": "客胜",
-        "prob_hit": true,
-        "fusion_direction": "主胜",
-        "ev": {
-          "w": 0.1869,
-          "d": -0.0145,
-          "l": -0.0849
-        },
-        "odds_ev": {
-          "w": -0.0976,
-          "d": -0.0776,
-          "l": 0.1753
-        },
-        "ev_signal": "市场优先(模型分歧)",
-        "kelly": {
-          "w": 0.0252,
-          "d": 0,
-          "l": 0
-        },
-        "pinnacle": {
-          "w": 4.07,
-          "d": 3.57,
-          "l": 2.01,
-          "open": {
-            "w": 3.53,
-            "d": 3.5,
-            "l": 2.13
-          }
-        },
-        "bet365": {
-          "w": 3.9,
-          "d": 3.5,
-          "l": 1.95,
-          "open": {
-            "w": 3.9,
-            "d": 3.75,
-            "l": 1.85
-          }
-        },
-        "hkjc": {
-          "w": 3.5,
-          "d": 3.2,
-          "l": 1.88
-        },
-        "hkjc_open": {
-          "w": 3.6,
-          "d": 3.0,
-          "l": 1.92
-        },
-        "risk_level": "",
-        "stars": 0,
-        "confidence_index": 0,
-        "reference_score": "0-1",
-        "cold_risk": "",
-        "source": "beidan",
-        "cold_signals": "无LGBM(用final降级)|市场优先(模型分歧)|市场客胜",
-        "risk_warning": "",
-        "actual_outcome": "客胜 0-1",
-        "avg_margin": 0.0348,
-        "ev_value": -0.0849,
-        "deviation_analysis": "",
-        "odds_source": "pinnacle",
-        "confidence_tier": "low",
-        "calibrated_prob": 0.463,
-        "home_lambda": 1.687,
-        "away_lambda": 1.283,
-        "home_ranking": 0,
-        "away_ranking": 0,
-        "hhad": {
-          "handicap": null,
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "ah": {
-          "handicap": 0.0,
-          "home_w": 0,
-          "away_w": 0,
-          "source": "",
-          "open": {
-            "handicap": null,
-            "home_w": 0,
-            "away_w": 0
-          }
-        },
-        "liji": {
-          "1x2": {
-            "close": {
-              "w": 0,
-              "d": 0,
-              "l": 0
-            },
-            "open": {
-              "w": 0,
-              "d": 0,
-              "l": 0
-            }
-          },
-          "close": {
-            "handicap": -0.5,
-            "home_w": 0.9,
-            "away_w": 1.04
-          },
-          "open": {
-            "handicap": -0.5,
-            "home_w": 0.97,
-            "away_w": 0.93
-          }
-        },
-        "ms": {
-          "1x2": {
-            "close": {
-              "w": 0,
-              "d": 0,
-              "l": 0
-            },
-            "open": {
-              "w": 0,
-              "d": 0,
-              "l": 0
-            }
-          },
-          "close": {
-            "handicap": -0.5,
-            "home_w": 0.86,
-            "away_w": 1.06
-          },
-          "open": {
-            "handicap": -0.5,
-            "home_w": 0.92,
-            "away_w": 0.92
-          }
-        },
-        "pin_ah": {
-          "handicap": -0.5,
-          "home_w": 0.92,
-          "away_w": 1.01,
-          "open": {
-            "handicap": -0.25,
-            "home_w": 1.05,
-            "away_w": 0.85
-          }
-        },
-        "pin_ou": {
-          "line": 2.75,
-          "over": 0.97,
-          "under": 0.9,
-          "open": {
-            "line": 2.5,
-            "over": 0.93,
-            "under": 0.94
-          }
-        },
-        "ou": {
-          "over": 0,
-          "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
-        },
-        "liji_ou": {
-          "over": 1.06,
-          "line": 2.75,
-          "under": 0.86,
-          "open": {
-            "over": 1.03,
-            "line": 2.5,
-            "under": 0.85
-          }
-        },
-        "ms_ou": {
-          "over": 1.06,
-          "line": 2.75,
-          "under": 0.84,
-          "open": {
-            "over": 0.93,
-            "line": 2.5,
-            "under": 0.89
-          }
-        },
-        "hkjc_ah": {
-          "handicap": -0.5,
-          "home_w": 0.85,
-          "away_w": 1.0,
-          "open": {
-            "handicap": -0.5,
-            "home_w": 0.98,
-            "away_w": 0.88
-          }
-        },
-        "hkjc_ou": {
-          "line": 2.75,
-          "over": 1.03,
-          "under": 0.83,
-          "open": {
-            "line": 2.5,
-            "over": 0.95,
-            "under": 0.9
-          }
-        },
-        "william_1x2": {
-          "w": 3.75,
-          "d": 3.4,
-          "l": 1.95
-        },
-        "william_ah": {
-          "handicap": -0.5,
-          "home_w": 0.8,
-          "away_w": 0.95,
-          "open": {
-            "handicap": -0.75,
-            "home_w": 0.72,
-            "away_w": 0.93
-          }
-        },
-        "william_ou": {
-          "over": 0.8,
-          "line": 2.5,
-          "under": 0.95,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
-        }
-      },
-      {
-        "id": 1946,
-        "date": "2026-07-07",
-        "league": "冰岛超",
-        "home": "凯夫拉维克",
-        "away": "弗拉姆",
-        "kickoff": "2026-07-07 03:15",
-        "prediction": "客胜",
-        "prediction_prob": 0.409,
-        "odds": {
-          "w": 3.38,
-          "d": 3.99,
-          "l": 1.92
-        },
-        "poisson": {
-          "w": 0.395,
-          "d": 0.276,
-          "l": 0.33
-        },
-        "final_prob": {
-          "w": 0.336,
-          "d": 0.255,
-          "l": 0.409
-        },
-        "fusion_prob": {
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "result": "平局",
-        "score": "1-1",
-        "ev_direction": "客胜",
-        "ev_hit": false,
-        "prob_direction": "客胜",
-        "prob_hit": false,
-        "fusion_direction": "主胜",
-        "ev": {
-          "w": 0.2002,
-          "d": 0.0852,
-          "l": -0.1565
-        },
-        "odds_ev": {
-          "w": -0.0561,
-          "d": -0.0985,
-          "l": 0.1547
-        },
-        "ev_signal": "市场优先(模型分歧)",
-        "kelly": {
-          "w": 0.0285,
-          "d": 0.0029,
-          "l": 0
-        },
-        "pinnacle": {
-          "w": 3.13,
-          "d": 4.38,
-          "l": 1.93,
-          "open": {
-            "w": 2.99,
-            "d": 3.85,
-            "l": 2.07
-          }
-        },
-        "bet365": {
-          "w": 3.2,
-          "d": 3.9,
-          "l": 1.85,
-          "open": {
-            "w": 2.75,
-            "d": 3.75,
-            "l": 2.05
-          }
-        },
-        "hkjc": {
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "hkjc_open": {
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "risk_level": "",
-        "stars": 0,
-        "confidence_index": 0,
-        "reference_score": "1-1",
-        "cold_risk": "",
-        "source": "beidan",
-        "cold_signals": "无LGBM(用final降级)|市场优先(模型分歧)|市场客胜",
-        "risk_warning": "",
-        "actual_outcome": "平局 1-1",
-        "avg_margin": 0.0673,
-        "ev_value": -0.1565,
-        "deviation_analysis": "",
-        "odds_source": "pinnacle",
-        "confidence_tier": "very_low",
-        "calibrated_prob": 0.396,
-        "home_lambda": 1.267,
-        "away_lambda": 1.133,
-        "home_ranking": 0,
-        "away_ranking": 0,
-        "hhad": {
-          "handicap": null,
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "ah": {
-          "handicap": 0.0,
-          "home_w": 0,
-          "away_w": 0,
-          "source": "",
-          "open": {
-            "handicap": null,
-            "home_w": 0,
-            "away_w": 0
-          }
-        },
-        "liji": {
-          "1x2": {
-            "close": {
-              "w": 0,
-              "d": 0,
-              "l": 0
-            },
-            "open": {
-              "w": 0,
-              "d": 0,
-              "l": 0
-            }
-          },
-          "close": {
-            "handicap": -0.5,
-            "home_w": 0.99,
-            "away_w": 0.93
-          },
-          "open": {
-            "handicap": -0.25,
-            "home_w": 0.93,
-            "away_w": 0.97
-          }
-        },
-        "ms": {
-          "1x2": {
-            "close": {
-              "w": 0,
-              "d": 0,
-              "l": 0
-            },
-            "open": {
-              "w": 0,
-              "d": 0,
-              "l": 0
-            }
-          },
-          "close": {
-            "handicap": -0.5,
-            "home_w": 0.97,
-            "away_w": 0.93
-          },
-          "open": {
-            "handicap": -0.25,
-            "home_w": 0.9,
-            "away_w": 0.94
-          }
-        },
-        "pin_ah": {
-          "handicap": -0.5,
-          "home_w": 0.91,
-          "away_w": 0.93,
-          "open": {
-            "handicap": -0.25,
-            "home_w": 0.96,
-            "away_w": 0.81
-          }
-        },
-        "pin_ou": {
-          "line": 3.75,
-          "over": 0.93,
-          "under": 0.9,
-          "open": {
-            "line": 3.5,
-            "over": 0.85,
-            "under": 0.9
-          }
-        },
-        "ou": {
-          "over": 0,
-          "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
-        },
-        "liji_ou": {
-          "over": 0.97,
-          "line": 3.75,
-          "under": 0.93,
-          "open": {
-            "over": 0.95,
-            "line": 3.5,
-            "under": 0.93
-          }
-        },
-        "ms_ou": {
-          "over": 0.97,
-          "line": 3.75,
-          "under": 0.91,
-          "open": {
-            "over": 0.91,
-            "line": 3.5,
-            "under": 0.91
-          }
-        },
-        "hkjc_ah": {
-          "handicap": -0.5,
-          "home_w": 0.9,
-          "away_w": 0.9,
-          "open": {
-            "handicap": -0.25,
-            "home_w": 0.9,
-            "away_w": 0.9
-          }
-        },
-        "hkjc_ou": {
-          "line": 3.75,
-          "over": 0.92,
-          "under": 0.87,
-          "open": {
-            "line": 3.5,
-            "over": 0.88,
-            "under": 0.93
-          }
-        },
-        "william_1x2": {
-          "w": 3.0,
-          "d": 4.0,
-          "l": 1.85
-        },
-        "william_ah": {
-          "handicap": -0.5,
-          "home_w": 0.85,
-          "away_w": 0.85,
-          "open": {
-            "handicap": -0.25,
-            "home_w": 0.93,
-            "away_w": 0.8
-          }
-        },
-        "william_ou": {
-          "over": 0.75,
-          "line": 3.5,
-          "under": 0.95,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
-        }
-      },
-      {
-        "id": 1947,
-        "date": "2026-07-07",
-        "league": "巴西乙",
-        "home": "博塔弗戈SP",
-        "away": "阿瓦伊",
-        "kickoff": "2026-07-07 06:00",
-        "prediction": "主胜",
-        "prediction_prob": 0.46,
-        "odds": {
-          "w": 1.96,
-          "d": 3.28,
-          "l": 4.32
-        },
-        "poisson": {
-          "w": 0.35,
-          "d": 0.275,
-          "l": 0.375
-        },
-        "final_prob": {
-          "w": 0.46,
-          "d": 0.288,
-          "l": 0.252
-        },
-        "fusion_prob": {
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "result": "主胜",
-        "score": "3-1",
-        "ev_direction": "主胜",
-        "ev_hit": true,
-        "prob_direction": "主胜",
-        "prob_hit": true,
-        "fusion_direction": "主胜",
-        "ev": {
-          "w": -0.0562,
-          "d": -0.0113,
-          "l": 0.1357
-        },
-        "odds_ev": {
-          "w": 0.1542,
-          "d": -0.042,
-          "l": -0.1121
-        },
-        "ev_signal": "市场优先(模型分歧)",
-        "kelly": {
-          "w": 0,
-          "d": 0,
-          "l": 0.0133
-        },
-        "pinnacle": {
-          "w": 1.72,
-          "d": 3.55,
-          "l": 5.59,
-          "open": {
-            "w": 1.83,
-            "d": 3.15,
-            "l": 4.81
-          }
-        },
-        "bet365": {
-          "w": 1.7,
-          "d": 3.3,
-          "l": 5.75,
-          "open": {
-            "w": 2.1,
-            "d": 3.0,
-            "l": 3.5
-          }
-        },
-        "hkjc": {
-          "w": 1.63,
-          "d": 3.25,
-          "l": 4.7
-        },
-        "hkjc_open": {
-          "w": 1.86,
-          "d": 3.05,
-          "l": 3.75
-        },
-        "risk_level": "",
-        "stars": 0,
-        "confidence_index": 0,
-        "reference_score": "3-1",
-        "cold_risk": "",
-        "source": "beidan",
-        "cold_signals": "无LGBM(用final降级)|市场优先(模型分歧)|市场主胜",
-        "risk_warning": "",
-        "actual_outcome": "主胜 3-1",
-        "avg_margin": 0.0466,
-        "ev_value": -0.0562,
-        "deviation_analysis": "",
-        "odds_source": "pinnacle",
-        "confidence_tier": "low",
-        "calibrated_prob": 0.464,
-        "home_lambda": 1.185,
-        "away_lambda": 1.235,
-        "home_ranking": 0,
-        "away_ranking": 0,
-        "hhad": {
-          "handicap": null,
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "ah": {
-          "handicap": 0.0,
-          "home_w": 0,
-          "away_w": 0,
-          "source": "",
-          "open": {
-            "handicap": null,
-            "home_w": 0,
-            "away_w": 0
-          }
-        },
-        "liji": {
-          "1x2": {
-            "close": {
-              "w": 0,
-              "d": 0,
-              "l": 0
-            },
-            "open": {
-              "w": 0,
-              "d": 0,
-              "l": 0
-            }
-          },
-          "close": {
-            "handicap": 0.75,
-            "home_w": 1.0,
-            "away_w": 0.9
-          },
-          "open": {
-            "handicap": 0.5,
-            "home_w": 0.94,
-            "away_w": 0.94
-          }
-        },
-        "ms": {
-          "1x2": {
-            "close": {
-              "w": 0,
-              "d": 0,
-              "l": 0
-            },
-            "open": {
-              "w": 0,
-              "d": 0,
-              "l": 0
-            }
-          },
-          "close": {
-            "handicap": 0.75,
-            "home_w": 0.95,
-            "away_w": 0.95
-          },
-          "open": {
-            "handicap": 0.5,
-            "home_w": 0.93,
-            "away_w": 0.91
-          }
-        },
-        "pin_ah": {
-          "handicap": 0.75,
-          "home_w": 0.97,
-          "away_w": 0.92,
-          "open": {
-            "handicap": 0.5,
-            "home_w": 0.83,
-            "away_w": 0.97
-          }
-        },
-        "pin_ou": {
-          "line": 2.25,
-          "over": 1.03,
-          "under": 0.85,
-          "open": {
-            "line": 2.0,
-            "over": 0.77,
-            "under": 1.04
-          }
-        },
-        "ou": {
-          "over": 0,
-          "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
-        },
-        "liji_ou": {
-          "over": 1.02,
-          "line": 2.25,
-          "under": 0.86,
-          "open": {
-            "over": 1.06,
-            "line": 2.25,
-            "under": 0.8
-          }
-        },
-        "ms_ou": {
-          "over": 1.08,
-          "line": 2.25,
-          "under": 0.8,
-          "open": {
-            "over": 1.04,
-            "line": 2.25,
-            "under": 0.78
-          }
-        },
-        "hkjc_ah": {
-          "handicap": 0.75,
-          "home_w": 0.9,
-          "away_w": 0.9,
-          "open": {
-            "handicap": 0.25,
-            "home_w": 0.88,
-            "away_w": 0.93
-          }
-        },
-        "hkjc_ou": {
-          "line": 2.25,
-          "over": 1.03,
-          "under": 0.78,
-          "open": {
-            "line": 2.0,
-            "over": 0.85,
-            "under": 0.95
-          }
-        },
-        "william_1x2": {
-          "w": 1.7,
-          "d": 3.25,
-          "l": 5.0
-        },
-        "william_ah": {
-          "handicap": 0.75,
-          "home_w": 0.91,
-          "away_w": 0.74,
-          "open": {
-            "handicap": 0.25,
-            "home_w": 0.78,
-            "away_w": 0.83
-          }
-        },
-        "william_ou": {
-          "over": 1.2,
-          "line": 2.5,
-          "under": 0.62,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
-        }
-      },
-      {
-        "id": 1949,
-        "date": "2026-07-07",
-        "league": "巴西乙",
-        "home": "维拉诺瓦",
-        "away": "圣贝尔纳多",
-        "kickoff": "2026-07-07 06:00",
-        "prediction": "主胜",
-        "prediction_prob": 0.454,
-        "odds": {
-          "w": 1.99,
-          "d": 3.29,
-          "l": 4.18
-        },
-        "poisson": {
-          "w": 0.349,
-          "d": 0.275,
-          "l": 0.376
-        },
-        "final_prob": {
-          "w": 0.454,
-          "d": 0.288,
-          "l": 0.258
-        },
-        "fusion_prob": {
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "result": "主胜",
-        "score": "2-1",
-        "ev_direction": "主胜",
-        "ev_hit": true,
-        "prob_direction": "主胜",
-        "prob_hit": true,
-        "fusion_direction": "主胜",
-        "ev": {
-          "w": -0.0551,
-          "d": -0.0093,
-          "l": 0.1249
-        },
-        "odds_ev": {
-          "w": 0.1473,
-          "d": -0.0426,
-          "l": -0.1045
-        },
-        "ev_signal": "市场优先(模型分歧)",
-        "kelly": {
-          "w": 0,
-          "d": 0,
-          "l": 0.0123
-        },
-        "pinnacle": {
-          "w": 1.99,
-          "d": 3.22,
-          "l": 4.41,
-          "open": {
-            "w": 1.87,
-            "d": 3.3,
-            "l": 4.3
-          }
-        },
-        "bet365": {
-          "w": 1.95,
-          "d": 3.3,
-          "l": 4.1,
-          "open": {
-            "w": 1.83,
-            "d": 3.3,
-            "l": 4.33
-          }
-        },
-        "hkjc": {
-          "w": 1.77,
-          "d": 3.15,
-          "l": 4.0
-        },
-        "hkjc_open": {
-          "w": 1.76,
-          "d": 3.15,
-          "l": 4.05
-        },
-        "risk_level": "",
-        "stars": 0,
-        "confidence_index": 0,
-        "reference_score": "2-1",
-        "cold_risk": "",
-        "source": "beidan",
-        "cold_signals": "无LGBM(用final降级)|市场优先(模型分歧)|市场主胜",
-        "risk_warning": "",
-        "actual_outcome": "主胜 2-1",
-        "avg_margin": 0.0457,
-        "ev_value": -0.0551,
-        "deviation_analysis": "",
-        "odds_source": "pinnacle",
-        "confidence_tier": "low",
-        "calibrated_prob": 0.458,
-        "home_lambda": 1.182,
-        "away_lambda": 1.238,
-        "home_ranking": 0,
-        "away_ranking": 0,
-        "hhad": {
-          "handicap": null,
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "ah": {
-          "handicap": 0.0,
-          "home_w": 0,
-          "away_w": 0,
-          "source": "",
-          "open": {
-            "handicap": null,
-            "home_w": 0,
-            "away_w": 0
-          }
-        },
-        "liji": {
-          "1x2": {
-            "close": {
-              "w": 0,
-              "d": 0,
-              "l": 0
-            },
-            "open": {
-              "w": 0,
-              "d": 0,
-              "l": 0
-            }
-          },
-          "close": {
-            "handicap": 0.5,
-            "home_w": 1.0,
-            "away_w": 0.9
-          },
-          "open": {
-            "handicap": 0.5,
-            "home_w": 1.06,
-            "away_w": 0.82
-          }
-        },
-        "ms": {
-          "1x2": {
-            "close": {
-              "w": 0,
-              "d": 0,
-              "l": 0
-            },
-            "open": {
-              "w": 0,
-              "d": 0,
-              "l": 0
-            }
-          },
-          "close": {
-            "handicap": 0.5,
-            "home_w": 0.97,
-            "away_w": 0.93
-          },
-          "open": {
-            "handicap": 0.5,
-            "home_w": 1.02,
-            "away_w": 0.82
-          }
-        },
-        "pin_ah": {
-          "handicap": 0.5,
-          "home_w": 0.99,
-          "away_w": 0.89,
-          "open": {
-            "handicap": 0.5,
-            "home_w": 0.88,
-            "away_w": 0.92
-          }
-        },
-        "pin_ou": {
-          "line": 2.25,
-          "over": 0.99,
-          "under": 0.88,
-          "open": {
-            "line": 2.25,
-            "over": 0.93,
-            "under": 0.86
-          }
-        },
-        "ou": {
-          "over": 0,
-          "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
-        },
-        "liji_ou": {
-          "over": 1.0,
-          "line": 2.25,
-          "under": 0.88,
-          "open": {
-            "over": 0.98,
-            "line": 2.25,
-            "under": 0.9
-          }
-        },
-        "ms_ou": {
-          "over": 0.98,
-          "line": 2.25,
-          "under": 0.9,
-          "open": {
-            "over": 0.94,
-            "line": 2.25,
-            "under": 0.88
-          }
-        },
-        "hkjc_ah": {
-          "handicap": 0.5,
-          "home_w": 0.92,
-          "away_w": 0.87,
-          "open": {
-            "handicap": 0.5,
-            "home_w": 0.88,
-            "away_w": 0.93
-          }
-        },
-        "hkjc_ou": {
-          "line": 2.25,
-          "over": 0.95,
-          "under": 0.85,
-          "open": {
-            "line": 2.25,
-            "over": 0.9,
-            "under": 0.9
-          }
-        },
-        "william_1x2": {
-          "w": 1.95,
-          "d": 3.0,
-          "l": 4.0
-        },
-        "william_ah": {
-          "handicap": 0.25,
-          "home_w": 0.68,
-          "away_w": 0.96,
-          "open": {
-            "handicap": 0.5,
-            "home_w": 0.85,
-            "away_w": 0.85
-          }
-        },
-        "william_ou": {
-          "over": 1.2,
-          "line": 2.5,
-          "under": 0.62,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
-        }
-      },
-      {
-        "id": 1950,
-        "date": "2026-07-07",
-        "league": "世界杯",
-        "home": "美国",
-        "away": "比利时",
-        "kickoff": "2026-07-07 08:00",
-        "prediction": "主胜",
-        "prediction_prob": 0.378,
-        "odds": {
-          "w": 2.77,
-          "d": 3.43,
-          "l": 2.63
-        },
-        "poisson": {
-          "w": 0.493,
-          "d": 0.236,
-          "l": 0.271
-        },
-        "final_prob": {
-          "w": 0.378,
-          "d": 0.273,
-          "l": 0.349
-        },
-        "fusion_prob": {
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "result": "",
-        "score": "",
-        "ev_direction": "客胜",
-        "ev_hit": false,
-        "prob_direction": "主胜",
-        "prob_hit": false,
-        "fusion_direction": "主胜",
-        "ev": {
-          "w": 0.0805,
-          "d": -0.0329,
-          "l": -0.052
-        },
-        "odds_ev": {
-          "w": 0.0163,
-          "d": -0.051,
-          "l": 0.0349
-        },
-        "ev_signal": "市场优先(模型分歧)",
-        "kelly": {
-          "w": 0.0133,
-          "d": 0,
-          "l": 0
-        },
-        "pinnacle": {
-          "w": 2.77,
-          "d": 3.43,
-          "l": 2.63,
-          "open": {
-            "w": 0,
-            "d": 0,
-            "l": 0
-          }
-        },
-        "bet365": {
-          "w": 0,
-          "d": 0,
-          "l": 0,
-          "open": {
-            "w": 0,
-            "d": 0,
-            "l": 0
-          }
-        },
-        "hkjc": {
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "hkjc_open": {
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "risk_level": "",
-        "stars": 0,
-        "confidence_index": 0,
-        "reference_score": "",
-        "cold_risk": "",
-        "source": "beidan",
-        "cold_signals": "无LGBM(用final降级)|市场优先(模型分歧)|市场客胜",
-        "risk_warning": "",
-        "actual_outcome": "",
-        "avg_margin": 0.0328,
-        "ev_value": -0.052,
-        "deviation_analysis": "",
-        "odds_source": "pinnacle",
-        "confidence_tier": "very_low",
-        "calibrated_prob": 0.375,
-        "home_lambda": 1.738,
-        "away_lambda": 1.232,
-        "home_ranking": 0,
-        "away_ranking": 0,
-        "hhad": {
-          "handicap": null,
-          "w": 0,
-          "d": 0,
-          "l": 0
-        },
-        "ah": {
-          "handicap": 0.0,
-          "home_w": 0,
-          "away_w": 0,
-          "source": "",
-          "open": {
-            "handicap": null,
-            "home_w": 0,
-            "away_w": 0
-          }
-        },
-        "liji": {
-          "1x2": {
-            "close": {
-              "w": 0,
-              "d": 0,
-              "l": 0
-            },
-            "open": {
-              "w": 0,
-              "d": 0,
-              "l": 0
-            }
-          },
-          "close": {
-            "handicap": 0.0,
-            "home_w": 1.0,
-            "away_w": 0.9
-          },
-          "open": {
-            "handicap": 0.0,
-            "home_w": 0.85,
-            "away_w": 1.05
-          }
-        },
-        "ms": {
-          "1x2": {
-            "close": {
-              "w": 0,
-              "d": 0,
-              "l": 0
-            },
-            "open": {
-              "w": 0,
-              "d": 0,
-              "l": 0
-            }
-          },
-          "close": {
-            "handicap": 0.0,
-            "home_w": 0.96,
-            "away_w": 0.94
-          },
-          "open": {
-            "handicap": 0.0,
-            "home_w": 0.97,
-            "away_w": 0.87
-          }
-        },
-        "pin_ah": {
-          "handicap": 0.0,
-          "home_w": 1.0,
-          "away_w": 0.9,
-          "open": {
-            "handicap": null,
-            "home_w": 0,
-            "away_w": 0
-          }
-        },
-        "pin_ou": {
-          "line": 2.75,
-          "over": 0.99,
-          "under": 0.89,
-          "open": {
-            "line": null,
-            "over": 0,
-            "under": 0
-          }
-        },
-        "ou": {
-          "over": 0,
-          "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
-        },
-        "liji_ou": {
-          "over": 0,
-          "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
-        },
-        "ms_ou": {
-          "over": 0,
-          "line": null,
-          "under": 0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
-        },
-        "hkjc_ah": {
-          "handicap": 0.0,
-          "home_w": 0.92,
-          "away_w": 0.88,
-          "open": {
-            "handicap": null,
-            "home_w": 0,
-            "away_w": 0
-          }
-        },
-        "hkjc_ou": {
-          "line": null,
-          "over": 0,
-          "under": 0,
-          "open": {
-            "line": null,
-            "over": 0,
-            "under": 0
-          }
-        },
-        "william_1x2": {
-          "w": 2.7,
-          "d": 3.25,
-          "l": 2.5
-        },
-        "william_ah": {
-          "handicap": 0.0,
-          "home_w": 0.87,
-          "away_w": 0.75,
-          "open": {
-            "handicap": 0.0,
-            "home_w": 0,
-            "away_w": 0
-          }
-        },
-        "william_ou": {
-          "over": 0.73,
-          "line": 2.5,
-          "under": 1.0,
-          "open": {
-            "over": 0,
-            "line": null,
-            "under": 0
-          }
         }
       }
     ]
