@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2026-07-07 09:52:53",
+    "generated_at": "2026-07-07 10:15:01",
     "total_dates": 10,
     "total_matches": 123,
     "date_range": {
@@ -47,7 +47,7 @@
         "prob_rate": 30.8
       }
     },
-    "last_updated": "2026-07-07 09:52"
+    "last_updated": "2026-07-07 10:15"
   },
   "daily_stats": {
     "2026-07-04": {
@@ -24949,18 +24949,18 @@
         "prob_hit": false,
         "fusion_direction": "主胜",
         "ev": {
-          "w": 0,
-          "d": 0,
-          "l": 0
+          "w": 0.195,
+          "d": 0.0089,
+          "l": -0.1349
         },
         "odds_ev": {
-          "w": 0,
-          "d": 0,
-          "l": 0
+          "w": -0.0472,
+          "d": -0.0627,
+          "l": 0.11
         },
-        "ev_signal": "",
+        "ev_signal": "市场优先(模型分歧)",
         "kelly": {
-          "w": 0,
+          "w": 0.0301,
           "d": 0,
           "l": 0
         },
@@ -25000,11 +25000,11 @@
         "reference_score": "1-1",
         "cold_risk": "",
         "source": "beidan",
-        "cold_signals": "",
+        "cold_signals": "无LGBM(用final降级)|市场优先(模型分歧)|市场客胜",
         "risk_warning": "",
         "actual_outcome": "平局 1-1",
-        "avg_margin": 0,
-        "ev_value": 0,
+        "avg_margin": 0.059,
+        "ev_value": -0.1349,
         "deviation_analysis": "",
         "odds_source": "pinnacle",
         "confidence_tier": "very_low",
@@ -25211,18 +25211,18 @@
         "prob_hit": false,
         "fusion_direction": "主胜",
         "ev": {
-          "w": 0,
-          "d": 0,
-          "l": 0
+          "w": 0.0789,
+          "d": 0.019,
+          "l": -0.0978
         },
         "odds_ev": {
-          "w": 0,
-          "d": 0,
-          "l": 0
+          "w": 0.0474,
+          "d": -0.0703,
+          "l": 0.023
         },
-        "ev_signal": "",
+        "ev_signal": "双重确认",
         "kelly": {
-          "w": 0,
+          "w": 0.0065,
           "d": 0,
           "l": 0
         },
@@ -25262,11 +25262,11 @@
         "reference_score": "2-4",
         "cold_risk": "",
         "source": "beidan",
-        "cold_signals": "",
+        "cold_signals": "无LGBM(用final降级)|双重确认|市场主胜|概率优势8%",
         "risk_warning": "",
         "actual_outcome": "客胜 2-4",
-        "avg_margin": 0,
-        "ev_value": 0,
+        "avg_margin": 0.0591,
+        "ev_value": 0.0789,
         "deviation_analysis": "",
         "odds_source": "pinnacle",
         "confidence_tier": "very_low",
@@ -25473,18 +25473,18 @@
         "prob_hit": true,
         "fusion_direction": "主胜",
         "ev": {
-          "w": 0,
-          "d": 0,
-          "l": 0
+          "w": 0.1869,
+          "d": -0.0145,
+          "l": -0.0849
         },
         "odds_ev": {
-          "w": 0,
-          "d": 0,
-          "l": 0
+          "w": -0.0976,
+          "d": -0.0776,
+          "l": 0.1753
         },
-        "ev_signal": "",
+        "ev_signal": "市场优先(模型分歧)",
         "kelly": {
-          "w": 0,
+          "w": 0.0252,
           "d": 0,
           "l": 0
         },
@@ -25524,11 +25524,11 @@
         "reference_score": "0-1",
         "cold_risk": "",
         "source": "beidan",
-        "cold_signals": "",
+        "cold_signals": "无LGBM(用final降级)|市场优先(模型分歧)|市场客胜",
         "risk_warning": "",
         "actual_outcome": "客胜 0-1",
-        "avg_margin": 0,
-        "ev_value": 0,
+        "avg_margin": 0.0348,
+        "ev_value": -0.0849,
         "deviation_analysis": "",
         "odds_source": "pinnacle",
         "confidence_tier": "low",
@@ -25735,19 +25735,19 @@
         "prob_hit": false,
         "fusion_direction": "主胜",
         "ev": {
-          "w": 0,
-          "d": 0,
-          "l": 0
+          "w": 0.2002,
+          "d": 0.0852,
+          "l": -0.1565
         },
         "odds_ev": {
-          "w": 0,
-          "d": 0,
-          "l": 0
+          "w": -0.0561,
+          "d": -0.0985,
+          "l": 0.1547
         },
-        "ev_signal": "",
+        "ev_signal": "市场优先(模型分歧)",
         "kelly": {
-          "w": 0,
-          "d": 0,
+          "w": 0.0285,
+          "d": 0.0029,
           "l": 0
         },
         "pinnacle": {
@@ -25786,11 +25786,11 @@
         "reference_score": "1-1",
         "cold_risk": "",
         "source": "beidan",
-        "cold_signals": "",
+        "cold_signals": "无LGBM(用final降级)|市场优先(模型分歧)|市场客胜",
         "risk_warning": "",
         "actual_outcome": "平局 1-1",
-        "avg_margin": 0,
-        "ev_value": 0,
+        "avg_margin": 0.0673,
+        "ev_value": -0.1565,
         "deviation_analysis": "",
         "odds_source": "pinnacle",
         "confidence_tier": "very_low",
@@ -25997,20 +25997,20 @@
         "prob_hit": true,
         "fusion_direction": "主胜",
         "ev": {
-          "w": 0,
-          "d": 0,
-          "l": 0
+          "w": -0.0562,
+          "d": -0.0113,
+          "l": 0.1357
         },
         "odds_ev": {
-          "w": 0,
-          "d": 0,
-          "l": 0
+          "w": 0.1542,
+          "d": -0.042,
+          "l": -0.1121
         },
-        "ev_signal": "",
+        "ev_signal": "市场优先(模型分歧)",
         "kelly": {
           "w": 0,
           "d": 0,
-          "l": 0
+          "l": 0.0133
         },
         "pinnacle": {
           "w": 1.96,
@@ -26048,11 +26048,11 @@
         "reference_score": "3-1",
         "cold_risk": "",
         "source": "beidan",
-        "cold_signals": "",
+        "cold_signals": "无LGBM(用final降级)|市场优先(模型分歧)|市场主胜",
         "risk_warning": "",
         "actual_outcome": "主胜 3-1",
-        "avg_margin": 0,
-        "ev_value": 0,
+        "avg_margin": 0.0466,
+        "ev_value": -0.0562,
         "deviation_analysis": "",
         "odds_source": "pinnacle",
         "confidence_tier": "low",
@@ -26259,20 +26259,20 @@
         "prob_hit": true,
         "fusion_direction": "主胜",
         "ev": {
-          "w": 0,
-          "d": 0,
-          "l": 0
+          "w": -0.0551,
+          "d": -0.0093,
+          "l": 0.1249
         },
         "odds_ev": {
-          "w": 0,
-          "d": 0,
-          "l": 0
+          "w": 0.1473,
+          "d": -0.0426,
+          "l": -0.1045
         },
-        "ev_signal": "",
+        "ev_signal": "市场优先(模型分歧)",
         "kelly": {
           "w": 0,
           "d": 0,
-          "l": 0
+          "l": 0.0123
         },
         "pinnacle": {
           "w": 1.99,
@@ -26310,11 +26310,11 @@
         "reference_score": "2-1",
         "cold_risk": "",
         "source": "beidan",
-        "cold_signals": "",
+        "cold_signals": "无LGBM(用final降级)|市场优先(模型分歧)|市场主胜",
         "risk_warning": "",
         "actual_outcome": "主胜 2-1",
-        "avg_margin": 0,
-        "ev_value": 0,
+        "avg_margin": 0.0457,
+        "ev_value": -0.0551,
         "deviation_analysis": "",
         "odds_source": "pinnacle",
         "confidence_tier": "low",
@@ -26515,24 +26515,24 @@
         },
         "result": "",
         "score": "",
-        "ev_direction": "主胜",
+        "ev_direction": "客胜",
         "ev_hit": false,
         "prob_direction": "主胜",
         "prob_hit": false,
         "fusion_direction": "主胜",
         "ev": {
-          "w": 0,
-          "d": 0,
-          "l": 0
+          "w": 0.0805,
+          "d": -0.0329,
+          "l": -0.052
         },
         "odds_ev": {
-          "w": 0,
-          "d": 0,
-          "l": 0
+          "w": 0.0163,
+          "d": -0.051,
+          "l": 0.0349
         },
-        "ev_signal": "",
+        "ev_signal": "市场优先(模型分歧)",
         "kelly": {
-          "w": 0,
+          "w": 0.0133,
           "d": 0,
           "l": 0
         },
@@ -26572,11 +26572,11 @@
         "reference_score": "",
         "cold_risk": "",
         "source": "beidan",
-        "cold_signals": "",
+        "cold_signals": "无LGBM(用final降级)|市场优先(模型分歧)|市场客胜",
         "risk_warning": "",
         "actual_outcome": "",
-        "avg_margin": 0,
-        "ev_value": 0,
+        "avg_margin": 0.0328,
+        "ev_value": -0.052,
         "deviation_analysis": "",
         "odds_source": "pinnacle",
         "confidence_tier": "very_low",
