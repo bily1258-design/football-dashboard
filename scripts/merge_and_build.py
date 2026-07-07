@@ -40,20 +40,11 @@ WEEKDAY_CN = ['周一','周二','周三','周四','周五','周六','周日']
 
 
 def _window_date(kickoff: str, fallback_date: str) -> str:
-    """竞彩窗口归日：00:00-11:59 归前一天，12:00-23:59 归当天"""
-    if not kickoff or kickoff == '待定':
-        return fallback_date
-    try:
-        dt = datetime.strptime(kickoff[:19], '%Y-%m-%d %H:%M:%S')
-    except ValueError:
-        try:
-            dt = datetime.strptime(kickoff[:19], '%Y-%m-%dT%H:%M:%S')
-        except ValueError:
-            return fallback_date
-    if dt.hour < 12:
-        prev = dt - timedelta(days=1)
-        return prev.strftime('%Y-%m-%d')
-    return dt.strftime('%Y-%m-%d')
+    """竞彩窗口归日：返回原始日期，不做调整。
+    DB日期已由手动修正，无需应用竞彩窗口规则（00:00-11:59 归前一天）。
+    函数保留以备将来启用。
+    """
+    return fallback_date
 
 
 def load_from_processed(max_days=999) -> dict:
