@@ -145,7 +145,7 @@ function openAhModal(record) {
   // 构建统一表
   let ahRows = '';
   // Bet365
-  ahRows += ahRow('Bet365', 'ah-badge-bet365', record.hkjc_ah, record.hkjc_ou);
+  ahRows += ahRow('Bet365', 'ah-badge-bet365', record.bet365_ah, record.bet365_ou);
   // Pinnacle
   ahRows += ahRow('Pinnacle', 'ah-badge-pin', record.pin_ah, record.pin_ou);
   // 利记

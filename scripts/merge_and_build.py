@@ -114,6 +114,24 @@ def _merge_missing(kept, discarded):
         dpou = discarded.get('pin_ou', {})
         if dpou and dpou.get('line') is not None and dpou.get('line') != 0:
             kept['pin_ou'] = dpou
+    # 补bet365 1X2
+    b365 = kept.get('bet365', {})
+    if not b365 or (b365.get('w', 0) == 0 and b365.get('d', 0) == 0 and b365.get('l', 0) == 0):
+        db365 = discarded.get('bet365', {})
+        if db365 and (db365.get('w', 0) > 0 or db365.get('d', 0) > 0 or db365.get('l', 0) > 0):
+            kept['bet365'] = db365
+    # 补bet365_ah
+    b365ah = kept.get('bet365_ah', {})
+    if not b365ah or (b365ah.get('handicap') is None or b365ah.get('handicap') == 0):
+        db365ah = discarded.get('bet365_ah', {})
+        if db365ah and db365ah.get('handicap') is not None and db365ah.get('handicap') != 0:
+            kept['bet365_ah'] = db365ah
+    # 补bet365_ou
+    b365ou = kept.get('bet365_ou', {})
+    if not b365ou or (b365ou.get('over', 0) == 0):
+        db365ou = discarded.get('bet365_ou', {})
+        if db365ou and db365ou.get('over', 0) > 0:
+            kept['bet365_ou'] = db365ou
 
 
 def load_from_db(db_path: str, max_days=999) -> dict:
@@ -477,6 +495,26 @@ def load_from_db(db_path: str, max_days=999) -> dict:
                     'over': d.get('william_ou_open_over', 0) or 0,
                     'line': d.get('william_ou_open_line', None),
                     'under': d.get('william_ou_open_under', 0) or 0,
+                },
+            },
+            'bet365_ah': {
+                'handicap': d.get('bet365_ah_handicap', None),
+                'home_w': d.get('bet365_ah_home_water', 0) or 0,
+                'away_w': d.get('bet365_ah_away_water', 0) or 0,
+                'open': {
+                    'handicap': d.get('bet365_ah_open_handicap', None),
+                    'home_w': d.get('bet365_ah_open_home_water', 0) or 0,
+                    'away_w': d.get('bet365_ah_open_away_water', 0) or 0,
+                },
+            },
+            'bet365_ou': {
+                'line': d.get('bet365_ou_line', None),
+                'over': d.get('bet365_ou_over', 0) or 0,
+                'under': d.get('bet365_ou_under', 0) or 0,
+                'open': {
+                    'line': d.get('bet365_ou_open_line', None),
+                    'over': d.get('bet365_ou_open_over', 0) or 0,
+                    'under': d.get('bet365_ou_open_under', 0) or 0,
                 },
             },
         })
@@ -859,7 +897,7 @@ def main():
                 print(f'📌 DB补充{len(missing)}天缺失数据: {sorted(missing.keys())}')
             # DB中同日期记录数更多时也更新（processed可能缺新插入的场次）
             # 同时用DB的新字段（pin_ah/ou等）补充processed旧记录
-            _NEW_KEYS = {'pin_ah', 'pin_ou', 'ou', 'liji_ou', 'ms_ou', 'hkjc_ah', 'hkjc_ou', 'william_1x2', 'william_ah', 'william_ou', 'bet365'}
+            _NEW_KEYS = {'pin_ah', 'pin_ou', 'ou', 'liji_ou', 'ms_ou', 'hkjc_ah', 'hkjc_ou', 'william_1x2', 'william_ah', 'william_ou', 'bet365', 'bet365_ah', 'bet365_ou'}
             # ah/liji/ms字段：processed为空或handicap=0时，用DB非零值覆盖
             _AH_KEYS = {'ah', 'liji', 'ms'}
             # hkjc 1X2初盘同步
