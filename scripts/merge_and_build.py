@@ -104,16 +104,29 @@ def _merge_missing(kept, discarded):
             kept['william_ou'] = dwou
     # 补pin_ah
     pah = kept.get('pin_ah', {})
+    dpah = discarded.get('pin_ah', {})
     if not pah or (pah.get('handicap') is None or pah.get('handicap') == 0):
-        dpah = discarded.get('pin_ah', {})
         if dpah and dpah.get('handicap') is not None and dpah.get('handicap') != 0:
             kept['pin_ah'] = dpah
+            pah = dpah  # 更新引用
+    # 即使close有效，也要补open数据（跨日期去重时07-08条目有close但无open）
+    if isinstance(pah, dict) and isinstance(dpah, dict):
+        pah_open = pah.get('open', {}) if isinstance(pah.get('open'), dict) else {}
+        dpah_open = dpah.get('open', {}) if isinstance(dpah.get('open'), dict) else {}
+        if (not pah_open or pah_open.get('handicap') is None) and dpah_open and dpah_open.get('handicap') is not None:
+            kept['pin_ah']['open'] = dpah_open
     # 补pin_ou
     pou = kept.get('pin_ou', {})
+    dpou = discarded.get('pin_ou', {})
     if not pou or (pou.get('line') is None or pou.get('line') == 0):
-        dpou = discarded.get('pin_ou', {})
         if dpou and dpou.get('line') is not None and dpou.get('line') != 0:
             kept['pin_ou'] = dpou
+            pou = dpou
+    if isinstance(pou, dict) and isinstance(dpou, dict):
+        pou_open = pou.get('open', {}) if isinstance(pou.get('open'), dict) else {}
+        dpou_open = dpou.get('open', {}) if isinstance(dpou.get('open'), dict) else {}
+        if (not pou_open or pou_open.get('line') is None) and dpou_open and dpou_open.get('line') is not None:
+            kept['pin_ou']['open'] = dpou_open
     # 补bet365 1X2
     b365 = kept.get('bet365', {})
     if not b365 or (b365.get('w', 0) == 0 and b365.get('d', 0) == 0 and b365.get('l', 0) == 0):
