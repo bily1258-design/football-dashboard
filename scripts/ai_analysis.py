@@ -180,13 +180,26 @@ def analyze_matches(matches: List[Dict]) -> List[Dict]:
     skipped = 0
 
     for m in matches:
-        # 获取赔率（优先zqdc赔率，没有则用普通赔率）
-        ow = float(m.get('odds_zqdc_win', 0) or m.get('odds_win', 0))
-        od = float(m.get('odds_zqdc_draw', 0) or m.get('odds_draw', 0))
-        ol = float(m.get('odds_zqdc_loss', 0) or m.get('odds_loss', 0))
+        # 赔率优先级：平博 → Bet365 → zqdc
+        ow_pin = float(m.get('odds_pinnacle_win', 0) or 0)
+        od_pin = float(m.get('odds_pinnacle_draw', 0) or 0)
+        ol_pin = float(m.get('odds_pinnacle_loss', 0) or 0)
+        ow_bet = float(m.get('odds_bet365_win', 0) or 0)
+        od_bet = float(m.get('odds_bet365_draw', 0) or 0)
+        ol_bet = float(m.get('odds_bet365_loss', 0) or 0)
+        ow_zq  = float(m.get('odds_zqdc_win', 0) or m.get('odds_win', 0))
+        od_zq  = float(m.get('odds_zqdc_draw', 0) or m.get('odds_draw', 0))
+        ol_zq  = float(m.get('odds_zqdc_loss', 0) or m.get('odds_loss', 0))
 
-        # 如果都没有有效赔率，跳过
-        if ow <= 1 or od <= 1 or ol <= 1:
+        # 选主赔率源（平博→Bet365→zqdc）
+        ow, od, ol, odds_source = 0, 0, 0, ''
+        if ow_pin > 1 and od_pin > 1 and ol_pin > 1:
+            ow, od, ol, odds_source = ow_pin, od_pin, ol_pin, 'pinnacle'
+        elif ow_bet > 1 and od_bet > 1 and ol_bet > 1:
+            ow, od, ol, odds_source = ow_bet, od_bet, ol_bet, 'bet365'
+        elif ow_zq > 1 and od_zq > 1 and ol_zq > 1:
+            ow, od, ol, odds_source = ow_zq, od_zq, ol_zq, 'zqdc'
+        else:
             skipped += 1
             continue
 
@@ -202,29 +215,25 @@ def analyze_matches(matches: List[Dict]) -> List[Dict]:
         # 3. 泊松1X2概率
         pois_w, pois_d, pois_l = poisson_match_probs(lam_h, lam_a)
 
-        # 4. 融合概率: final = weight*poisson + (1-weight)*implied
+        # 4. 融合概率
         fusion_w = POISSON_WEIGHT * pois_w + (1 - POISSON_WEIGHT) * imp_w
         fusion_d = POISSON_WEIGHT * pois_d + (1 - POISSON_WEIGHT) * imp_d
         fusion_l = POISSON_WEIGHT * pois_l + (1 - POISSON_WEIGHT) * imp_l
-        # 归一化
         ft = fusion_w + fusion_d + fusion_l
         fusion_w, fusion_d, fusion_l = fusion_w/ft, fusion_d/ft, fusion_l/ft
 
-        # 5. EV
+        # 5. EV（主赔率源）
         ev_w = calc_ev(fusion_w, imp_w)
         ev_d = calc_ev(fusion_d, imp_d)
         ev_l = calc_ev(fusion_l, imp_l)
-
-        # 6. 软压缩
         ev_w_c = tanh_compress(ev_w)
         ev_d_c = tanh_compress(ev_d)
         ev_l_c = tanh_compress(ev_l)
 
-        # 7. 推荐方向
+        # 6. 推荐方向
         dir_cn, dir_en, best_ev = determine_direction(ev_w_c, ev_d_c, ev_l_c)
 
-        # 8. 最大概率方向
-        max_prob = max({'home': fusion_w, 'draw': fusion_d, 'away': fusion_l}, key=lambda k: {'home': fusion_w, 'draw': fusion_d, 'away': fusion_l}[k])
+        # 7. 最大概率方向
         max_prob_val = max(fusion_w, fusion_d, fusion_l)
 
         # 比分 → 实际结果方向
@@ -237,6 +246,25 @@ def analyze_matches(matches: List[Dict]) -> List[Dict]:
             actual = ''
         hit = '✅' if actual and actual == dir_en else ('❌' if actual else '')
 
+        # 8. 赔率对比数据（平博EV vs Bet365 EV vs zqdc EV）
+        comparison = {}
+        for src_name, src_o in [('pinnacle', (ow_pin, od_pin, ol_pin)),
+                                ('bet365', (ow_bet, od_bet, ol_bet)),
+                                ('zqdc', (ow_zq, od_zq, ol_zq))]:
+            o_w, o_d, o_l = src_o
+            if o_w > 1 and o_d > 1 and o_l > 1:
+                iw, id_, il, _ = implied_from_odds(o_w, o_d, o_l) or (None, None, None, 0)
+                if iw:
+                    ew = tanh_compress(calc_ev(fusion_w, iw))
+                    ed = tanh_compress(calc_ev(fusion_d, id_))
+                    el = tanh_compress(calc_ev(fusion_l, il))
+                    dc, _, _ = determine_direction(ew, ed, el)
+                    comparison[src_name] = {
+                        'odds': [round(o_w,2), round(o_d,2), round(o_l,2)],
+                        'ev': [round(ew,4), round(ed,4), round(el,4)],
+                        'dir': dc,
+                    }
+
         results.append({
             'date': m.get('date', ''),
             'match_time': m.get('match_time', ''),
@@ -246,6 +274,7 @@ def analyze_matches(matches: List[Dict]) -> List[Dict]:
             'score': score_raw,
             'hit': hit,
             'source': m.get('source', 'beidan'),
+            'odds_source': odds_source,
             'odds_win': round(ow, 2),
             'odds_draw': round(od, 2),
             'odds_loss': round(ol, 2),
@@ -267,6 +296,7 @@ def analyze_matches(matches: List[Dict]) -> List[Dict]:
             'prediction': dir_en,
             'prediction_cn': dir_cn,
             'prediction_prob': round(max_prob_val, 4),
+            'comparison': comparison,
         })
 
     logger.info(f"分析完成: {len(results)} 场 (跳过 {skipped} 场无赔率)")
@@ -357,6 +387,7 @@ def generate_frontend(results: List[Dict]):
           <th>主队</th>
           <th>客队</th>
           <th data-sort="odds">赔率(W/D/L)</th>
+          <th>平博/Bet365/北单</th>
           <th data-sort="poisson">泊松(W/D/L)</th>
           <th data-sort="fusion">融合(W/D/L)</th>
           <th data-sort="ev">EV(W/D/L)</th>
@@ -417,6 +448,13 @@ tr:hover{background:#1a2a3a}
 .tag{display:inline-block;padding:1px 6px;border-radius:3px;font-size:11px;background:#2a3a4a;color:#8899aa}
 .tag-beidan{background:#1e3a5f;color:#60a5fa}
 .tag-jingcai{background:#3a2a1e;color:#fbbf24}
+.odds-source-tag{display:inline-block;padding:0 4px;border-radius:3px;font-size:10px;margin-right:4px;font-weight:700}
+.tag-pinnacle{background:#1a3a2a;color:#4ade80}
+.tag-bet365{background:#2a1e3a;color:#a78bfa}
+.tag-zqdc{background:#1e3a5f;color:#60a5fa}
+.cmp-cell{font-size:11px;line-height:1.6}
+.cmp-item{display:block;padding:0 2px;white-space:nowrap}
+.cmp-na{color:#556677}
 .lambda-cell{font-size:12px;color:#8899aa}
 .hit-yes{color:#4ade80;font-weight:700;font-size:1.1em;text-align:center}
 .hit-no{color:#f87171;font-weight:700;font-size:1.1em;text-align:center}
@@ -443,6 +481,20 @@ function fmtEv(v){return v===0?'0%':(v>0?'+':'')+(v*100).toFixed(1)+'%'}
 function evClass(v){return v>0.03?'ev-pos':v<-0.03?'ev-neg':'ev-zero'}
 function dirClass(d){return d==='home'?'dir-home':d==='draw'?'dir-draw':d==='away'?'dir-away':'dir-wait'}
 function dirText(d){return d==='home'?'主胜':d==='draw'?'平局':d==='away'?'客胜':'观望'}
+function srcLabel(s){return {pinnacle:'平博',bet365:'B365',zqdc:'北单'}[s]||s}
+function srcEvClass(v){return v>0.03?'ev-pos':v<-0.03?'ev-neg':'ev-zero'}
+function renderCmp(c){
+  if(!c) return '-';
+  var keys = ['pinnacle','bet365','zqdc'];
+  var html = '';
+  for(var i=0;i<keys.length;i++){
+    var s = keys[i], d = c[s];
+    if(!d) {html+= '<span class="cmp-item cmp-na">'+(s==='pinnacle'?'平博':s==='bet365'?'B365':'北单')+':--</span>'; continue;}
+    var bestEv = Math.max(d.ev[0],d.ev[1],d.ev[2]);
+    html+= '<span class="cmp-item '+srcEvClass(bestEv)+'">'+(s==='pinnacle'?'平博':s==='bet365'?'B365':'北单')+' '+d.odds[0].toFixed(2)+'/'+d.odds[1].toFixed(2)+'/'+d.odds[2].toFixed(2)+'</span>';
+  }
+  return html;
+}
 function fmtTime(t){return t?t.replace(/^\\d{2}-/,''):''}
 
 function applyFilters(){
@@ -474,7 +526,8 @@ function renderTable(matches){
       '<td><span class="tag tag-'+m.source+'">'+(m.event||m.source)+'</span></td>'+
       '<td class="team-name">'+m.home_team+'</td>'+
       '<td class="team-name">'+m.away_team+'</td>'+
-      '<td class="odds-cell"><span class="odds-val odds-w">'+fmtOdds(m.odds_win)+'</span> <span class="odds-val odds-d">'+fmtOdds(m.odds_draw)+'</span> <span class="odds-val odds-l">'+fmtOdds(m.odds_loss)+'</span></td>'+
+      '<td class="odds-cell"><span class="odds-source-tag tag-'+m.odds_source+'">'+'平博Bet365北单'.match(/.{2}/g)[{pinnacle:0,bet365:1,zqdc:2}[m.odds_source]||0]+'</span><span class="odds-val odds-w">'+fmtOdds(m.odds_win)+'</span> <span class="odds-val odds-d">'+fmtOdds(m.odds_draw)+'</span> <span class="odds-val odds-l">'+fmtOdds(m.odds_loss)+'</span></td>'+
+      '<td class="odds-cell cmp-cell">'+renderCmp(m.comparison)+'</td>'+
       '<td class="odds-cell"><span class="odds-val odds-w">'+fmtPct(m.poisson_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.poisson_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.poisson_loss)+'</span></td>'+
       '<td class="odds-cell"><span class="odds-val odds-w">'+fmtPct(m.fusion_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.fusion_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.fusion_loss)+'</span></td>'+
       '<td class="odds-cell"><span class="odds-val '+evClass(m.ev_win)+'">'+fmtEv(m.ev_win)+'</span> <span class="odds-val '+evClass(m.ev_draw)+'">'+fmtEv(m.ev_draw)+'</span> <span class="odds-val '+evClass(m.ev_loss)+'">'+fmtEv(m.ev_loss)+'</span></td>'+

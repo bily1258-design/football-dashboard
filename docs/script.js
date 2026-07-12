@@ -8,6 +8,20 @@ function fmtEv(v){return v===0?'0%':(v>0?'+':'')+(v*100).toFixed(1)+'%'}
 function evClass(v){return v>0.03?'ev-pos':v<-0.03?'ev-neg':'ev-zero'}
 function dirClass(d){return d==='home'?'dir-home':d==='draw'?'dir-draw':d==='away'?'dir-away':'dir-wait'}
 function dirText(d){return d==='home'?'主胜':d==='draw'?'平局':d==='away'?'客胜':'观望'}
+function srcLabel(s){return {pinnacle:'平博',bet365:'B365',zqdc:'北单'}[s]||s}
+function srcEvClass(v){return v>0.03?'ev-pos':v<-0.03?'ev-neg':'ev-zero'}
+function renderCmp(c){
+  if(!c) return '-';
+  var keys = ['pinnacle','bet365','zqdc'];
+  var html = '';
+  for(var i=0;i<keys.length;i++){
+    var s = keys[i], d = c[s];
+    if(!d) {html+= '<span class="cmp-item cmp-na">'+(s==='pinnacle'?'平博':s==='bet365'?'B365':'北单')+':--</span>'; continue;}
+    var bestEv = Math.max(d.ev[0],d.ev[1],d.ev[2]);
+    html+= '<span class="cmp-item '+srcEvClass(bestEv)+'">'+(s==='pinnacle'?'平博':s==='bet365'?'B365':'北单')+' '+d.odds[0].toFixed(2)+'/'+d.odds[1].toFixed(2)+'/'+d.odds[2].toFixed(2)+'</span>';
+  }
+  return html;
+}
 function fmtTime(t){return t?t.replace(/^\d{2}-/,''):''}
 
 function applyFilters(){
@@ -39,7 +53,8 @@ function renderTable(matches){
       '<td><span class="tag tag-'+m.source+'">'+(m.event||m.source)+'</span></td>'+
       '<td class="team-name">'+m.home_team+'</td>'+
       '<td class="team-name">'+m.away_team+'</td>'+
-      '<td class="odds-cell"><span class="odds-val odds-w">'+fmtOdds(m.odds_win)+'</span> <span class="odds-val odds-d">'+fmtOdds(m.odds_draw)+'</span> <span class="odds-val odds-l">'+fmtOdds(m.odds_loss)+'</span></td>'+
+      '<td class="odds-cell"><span class="odds-source-tag tag-'+m.odds_source+'">'+'平博Bet365北单'.match(/.{2}/g)[{pinnacle:0,bet365:1,zqdc:2}[m.odds_source]||0]+'</span><span class="odds-val odds-w">'+fmtOdds(m.odds_win)+'</span> <span class="odds-val odds-d">'+fmtOdds(m.odds_draw)+'</span> <span class="odds-val odds-l">'+fmtOdds(m.odds_loss)+'</span></td>'+
+      '<td class="odds-cell cmp-cell">'+renderCmp(m.comparison)+'</td>'+
       '<td class="odds-cell"><span class="odds-val odds-w">'+fmtPct(m.poisson_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.poisson_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.poisson_loss)+'</span></td>'+
       '<td class="odds-cell"><span class="odds-val odds-w">'+fmtPct(m.fusion_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.fusion_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.fusion_loss)+'</span></td>'+
       '<td class="odds-cell"><span class="odds-val '+evClass(m.ev_win)+'">'+fmtEv(m.ev_win)+'</span> <span class="odds-val '+evClass(m.ev_draw)+'">'+fmtEv(m.ev_draw)+'</span> <span class="odds-val '+evClass(m.ev_loss)+'">'+fmtEv(m.ev_loss)+'</span></td>'+

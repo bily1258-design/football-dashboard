@@ -1,22 +1,33 @@
 #!/usr/bin/env python3
-"""fetch_zqdc.py — 从500.com zqdc页面抓取北单比赛数据
+"""fetch_zqdc.py — 从500.com抓取北单+平博+Bet365赔率数据
 
-抓取zqdc期号页面，提取比赛信息+北单赔率(liveOddsList["3"])。
-支持自动在已知期号中查找。
+抓取zqdc期号页面，提取比赛信息+北单赔率(liveOddsList["3"])，
+再通过odds.500.com API获取平博(1055)和Bet365(3)的1X2收盘赔率。
 
 用法:
-  python3 scripts/fetch_zqdc.py                              # 今天
-  python3 scripts/fetch_zqdc.py --date 2026-07-12            # 指定日期
-  python3 scripts/fetch_zqdc.py --date 2026-07-12 --period 26074  # 指定期号
+  python3 scripts/fetch_zqdc.py                                     # 今天
+  python3 scripts/fetch_zqdc.py --date 2026-07-12                   # 指定日期
+  python3 scripts/fetch_zqdc.py --date 2026-07-12 --period 26074    # 指定期号
+  python3 scripts/fetch_zqdc.py --date 2026-07-12 --no-pinnacle     # 跳过平博/Bet365
 
 输出: data/matches_{YYYYMMDD}.json
 """
-import re, json, os, argparse, urllib.request
+import re, json, os, argparse, urllib.request, time
 from datetime import datetime, date
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(os.path.dirname(SCRIPT_DIR), "data")
 KNOWN_PERIODS = ['26072', '26073', '26074']
+
+# 500.com赔率API请求头
+API_HEADERS = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+    'Accept': 'application/json, text/javascript, */*; q=0.01',
+    'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+    'X-Requested-With': 'XMLHttpRequest',
+}
+
+# ========== 基础抓取 ==========
 
 def fetch(period):
     url = f'https://live.500.com/zqdc.php?e={period}'
@@ -26,6 +37,40 @@ def fetch(period):
     })
     with urllib.request.urlopen(req, timeout=20) as resp:
         return resp.read().decode('gbk', errors='replace')
+
+def fetch_json(url, retries=2, referer=None):
+    """请求500.com JSON接口"""
+    for attempt in range(retries + 1):
+        try:
+            headers = dict(API_HEADERS)
+            if referer:
+                headers['Referer'] = referer
+            req = urllib.request.Request(url, headers=headers)
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                raw = resp.read().decode('utf-8', errors='replace').strip()
+                if raw.startswith('(') and raw.endswith(')'):
+                    raw = raw[1:-1]
+                return json.loads(raw) if raw else None
+        except Exception:
+            if attempt == retries:
+                return None
+            time.sleep(1)
+    return None
+
+def fetch_1x2_close(fid, cid):
+    """获取指定公司的1X2收盘赔率，返回{w,d,l}或None"""
+    url = f'https://odds.500.com/fenxi/json/ouzhi.php?fid={fid}&cid={cid}&type=europe&r=1'
+    referer = f'https://odds.500.com/fenxi/ouzhi-{fid}.shtml'
+    data = fetch_json(url, referer=referer)
+    if not data or not isinstance(data, list) or len(data) < 1:
+        return None
+    try:
+        close = data[0]  # 最新=收盘
+        return {'w': float(close[0]), 'd': float(close[1]), 'l': float(close[2])}
+    except (IndexError, ValueError, TypeError):
+        return None
+
+# ========== 解析zqdc页面 ==========
 
 def parse(html, date_str):
     target_md = date_str[5:]  # MM-DD
@@ -39,9 +84,8 @@ def parse(html, date_str):
         except Exception as e:
             print(f"[WARN] liveOddsList解析失败: {e}")
 
-    # 2) 解析比赛行 <tr id="aXXXX" status="..." gy="联赛,主队,客队" ...>
+    # 2) 解析比赛行 <tr id="aXXXX" ...>
     matches = []
-    # 匹配所有tr行
     for tr_m in re.finditer(r'<tr\s+id="a(\d+)"[^>]*status="(\d+)"[^>]*gy="([^"]*)"[^>]*yy="([^"]*)"[^>]*>.*?</tr>', html, re.DOTALL):
         fid, status, gy_str, yy_str = tr_m.group(1), tr_m.group(2), tr_m.group(3), tr_m.group(4)
         row = tr_m.group(0)
@@ -60,7 +104,7 @@ def parse(html, date_str):
         home = parts[1] if len(parts) >= 2 else ''
         away = parts[2] if len(parts) >= 3 else ''
 
-        # 评分
+        # 比分
         score_m = re.search(r'<td[^>]*align="center"[^>]*class="[^"]*red[^"]*"[^>]*>(\d+)\s*-\s*(\d+)</td>', row)
         score = f"{score_m.group(1)}-{score_m.group(2)}" if score_m else ''
 
@@ -90,6 +134,46 @@ def parse(html, date_str):
 
     return sorted(matches, key=lambda x: x['match_time'])
 
+# ========== 追加平博/Bet365赔率 ==========
+
+def enhance_with_pinnacle_bet365(matches, delay=0.3):
+    """为每场比赛获取平博(cid=1055)和Bet365(cid=3)的收盘赔率"""
+    pinnacle_ok = bet365_ok = 0
+    total = len(matches)
+
+    for i, m in enumerate(matches):
+        fid = m['fid']
+        print(f"  [{i+1}/{total}] fid={fid} {m['home_team']} vs {m['away_team']}...", end=' ', flush=True)
+
+        # 平博
+        p = fetch_1x2_close(fid, 1055)
+        if p:
+            m['odds_pinnacle_win'] = p['w']
+            m['odds_pinnacle_draw'] = p['d']
+            m['odds_pinnacle_loss'] = p['l']
+            pinnacle_ok += 1
+            print(f"平博{p['w']}/{p['d']}/{p['l']}", end='  ', flush=True)
+        else:
+            print("平博-", end='  ', flush=True)
+
+        # Bet365
+        b = fetch_1x2_close(fid, 3)
+        if b:
+            m['odds_bet365_win'] = b['w']
+            m['odds_bet365_draw'] = b['d']
+            m['odds_bet365_loss'] = b['l']
+            bet365_ok += 1
+            print(f"Bet365{b['w']}/{b['d']}/{b['l']}")
+        else:
+            print("Bet365-")
+
+        if delay > 0 and i < total - 1:
+            time.sleep(delay)
+
+    return pinnacle_ok, bet365_ok
+
+# ========== 期号查找 ==========
+
 def find_period(date_str, known_periods):
     """逐个期号查找，返回(期号, 比赛列表)"""
     for p in known_periods:
@@ -99,10 +183,13 @@ def find_period(date_str, known_periods):
             return p, ms
     return known_periods[-1], []
 
+# ========== 主函数 ==========
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--date', default=date.today().isoformat())
     parser.add_argument('--period')
+    parser.add_argument('--no-pinnacle', action='store_true', help='跳过平博/Bet365抓取')
     args = parser.parse_args()
 
     if args.period:
@@ -117,6 +204,12 @@ def main():
     if not ms:
         print(f"[WARN] {args.date} 无比赛数据")
         return
+
+    # 追加平博/Bet365赔率
+    if not args.no_pinnacle:
+        print("[INFO] 抓取平博和Bet365赔率(收盘)...")
+        p_ok, b_ok = enhance_with_pinnacle_bet365(ms)
+        print(f"[INFO] 平博 {p_ok}/{len(ms)}, Bet365 {b_ok}/{len(ms)}")
 
     out = {
         'date': args.date,
