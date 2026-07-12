@@ -11,6 +11,9 @@ on:
   schedule:
     - cron: '30 1,9,15 * * *'
 
+permissions:
+  contents: write
+
 jobs:
   analyze:
     runs-on: ubuntu-latest
