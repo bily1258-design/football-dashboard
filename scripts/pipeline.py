@@ -14,6 +14,7 @@
   9. review              — 赛果回填 + 命中分析（填充 actual_outcome）
  10. recalibrate_db      — 联赛分层参数 + isotonic校准 + 信心分层
  11. merge_and_build --db — 构建 docs/ (results.json + index.html)
+ 11.5 merge_zqdc         — 北单晚场合并（从zqdc.php提取比赛+赔率）
  12. git push docs/      — 推 docs/ 到仓库（触发 GA 部署）
  13. push_db             — DB 推 Release
 
@@ -46,6 +47,7 @@ STEPS = [
     ("9  复盘",          "review.py",               ["--date", "{date}", "--db", "{db}"],   False, "skip_review"),
     ("10 校准",          "recalibrate_db.py",       ["--db", "{db}"],                       False, None),
     ("11 构建",          "merge_and_build.py",      ["--db", "{db}"],                       False, None),
+     ("11.5 北单合并",    "merge_zqdc.py",           ["--date", "{date}", "--update"],       False, None),
     ("12 推送docs",      None,                       None,                                  False, "skip_push"),
     ("13 推送DB",        "push_db.py",              ["--db", "{db}"],                       False, "skip_push"),
 ]
