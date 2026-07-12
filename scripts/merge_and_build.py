@@ -246,6 +246,19 @@ def load_from_db(db_path: str, max_days=999) -> dict:
     by_date = {}
     for r in cur.fetchall():
         d = dict(r)
+        # ── 修复kickoff_time格式损坏: "2026-07-10 07-11 18:00:00" ──
+        #   格式为 YYYY-MM-DD MM-DD HH:MM:SS，中间的MM-DD是实际比赛日期
+        kt = d.get('kickoff_time', '') or ''
+        m_kt = re.match(r'^(\d{4}-\d{2}-\d{2}) (\d{2}-\d{2}) (\d{2}:\d{2}:\d{2})$', kt)
+        if m_kt:
+            embedded_md = m_kt.group(2)   # "07-11"
+            actual_time = m_kt.group(3)   # "18:00:00"
+            # 从date列取年份，从embedded_md取月-日
+            year = d['date'][:4] if d['date'] else '2026'
+            corrected_date = f"{year}-{embedded_md}"
+            # 修正date和kickoff_time
+            d['date'] = corrected_date
+            d['kickoff_time'] = f"{corrected_date} {actual_time}"
         date = d['date']
         # 竞彩窗口归日：凌晨00:00-11:59的比赛归前一天
         wd = _window_date(d.get('kickoff_time', ''), date)
