@@ -227,12 +227,24 @@ def analyze_matches(matches: List[Dict]) -> List[Dict]:
         max_prob = max({'home': fusion_w, 'draw': fusion_d, 'away': fusion_l}, key=lambda k: {'home': fusion_w, 'draw': fusion_d, 'away': fusion_l}[k])
         max_prob_val = max(fusion_w, fusion_d, fusion_l)
 
+        # 比分 → 实际结果方向
+        score_raw = m.get('score', '')
+        score_parts = score_raw.split('-')
+        if len(score_parts) == 2 and score_parts[0].strip().isdigit() and score_parts[1].strip().isdigit():
+            sh, sa = int(score_parts[0]), int(score_parts[1])
+            actual = 'home' if sh > sa else ('draw' if sh == sa else 'away')
+        else:
+            actual = ''
+        hit = '✅' if actual and actual == dir_en else ('❌' if actual else '')
+
         results.append({
             'date': m.get('date', ''),
             'match_time': m.get('match_time', ''),
             'event': m.get('event', ''),
             'home_team': m.get('home_team', ''),
             'away_team': m.get('away_team', ''),
+            'score': score_raw,
+            'hit': hit,
             'source': m.get('source', 'beidan'),
             'odds_win': round(ow, 2),
             'odds_draw': round(od, 2),
