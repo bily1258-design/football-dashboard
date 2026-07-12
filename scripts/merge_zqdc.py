@@ -130,31 +130,67 @@ def parse_zqdc_page(text, target_date):
 
 
 def format_as_dashboard_record(m):
-    """将zqdc比赛格式化为dashboard记录格式"""
+    """将zqdc比赛格式化为dashboard记录格式，含EV/泊松计算"""
     w = m['odds_w']
     d_val = m['odds_d']
     l_val = m['odds_l']
-    
-    odds = {'w': w, 'd': d_val, 'l': l_val} if w else None
-    
-    # 从赔率计算市场隐含概率
-    prob = None
-    if w and d_val and l_val:
-        margin = 1/w + 1/d_val + 1/l_val
-        prob = {
-            'w': round(1/w/margin, 3),
-            'd': round(1/d_val/margin, 3),
-            'l': round(1/l_val/margin, 3)
-        }
-    
-    # 基准预测（使用最高概率方向）
-    prediction = ''
-    prediction_prob = 0
-    if prob:
-        max_dir = max(prob, key=prob.get)
-        prediction = {'w': '主胜', 'd': '平局', 'l': '客胜'}.get(max_dir, '')
-        prediction_prob = prob[max_dir]
-    
+
+    if not (w and d_val and l_val):
+        return None  # 无赔率不导入
+
+    odds = {'w': w, 'd': d_val, 'l': l_val}
+
+    # 从赔率计算公平概率（去掉市场边际）
+    margin = 1/w + 1/d_val + 1/l_val
+    fair_prob = {
+        'w': round(1/w/margin, 4),
+        'd': round(1/d_val/margin, 4),
+        'l': round(1/l_val/margin, 4),
+    }
+
+    # EV = 公平概率 × 赔率 - 1
+    ev = {
+        'w': round(fair_prob['w'] * w - 1, 4),
+        'd': round(fair_prob['d'] * d_val - 1, 4),
+        'l': round(fair_prob['l'] * l_val - 1, 4),
+    }
+
+    # Kelly = EV / (赔率 - 1)
+    kelly = {}
+    for k, odds_val in [('w', w), ('d', d_val), ('l', l_val)]:
+        if odds_val > 1:
+            kelly[k] = round(ev[k] / (odds_val - 1), 4)
+        else:
+            kelly[k] = 0.0
+
+    # 泊松概率 = 公平概率（无泊松模型，用市场隐含概率替代）
+    poisson = {k: round(v, 4) for k, v in fair_prob.items()}
+    final_prob = {k: round(v, 4) for k, v in fair_prob.items()}
+
+    # 基准预测（最高概率方向）
+    max_dir = max(fair_prob, key=fair_prob.get)
+    prediction = {'w': '主胜', 'd': '平局', 'l': '客胜'}[max_dir]
+    prediction_prob = fair_prob[max_dir]
+
+    # 预测方向和是否命中
+    prob_direction = prediction
+    prob_hit = False
+
+    # 最高EV方向
+    max_ev_dir = max(ev, key=ev.get)
+    ev_direction = {'w': '主胜', 'd': '平局', 'l': '客胜'}[max_ev_dir]
+    ev_hit = False
+
+    # 信心分层
+    if prediction_prob >= 0.55:
+        confidence_tier = 'high'
+    elif prediction_prob >= 0.45:
+        confidence_tier = 'medium'
+    elif prediction_prob >= 0.38:
+        confidence_tier = 'low'
+    else:
+        confidence_tier = 'very_low'
+
     # 赛果判定
     result_type = ''
     if m['score']:
@@ -167,7 +203,10 @@ def format_as_dashboard_record(m):
                 result_type = '客胜'
             else:
                 result_type = '平局'
-    
+            # 判断命中
+            prob_hit = (prediction == result_type)
+            ev_hit = (ev_direction == result_type)
+
     return {
         'id': m['fid'],
         'date': m['date'],
@@ -177,7 +216,16 @@ def format_as_dashboard_record(m):
         'kickoff': m['kickoff'],
         'prediction': prediction,
         'prediction_prob': prediction_prob,
+        'prob_direction': prob_direction,
+        'prob_hit': prob_hit,
+        'ev_direction': ev_direction,
+        'ev_hit': ev_hit,
+        'confidence_tier': confidence_tier,
         'odds': odds,
+        'poisson': poisson,
+        'final_prob': final_prob,
+        'ev': ev,
+        'kelly': kelly,
         'result': result_type,
         'score': m['score'],
         'source': 'beidan',
@@ -219,35 +267,51 @@ def main():
             unique_matches.append(m)
     
     print(f"\n共 {len(unique_matches)} 场 {args.date} 的比赛")
+    print("zqdc页面fids:", sorted(m['fid'] for m in unique_matches))
     
     if not args.update:
         print("\n预览（--update 以写入）:")
         for m in sorted(unique_matches, key=lambda x: x['kickoff']):
             odds_str = f"{m['odds_w']:.2f}/{m['odds_d']:.2f}/{m['odds_l']:.2f}" if m['odds_w'] else "无赔率"
-            print(f"  {m['kickoff'][-5:]} | {m['league']:12s} | {m['home']:18s} vs {m['away']:18s} | {m['score']:6s} | {odds_str}")
+            print(f"  fid={m['fid']} | {m['kickoff'][-5:]} | {m['league']:12s} | {m['home']:18s} vs {m['away']:18s} | {m['score']:6s} | {odds_str}")
         return
     
     # 读取当前 results.json
     with open(args.results) as f:
         results = json.load(f)
     
-    # 添加新比赛
+    # 添加/更新比赛
     added = 0
-    skipped = 0
+    updated = 0
+    no_odds = 0
     for m in unique_matches:
         record = format_as_dashboard_record(m)
+        if record is None:
+            no_odds += 1
+            continue
         date = record['date']
         if date not in results['matches']:
             results['matches'][date] = []
         
-        # 检查是否已存在（按id）
-        existing_ids = {x.get('id') for x in results['matches'][date]}
-        if record['id'] in existing_ids:
-            skipped += 1
-            continue
+        # 按fid查找已有记录
+        found = False
+        for i, existing in enumerate(results['matches'][date]):
+            if existing.get('id') == record['id']:
+                # 已有记录且含fusion_prob（来自完整管线），不覆盖
+                if existing.get('fusion_prob'):
+                    pass  # 保持原有管线数据（含Pinnacle EV）
+                else:
+                    # 旧版merge_zqdc导入的缺数据记录，替换
+                    results['matches'][date][i] = record
+                    updated += 1
+                    if updated <= 5:
+                        print(f"   更新 fid={record['id']} {record['home']} vs {record['away']}")
+                found = True
+                break
         
-        results['matches'][date].append(record)
-        added += 1
+        if not found:
+            results['matches'][date].append(record)
+            added += 1
     
     # 按时间排序
     for date in results['matches']:
@@ -260,7 +324,7 @@ def main():
     with open(args.results, 'w', encoding='utf-8') as f:
         json.dump(results, f, ensure_ascii=False, indent=2)
     
-    print(f"\n✅ 添加了 {added} 场，{skipped} 场已存在")
+    print(f"\n✅ 添加了 {added} 场，更新了 {updated} 场，{no_odds} 场无赔率已跳过")
 
 
 if __name__ == '__main__':

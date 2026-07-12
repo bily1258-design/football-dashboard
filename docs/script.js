@@ -562,9 +562,7 @@ function loadDate() {
     const ev = r.ev;
     const evW = ev?.w ?? 0, evD = ev?.d ?? 0, evL = ev?.l ?? 0;
     const evCls = v => v > 0 ? 'ev-pos' : 'ev-neg';
-    const evStr = ev
-      ? `<span class="${evCls(evW)}">${pct(evW)}</span>/<span class="${evCls(evD)}">${pct(evD)}</span>/<span class="${evCls(evL)}">${pct(evL)}</span>`
-      : '-/-/-';
+    const evStr = `<span class="${evCls(evW)}">${pct(evW)}</span>/<span class="${evCls(evD)}">${pct(evD)}</span>/<span class="${evCls(evL)}">${pct(evL)}</span>`;
     const pinAh = r.pin_ah || {};
     const lijiAh = (r.liji || {}).close || {};
     let ahDisplayVal = '-';
@@ -594,11 +592,11 @@ function loadDate() {
       : `<td>${ahDisplayVal}</td>`;
     const pct = v => (v * 100).toFixed(1) + '%';
     const poisson = r.poisson;
-    const poissonStr = poisson ? `${pct(poisson.w??0)}/${pct(poisson.d??0)}/${pct(poisson.l??0)}` : '-/-/-';
+    const poissonStr = `${pct(poisson?.w??0)}/${pct(poisson?.d??0)}/${pct(poisson?.l??0)}`;
     const fp = r.final_prob;
-    const finalStr = fp ? `${pct(fp.w??0)}/${pct(fp.d??0)}/${pct(fp.l??0)}` : '-/-/-';
+    const finalStr = `${pct(fp?.w??0)}/${pct(fp?.d??0)}/${pct(fp?.l??0)}`;
     const kelly = r.kelly;
-    const kellyStr = kelly ? `${pct(kelly.w??0)}/${pct(kelly.d??0)}/${pct(kelly.l??0)}` : '-/-/-';
+    const kellyStr = `${pct(kelly?.w??0)}/${pct(kelly?.d??0)}/${pct(kelly?.l??0)}`;
     const kickoff = (!r.kickoff || r.kickoff === '待定') ? '-' : r.kickoff.substring(11, 16);
     const probPct = (r.prediction_prob * 100).toFixed(1) + '%';
     const probLabel = r.prob_direction ? `${r.prob_direction} ${probPct}` : probPct;
