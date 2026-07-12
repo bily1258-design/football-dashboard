@@ -356,13 +356,13 @@ def generate_frontend(results: List[Dict]):
           <th data-sort="league">赛事</th>
           <th>主队</th>
           <th>客队</th>
-          <th>比分</th>
-          <th>命中</th>
           <th data-sort="odds">赔率(W/D/L)</th>
           <th data-sort="poisson">泊松(W/D/L)</th>
           <th data-sort="fusion">融合(W/D/L)</th>
           <th data-sort="ev">EV(W/D/L)</th>
           <th data-sort="direction">方向</th>
+          <th>比分</th>
+          <th>命中</th>
           <th data-sort="lambda">λ</th>
         </tr>
       </thead>
@@ -472,13 +472,13 @@ function renderTable(matches){
       '<td><span class="tag tag-'+m.source+'">'+(m.event||m.source)+'</span></td>'+
       '<td class="team-name">'+m.home_team+'</td>'+
       '<td class="team-name">'+m.away_team+'</td>'+
-      '<td class="score-cell">'+(m.score||'-')+'</td>'+
-      '<td class="'+hc+'">'+(m.hit||'')+'</td>'+
       '<td class="odds-cell"><span class="odds-val odds-w">'+fmtOdds(m.odds_win)+'</span> <span class="odds-val odds-d">'+fmtOdds(m.odds_draw)+'</span> <span class="odds-val odds-l">'+fmtOdds(m.odds_loss)+'</span></td>'+
       '<td class="odds-cell"><span class="odds-val odds-w">'+fmtPct(m.poisson_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.poisson_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.poisson_loss)+'</span></td>'+
       '<td class="odds-cell"><span class="odds-val odds-w">'+fmtPct(m.fusion_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.fusion_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.fusion_loss)+'</span></td>'+
       '<td class="odds-cell"><span class="odds-val '+evClass(m.ev_win)+'">'+fmtEv(m.ev_win)+'</span> <span class="odds-val '+evClass(m.ev_draw)+'">'+fmtEv(m.ev_draw)+'</span> <span class="odds-val '+evClass(m.ev_loss)+'">'+fmtEv(m.ev_loss)+'</span></td>'+
       '<td><span class="'+dirClass(m.prediction)+'">'+dirText(m.prediction)+'</span></td>'+
+      '<td class="score-cell">'+(m.score||'-')+'</td>'+
+      '<td class="'+hc+'">'+(m.hit||'')+'</td>'+
       '<td class="lambda-cell">'+m.home_lambda+' / '+m.away_lambda+'</td>';
     tbody.appendChild(tr);
   });
