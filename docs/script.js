@@ -11,16 +11,33 @@ function dirText(d){return d==='home'?'主胜':d==='draw'?'平局':d==='away'?'�
 function srcLabel(s){return {pinnacle:'平博',bet365:'B365',zqdc:'北单'}[s]||s}
 function srcEvClass(v){return v>0.03?'ev-pos':v<-0.03?'ev-neg':'ev-zero'}
 function renderCmp(c){
-  if(!c) return '-';
+  if(!c) return '<span class="cmp-na">--</span>';
   var keys = ['pinnacle','bet365','zqdc'];
-  var html = '';
+  var pinDir = c.pinnacle?c.pinnacle.dir:'';
+  var betDir = c.bet365?c.bet365.dir:'';
+  var hint = '', hintClass = '';
+  if(pinDir && betDir && pinDir===betDir && pinDir!=='观望'){
+    hint = '✅一致'; hintClass = 'cmp-hint-agree';
+  } else if(pinDir && betDir && pinDir!=='观望' && betDir!=='观望' && pinDir!==betDir){
+    hint = '⚠️分歧'; hintClass = 'cmp-hint-conflict';
+  } else if(pinDir==='观望' && betDir==='观望'){
+    hint = '◻️观望'; hintClass = 'cmp-hint-wait';
+  } else {
+    hint = '🔄分歧'; hintClass = 'cmp-hint-conflict';
+  }
+  // 弹窗内容
+  var popup = '';
   for(var i=0;i<keys.length;i++){
     var s = keys[i], d = c[s];
-    if(!d) {html+= '<span class="cmp-item cmp-na">'+(s==='pinnacle'?'平博':s==='bet365'?'B365':'北单')+':--</span>'; continue;}
+    if(!d) {popup+= '<div class="cmp-pop-row cmp-na">'+(s==='pinnacle'?'平博':s==='bet365'?'B365':'北单')+' --</div>'; continue;}
     var bestEv = Math.max(d.ev[0],d.ev[1],d.ev[2]);
-    html+= '<span class="cmp-item '+srcEvClass(bestEv)+'">'+(s==='pinnacle'?'平博':s==='bet365'?'B365':'北单')+' '+d.odds[0].toFixed(2)+'/'+d.odds[1].toFixed(2)+'/'+d.odds[2].toFixed(2)+'</span>';
+    var dirDot = '';
+    if(d.dir==='主胜') dirDot=' 👑H';
+    else if(d.dir==='平局') dirDot=' ⚖️D';
+    else if(d.dir==='客胜') dirDot=' 👑A';
+    popup+= '<div class="cmp-pop-row">'+(s==='pinnacle'?'平博':s==='bet365'?'B365':'北单')+' '+d.odds[0].toFixed(2)+'/'+d.odds[1].toFixed(2)+'/'+d.odds[2].toFixed(2)+dirDot+'</div>';
   }
-  return html;
+  return '<span class="cmp-hint-wrap"><span class="cmp-hint '+hintClass+'">'+hint+'</span><div class="cmp-popup">'+popup+'</div></span>';
 }
 function fmtTime(t){return t?t.replace(/^\d{2}-/,''):''}
 

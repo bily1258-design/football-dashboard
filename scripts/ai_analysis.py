@@ -452,9 +452,18 @@ tr:hover{background:#1a2a3a}
 .tag-pinnacle{background:#1a3a2a;color:#4ade80}
 .tag-bet365{background:#2a1e3a;color:#a78bfa}
 .tag-zqdc{background:#1e3a5f;color:#60a5fa}
-.cmp-cell{font-size:11px;line-height:1.6}
-.cmp-item{display:block;padding:0 2px;white-space:nowrap}
-.cmp-na{color:#556677}
+.cmp-cell{font-size:11px;line-height:1.6;position:relative;text-align:center;min-width:70px}
+.cmp-hint-wrap{cursor:pointer;position:relative;display:inline-block}
+.cmp-hint{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;cursor:pointer;transition:all .15s}
+.cmp-hint:hover{filter:brightness(1.3)}
+.cmp-hint-agree{background:#0a2a1a;color:#4ade80;border:1px solid #1a4a2a}
+.cmp-hint-conflict{background:#2a1a0a;color:#fbbf24;border:1px solid #4a3a1a}
+.cmp-hint-wait{background:#1a1a2a;color:#667788;border:1px solid #2a2a3a}
+.cmp-popup{display:none;position:absolute;top:100%;left:50%;transform:translateX(-50%);z-index:100;background:#0d1b2a;border:1px solid #2a4a6a;border-radius:8px;padding:8px 12px;white-space:nowrap;min-width:130px;box-shadow:0 8px 24px rgba(0,0,0,0.6);margin-top:4px}
+.cmp-hint-wrap:hover .cmp-popup{display:block}
+.cmp-pop-row{font-size:11px;padding:3px 0;color:#c0c8d0;border-bottom:1px solid #1a2a3a}
+.cmp-pop-row:last-child{border-bottom:none}
+.cmp-pop-row .cmp-na{color:#556677}
 .lambda-cell{font-size:12px;color:#8899aa}
 .hit-yes{color:#4ade80;font-weight:700;font-size:1.1em;text-align:center}
 .hit-no{color:#f87171;font-weight:700;font-size:1.1em;text-align:center}
@@ -484,16 +493,33 @@ function dirText(d){return d==='home'?'主胜':d==='draw'?'平局':d==='away'?'�
 function srcLabel(s){return {pinnacle:'平博',bet365:'B365',zqdc:'北单'}[s]||s}
 function srcEvClass(v){return v>0.03?'ev-pos':v<-0.03?'ev-neg':'ev-zero'}
 function renderCmp(c){
-  if(!c) return '-';
+  if(!c) return '<span class="cmp-na">--</span>';
   var keys = ['pinnacle','bet365','zqdc'];
-  var html = '';
+  var pinDir = c.pinnacle?c.pinnacle.dir:'';
+  var betDir = c.bet365?c.bet365.dir:'';
+  var hint = '', hintClass = '';
+  if(pinDir && betDir && pinDir===betDir && pinDir!=='观望'){
+    hint = '✅一致'; hintClass = 'cmp-hint-agree';
+  } else if(pinDir && betDir && pinDir!=='观望' && betDir!=='观望' && pinDir!==betDir){
+    hint = '⚠️分歧'; hintClass = 'cmp-hint-conflict';
+  } else if(pinDir==='观望' && betDir==='观望'){
+    hint = '◻️观望'; hintClass = 'cmp-hint-wait';
+  } else {
+    hint = '🔄分歧'; hintClass = 'cmp-hint-conflict';
+  }
+  // 弹窗内容
+  var popup = '';
   for(var i=0;i<keys.length;i++){
     var s = keys[i], d = c[s];
-    if(!d) {html+= '<span class="cmp-item cmp-na">'+(s==='pinnacle'?'平博':s==='bet365'?'B365':'北单')+':--</span>'; continue;}
+    if(!d) {popup+= '<div class="cmp-pop-row cmp-na">'+(s==='pinnacle'?'平博':s==='bet365'?'B365':'北单')+' --</div>'; continue;}
     var bestEv = Math.max(d.ev[0],d.ev[1],d.ev[2]);
-    html+= '<span class="cmp-item '+srcEvClass(bestEv)+'">'+(s==='pinnacle'?'平博':s==='bet365'?'B365':'北单')+' '+d.odds[0].toFixed(2)+'/'+d.odds[1].toFixed(2)+'/'+d.odds[2].toFixed(2)+'</span>';
+    var dirDot = '';
+    if(d.dir==='主胜') dirDot=' 👑H';
+    else if(d.dir==='平局') dirDot=' ⚖️D';
+    else if(d.dir==='客胜') dirDot=' 👑A';
+    popup+= '<div class="cmp-pop-row">'+(s==='pinnacle'?'平博':s==='bet365'?'B365':'北单')+' '+d.odds[0].toFixed(2)+'/'+d.odds[1].toFixed(2)+'/'+d.odds[2].toFixed(2)+dirDot+'</div>';
   }
-  return html;
+  return '<span class="cmp-hint-wrap"><span class="cmp-hint '+hintClass+'">'+hint+'</span><div class="cmp-popup">'+popup+'</div></span>';
 }
 function fmtTime(t){return t?t.replace(/^\\d{2}-/,''):''}
 
