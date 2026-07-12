@@ -370,7 +370,7 @@ def generate_frontend(results: List[Dict]):
     </table>
   </div>
 </div>
-<script src="script.js?v=20260712v5"></script>
+<script src="script.js?v=20260712v6"></script>
 </body>
 </html>'''
     with open(os.path.join(DOCS_DIR, 'index.html'), 'w', encoding='utf-8') as f:
