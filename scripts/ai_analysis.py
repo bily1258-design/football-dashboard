@@ -30,7 +30,7 @@ BASE_TOTAL_GOALS = 2.4       # 场均总进球
 HOME_ADV = 0.15              # 主场加成
 SKILL_FACTOR = 0.6           # 实力调整系数
 LAMBDA_MIN, LAMBDA_MAX = 0.3, 4.0
-POISSON_WEIGHT = 0.5         # final = POISSON_WEIGHT*poisson + (1-POISSON_WEIGHT)*implied
+POISSON_WEIGHT = 0.7         # final = 0.7*poisson + 0.3*implied（旧版final权重）
 EV_TANH_SCALE = 0.50         # EV软压缩
 MIN_EV_THRESHOLD = 0.03      # 最小EV阈值（3%）
 MAX_GOALS = 10               # 泊松积分上限
