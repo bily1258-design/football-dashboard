@@ -70,6 +70,16 @@ def load_from_processed(max_days=999) -> dict:
             # source映射：om_only → beidan
             if rec.get('source') == 'om_only':
                 rec['source'] = 'beidan'
+            # 过滤：仅保留北单/竞彩
+            _s = rec.get('source', '')
+            if _s not in ('beidan', 'jingcai'):
+                continue
+            # 过滤：跳过无EV/泊松数据的比赛
+            _ev = rec.get('ev', {}) or {}
+            _poi = rec.get('poisson', {}) or {}
+            if (_ev.get('w', 0) == 0 and _ev.get('d', 0) == 0 and _ev.get('l', 0) == 0
+                and _poi.get('w', 0) == 0 and _poi.get('d', 0) == 0 and _poi.get('l', 0) == 0):
+                continue
             if d_new not in by_date:
                 by_date[d_new] = []
             by_date[d_new].append(rec)
