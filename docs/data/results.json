@@ -1,8 +1,13 @@
 {
-  "generated_at": "2026-07-12 23:45:37",
-  "total_matches": 48,
-  "date_range": "2026-07-11 ~ 2026-07-12",
+  "generated_at": "2026-07-12 23:54:11",
+  "total_matches": 58,
+  "date_range": "2026-07-11 ~ 2026-07-13",
   "daily_stats": [
+    {
+      "date": "2026-07-13",
+      "count": 10,
+      "positive_ev": 10
+    },
     {
       "date": "2026-07-12",
       "count": 20,
@@ -2068,29 +2073,55 @@
       "score": "3-0",
       "hit": "❌",
       "source": "beidan",
-      "odds_source": "zqdc",
+      "odds_source": "pinnacle",
       "odds_win": 1.7,
       "odds_draw": 3.8,
-      "odds_loss": 4.5,
-      "margin": 0.0736,
-      "implied_win": 0.5479,
-      "implied_draw": 0.2451,
-      "implied_loss": 0.207,
-      "home_lambda": 1.485,
-      "away_lambda": 0.915,
-      "poisson_win": 0.5051,
-      "poisson_draw": 0.2627,
-      "poisson_loss": 0.2322,
-      "fusion_win": 0.5265,
-      "fusion_draw": 0.2539,
-      "fusion_loss": 0.2196,
-      "ev_win": -0.0389,
-      "ev_draw": 0.0358,
-      "ev_loss": 0.0605,
+      "odds_loss": 4.87,
+      "margin": 0.0567,
+      "implied_win": 0.5567,
+      "implied_draw": 0.249,
+      "implied_loss": 0.1943,
+      "home_lambda": 1.495,
+      "away_lambda": 0.905,
+      "poisson_win": 0.5099,
+      "poisson_draw": 0.2618,
+      "poisson_loss": 0.2283,
+      "fusion_win": 0.5333,
+      "fusion_draw": 0.2554,
+      "fusion_loss": 0.2113,
+      "ev_win": -0.0419,
+      "ev_draw": 0.0256,
+      "ev_loss": 0.0866,
       "prediction": "away",
       "prediction_cn": "客胜",
-      "prediction_prob": 0.5265,
+      "prediction_prob": 0.5333,
       "comparison": {
+        "pinnacle": {
+          "odds": [
+            1.7,
+            3.8,
+            4.87
+          ],
+          "ev": [
+            -0.0419,
+            0.0256,
+            0.0866
+          ],
+          "dir": "客胜"
+        },
+        "bet365": {
+          "odds": [
+            1.7,
+            3.8,
+            4.5
+          ],
+          "ev": [
+            -0.0267,
+            0.0419,
+            0.0209
+          ],
+          "dir": "平局"
+        },
         "zqdc": {
           "odds": [
             1.7,
@@ -2098,11 +2129,11 @@
             4.5
           ],
           "ev": [
-            -0.0389,
-            0.0358,
-            0.0605
+            -0.0267,
+            0.0419,
+            0.0209
           ],
-          "dir": "客胜"
+          "dir": "平局"
         }
       }
     },
@@ -2115,29 +2146,55 @@
       "score": "1-0",
       "hit": "❌",
       "source": "beidan",
-      "odds_source": "zqdc",
-      "odds_win": 1.65,
-      "odds_draw": 3.8,
-      "odds_loss": 4.33,
-      "margin": 0.1002,
-      "implied_win": 0.5509,
-      "implied_draw": 0.2392,
-      "implied_loss": 0.2099,
-      "home_lambda": 1.484,
-      "away_lambda": 0.916,
-      "poisson_win": 0.5046,
-      "poisson_draw": 0.2628,
-      "poisson_loss": 0.2326,
-      "fusion_win": 0.5277,
-      "fusion_draw": 0.251,
-      "fusion_loss": 0.2213,
-      "ev_win": -0.0419,
-      "ev_draw": 0.0492,
-      "ev_loss": 0.0538,
+      "odds_source": "pinnacle",
+      "odds_win": 1.77,
+      "odds_draw": 3.65,
+      "odds_loss": 4.4,
+      "margin": 0.0662,
+      "implied_win": 0.5299,
+      "implied_draw": 0.257,
+      "implied_loss": 0.2132,
+      "home_lambda": 1.478,
+      "away_lambda": 0.922,
+      "poisson_win": 0.5012,
+      "poisson_draw": 0.2634,
+      "poisson_loss": 0.2353,
+      "fusion_win": 0.5156,
+      "fusion_draw": 0.2602,
+      "fusion_loss": 0.2242,
+      "ev_win": -0.027,
+      "ev_draw": 0.0126,
+      "ev_loss": 0.0518,
       "prediction": "away",
       "prediction_cn": "客胜",
-      "prediction_prob": 0.5277,
+      "prediction_prob": 0.5156,
       "comparison": {
+        "pinnacle": {
+          "odds": [
+            1.77,
+            3.65,
+            4.4
+          ],
+          "ev": [
+            -0.027,
+            0.0126,
+            0.0518
+          ],
+          "dir": "客胜"
+        },
+        "bet365": {
+          "odds": [
+            1.65,
+            3.8,
+            4.33
+          ],
+          "ev": [
+            -0.0638,
+            0.0869,
+            0.0678
+          ],
+          "dir": "平局"
+        },
         "zqdc": {
           "odds": [
             1.65,
@@ -2145,11 +2202,11 @@
             4.33
           ],
           "ev": [
-            -0.0419,
-            0.0492,
-            0.0538
+            -0.0638,
+            0.0869,
+            0.0678
           ],
-          "dir": "客胜"
+          "dir": "平局"
         }
       }
     },
@@ -2162,29 +2219,55 @@
       "score": "0-2",
       "hit": "❌",
       "source": "beidan",
-      "odds_source": "zqdc",
-      "odds_win": 4.2,
-      "odds_draw": 3.6,
-      "odds_loss": 1.67,
-      "margin": 0.1147,
-      "implied_win": 0.2136,
-      "implied_draw": 0.2492,
-      "implied_loss": 0.5372,
-      "home_lambda": 1.221,
-      "away_lambda": 1.179,
-      "poisson_win": 0.3718,
-      "poisson_draw": 0.2765,
-      "poisson_loss": 0.3517,
-      "fusion_win": 0.2927,
-      "fusion_draw": 0.2629,
-      "fusion_loss": 0.4444,
-      "ev_win": 0.3147,
-      "ev_draw": 0.0547,
-      "ev_loss": -0.1661,
+      "odds_source": "pinnacle",
+      "odds_win": 4.83,
+      "odds_draw": 3.86,
+      "odds_loss": 1.7,
+      "margin": 0.0543,
+      "implied_win": 0.1964,
+      "implied_draw": 0.2457,
+      "implied_loss": 0.5579,
+      "home_lambda": 1.206,
+      "away_lambda": 1.194,
+      "poisson_win": 0.3647,
+      "poisson_draw": 0.2766,
+      "poisson_loss": 0.3587,
+      "fusion_win": 0.2805,
+      "fusion_draw": 0.2612,
+      "fusion_loss": 0.4583,
+      "ev_win": 0.3474,
+      "ev_draw": 0.0626,
+      "ev_loss": -0.1713,
       "prediction": "home",
       "prediction_cn": "主胜",
-      "prediction_prob": 0.4444,
+      "prediction_prob": 0.4583,
       "comparison": {
+        "pinnacle": {
+          "odds": [
+            4.83,
+            3.86,
+            1.7
+          ],
+          "ev": [
+            0.3474,
+            0.0626,
+            -0.1713
+          ],
+          "dir": "主胜"
+        },
+        "bet365": {
+          "odds": [
+            4.2,
+            3.6,
+            1.67
+          ],
+          "ev": [
+            0.2779,
+            0.0479,
+            -0.1428
+          ],
+          "dir": "主胜"
+        },
         "zqdc": {
           "odds": [
             4.2,
@@ -2192,9 +2275,9 @@
             1.67
           ],
           "ev": [
-            0.3147,
-            0.0547,
-            -0.1661
+            0.2779,
+            0.0479,
+            -0.1428
           ],
           "dir": "主胜"
         }
@@ -2209,29 +2292,55 @@
       "score": "1-1",
       "hit": "❌",
       "source": "beidan",
-      "odds_source": "zqdc",
-      "odds_win": 4.2,
-      "odds_draw": 3.8,
-      "odds_loss": 1.8,
-      "margin": 0.0568,
-      "implied_win": 0.2253,
-      "implied_draw": 0.249,
-      "implied_loss": 0.5257,
-      "home_lambda": 1.23,
-      "away_lambda": 1.17,
-      "poisson_win": 0.3763,
+      "odds_source": "pinnacle",
+      "odds_win": 4.51,
+      "odds_draw": 3.86,
+      "odds_loss": 1.83,
+      "margin": 0.0272,
+      "implied_win": 0.2158,
+      "implied_draw": 0.2522,
+      "implied_loss": 0.532,
+      "home_lambda": 1.223,
+      "away_lambda": 1.177,
+      "poisson_win": 0.373,
       "poisson_draw": 0.2765,
-      "poisson_loss": 0.3472,
-      "fusion_win": 0.3008,
-      "fusion_draw": 0.2627,
-      "fusion_loss": 0.4365,
-      "ev_win": 0.2926,
-      "ev_draw": 0.0549,
-      "ev_loss": -0.1635,
+      "poisson_loss": 0.3505,
+      "fusion_win": 0.2944,
+      "fusion_draw": 0.2644,
+      "fusion_loss": 0.4412,
+      "ev_win": 0.3109,
+      "ev_draw": 0.0481,
+      "ev_loss": -0.1642,
       "prediction": "home",
       "prediction_cn": "主胜",
-      "prediction_prob": 0.4365,
+      "prediction_prob": 0.4412,
       "comparison": {
+        "pinnacle": {
+          "odds": [
+            4.51,
+            3.86,
+            1.83
+          ],
+          "ev": [
+            0.3109,
+            0.0481,
+            -0.1642
+          ],
+          "dir": "主胜"
+        },
+        "bet365": {
+          "odds": [
+            4.2,
+            3.8,
+            1.8
+          ],
+          "ev": [
+            0.2733,
+            0.0613,
+            -0.1554
+          ],
+          "dir": "主胜"
+        },
         "zqdc": {
           "odds": [
             4.2,
@@ -2239,9 +2348,9 @@
             1.8
           ],
           "ev": [
-            0.2926,
-            0.0549,
-            -0.1635
+            0.2733,
+            0.0613,
+            -0.1554
           ],
           "dir": "主胜"
         }
@@ -2256,29 +2365,55 @@
       "score": "1-0",
       "hit": "❌",
       "source": "beidan",
-      "odds_source": "zqdc",
-      "odds_win": 1.7,
-      "odds_draw": 3.4,
-      "odds_loss": 6.0,
-      "margin": 0.049,
-      "implied_win": 0.5607,
-      "implied_draw": 0.2804,
-      "implied_loss": 0.1589,
-      "home_lambda": 1.518,
-      "away_lambda": 0.882,
-      "poisson_win": 0.5216,
-      "poisson_draw": 0.2595,
-      "poisson_loss": 0.219,
-      "fusion_win": 0.5412,
-      "fusion_draw": 0.2699,
-      "fusion_loss": 0.1889,
-      "ev_win": -0.0349,
-      "ev_draw": -0.0372,
-      "ev_loss": 0.1806,
+      "odds_source": "pinnacle",
+      "odds_win": 1.78,
+      "odds_draw": 3.29,
+      "odds_loss": 6.2,
+      "margin": 0.027,
+      "implied_win": 0.547,
+      "implied_draw": 0.2959,
+      "implied_loss": 0.157,
+      "home_lambda": 1.516,
+      "away_lambda": 0.884,
+      "poisson_win": 0.5209,
+      "poisson_draw": 0.2596,
+      "poisson_loss": 0.2195,
+      "fusion_win": 0.5339,
+      "fusion_draw": 0.2778,
+      "fusion_loss": 0.1883,
+      "ev_win": -0.0239,
+      "ev_draw": -0.0611,
+      "ev_loss": 0.1891,
       "prediction": "away",
       "prediction_cn": "客胜",
-      "prediction_prob": 0.5412,
+      "prediction_prob": 0.5339,
       "comparison": {
+        "pinnacle": {
+          "odds": [
+            1.78,
+            3.29,
+            6.2
+          ],
+          "ev": [
+            -0.0239,
+            -0.0611,
+            0.1891
+          ],
+          "dir": "客胜"
+        },
+        "bet365": {
+          "odds": [
+            1.7,
+            3.4,
+            6.0
+          ],
+          "ev": [
+            -0.0477,
+            -0.0093,
+            0.1771
+          ],
+          "dir": "客胜"
+        },
         "zqdc": {
           "odds": [
             1.7,
@@ -2286,9 +2421,9 @@
             6.0
           ],
           "ev": [
-            -0.0349,
-            -0.0372,
-            0.1806
+            -0.0477,
+            -0.0093,
+            0.1771
           ],
           "dir": "客胜"
         }
@@ -2303,29 +2438,55 @@
       "score": "0-0",
       "hit": "❌",
       "source": "beidan",
-      "odds_source": "zqdc",
-      "odds_win": 3.5,
-      "odds_draw": 3.4,
-      "odds_loss": 2.05,
-      "margin": 0.0676,
-      "implied_win": 0.2676,
-      "implied_draw": 0.2755,
-      "implied_loss": 0.4569,
-      "home_lambda": 1.272,
-      "away_lambda": 1.128,
-      "poisson_win": 0.3968,
-      "poisson_draw": 0.2757,
-      "poisson_loss": 0.3274,
-      "fusion_win": 0.3322,
-      "fusion_draw": 0.2756,
-      "fusion_loss": 0.3922,
-      "ev_win": 0.2243,
-      "ev_draw": 0.0004,
-      "ev_loss": -0.138,
+      "odds_source": "pinnacle",
+      "odds_win": 3.75,
+      "odds_draw": 3.07,
+      "odds_loss": 2.14,
+      "margin": 0.0597,
+      "implied_win": 0.2516,
+      "implied_draw": 0.3074,
+      "implied_loss": 0.441,
+      "home_lambda": 1.268,
+      "away_lambda": 1.132,
+      "poisson_win": 0.395,
+      "poisson_draw": 0.2758,
+      "poisson_loss": 0.3291,
+      "fusion_win": 0.3233,
+      "fusion_draw": 0.2916,
+      "fusion_loss": 0.3851,
+      "ev_win": 0.2576,
+      "ev_draw": -0.0512,
+      "ev_loss": -0.1242,
       "prediction": "home",
       "prediction_cn": "主胜",
-      "prediction_prob": 0.3922,
+      "prediction_prob": 0.3851,
       "comparison": {
+        "pinnacle": {
+          "odds": [
+            3.75,
+            3.07,
+            2.14
+          ],
+          "ev": [
+            0.2576,
+            -0.0512,
+            -0.1242
+          ],
+          "dir": "主胜"
+        },
+        "bet365": {
+          "odds": [
+            3.5,
+            3.4,
+            2.05
+          ],
+          "ev": [
+            0.197,
+            0.0582,
+            -0.1523
+          ],
+          "dir": "主胜"
+        },
         "zqdc": {
           "odds": [
             3.5,
@@ -2333,9 +2494,9 @@
             2.05
           ],
           "ev": [
-            0.2243,
-            0.0004,
-            -0.138
+            0.197,
+            0.0582,
+            -0.1523
           ],
           "dir": "主胜"
         }
@@ -2350,29 +2511,55 @@
       "score": "0-1",
       "hit": "❌",
       "source": "beidan",
-      "odds_source": "zqdc",
-      "odds_win": 2.15,
-      "odds_draw": 3.2,
-      "odds_loss": 3.6,
-      "margin": 0.0554,
-      "implied_win": 0.4407,
-      "implied_draw": 0.2961,
-      "implied_loss": 0.2632,
-      "home_lambda": 1.426,
-      "away_lambda": 0.974,
-      "poisson_win": 0.4745,
-      "poisson_draw": 0.2679,
-      "poisson_loss": 0.2576,
-      "fusion_win": 0.4576,
-      "fusion_draw": 0.282,
-      "fusion_loss": 0.2604,
-      "ev_win": 0.0383,
-      "ev_draw": -0.0475,
-      "ev_loss": -0.0107,
+      "odds_source": "pinnacle",
+      "odds_win": 2.27,
+      "odds_draw": 3.0,
+      "odds_loss": 3.85,
+      "margin": 0.0336,
+      "implied_win": 0.4262,
+      "implied_draw": 0.3225,
+      "implied_loss": 0.2513,
+      "home_lambda": 1.427,
+      "away_lambda": 0.973,
+      "poisson_win": 0.4755,
+      "poisson_draw": 0.2677,
+      "poisson_loss": 0.2568,
+      "fusion_win": 0.4508,
+      "fusion_draw": 0.2951,
+      "fusion_loss": 0.2541,
+      "ev_win": 0.0575,
+      "ev_draw": -0.0841,
+      "ev_loss": 0.011,
       "prediction": "home",
       "prediction_cn": "主胜",
-      "prediction_prob": 0.4576,
+      "prediction_prob": 0.4508,
       "comparison": {
+        "pinnacle": {
+          "odds": [
+            2.27,
+            3.0,
+            3.85
+          ],
+          "ev": [
+            0.0575,
+            -0.0841,
+            0.011
+          ],
+          "dir": "主胜"
+        },
+        "bet365": {
+          "odds": [
+            2.15,
+            3.2,
+            3.6
+          ],
+          "ev": [
+            0.023,
+            -0.0033,
+            -0.0347
+          ],
+          "dir": "观望"
+        },
         "zqdc": {
           "odds": [
             2.15,
@@ -2380,11 +2567,11 @@
             3.6
           ],
           "ev": [
-            0.0383,
-            -0.0475,
-            -0.0107
+            0.023,
+            -0.0033,
+            -0.0347
           ],
-          "dir": "主胜"
+          "dir": "观望"
         }
       }
     },
@@ -2397,29 +2584,55 @@
       "score": "0-0",
       "hit": "❌",
       "source": "beidan",
-      "odds_source": "zqdc",
-      "odds_win": 2.3,
-      "odds_draw": 3.1,
-      "odds_loss": 3.25,
-      "margin": 0.0651,
-      "implied_win": 0.4082,
-      "implied_draw": 0.3029,
-      "implied_loss": 0.2889,
-      "home_lambda": 1.401,
-      "away_lambda": 0.999,
-      "poisson_win": 0.4622,
-      "poisson_draw": 0.2696,
-      "poisson_loss": 0.2682,
-      "fusion_win": 0.4352,
-      "fusion_draw": 0.2863,
-      "fusion_loss": 0.2786,
-      "ev_win": 0.0657,
-      "ev_draw": -0.0547,
-      "ev_loss": -0.0357,
+      "odds_source": "pinnacle",
+      "odds_win": 2.43,
+      "odds_draw": 3.08,
+      "odds_loss": 3.37,
+      "margin": 0.0329,
+      "implied_win": 0.3984,
+      "implied_draw": 0.3143,
+      "implied_loss": 0.2873,
+      "home_lambda": 1.399,
+      "away_lambda": 1.001,
+      "poisson_win": 0.4608,
+      "poisson_draw": 0.2698,
+      "poisson_loss": 0.2694,
+      "fusion_win": 0.4296,
+      "fusion_draw": 0.2921,
+      "fusion_loss": 0.2783,
+      "ev_win": 0.0776,
+      "ev_draw": -0.0703,
+      "ev_loss": -0.0311,
       "prediction": "home",
       "prediction_cn": "主胜",
-      "prediction_prob": 0.4352,
+      "prediction_prob": 0.4296,
       "comparison": {
+        "pinnacle": {
+          "odds": [
+            2.43,
+            3.08,
+            3.37
+          ],
+          "ev": [
+            0.0776,
+            -0.0703,
+            -0.0311
+          ],
+          "dir": "主胜"
+        },
+        "bet365": {
+          "odds": [
+            2.3,
+            3.1,
+            3.25
+          ],
+          "ev": [
+            0.0521,
+            -0.0356,
+            -0.0365
+          ],
+          "dir": "主胜"
+        },
         "zqdc": {
           "odds": [
             2.3,
@@ -2427,9 +2640,9 @@
             3.25
           ],
           "ev": [
-            0.0657,
-            -0.0547,
-            -0.0357
+            0.0521,
+            -0.0356,
+            -0.0365
           ],
           "dir": "主胜"
         }
@@ -2444,29 +2657,55 @@
       "score": "1-1",
       "hit": "❌",
       "source": "beidan",
-      "odds_source": "zqdc",
-      "odds_win": 2.15,
-      "odds_draw": 3.25,
-      "odds_loss": 3.0,
-      "margin": 0.1061,
-      "implied_win": 0.4205,
-      "implied_draw": 0.2782,
-      "implied_loss": 0.3013,
-      "home_lambda": 1.4,
-      "away_lambda": 1.0,
-      "poisson_win": 0.4612,
-      "poisson_draw": 0.2698,
-      "poisson_loss": 0.269,
-      "fusion_win": 0.4409,
-      "fusion_draw": 0.274,
-      "fusion_loss": 0.2852,
-      "ev_win": 0.0483,
-      "ev_draw": -0.0151,
-      "ev_loss": -0.0534,
+      "odds_source": "pinnacle",
+      "odds_win": 2.26,
+      "odds_draw": 3.26,
+      "odds_loss": 3.35,
+      "margin": 0.0477,
+      "implied_win": 0.4223,
+      "implied_draw": 0.2928,
+      "implied_loss": 0.2849,
+      "home_lambda": 1.408,
+      "away_lambda": 0.992,
+      "poisson_win": 0.4657,
+      "poisson_draw": 0.2692,
+      "poisson_loss": 0.2652,
+      "fusion_win": 0.444,
+      "fusion_draw": 0.281,
+      "fusion_loss": 0.275,
+      "ev_win": 0.0512,
+      "ev_draw": -0.0403,
+      "ev_loss": -0.0346,
       "prediction": "home",
       "prediction_cn": "主胜",
-      "prediction_prob": 0.4409,
+      "prediction_prob": 0.444,
       "comparison": {
+        "pinnacle": {
+          "odds": [
+            2.26,
+            3.26,
+            3.35
+          ],
+          "ev": [
+            0.0512,
+            -0.0403,
+            -0.0346
+          ],
+          "dir": "主胜"
+        },
+        "bet365": {
+          "odds": [
+            2.15,
+            3.25,
+            3.0
+          ],
+          "ev": [
+            0.0557,
+            0.01,
+            -0.0864
+          ],
+          "dir": "主胜"
+        },
         "zqdc": {
           "odds": [
             2.15,
@@ -2474,9 +2713,9 @@
             3.0
           ],
           "ev": [
-            0.0483,
-            -0.0151,
-            -0.0534
+            0.0557,
+            0.01,
+            -0.0864
           ],
           "dir": "主胜"
         }
@@ -2491,29 +2730,55 @@
       "score": "1-0",
       "hit": "✅",
       "source": "beidan",
-      "odds_source": "zqdc",
-      "odds_win": 2.25,
-      "odds_draw": 3.0,
-      "odds_loss": 3.0,
-      "margin": 0.1111,
-      "implied_win": 0.4,
-      "implied_draw": 0.3,
-      "implied_loss": 0.3,
-      "home_lambda": 1.393,
-      "away_lambda": 1.007,
-      "poisson_win": 0.4578,
-      "poisson_draw": 0.2702,
-      "poisson_loss": 0.272,
-      "fusion_win": 0.4289,
-      "fusion_draw": 0.2851,
-      "fusion_loss": 0.286,
-      "ev_win": 0.0718,
-      "ev_draw": -0.0495,
-      "ev_loss": -0.0466,
+      "odds_source": "pinnacle",
+      "odds_win": 2.36,
+      "odds_draw": 3.14,
+      "odds_loss": 2.99,
+      "margin": 0.0766,
+      "implied_win": 0.3936,
+      "implied_draw": 0.2958,
+      "implied_loss": 0.3106,
+      "home_lambda": 1.385,
+      "away_lambda": 1.015,
+      "poisson_win": 0.454,
+      "poisson_draw": 0.2707,
+      "poisson_loss": 0.2753,
+      "fusion_win": 0.4238,
+      "fusion_draw": 0.2832,
+      "fusion_loss": 0.293,
+      "ev_win": 0.0762,
+      "ev_draw": -0.0423,
+      "ev_loss": -0.0566,
       "prediction": "home",
       "prediction_cn": "主胜",
-      "prediction_prob": 0.4289,
+      "prediction_prob": 0.4238,
       "comparison": {
+        "pinnacle": {
+          "odds": [
+            2.36,
+            3.14,
+            2.99
+          ],
+          "ev": [
+            0.0762,
+            -0.0423,
+            -0.0566
+          ],
+          "dir": "主胜"
+        },
+        "bet365": {
+          "odds": [
+            2.25,
+            3.0,
+            3.0
+          ],
+          "ev": [
+            0.0592,
+            -0.0556,
+            -0.0234
+          ],
+          "dir": "主胜"
+        },
         "zqdc": {
           "odds": [
             2.25,
@@ -2521,9 +2786,9 @@
             3.0
           ],
           "ev": [
-            0.0718,
-            -0.0495,
-            -0.0466
+            0.0592,
+            -0.0556,
+            -0.0234
           ],
           "dir": "主胜"
         }
@@ -2538,29 +2803,55 @@
       "score": "1-0",
       "hit": "❌",
       "source": "beidan",
-      "odds_source": "zqdc",
-      "odds_win": 1.42,
-      "odds_draw": 4.75,
-      "odds_loss": 6.5,
-      "margin": 0.0686,
-      "implied_win": 0.659,
-      "implied_draw": 0.197,
-      "implied_loss": 0.144,
-      "home_lambda": 1.542,
-      "away_lambda": 0.858,
-      "poisson_win": 0.5343,
-      "poisson_draw": 0.2567,
-      "poisson_loss": 0.2089,
-      "fusion_win": 0.5967,
-      "fusion_draw": 0.2269,
-      "fusion_loss": 0.1765,
-      "ev_win": -0.0935,
-      "ev_draw": 0.1471,
-      "ev_loss": 0.2115,
+      "odds_source": "pinnacle",
+      "odds_win": 1.41,
+      "odds_draw": 5.19,
+      "odds_loss": 6.91,
+      "margin": 0.0466,
+      "implied_win": 0.6776,
+      "implied_draw": 0.1841,
+      "implied_loss": 0.1383,
+      "home_lambda": 1.548,
+      "away_lambda": 0.852,
+      "poisson_win": 0.5373,
+      "poisson_draw": 0.2561,
+      "poisson_loss": 0.2066,
+      "fusion_win": 0.6075,
+      "fusion_draw": 0.2201,
+      "fusion_loss": 0.1724,
+      "ev_win": -0.1021,
+      "ev_draw": 0.1861,
+      "ev_loss": 0.2288,
       "prediction": "away",
       "prediction_cn": "客胜",
-      "prediction_prob": 0.5967,
+      "prediction_prob": 0.6075,
       "comparison": {
+        "pinnacle": {
+          "odds": [
+            1.41,
+            5.19,
+            6.91
+          ],
+          "ev": [
+            -0.1021,
+            0.1861,
+            0.2288
+          ],
+          "dir": "客胜"
+        },
+        "bet365": {
+          "odds": [
+            1.42,
+            4.75,
+            6.5
+          ],
+          "ev": [
+            -0.0776,
+            0.115,
+            0.188
+          ],
+          "dir": "客胜"
+        },
         "zqdc": {
           "odds": [
             1.42,
@@ -2568,9 +2859,9 @@
             6.5
           ],
           "ev": [
-            -0.0935,
-            0.1471,
-            0.2115
+            -0.0776,
+            0.115,
+            0.188
           ],
           "dir": "客胜"
         }
@@ -2585,29 +2876,55 @@
       "score": "3-0",
       "hit": "❌",
       "source": "beidan",
-      "odds_source": "zqdc",
+      "odds_source": "pinnacle",
       "odds_win": 1.95,
-      "odds_draw": 4.0,
-      "odds_loss": 3.3,
-      "margin": 0.0659,
-      "implied_win": 0.4811,
-      "implied_draw": 0.2346,
-      "implied_loss": 0.2843,
-      "home_lambda": 1.427,
-      "away_lambda": 0.973,
-      "poisson_win": 0.4753,
-      "poisson_draw": 0.2678,
-      "poisson_loss": 0.2569,
-      "fusion_win": 0.4782,
-      "fusion_draw": 0.2512,
-      "fusion_loss": 0.2706,
-      "ev_win": -0.0061,
-      "ev_draw": 0.0703,
-      "ev_loss": -0.048,
+      "odds_draw": 4.05,
+      "odds_loss": 3.5,
+      "margin": 0.0454,
+      "implied_win": 0.4905,
+      "implied_draw": 0.2362,
+      "implied_loss": 0.2733,
+      "home_lambda": 1.435,
+      "away_lambda": 0.965,
+      "poisson_win": 0.4795,
+      "poisson_draw": 0.2671,
+      "poisson_loss": 0.2534,
+      "fusion_win": 0.485,
+      "fusion_draw": 0.2516,
+      "fusion_loss": 0.2634,
+      "ev_win": -0.0113,
+      "ev_draw": 0.0651,
+      "ev_loss": -0.0363,
       "prediction": "draw",
       "prediction_cn": "平局",
-      "prediction_prob": 0.4782,
+      "prediction_prob": 0.485,
       "comparison": {
+        "pinnacle": {
+          "odds": [
+            1.95,
+            4.05,
+            3.5
+          ],
+          "ev": [
+            -0.0113,
+            0.0651,
+            -0.0363
+          ],
+          "dir": "平局"
+        },
+        "bet365": {
+          "odds": [
+            1.95,
+            4.0,
+            3.3
+          ],
+          "ev": [
+            0.008,
+            0.0724,
+            -0.0732
+          ],
+          "dir": "平局"
+        },
         "zqdc": {
           "odds": [
             1.95,
@@ -2615,9 +2932,9 @@
             3.3
           ],
           "ev": [
-            -0.0061,
-            0.0703,
-            -0.048
+            0.008,
+            0.0724,
+            -0.0732
           ],
           "dir": "平局"
         }
@@ -2632,29 +2949,55 @@
       "score": "1-0",
       "hit": "✅",
       "source": "beidan",
-      "odds_source": "zqdc",
-      "odds_win": 2.15,
-      "odds_draw": 3.3,
-      "odds_loss": 3.4,
-      "margin": 0.0623,
-      "implied_win": 0.4379,
-      "implied_draw": 0.2853,
-      "implied_loss": 0.2769,
-      "home_lambda": 1.418,
-      "away_lambda": 0.982,
-      "poisson_win": 0.4704,
-      "poisson_draw": 0.2685,
-      "poisson_loss": 0.2611,
-      "fusion_win": 0.4541,
-      "fusion_draw": 0.2769,
-      "fusion_loss": 0.269,
-      "ev_win": 0.0371,
-      "ev_draw": -0.0294,
-      "ev_loss": -0.0285,
+      "odds_source": "pinnacle",
+      "odds_win": 2.12,
+      "odds_draw": 3.33,
+      "odds_loss": 3.39,
+      "margin": 0.067,
+      "implied_win": 0.4421,
+      "implied_draw": 0.2814,
+      "implied_loss": 0.2765,
+      "home_lambda": 1.419,
+      "away_lambda": 0.981,
+      "poisson_win": 0.4712,
+      "poisson_draw": 0.2684,
+      "poisson_loss": 0.2604,
+      "fusion_win": 0.4567,
+      "fusion_draw": 0.2749,
+      "fusion_loss": 0.2684,
+      "ev_win": 0.0329,
+      "ev_draw": -0.0232,
+      "ev_loss": -0.029,
       "prediction": "home",
       "prediction_cn": "主胜",
-      "prediction_prob": 0.4541,
+      "prediction_prob": 0.4567,
       "comparison": {
+        "pinnacle": {
+          "odds": [
+            2.12,
+            3.33,
+            3.39
+          ],
+          "ev": [
+            0.0329,
+            -0.0232,
+            -0.029
+          ],
+          "dir": "主胜"
+        },
+        "bet365": {
+          "odds": [
+            2.15,
+            3.3,
+            3.4
+          ],
+          "ev": [
+            0.0428,
+            -0.0363,
+            -0.0304
+          ],
+          "dir": "主胜"
+        },
         "zqdc": {
           "odds": [
             2.15,
@@ -2662,9 +3005,9 @@
             3.4
           ],
           "ev": [
-            0.0371,
-            -0.0294,
-            -0.0285
+            0.0428,
+            -0.0363,
+            -0.0304
           ],
           "dir": "主胜"
         }
@@ -2679,29 +3022,55 @@
       "score": "0-1",
       "hit": "❌",
       "source": "beidan",
-      "odds_source": "zqdc",
-      "odds_win": 5.5,
-      "odds_draw": 4.33,
-      "odds_loss": 1.53,
-      "margin": 0.0664,
-      "implied_win": 0.1705,
-      "implied_draw": 0.2166,
-      "implied_loss": 0.6129,
-      "home_lambda": 1.181,
-      "away_lambda": 1.219,
-      "poisson_win": 0.3523,
-      "poisson_draw": 0.2766,
-      "poisson_loss": 0.3711,
-      "fusion_win": 0.2614,
-      "fusion_draw": 0.2466,
-      "fusion_loss": 0.492,
-      "ev_win": 0.394,
-      "ev_draw": 0.135,
-      "ev_loss": -0.1876,
+      "odds_source": "pinnacle",
+      "odds_win": 5.84,
+      "odds_draw": 4.53,
+      "odds_loss": 1.51,
+      "margin": 0.0542,
+      "implied_win": 0.1624,
+      "implied_draw": 0.2094,
+      "implied_loss": 0.6282,
+      "home_lambda": 1.173,
+      "away_lambda": 1.227,
+      "poisson_win": 0.3488,
+      "poisson_draw": 0.2765,
+      "poisson_loss": 0.3747,
+      "fusion_win": 0.2556,
+      "fusion_draw": 0.2429,
+      "fusion_loss": 0.5015,
+      "ev_win": 0.4084,
+      "ev_draw": 0.155,
+      "ev_loss": -0.1915,
       "prediction": "home",
       "prediction_cn": "主胜",
-      "prediction_prob": 0.492,
+      "prediction_prob": 0.5015,
       "comparison": {
+        "pinnacle": {
+          "odds": [
+            5.84,
+            4.53,
+            1.51
+          ],
+          "ev": [
+            0.4084,
+            0.155,
+            -0.1915
+          ],
+          "dir": "主胜"
+        },
+        "bet365": {
+          "odds": [
+            5.5,
+            4.33,
+            1.53
+          ],
+          "ev": [
+            0.3804,
+            0.1194,
+            -0.1743
+          ],
+          "dir": "主胜"
+        },
         "zqdc": {
           "odds": [
             5.5,
@@ -2709,9 +3078,9 @@
             1.53
           ],
           "ev": [
-            0.394,
-            0.135,
-            -0.1876
+            0.3804,
+            0.1194,
+            -0.1743
           ],
           "dir": "主胜"
         }
@@ -2723,42 +3092,68 @@
       "event": "巴西乙",
       "home_team": "铁路工人",
       "away_team": "新奥里藏蒂诺",
-      "score": "",
-      "hit": "",
+      "score": "1-1",
+      "hit": "❌",
       "source": "beidan",
-      "odds_source": "zqdc",
-      "odds_win": 2.5,
-      "odds_draw": 3.0,
-      "odds_loss": 3.0,
-      "margin": 0.0667,
-      "implied_win": 0.375,
-      "implied_draw": 0.3125,
-      "implied_loss": 0.3125,
-      "home_lambda": 1.377,
-      "away_lambda": 1.023,
-      "poisson_win": 0.4499,
-      "poisson_draw": 0.2712,
-      "poisson_loss": 0.2789,
-      "fusion_win": 0.4125,
-      "fusion_draw": 0.2918,
-      "fusion_loss": 0.2957,
-      "ev_win": 0.0986,
-      "ev_draw": -0.0657,
-      "ev_loss": -0.0536,
+      "odds_source": "pinnacle",
+      "odds_win": 2.68,
+      "odds_draw": 2.97,
+      "odds_loss": 3.05,
+      "margin": 0.0377,
+      "implied_win": 0.3596,
+      "implied_draw": 0.3245,
+      "implied_loss": 0.316,
+      "home_lambda": 1.369,
+      "away_lambda": 1.031,
+      "poisson_win": 0.4459,
+      "poisson_draw": 0.2717,
+      "poisson_loss": 0.2824,
+      "fusion_win": 0.4027,
+      "fusion_draw": 0.2981,
+      "fusion_loss": 0.2992,
+      "ev_win": 0.1178,
+      "ev_draw": -0.0807,
+      "ev_loss": -0.0529,
       "prediction": "home",
       "prediction_cn": "主胜",
-      "prediction_prob": 0.4125,
+      "prediction_prob": 0.4027,
       "comparison": {
-        "zqdc": {
+        "pinnacle": {
           "odds": [
-            2.5,
-            3.0,
+            2.68,
+            2.97,
+            3.05
+          ],
+          "ev": [
+            0.1178,
+            -0.0807,
+            -0.0529
+          ],
+          "dir": "主胜"
+        },
+        "bet365": {
+          "odds": [
+            2.55,
+            2.9,
             3.0
           ],
           "ev": [
-            0.0986,
-            -0.0657,
-            -0.0536
+            0.0979,
+            -0.0743,
+            -0.0392
+          ],
+          "dir": "主胜"
+        },
+        "zqdc": {
+          "odds": [
+            2.55,
+            2.9,
+            3.0
+          ],
+          "ev": [
+            0.0979,
+            -0.0743,
+            -0.0392
           ],
           "dir": "主胜"
         }
@@ -2770,44 +3165,70 @@
       "event": "瑞典超",
       "home_team": "加尔斯",
       "away_team": "埃尔夫斯堡",
-      "score": "",
-      "hit": "",
+      "score": "0-0",
+      "hit": "❌",
       "source": "beidan",
-      "odds_source": "zqdc",
-      "odds_win": 1.75,
-      "odds_draw": 3.7,
-      "odds_loss": 4.33,
-      "margin": 0.0726,
-      "implied_win": 0.5327,
-      "implied_draw": 0.252,
-      "implied_loss": 0.2153,
-      "home_lambda": 1.477,
-      "away_lambda": 0.923,
-      "poisson_win": 0.501,
-      "poisson_draw": 0.2635,
-      "poisson_loss": 0.2356,
-      "fusion_win": 0.5168,
-      "fusion_draw": 0.2577,
-      "fusion_loss": 0.2254,
-      "ev_win": -0.0298,
-      "ev_draw": 0.0228,
-      "ev_loss": 0.0469,
+      "odds_source": "pinnacle",
+      "odds_win": 1.72,
+      "odds_draw": 3.58,
+      "odds_loss": 4.81,
+      "margin": 0.0686,
+      "implied_win": 0.5441,
+      "implied_draw": 0.2614,
+      "implied_loss": 0.1945,
+      "home_lambda": 1.492,
+      "away_lambda": 0.908,
+      "poisson_win": 0.5085,
+      "poisson_draw": 0.2621,
+      "poisson_loss": 0.2295,
+      "fusion_win": 0.5263,
+      "fusion_draw": 0.2617,
+      "fusion_loss": 0.212,
+      "ev_win": -0.0327,
+      "ev_draw": 0.0013,
+      "ev_loss": 0.0888,
       "prediction": "away",
       "prediction_cn": "客胜",
-      "prediction_prob": 0.5168,
+      "prediction_prob": 0.5263,
       "comparison": {
-        "zqdc": {
+        "pinnacle": {
           "odds": [
-            1.75,
-            3.7,
-            4.33
+            1.72,
+            3.58,
+            4.81
           ],
           "ev": [
-            -0.0298,
-            0.0228,
-            0.0469
+            -0.0327,
+            0.0013,
+            0.0888
           ],
           "dir": "客胜"
+        },
+        "bet365": {
+          "odds": [
+            1.85,
+            3.6,
+            4.0
+          ],
+          "ev": [
+            0.04,
+            0.0066,
+            -0.0929
+          ],
+          "dir": "主胜"
+        },
+        "zqdc": {
+          "odds": [
+            1.85,
+            3.6,
+            4.0
+          ],
+          "ev": [
+            0.04,
+            0.0066,
+            -0.0929
+          ],
+          "dir": "主胜"
         }
       }
     },
@@ -2817,42 +3238,68 @@
       "event": "瑞典超",
       "home_team": "布鲁马波卡纳",
       "away_team": "天狼星",
-      "score": "",
-      "hit": "",
+      "score": "0-2",
+      "hit": "❌",
       "source": "beidan",
-      "odds_source": "zqdc",
-      "odds_win": 4.5,
-      "odds_draw": 4.33,
-      "odds_loss": 1.65,
-      "margin": 0.0592,
-      "implied_win": 0.2098,
-      "implied_draw": 0.218,
-      "implied_loss": 0.5722,
-      "home_lambda": 1.211,
-      "away_lambda": 1.189,
-      "poisson_win": 0.367,
+      "odds_source": "pinnacle",
+      "odds_win": 4.61,
+      "odds_draw": 3.99,
+      "odds_loss": 1.67,
+      "margin": 0.0663,
+      "implied_win": 0.2034,
+      "implied_draw": 0.235,
+      "implied_loss": 0.5615,
+      "home_lambda": 1.21,
+      "away_lambda": 1.19,
+      "poisson_win": 0.3663,
       "poisson_draw": 0.2766,
-      "poisson_loss": 0.3564,
-      "fusion_win": 0.2884,
-      "fusion_draw": 0.2473,
-      "fusion_loss": 0.4643,
-      "ev_win": 0.3174,
-      "ev_draw": 0.1312,
-      "ev_loss": -0.1801,
+      "poisson_loss": 0.3571,
+      "fusion_win": 0.2849,
+      "fusion_draw": 0.2558,
+      "fusion_loss": 0.4593,
+      "ev_win": 0.3323,
+      "ev_draw": 0.0875,
+      "ev_loss": -0.1744,
       "prediction": "home",
       "prediction_cn": "主胜",
-      "prediction_prob": 0.4643,
+      "prediction_prob": 0.4593,
       "comparison": {
-        "zqdc": {
+        "pinnacle": {
           "odds": [
-            4.5,
-            4.33,
-            1.65
+            4.61,
+            3.99,
+            1.67
           ],
           "ev": [
-            0.3174,
-            0.1312,
-            -0.1801
+            0.3323,
+            0.0875,
+            -0.1744
+          ],
+          "dir": "主胜"
+        },
+        "bet365": {
+          "odds": [
+            5.0,
+            4.33,
+            1.6
+          ],
+          "ev": [
+            0.3825,
+            0.1634,
+            -0.2101
+          ],
+          "dir": "主胜"
+        },
+        "zqdc": {
+          "odds": [
+            5.0,
+            4.33,
+            1.6
+          ],
+          "ev": [
+            0.3825,
+            0.1634,
+            -0.2101
           ],
           "dir": "主胜"
         }
@@ -2867,29 +3314,55 @@
       "score": "",
       "hit": "",
       "source": "beidan",
-      "odds_source": "zqdc",
-      "odds_win": 1.45,
-      "odds_draw": 4.75,
-      "odds_loss": 6.0,
-      "margin": 0.0668,
-      "implied_win": 0.6464,
-      "implied_draw": 0.1973,
-      "implied_loss": 0.1562,
-      "home_lambda": 1.533,
-      "away_lambda": 0.867,
-      "poisson_win": 0.5296,
-      "poisson_draw": 0.2578,
-      "poisson_loss": 0.2126,
-      "fusion_win": 0.588,
-      "fusion_draw": 0.2276,
-      "fusion_loss": 0.1844,
-      "ev_win": -0.0894,
-      "ev_draw": 0.1485,
-      "ev_loss": 0.1731,
+      "odds_source": "pinnacle",
+      "odds_win": 1.42,
+      "odds_draw": 5.09,
+      "odds_loss": 7.41,
+      "margin": 0.0356,
+      "implied_win": 0.68,
+      "implied_draw": 0.1897,
+      "implied_loss": 0.1303,
+      "home_lambda": 1.554,
+      "away_lambda": 0.846,
+      "poisson_win": 0.54,
+      "poisson_draw": 0.2555,
+      "poisson_loss": 0.2045,
+      "fusion_win": 0.61,
+      "fusion_draw": 0.2226,
+      "fusion_loss": 0.1674,
+      "ev_win": -0.1015,
+      "ev_draw": 0.1667,
+      "ev_loss": 0.2576,
       "prediction": "away",
       "prediction_cn": "客胜",
-      "prediction_prob": 0.588,
+      "prediction_prob": 0.61,
       "comparison": {
+        "pinnacle": {
+          "odds": [
+            1.42,
+            5.09,
+            7.41
+          ],
+          "ev": [
+            -0.1015,
+            0.1667,
+            0.2576
+          ],
+          "dir": "客胜"
+        },
+        "bet365": {
+          "odds": [
+            1.45,
+            4.75,
+            6.0
+          ],
+          "ev": [
+            -0.0562,
+            0.1252,
+            0.0712
+          ],
+          "dir": "平局"
+        },
         "zqdc": {
           "odds": [
             1.45,
@@ -2897,11 +3370,11 @@
             6.0
           ],
           "ev": [
-            -0.0894,
-            0.1485,
-            0.1731
+            -0.0562,
+            0.1252,
+            0.0712
           ],
-          "dir": "客胜"
+          "dir": "平局"
         }
       }
     },
@@ -2914,41 +3387,67 @@
       "score": "",
       "hit": "",
       "source": "beidan",
-      "odds_source": "zqdc",
-      "odds_win": 1.57,
-      "odds_draw": 4.2,
-      "odds_loss": 5.25,
-      "margin": 0.0655,
-      "implied_win": 0.5978,
-      "implied_draw": 0.2235,
-      "implied_loss": 0.1788,
-      "home_lambda": 1.512,
-      "away_lambda": 0.888,
-      "poisson_win": 0.5187,
-      "poisson_draw": 0.2601,
-      "poisson_loss": 0.2213,
-      "fusion_win": 0.5582,
-      "fusion_draw": 0.2418,
-      "fusion_loss": 0.2,
-      "ev_win": -0.0658,
-      "ev_draw": 0.0812,
-      "ev_loss": 0.1167,
+      "odds_source": "pinnacle",
+      "odds_win": 1.6,
+      "odds_draw": 4.38,
+      "odds_loss": 5.49,
+      "margin": 0.0355,
+      "implied_win": 0.6036,
+      "implied_draw": 0.2205,
+      "implied_loss": 0.1759,
+      "home_lambda": 1.515,
+      "away_lambda": 0.885,
+      "poisson_win": 0.5201,
+      "poisson_draw": 0.2598,
+      "poisson_loss": 0.2202,
+      "fusion_win": 0.5618,
+      "fusion_draw": 0.2401,
+      "fusion_loss": 0.198,
+      "ev_win": -0.0688,
+      "ev_draw": 0.0881,
+      "ev_loss": 0.1232,
       "prediction": "away",
       "prediction_cn": "客胜",
-      "prediction_prob": 0.5582,
+      "prediction_prob": 0.5618,
       "comparison": {
-        "zqdc": {
+        "pinnacle": {
+          "odds": [
+            1.6,
+            4.38,
+            5.49
+          ],
+          "ev": [
+            -0.0688,
+            0.0881,
+            0.1232
+          ],
+          "dir": "客胜"
+        },
+        "bet365": {
           "odds": [
             1.57,
             4.2,
             5.25
           ],
           "ev": [
-            -0.0658,
-            0.0812,
-            0.1167
+            -0.0599,
+            0.0741,
+            0.1062
           ],
           "dir": "客胜"
+        },
+        "zqdc": {
+          "odds": [
+            1.57,
+            4.33,
+            5.25
+          ],
+          "ev": [
+            -0.0661,
+            0.0991,
+            0.0991
+          ],
+          "dir": "平局"
         }
       }
     },
@@ -2961,39 +3460,795 @@
       "score": "",
       "hit": "",
       "source": "beidan",
-      "odds_source": "zqdc",
-      "odds_win": 1.9,
-      "odds_draw": 3.7,
-      "odds_loss": 3.7,
-      "margin": 0.0669,
-      "implied_win": 0.4933,
-      "implied_draw": 0.2533,
-      "implied_loss": 0.2533,
-      "home_lambda": 1.446,
-      "away_lambda": 0.954,
-      "poisson_win": 0.4852,
-      "poisson_draw": 0.2662,
-      "poisson_loss": 0.2486,
-      "fusion_win": 0.4892,
-      "fusion_draw": 0.2598,
-      "fusion_loss": 0.251,
-      "ev_win": -0.0083,
-      "ev_draw": 0.0254,
-      "ev_loss": -0.0093,
+      "odds_source": "pinnacle",
+      "odds_win": 1.99,
+      "odds_draw": 3.8,
+      "odds_loss": 3.72,
+      "margin": 0.0345,
+      "implied_win": 0.4858,
+      "implied_draw": 0.2544,
+      "implied_loss": 0.2599,
+      "home_lambda": 1.441,
+      "away_lambda": 0.959,
+      "poisson_win": 0.4823,
+      "poisson_draw": 0.2667,
+      "poisson_loss": 0.251,
+      "fusion_win": 0.484,
+      "fusion_draw": 0.2605,
+      "fusion_loss": 0.2554,
+      "ev_win": -0.0035,
+      "ev_draw": 0.0241,
+      "ev_loss": -0.017,
       "prediction": "wait",
       "prediction_cn": "观望",
-      "prediction_prob": 0.4892,
+      "prediction_prob": 0.484,
       "comparison": {
-        "zqdc": {
+        "pinnacle": {
           "odds": [
-            1.9,
-            3.7,
-            3.7
+            1.99,
+            3.8,
+            3.72
           ],
           "ev": [
-            -0.0083,
-            0.0254,
-            -0.0093
+            -0.0035,
+            0.0241,
+            -0.017
+          ],
+          "dir": "观望"
+        },
+        "bet365": {
+          "odds": [
+            1.95,
+            3.8,
+            3.5
+          ],
+          "ev": [
+            0.0021,
+            0.0509,
+            -0.0507
+          ],
+          "dir": "平局"
+        },
+        "zqdc": {
+          "odds": [
+            1.95,
+            3.8,
+            3.5
+          ],
+          "ev": [
+            0.0021,
+            0.0509,
+            -0.0507
+          ],
+          "dir": "平局"
+        }
+      }
+    },
+    {
+      "date": "2026-07-13",
+      "match_time": "07-13 01:15",
+      "event": "挪超",
+      "home_team": "萨尔普斯堡",
+      "away_team": "维京",
+      "score": "",
+      "hit": "",
+      "source": "beidan",
+      "odds_source": "pinnacle",
+      "odds_win": 5.15,
+      "odds_draw": 4.87,
+      "odds_loss": 1.57,
+      "margin": 0.0365,
+      "implied_win": 0.1873,
+      "implied_draw": 0.1981,
+      "implied_loss": 0.6145,
+      "home_lambda": 1.19,
+      "away_lambda": 1.21,
+      "poisson_win": 0.3569,
+      "poisson_draw": 0.2766,
+      "poisson_loss": 0.3665,
+      "fusion_win": 0.2721,
+      "fusion_draw": 0.2374,
+      "fusion_loss": 0.4905,
+      "ev_win": 0.3594,
+      "ev_draw": 0.1883,
+      "ev_loss": -0.1915,
+      "prediction": "home",
+      "prediction_cn": "主胜",
+      "prediction_prob": 0.4905,
+      "comparison": {
+        "pinnacle": {
+          "odds": [
+            5.15,
+            4.87,
+            1.57
+          ],
+          "ev": [
+            0.3594,
+            0.1883,
+            -0.1915
+          ],
+          "dir": "主胜"
+        },
+        "bet365": {
+          "odds": [
+            5.0,
+            4.5,
+            1.55
+          ],
+          "ev": [
+            0.3593,
+            0.1365,
+            -0.18
+          ],
+          "dir": "主胜"
+        },
+        "zqdc": {
+          "odds": [
+            5.0,
+            4.5,
+            1.55
+          ],
+          "ev": [
+            0.3593,
+            0.1365,
+            -0.18
+          ],
+          "dir": "主胜"
+        }
+      }
+    },
+    {
+      "date": "2026-07-13",
+      "match_time": "07-13 01:30",
+      "event": "罗超杯",
+      "home_team": "CS克拉约瓦大学",
+      "away_team": "克卢日大学",
+      "score": "",
+      "hit": "",
+      "source": "beidan",
+      "odds_source": "pinnacle",
+      "odds_win": 1.7,
+      "odds_draw": 3.68,
+      "odds_loss": 5.17,
+      "margin": 0.0534,
+      "implied_win": 0.5584,
+      "implied_draw": 0.258,
+      "implied_loss": 0.1836,
+      "home_lambda": 1.502,
+      "away_lambda": 0.898,
+      "poisson_win": 0.5134,
+      "poisson_draw": 0.2611,
+      "poisson_loss": 0.2255,
+      "fusion_win": 0.5359,
+      "fusion_draw": 0.2595,
+      "fusion_loss": 0.2046,
+      "ev_win": -0.0403,
+      "ev_draw": 0.0061,
+      "ev_loss": 0.1121,
+      "prediction": "away",
+      "prediction_cn": "客胜",
+      "prediction_prob": 0.5359,
+      "comparison": {
+        "pinnacle": {
+          "odds": [
+            1.7,
+            3.68,
+            5.17
+          ],
+          "ev": [
+            -0.0403,
+            0.0061,
+            0.1121
+          ],
+          "dir": "客胜"
+        },
+        "bet365": {
+          "odds": [
+            1.73,
+            3.5,
+            4.75
+          ],
+          "ev": [
+            -0.004,
+            -0.0241,
+            0.0438
+          ],
+          "dir": "客胜"
+        },
+        "zqdc": {
+          "odds": [
+            1.73,
+            3.5,
+            4.75
+          ],
+          "ev": [
+            -0.004,
+            -0.0241,
+            0.0438
+          ],
+          "dir": "客胜"
+        }
+      }
+    },
+    {
+      "date": "2026-07-13",
+      "match_time": "07-13 02:00",
+      "event": "冰岛超",
+      "home_team": "KA阿克雷里",
+      "away_team": "IA阿克拉内斯",
+      "score": "",
+      "hit": "",
+      "source": "beidan",
+      "odds_source": "pinnacle",
+      "odds_win": 2.65,
+      "odds_draw": 3.94,
+      "odds_loss": 2.39,
+      "margin": 0.0496,
+      "implied_win": 0.3595,
+      "implied_draw": 0.2418,
+      "implied_loss": 0.3986,
+      "home_lambda": 1.335,
+      "away_lambda": 1.065,
+      "poisson_win": 0.4283,
+      "poisson_draw": 0.2735,
+      "poisson_loss": 0.2982,
+      "fusion_win": 0.3939,
+      "fusion_draw": 0.2577,
+      "fusion_loss": 0.3484,
+      "ev_win": 0.0945,
+      "ev_draw": 0.0651,
+      "ev_loss": -0.1234,
+      "prediction": "home",
+      "prediction_cn": "主胜",
+      "prediction_prob": 0.3939,
+      "comparison": {
+        "pinnacle": {
+          "odds": [
+            2.65,
+            3.94,
+            2.39
+          ],
+          "ev": [
+            0.0945,
+            0.0651,
+            -0.1234
+          ],
+          "dir": "主胜"
+        },
+        "bet365": {
+          "odds": [
+            2.45,
+            3.75,
+            2.38
+          ],
+          "ev": [
+            0.0565,
+            0.0577,
+            -0.0909
+          ],
+          "dir": "平局"
+        },
+        "zqdc": {
+          "odds": [
+            2.45,
+            3.75,
+            2.38
+          ],
+          "ev": [
+            0.0565,
+            0.0577,
+            -0.0909
+          ],
+          "dir": "平局"
+        }
+      }
+    },
+    {
+      "date": "2026-07-13",
+      "match_time": "07-13 02:00",
+      "event": "冰岛超",
+      "home_team": "弗拉姆",
+      "away_team": "托尔",
+      "score": "",
+      "hit": "",
+      "source": "beidan",
+      "odds_source": "pinnacle",
+      "odds_win": 1.2,
+      "odds_draw": 7.73,
+      "odds_loss": 9.81,
+      "margin": 0.0646,
+      "implied_win": 0.7827,
+      "implied_draw": 0.1215,
+      "implied_loss": 0.0957,
+      "home_lambda": 1.585,
+      "away_lambda": 0.815,
+      "poisson_win": 0.5559,
+      "poisson_draw": 0.2517,
+      "poisson_loss": 0.1924,
+      "fusion_win": 0.6693,
+      "fusion_draw": 0.1866,
+      "fusion_loss": 0.1441,
+      "ev_win": -0.141,
+      "ev_draw": 0.395,
+      "ev_loss": 0.3828,
+      "prediction": "draw",
+      "prediction_cn": "平局",
+      "prediction_prob": 0.6693,
+      "comparison": {
+        "pinnacle": {
+          "odds": [
+            1.2,
+            7.73,
+            9.81
+          ],
+          "ev": [
+            -0.141,
+            0.395,
+            0.3828
+          ],
+          "dir": "平局"
+        },
+        "bet365": {
+          "odds": [
+            1.25,
+            6.0,
+            8.0
+          ],
+          "ev": [
+            -0.0858,
+            0.2087,
+            0.2376
+          ],
+          "dir": "客胜"
+        },
+        "zqdc": {
+          "odds": [
+            1.25,
+            6.0,
+            8.0
+          ],
+          "ev": [
+            -0.0858,
+            0.2087,
+            0.2376
+          ],
+          "dir": "客胜"
+        }
+      }
+    },
+    {
+      "date": "2026-07-13",
+      "match_time": "07-13 02:00",
+      "event": "冰岛超",
+      "home_team": "KR雷克雅未克",
+      "away_team": "IBV韦斯特曼纳",
+      "score": "",
+      "hit": "",
+      "source": "beidan",
+      "odds_source": "pinnacle",
+      "odds_win": 1.46,
+      "odds_draw": 5.79,
+      "odds_loss": 5.04,
+      "margin": 0.0561,
+      "implied_win": 0.6486,
+      "implied_draw": 0.1635,
+      "implied_loss": 0.1879,
+      "home_lambda": 1.515,
+      "away_lambda": 0.885,
+      "poisson_win": 0.5204,
+      "poisson_draw": 0.2597,
+      "poisson_loss": 0.2199,
+      "fusion_win": 0.5845,
+      "fusion_draw": 0.2116,
+      "fusion_loss": 0.2039,
+      "ev_win": -0.0976,
+      "ev_draw": 0.2642,
+      "ev_loss": 0.0844,
+      "prediction": "draw",
+      "prediction_cn": "平局",
+      "prediction_prob": 0.5845,
+      "comparison": {
+        "pinnacle": {
+          "odds": [
+            1.46,
+            5.79,
+            5.04
+          ],
+          "ev": [
+            -0.0976,
+            0.2642,
+            0.0844
+          ],
+          "dir": "平局"
+        },
+        "bet365": {
+          "odds": [
+            1.48,
+            4.75,
+            5.0
+          ],
+          "ev": [
+            -0.0601,
+            0.0909,
+            0.1057
+          ],
+          "dir": "客胜"
+        },
+        "zqdc": {
+          "odds": [
+            1.48,
+            4.75,
+            5.0
+          ],
+          "ev": [
+            -0.0601,
+            0.0909,
+            0.1057
+          ],
+          "dir": "客胜"
+        }
+      }
+    },
+    {
+      "date": "2026-07-13",
+      "match_time": "07-13 03:00",
+      "event": "巴西乙",
+      "home_team": "阿瓦伊",
+      "away_team": "累西腓航海",
+      "score": "",
+      "hit": "",
+      "source": "beidan",
+      "odds_source": "pinnacle",
+      "odds_win": 2.74,
+      "odds_draw": 3.06,
+      "odds_loss": 2.64,
+      "margin": 0.0705,
+      "implied_win": 0.3409,
+      "implied_draw": 0.3053,
+      "implied_loss": 0.3538,
+      "home_lambda": 1.344,
+      "away_lambda": 1.056,
+      "poisson_win": 0.4333,
+      "poisson_draw": 0.273,
+      "poisson_loss": 0.2937,
+      "fusion_win": 0.3871,
+      "fusion_draw": 0.2891,
+      "fusion_loss": 0.3238,
+      "ev_win": 0.1323,
+      "ev_draw": -0.0526,
+      "ev_loss": -0.0842,
+      "prediction": "home",
+      "prediction_cn": "主胜",
+      "prediction_prob": 0.3871,
+      "comparison": {
+        "pinnacle": {
+          "odds": [
+            2.74,
+            3.06,
+            2.64
+          ],
+          "ev": [
+            0.1323,
+            -0.0526,
+            -0.0842
+          ],
+          "dir": "主胜"
+        },
+        "bet365": {
+          "odds": [
+            2.8,
+            3.0,
+            2.7
+          ],
+          "ev": [
+            0.1455,
+            -0.0791,
+            -0.0722
+          ],
+          "dir": "主胜"
+        },
+        "zqdc": {
+          "odds": [
+            2.8,
+            3.0,
+            2.7
+          ],
+          "ev": [
+            0.1455,
+            -0.0791,
+            -0.0722
+          ],
+          "dir": "主胜"
+        }
+      }
+    },
+    {
+      "date": "2026-07-13",
+      "match_time": "07-13 03:15",
+      "event": "阿根廷杯",
+      "home_team": "里瓦达维亚独立",
+      "away_team": "蒂格雷",
+      "score": "",
+      "hit": "",
+      "source": "beidan",
+      "odds_source": "pinnacle",
+      "odds_win": 2.37,
+      "odds_draw": 2.59,
+      "odds_loss": 3.37,
+      "margin": 0.1048,
+      "implied_win": 0.3819,
+      "implied_draw": 0.3495,
+      "implied_loss": 0.2686,
+      "home_lambda": 1.402,
+      "away_lambda": 0.998,
+      "poisson_win": 0.4626,
+      "poisson_draw": 0.2696,
+      "poisson_loss": 0.2678,
+      "fusion_win": 0.4223,
+      "fusion_draw": 0.3095,
+      "fusion_loss": 0.2682,
+      "ev_win": 0.1041,
+      "ev_draw": -0.1124,
+      "ev_loss": -0.0015,
+      "prediction": "home",
+      "prediction_cn": "主胜",
+      "prediction_prob": 0.4223,
+      "comparison": {
+        "pinnacle": {
+          "odds": [
+            2.37,
+            2.59,
+            3.37
+          ],
+          "ev": [
+            0.1041,
+            -0.1124,
+            -0.0015
+          ],
+          "dir": "主胜"
+        },
+        "bet365": {
+          "odds": [
+            2.4,
+            2.7,
+            3.6
+          ],
+          "ev": [
+            0.0785,
+            -0.1084,
+            0.0281
+          ],
+          "dir": "主胜"
+        },
+        "zqdc": {
+          "odds": [
+            2.4,
+            2.7,
+            3.6
+          ],
+          "ev": [
+            0.0785,
+            -0.1084,
+            0.0281
+          ],
+          "dir": "主胜"
+        }
+      }
+    },
+    {
+      "date": "2026-07-13",
+      "match_time": "07-13 04:05",
+      "event": "冰岛超",
+      "home_team": "FH哈夫纳夫约杜尔",
+      "away_team": "瓦路尔",
+      "score": "",
+      "hit": "",
+      "source": "beidan",
+      "odds_source": "pinnacle",
+      "odds_win": 2.31,
+      "odds_draw": 4.06,
+      "odds_loss": 2.7,
+      "margin": 0.0496,
+      "implied_win": 0.4125,
+      "implied_draw": 0.2347,
+      "implied_loss": 0.3529,
+      "home_lambda": 1.373,
+      "away_lambda": 1.027,
+      "poisson_win": 0.4479,
+      "poisson_draw": 0.2714,
+      "poisson_loss": 0.2806,
+      "fusion_win": 0.4302,
+      "fusion_draw": 0.2531,
+      "fusion_loss": 0.3168,
+      "ev_win": 0.0429,
+      "ev_draw": 0.0777,
+      "ev_loss": -0.1009,
+      "prediction": "draw",
+      "prediction_cn": "平局",
+      "prediction_prob": 0.4302,
+      "comparison": {
+        "pinnacle": {
+          "odds": [
+            2.31,
+            4.06,
+            2.7
+          ],
+          "ev": [
+            0.0429,
+            0.0777,
+            -0.1009
+          ],
+          "dir": "平局"
+        },
+        "bet365": {
+          "odds": [
+            2.2,
+            3.8,
+            2.63
+          ],
+          "ev": [
+            0.039,
+            0.0555,
+            -0.0845
+          ],
+          "dir": "平局"
+        },
+        "zqdc": {
+          "odds": [
+            2.2,
+            3.8,
+            2.63
+          ],
+          "ev": [
+            0.039,
+            0.0555,
+            -0.0845
+          ],
+          "dir": "平局"
+        }
+      }
+    },
+    {
+      "date": "2026-07-13",
+      "match_time": "07-13 05:00",
+      "event": "巴西乙",
+      "home_team": "戈亚尼亚竞技",
+      "away_team": "福塔莱萨",
+      "score": "",
+      "hit": "",
+      "source": "beidan",
+      "odds_source": "pinnacle",
+      "odds_win": 2.43,
+      "odds_draw": 3.08,
+      "odds_loss": 3.31,
+      "margin": 0.0383,
+      "implied_win": 0.3963,
+      "implied_draw": 0.3127,
+      "implied_loss": 0.291,
+      "home_lambda": 1.396,
+      "away_lambda": 1.004,
+      "poisson_win": 0.4594,
+      "poisson_draw": 0.27,
+      "poisson_loss": 0.2706,
+      "fusion_win": 0.4279,
+      "fusion_draw": 0.2913,
+      "fusion_loss": 0.2808,
+      "ev_win": 0.0789,
+      "ev_draw": -0.0678,
+      "ev_loss": -0.035,
+      "prediction": "home",
+      "prediction_cn": "主胜",
+      "prediction_prob": 0.4279,
+      "comparison": {
+        "pinnacle": {
+          "odds": [
+            2.43,
+            3.08,
+            3.31
+          ],
+          "ev": [
+            0.0789,
+            -0.0678,
+            -0.035
+          ],
+          "dir": "主胜"
+        },
+        "bet365": {
+          "odds": [
+            2.4,
+            3.0,
+            2.9
+          ],
+          "ev": [
+            0.1218,
+            -0.043,
+            -0.1069
+          ],
+          "dir": "主胜"
+        },
+        "zqdc": {
+          "odds": [
+            2.4,
+            3.0,
+            2.9
+          ],
+          "ev": [
+            0.1218,
+            -0.043,
+            -0.1069
+          ],
+          "dir": "主胜"
+        }
+      }
+    },
+    {
+      "date": "2026-07-13",
+      "match_time": "07-13 06:00",
+      "event": "巴西乙",
+      "home_team": "巴西雷加塔斯",
+      "away_team": "戈亚斯",
+      "score": "",
+      "hit": "",
+      "source": "beidan",
+      "odds_source": "pinnacle",
+      "odds_win": 1.93,
+      "odds_draw": 3.41,
+      "odds_loss": 4.38,
+      "margin": 0.0397,
+      "implied_win": 0.4984,
+      "implied_draw": 0.2821,
+      "implied_loss": 0.2196,
+      "home_lambda": 1.466,
+      "away_lambda": 0.934,
+      "poisson_win": 0.4954,
+      "poisson_draw": 0.2645,
+      "poisson_loss": 0.2401,
+      "fusion_win": 0.4969,
+      "fusion_draw": 0.2733,
+      "fusion_loss": 0.2299,
+      "ev_win": -0.0029,
+      "ev_draw": -0.0311,
+      "ev_loss": 0.0466,
+      "prediction": "away",
+      "prediction_cn": "客胜",
+      "prediction_prob": 0.4969,
+      "comparison": {
+        "pinnacle": {
+          "odds": [
+            1.93,
+            3.41,
+            4.38
+          ],
+          "ev": [
+            -0.0029,
+            -0.0311,
+            0.0466
+          ],
+          "dir": "客胜"
+        },
+        "bet365": {
+          "odds": [
+            1.91,
+            3.5,
+            4.0
+          ],
+          "ev": [
+            0.0053,
+            0.0131,
+            -0.0261
+          ],
+          "dir": "观望"
+        },
+        "zqdc": {
+          "odds": [
+            1.91,
+            3.5,
+            4.0
+          ],
+          "ev": [
+            0.0053,
+            0.0131,
+            -0.0261
           ],
           "dir": "观望"
         }
