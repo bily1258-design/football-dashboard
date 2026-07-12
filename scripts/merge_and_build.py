@@ -312,6 +312,15 @@ def load_from_db(db_path: str, max_days=999) -> dict:
         _raw_cp = d.get('calibrated_prob', 0) or 0
         if _raw_cp == 0:
             _raw_cp = round(max(fw, fd, fl), 3)
+        # 跳过无赔率/无EV的比赛（ev和poisson全为0）
+        _ev_w = d.get('ev_win', 0) or 0
+        _ev_d = d.get('ev_draw', 0) or 0
+        _ev_l = d.get('ev_loss', 0) or 0
+        _poi_w = d.get('poisson_win', 0) or 0
+        _poi_d = d.get('poisson_draw', 0) or 0
+        _poi_l = d.get('poisson_loss', 0) or 0
+        if _ev_w == 0 and _ev_d == 0 and _ev_l == 0 and _poi_w == 0 and _poi_d == 0 and _poi_l == 0:
+            continue
         by_date[wd].append({
             'id': d['id'], 'date': date, 'league': d.get('league',''),
             'home': d['home_team'], 'away': d['away_team'],
@@ -819,11 +828,6 @@ def generate_index_html(by_date, daily_stats, summary, league_score_freq=None, o
 <div class="controls">
 <label>日期：</label>
 <select id="dateSelect"></select>
-<div class="source-tabs">
-<button class="source-tab active" data-source="all">全部</button>
-<button class="source-tab" data-source="jingcai">香港马会</button>
-<button class="source-tab" data-source="beidan">北京单场</button>
-</div>
 <label><input type="checkbox" id="showResulted" checked> 已开奖</label>
 <label><input type="checkbox" id="showPending" checked> 待开奖</label>
 <button id="btnExcel" onclick="downloadExcel()" style="margin-left:auto;padding:4px 12px;background:#238636;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:13px">📥 下载Excel</button>
