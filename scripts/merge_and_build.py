@@ -933,22 +933,12 @@ def main():
             n_hkjc_merged = 0
             for d_key, db_records in db_data.items():
                 if d_key in by_date:
-                    if len(db_records) > len(by_date[d_key]):
-                        by_date[d_key] = db_records
-                    else:
-                        # 用归一化(home, away)匹配（别名归一化后跨源同场）
-                        db_by_match = {}
-                        for r in db_records:
-                            mk = _match_key(r.get('home',''), r.get('away',''))
-                            db_by_match.setdefault(mk, r)
-                        db_by_id = {r['id']: r for r in db_records}
-                        for proc_rec in by_date[d_key]:
-                            # 优先id匹配，回退到归一化(home,away)匹配
-                            db_rec = db_by_id.get(proc_rec.get('id'))
-                            if not db_rec:
-                                match_k = _match_key(proc_rec.get('home',''), proc_rec.get('away',''))
-                                db_rec = db_by_match.get(match_k)
-                            if db_rec:
+                    # 只按 FID (id) 匹配 — DB 记录没有匹配 FID 则跳过
+                    # 不再按 count 全覆盖（DB 含非 500.com 来源的额外场次）
+                    db_by_id = {r['id']: r for r in db_records}
+                    for proc_rec in by_date[d_key]:
+                        db_rec = db_by_id.get(proc_rec.get('id'))
+                        if db_rec:
                                 for k in _NEW_KEYS:
                                     if (k not in proc_rec or not isinstance(proc_rec.get(k), dict)) and k in db_rec and isinstance(db_rec.get(k), dict):
                                         proc_rec[k] = db_rec[k]
