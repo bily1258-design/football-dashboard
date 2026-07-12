@@ -552,7 +552,9 @@ function loadDate() {
       : '待定';
     const srcBadge = r.source === 'beidan'
       ? '<span class="badge badge-bd">北单</span>'
-      : '<span class="badge badge-jc">香港马会</span>';
+      : r.source === 'jingcai'
+      ? '<span class="badge badge-jc">竞彩</span>'
+      : '';
     const tierColors = {high:'#4caf50', medium:'#ff9800', low:'#8b949e', very_low:'#484f58'};
     const tierLabels = {high:'高', medium:'中', low:'低', very_low:'低'};
     const tier = r.confidence_tier || 'very_low';
