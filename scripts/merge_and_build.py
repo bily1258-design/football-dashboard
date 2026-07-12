@@ -321,6 +321,10 @@ def load_from_db(db_path: str, max_days=999) -> dict:
         _poi_l = d.get('poisson_loss', 0) or 0
         if _ev_w == 0 and _ev_d == 0 and _ev_l == 0 and _poi_w == 0 and _poi_d == 0 and _poi_l == 0:
             continue
+        # 只保留北单/竞彩（跳过weekfixture/wanchang等其它来源）
+        _src = d.get('source', '')
+        if _src not in ('beidan', 'jingcai', None, ''):
+            continue
         by_date[wd].append({
             'id': d['id'], 'date': date, 'league': d.get('league',''),
             'home': d['home_team'], 'away': d['away_team'],

@@ -4,26 +4,26 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>泊松预测看板</title>
-<link rel="stylesheet" href="style.css?v=20260712v4">
+<link rel="stylesheet" href="style.css">
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 </head>
 <body>
 <div class="header">
 <h1>⚽ 泊松预测看板</h1>
-<div class="sub">更新于 2026-07-12 | 共 68 场 | 3 天数据 (7/10-12) | 实盘/北单 EV+泊松</div>
+<div class="sub">更新于 2026-07-12 20:32 | 共 113 场已开奖 | 10 天数据</div>
 </div>
 
 <div class="summary-cards">
-<div class="card"><div class="label">EV方向命中率</div><div class="value" style="color:#4caf50">57.5%</div><div class="label">84/146</div></div>
-<div class="card"><div class="label">概率最高命中率</div><div class="value" style="color:#ff9800">50.7%</div><div class="label">74/146</div></div>
-<div class="card"><div class="label">任一命中</div><div class="value blue">58.2%</div><div class="label">85/146</div></div>
+<div class="card"><div class="label">EV方向命中率</div><div class="value" style="color:#4caf50">55.8%</div><div class="label">63/113</div></div>
+<div class="card"><div class="label">概率最高命中率</div><div class="value" style="color:#ff9800">57.5%</div><div class="label">65/113</div></div>
+<div class="card"><div class="label">任一命中</div><div class="value blue">57.5%</div><div class="label">65/113</div></div>
 <div class="card"><div class="label">总天数</div><div class="value blue">10</div></div>
 </div>
 <div class="summary-cards" style="margin-top:8px">
-<div class="card" style="border-color:#4caf50"><div class="label">⭐ 推荐命中率(EV)</div><div class="value" style="color:#4caf50">76.5%</div><div class="label">13/17 (高+中信心)</div></div>
-<div class="card" style="border-color:#4caf50"><div class="label">⭐ 推荐命中率(概率)</div><div class="value" style="color:#ff9800">58.8%</div><div class="label">10/17 (高+中信心)</div></div>
-<div class="card"><div class="label">🔴 高信心命中率</div><div class="value" style="color:#4caf50">83.3%</div><div class="label">5/6</div></div>
-<div class="card"><div class="label">🟡 中信心命中率</div><div class="value" style="color:#4caf50">72.7%</div><div class="label">8/11</div></div>
+<div class="card" style="border-color:#4caf50"><div class="label">⭐ 推荐命中率(EV)</div><div class="value" style="color:#4caf50">73.8%</div><div class="label">31/42 (高+中信心)</div></div>
+<div class="card" style="border-color:#4caf50"><div class="label">⭐ 推荐命中率(概率)</div><div class="value" style="color:#4caf50">78.6%</div><div class="label">33/42 (高+中信心)</div></div>
+<div class="card"><div class="label">🔴 高信心命中率</div><div class="value" style="color:#4caf50">85.7%</div><div class="label">24/28</div></div>
+<div class="card"><div class="label">🟡 中信心命中率</div><div class="value" style="color:#ff9800">50.0%</div><div class="label">7/14</div></div>
 </div>
 
 <div class="tabs">
@@ -36,9 +36,6 @@
 <div class="controls">
 <label>日期：</label>
 <select id="dateSelect"></select>
-<div class="source-tabs">
-<button class="source-tab active" data-source="all">全部</button>
-</div>
 <label><input type="checkbox" id="showResulted" checked> 已开奖</label>
 <label><input type="checkbox" id="showPending" checked> 待开奖</label>
 <button id="btnExcel" onclick="downloadExcel()" style="margin-left:auto;padding:4px 12px;background:#238636;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:13px">📥 下载Excel</button>
