@@ -393,6 +393,8 @@ h1{font-size:22px;color:#66b8ff;margin-bottom:8px}
 .stat-card .stat-val{font-size:18px;font-weight:700;color:#66b8ff}
 .stat-card .stat-label{font-size:11px;color:#667788;margin-top:2px}
 #loading{text-align:center;padding:40px;color:#667788;font-size:16px}
+#table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+#table-wrap::before{content:'← 左右滑动查看更多 →';display:block;text-align:center;font-size:11px;color:#556677;padding:4px 0}
 table{width:100%;border-collapse:collapse;font-size:13px}
 th{background:#1a2a3a;padding:8px 10px;text-align:left;font-weight:600;color:#8899aa;border-bottom:2px solid #2a3a4a;cursor:pointer;white-space:nowrap;user-select:none}
 th:hover{color:#66b8ff}
