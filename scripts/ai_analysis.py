@@ -356,6 +356,8 @@ def generate_frontend(results: List[Dict]):
           <th data-sort="league">赛事</th>
           <th>主队</th>
           <th>客队</th>
+          <th>比分</th>
+          <th>命中</th>
           <th data-sort="odds">赔率(W/D/L)</th>
           <th data-sort="poisson">泊松(W/D/L)</th>
           <th data-sort="fusion">融合(W/D/L)</th>
@@ -414,6 +416,9 @@ tr:hover{background:#1a2a3a}
 .tag-beidan{background:#1e3a5f;color:#60a5fa}
 .tag-jingcai{background:#3a2a1e;color:#fbbf24}
 .lambda-cell{font-size:12px;color:#8899aa}
+.hit-yes{color:#4ade80;font-weight:700;font-size:1.1em;text-align:center}
+.hit-no{color:#f87171;font-weight:700;font-size:1.1em;text-align:center}
+.score-cell{text-align:center;font-weight:500}
 .high-ev{animation:glow 2s ease-in-out infinite}
 @keyframes glow{0%,100%{opacity:1}50%{opacity:0.6}}
 @media(max-width:768px){
@@ -461,11 +466,14 @@ function renderTable(matches){
     var maxEv = Math.max(m.ev_win,m.ev_draw,m.ev_loss);
     var tr = document.createElement('tr');
     if(maxEv>0.08) tr.style.background='rgba(74,222,128,0.05)';
+    var hc=m.hit==='\u2705'?'hit-yes':m.hit==='\u274c'?'hit-no':'';
     tr.innerHTML =
       '<td>'+fmtTime(m.match_time)+'</td>'+
       '<td><span class="tag tag-'+m.source+'">'+(m.event||m.source)+'</span></td>'+
       '<td class="team-name">'+m.home_team+'</td>'+
       '<td class="team-name">'+m.away_team+'</td>'+
+      '<td class="score-cell">'+(m.score||'-')+'</td>'+
+      '<td class="'+hc+'">'+(m.hit||'')+'</td>'+
       '<td class="odds-cell"><span class="odds-val odds-w">'+fmtOdds(m.odds_win)+'</span> <span class="odds-val odds-d">'+fmtOdds(m.odds_draw)+'</span> <span class="odds-val odds-l">'+fmtOdds(m.odds_loss)+'</span></td>'+
       '<td class="odds-cell"><span class="odds-val odds-w">'+fmtPct(m.poisson_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.poisson_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.poisson_loss)+'</span></td>'+
       '<td class="odds-cell"><span class="odds-val odds-w">'+fmtPct(m.fusion_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.fusion_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.fusion_loss)+'</span></td>'+

@@ -33,11 +33,14 @@ function renderTable(matches){
     var maxEv = Math.max(m.ev_win,m.ev_draw,m.ev_loss);
     var tr = document.createElement('tr');
     if(maxEv>0.08) tr.style.background='rgba(74,222,128,0.05)';
+    var hc=m.hit==='✅'?'hit-yes':m.hit==='❌'?'hit-no':'';
     tr.innerHTML =
       '<td>'+fmtTime(m.match_time)+'</td>'+
       '<td><span class="tag tag-'+m.source+'">'+(m.event||m.source)+'</span></td>'+
       '<td class="team-name">'+m.home_team+'</td>'+
       '<td class="team-name">'+m.away_team+'</td>'+
+      '<td class="score-cell">'+(m.score||'-')+'</td>'+
+      '<td class="'+hc+'">'+(m.hit||'')+'</td>'+
       '<td class="odds-cell"><span class="odds-val odds-w">'+fmtOdds(m.odds_win)+'</span> <span class="odds-val odds-d">'+fmtOdds(m.odds_draw)+'</span> <span class="odds-val odds-l">'+fmtOdds(m.odds_loss)+'</span></td>'+
       '<td class="odds-cell"><span class="odds-val odds-w">'+fmtPct(m.poisson_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.poisson_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.poisson_loss)+'</span></td>'+
       '<td class="odds-cell"><span class="odds-val odds-w">'+fmtPct(m.fusion_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.fusion_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.fusion_loss)+'</span></td>'+
