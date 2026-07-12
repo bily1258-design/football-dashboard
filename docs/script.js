@@ -559,7 +559,8 @@ function loadDate() {
     const tierLabels = {high:'高', medium:'中', low:'低', very_low:'低'};
     const tier = r.confidence_tier || 'very_low';
     const tierBadge = `<span style="display:inline-block;padding:1px 5px;border-radius:3px;font-size:10px;color:#fff;background:${tierColors[tier]||'#484f58'};margin-left:3px">${tierLabels[tier]||'低'}</span>`;
-    const evW = r.ev.w, evD = r.ev.d, evL = r.ev.l;
+    const ev = r.ev || {};
+    const evW = ev.w ?? 0, evD = ev.d ?? 0, evL = ev.l ?? 0;
     const evCls = v => v > 0 ? 'ev-pos' : 'ev-neg';
     // 亚盘列优先显示Pinnacle让球，其次利记，再次威廉希尔，再次Bet365
     const pinAh = r.pin_ah || {};
@@ -590,15 +591,18 @@ function loadDate() {
       ? `<td class="ah-clickable" data-date="${sel}" data-idx="${i}">${ahDisplayVal}</td>`
       : `<td>${ahDisplayVal}</td>`;
     const pct = v => (v * 100).toFixed(1) + '%';
-    const poissonStr = `${pct(r.poisson.w)}/${pct(r.poisson.d)}/${pct(r.poisson.l)}`;
-    const finalStr = `${pct(r.final_prob.w)}/${pct(r.final_prob.d)}/${pct(r.final_prob.l)}`;
+    const poisson = r.poisson || {};
+    const poissonStr = `${pct(poisson.w??0)}/${pct(poisson.d??0)}/${pct(poisson.l??0)}`;
+    const fp = r.final_prob || {};
+    const finalStr = `${pct(fp.w??0)}/${pct(fp.d??0)}/${pct(fp.l??0)}`;
     const evStr = `<span class="${evCls(evW)}">${pct(evW)}</span>/<span class="${evCls(evD)}">${pct(evD)}</span>/<span class="${evCls(evL)}">${pct(evL)}</span>`;
-    const kellyStr = `${pct(r.kelly.w)}/${pct(r.kelly.d)}/${pct(r.kelly.l)}`;
+    const kelly = r.kelly || {};
+    const kellyStr = `${pct(kelly.w??0)}/${pct(kelly.d??0)}/${pct(kelly.l??0)}`;
     const kickoff = (!r.kickoff || r.kickoff === '待定') ? '-' : r.kickoff.substring(11, 16);
     const probPct = (r.prediction_prob * 100).toFixed(1) + '%';
     const probLabel = r.prob_direction ? `${r.prob_direction} ${probPct}` : probPct;
     const probDirClass = r.prob_hit ? 'hit' : (hasResult ? 'miss' : 'pending');
-    const hasPoisson = r.poisson && (r.poisson.w > 0 || r.poisson.d > 0 || r.poisson.l > 0);
+    const hasPoisson = poisson && (poisson.w > 0 || poisson.d > 0 || poisson.l > 0);
     const poissonCell = hasPoisson
       ? `<td class="poisson-clickable" data-date="${sel}" data-idx="${i}">${poissonStr}</td>`
       : `<td>${poissonStr}</td>`;
