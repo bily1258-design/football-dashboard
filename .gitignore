@@ -4,38 +4,20 @@
 *.db-wal
 *.db-shm
 
-# 忽略Python缓存
+# Python缓存
 __pycache__/
 *.pyc
-*.pyo
-*.pyd
-.Python
 
-# 忽略虚拟环境
-venv/
-env/
-.env
-
-# 忽略临时文件
-*.tmp
+# 日志
 *.log
+
+# 临时文件
+*.tmp
 .DS_Store
 
-# 忽略敏感信息
+# 敏感信息
 SECRET.md
 .env
 
-# 忽略大文件和生成数据
-data/processed/*.json
-data/cache/*.json
-!data/cache/zgzcw_*.json
-!data/cache/pinnacle_odds_*.json
-!data/cache/500com_results_*.json
-data/reports/*.csv
-data/reports/*.xlsx
-data/shared_state/
-outputs/
-data/football.db
-# Legacy archived scripts (dead code)
-scripts/legacy/*.log
-codeact/
+# docs/由GA生成，但results.json和前端文件需要提交才能触发GA
+# （本地生成后需要git add -f 或取消ignore）

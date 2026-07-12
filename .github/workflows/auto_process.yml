@@ -1,0 +1,40 @@
+name: 足彩数据自动分析
+
+on:
+  push:
+    paths:
+      - 'data/matches_*.json'
+      - 'scripts/ai_analysis.py'
+      - 'scripts/fetch_zqdc.py'
+      - '.github/workflows/auto_process.yml'
+  workflow_dispatch:
+  schedule:
+    - cron: '30 1,9,15 * * *'
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 设置 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 运行分析
+        run: python scripts/ai_analysis.py
+
+      - name: 验证结果
+        run: python scripts/verify_results.py
+
+      - name: 部署到 GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
+          force_orphan: true
+          user_name: 'football-bot'
+          user_email: 'bot@football-dashboard'
