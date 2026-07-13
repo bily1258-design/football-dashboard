@@ -67,25 +67,11 @@ def tanh_compress(ev: float, scale: float = EV_TANH_SCALE) -> float:
     return scale * math.tanh(ev / scale)
 
 def determine_direction(ev_w: float, ev_d: float, ev_l: float) -> Tuple[str, str, float]:
-    """确定推荐方向（选EV最小的方向 — 最被低估/价值最大）
-    1. 默认取EV最小的方向（最负值）
-    2. 若中间值EV与最小值EV相差<5% → 改推中间值方向
-    """
+    """确定推荐方向（选EV最小的方向 — 最被低估/价值最大）"""
     items = [('主胜', ev_w, 'home'), ('平局', ev_d, 'draw'), ('客胜', ev_l, 'away')]
-    # 按EV升序（最小到最大）
-    sorted_items = sorted(items, key=lambda x: x[1], reverse=False)
-    min_dir_cn, min_ev, min_dir_en = sorted_items[0]
-    mid_dir_cn, mid_ev, mid_dir_en = sorted_items[1]
-
-    # 默认：推最小值方向（最负EV = 最有价值）
-    best_dir_cn, best_dir_en = min_dir_cn, min_dir_en
-
-    # 若中间值与最小值相差不到5% → 改推中间值（分歧大时保守）
-    if abs(mid_ev - min_ev) < 0.05:
-        best_dir_cn, best_dir_en = mid_dir_cn, mid_dir_en
-
-    best_ev = ev_w if best_dir_en == 'home' else ev_d if best_dir_en == 'draw' else ev_l
-    return best_dir_cn, best_dir_en, round(best_ev, 4)
+    sorted_items = sorted(items, key=lambda x: x[1])  # 升序，最负排第一
+    dir_cn, best_ev, dir_en = sorted_items[0]
+    return dir_cn, dir_en, round(best_ev, 4)
 
 # ─── 数据加载 ──────────────────────────────────────
 
