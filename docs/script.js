@@ -55,7 +55,7 @@ function renderCmp(c){
       popup+= '<div class="cmp-pop-row"><span class="cmp-pop-source">'+oLabels[di]+'</span> <span class="cmp-div-val'+higherCls+' cmp-div-pin">'+po[di].toFixed(2)+'</span><span class="cmp-div-sep">|</span><span class="cmp-div-val cmp-div-bet">'+bo[di].toFixed(2)+'</span><span class="cmp-div-diff">'+diffNote+'</span></div>';
     }
   }
-  return '<span class="cmp-hint-wrap"><span class="cmp-hint '+hintClass+'">'+hint+'</span><div class="cmp-popup">'+popup+'</div></span>';
+  return '<div class="cmp-hint-wrap"><span class="cmp-hint '+hintClass+'">'+hint+'</span><div class="cmp-popup">'+popup+'</div></div>';
 }
 function fmtTime(t){return t?t.replace(/^\d{2}-/,''):''}
 
