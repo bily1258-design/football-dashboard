@@ -26,9 +26,9 @@ DOCS_DIR = os.path.join(REPO_DIR, "docs")
 DB_PATH = os.path.join(DATA_DIR, "football.db")
 
 # ─── 算法常量 ──────────────────────────────────────
-BASE_TOTAL_GOALS = 2.5       # 基准总进球
+BASE_TOTAL_GOALS = 2.0       # 基准总进球（从2.5下调）
 HOME_ADV = 0.03              # 主场加成（极小，避免虚高）
-LAMBDA_MIN, LAMBDA_MAX = 0.3, 4.0
+LAMBDA_MIN, LAMBDA_MAX = 0.01, 4.0      # λ下限几乎取消，避免人为撑高
 POISSON_WEIGHT = 0.7         # final = 0.7*poisson + 0.3*implied（旧版final权重）
 EV_TANH_SCALE = 0.50         # EV软压缩
 MIN_EV_THRESHOLD = 0.03      # 最小EV阈值（3%）
@@ -83,13 +83,18 @@ def implied_from_odds(odds_w: float, odds_d: float, odds_l: float) -> Tuple[Opti
 
 def estimate_lambdas(imp_w: float, imp_d: float, imp_l: float) -> Tuple[float, float]:
     """从隐含概率反推泊松λ（主/客预期进球）
-    lam_h = (imp_w / (imp_w+imp_l)) * BASE_TOTAL_GOALS + HOME_ADV
-    lam_a = (imp_l / (imp_w+imp_l)) * BASE_TOTAL_GOALS
+    分配平局概率到主客：draw_share一半给主、一半给客
+    lam_h = (imp_w + imp_d*0.5) / total * BASE_TOTAL_GOALS + HOME_ADV
+    lam_a = (imp_l + imp_d*0.5) / total * BASE_TOTAL_GOALS
     """
-    denom = max(imp_w + imp_l, 0.01)
-    lam_h = (imp_w / denom) * BASE_TOTAL_GOALS + HOME_ADV
-    lam_a = (imp_l / denom) * BASE_TOTAL_GOALS
-    return max(LAMBDA_MIN, min(LAMBDA_MAX, lam_h)), max(LAMBDA_MIN, min(LAMBDA_MAX, lam_a))
+    home_share = imp_w + imp_d * 0.5
+    away_share = imp_l + imp_d * 0.5
+    total = home_share + away_share
+    if total < 0.001:
+        return 0.0, 0.0
+    lam_h = (home_share / total) * BASE_TOTAL_GOALS + HOME_ADV
+    lam_a = (away_share / total) * BASE_TOTAL_GOALS
+    return min(LAMBDA_MAX, lam_h), min(LAMBDA_MAX, lam_a)
 
 def calc_ev(fusion_prob: float, implied_prob: float) -> float:
     """概率优势法EV: EV = fusion/implied - 1"""
