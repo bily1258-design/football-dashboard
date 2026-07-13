@@ -26,13 +26,15 @@ function renderCmp(c){
   if(d.open){
     popup+= '<div class="cmp-pop-row cmp-pop-open"><span class="cmp-pop-source">初盘</span> '+d.open[0].toFixed(2)+'/'+d.open[1].toFixed(2)+'/'+d.open[2].toFixed(2)+'</div>';
     var oLabels = ['胜','平','负'];
-    popup+= '<div class="cmp-divider"></div><div class="cmp-div-title">初盘→即时变化</div>';
+    popup+= '<div class="cmp-divider"></div><div class="cmp-div-title">即时分歧</div>';
     for(var di=0;di<3;di++){
       var curVal = d.odds[di], openVal = d.open[di];
-      var diff = curVal - openVal;
-      var diffNote = diff > 0.01 ? '↑' : (diff < -0.01 ? '↓' : '=');
-      var higherCls = diff > 0 ? ' cmp-div-higher' : (diff < 0 ? ' cmp-div-lower' : '');
-      popup+= '<div class="cmp-pop-row"><span class="cmp-pop-source">'+oLabels[di]+'</span> <span class="cmp-div-val cmp-div-open">'+openVal.toFixed(2)+'</span><span class="cmp-div-sep">→</span><span class="cmp-div-val'+higherCls+'">'+curVal.toFixed(2)+'</span><span class="cmp-div-diff">'+diffNote+'</span></div>';
+      var openCls = '', curCls = '';
+      var diffNote = '';
+      if(openVal > curVal){openCls=' cmp-div-higher'; curCls=' cmp-div-lower'; diffNote='↑';}
+      else if(curVal > openVal){openCls=' cmp-div-lower'; curCls=' cmp-div-higher'; diffNote='↓';}
+      else{diffNote='=';}
+      popup+= '<div class="cmp-pop-row"><span class="cmp-pop-source">'+oLabels[di]+'</span> <span class="cmp-div-val'+openCls+'">'+openVal.toFixed(2)+'</span><span class="cmp-div-sep">|</span><span class="cmp-div-val'+curCls+'">'+curVal.toFixed(2)+'</span><span class="cmp-div-diff">'+diffNote+'</span></div>';
     }
   }
   return '<div class="cmp-hint-wrap"><span class="cmp-hint '+hintClass+'">'+hint+'</span><div class="cmp-popup">'+popup+'</div></div>';
