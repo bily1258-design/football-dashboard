@@ -226,6 +226,12 @@ def analyze_matches(matches: List[Dict]) -> List[Dict]:
         # 3. 泊松1X2概率
         pois_w, pois_d, pois_l = poisson_match_probs(lam_h, lam_a)
 
+        # 3b. 主胜概率修正：主胜↓20%，分配的8%给平局，12%给客胜
+        _red = pois_w * 0.20
+        pois_w -= _red
+        pois_d += _red * 0.4   # 8/20=0.4
+        pois_l += _red * 0.6   # 12/20=0.6
+
         # 4. 融合概率
         fusion_w = POISSON_WEIGHT * pois_w + (1 - POISSON_WEIGHT) * imp_w
         fusion_d = POISSON_WEIGHT * pois_d + (1 - POISSON_WEIGHT) * imp_d
