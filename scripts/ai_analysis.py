@@ -490,6 +490,15 @@ tr:hover{background:#1a2a3a}
 .cmp-pop-source{display:inline-block;width:28px;color:#60a5fa;font-weight:600}
 .cmp-pop-latest{font-weight:500;color:#e0e8f0}
 .cmp-pop-open{font-size:10px;color:#7a8a9a;padding-left:28px;border-bottom:1px solid #1a2a3a}
+.cmp-divider{border-top:1px solid #2a4a6a;margin:4px 0}
+.cmp-div-title{font-size:10px;color:#8899aa;text-align:center;padding:2px 0}
+.cmp-div-sep{color:#445566;margin:0 2px}
+.cmp-div-val{font-weight:500;color:#e0e8f0}
+.cmp-div-pin{color:#4ade80}
+.cmp-div-bet{color:#a78bfa}
+.cmp-div-higher{color:#fbbf24;font-weight:700}
+.cmp-div-lower{color:#7a8a9a}
+.cmp-div-diff{font-size:9px;margin-left:2px;color:#8899aa}
 .lambda-cell{font-size:12px;color:#8899aa}
 .hit-yes{color:#4ade80;font-weight:700;font-size:1.1em;text-align:center}
 .hit-no{color:#f87171;font-weight:700;font-size:1.1em;text-align:center}
@@ -547,6 +556,20 @@ function renderCmp(c){
     popup+= '<div class="cmp-pop-row"><span class="cmp-pop-source">'+label+'</span> <span class="cmp-pop-latest">'+d.odds[0].toFixed(2)+'/'+d.odds[1].toFixed(2)+'/'+d.odds[2].toFixed(2)+'</span>'+dirDot+'</div>';
     if(d.open){
       popup+= '<div class="cmp-pop-row cmp-pop-open"><span class="cmp-pop-source">开盘</span> '+d.open[0].toFixed(2)+'/'+d.open[1].toFixed(2)+'/'+d.open[2].toFixed(2)+'</div>';
+    }
+  }
+  // 分歧对比：平博 vs Bet365 即时赔率
+  if(c.pinnacle && c.bet365){
+    var po = c.pinnacle.odds, bo = c.bet365.odds;
+    var oLabels = ['胜','平','负'];
+    popup+= '<div class="cmp-divider"></div><div class="cmp-div-title">即时分歧</div>';
+    for(var di=0;di<3;di++){
+      var higherCls = '';
+      var diffNote = '';
+      if(po[di] > bo[di]){higherCls=' cmp-div-higher'; diffNote='↑';}
+      else if(bo[di] > po[di]){higherCls=' cmp-div-lower'; diffNote='↓';}
+      else{diffNote='=';}
+      popup+= '<div class="cmp-pop-row"><span class="cmp-pop-source">'+oLabels[di]+'</span> <span class="cmp-div-val'+higherCls+' cmp-div-pin">'+po[di].toFixed(2)+'</span><span class="cmp-div-sep">|</span><span class="cmp-div-val cmp-div-bet">'+bo[di].toFixed(2)+'</span><span class="cmp-div-diff">'+diffNote+'</span></div>';
     }
   }
   return '<span class="cmp-hint-wrap"><span class="cmp-hint '+hintClass+'">'+hint+'</span><div class="cmp-popup">'+popup+'</div></span>';

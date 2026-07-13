@@ -41,6 +41,20 @@ function renderCmp(c){
       popup+= '<div class="cmp-pop-row cmp-pop-open"><span class="cmp-pop-source">开盘</span> '+d.open[0].toFixed(2)+'/'+d.open[1].toFixed(2)+'/'+d.open[2].toFixed(2)+'</div>';
     }
   }
+  // 分歧对比：平博 vs Bet365 即时赔率
+  if(c.pinnacle && c.bet365){
+    var po = c.pinnacle.odds, bo = c.bet365.odds;
+    var oLabels = ['胜','平','负'];
+    popup+= '<div class="cmp-divider"></div><div class="cmp-div-title">即时分歧</div>';
+    for(var di=0;di<3;di++){
+      var higherCls = '';
+      var diffNote = '';
+      if(po[di] > bo[di]){higherCls=' cmp-div-higher'; diffNote='↑';}
+      else if(bo[di] > po[di]){higherCls=' cmp-div-lower'; diffNote='↓';}
+      else{diffNote='=';}
+      popup+= '<div class="cmp-pop-row"><span class="cmp-pop-source">'+oLabels[di]+'</span> <span class="cmp-div-val'+higherCls+' cmp-div-pin">'+po[di].toFixed(2)+'</span><span class="cmp-div-sep">|</span><span class="cmp-div-val cmp-div-bet">'+bo[di].toFixed(2)+'</span><span class="cmp-div-diff">'+diffNote+'</span></div>';
+    }
+  }
   return '<span class="cmp-hint-wrap"><span class="cmp-hint '+hintClass+'">'+hint+'</span><div class="cmp-popup">'+popup+'</div></span>';
 }
 function fmtTime(t){return t?t.replace(/^\d{2}-/,''):''}
