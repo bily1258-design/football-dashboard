@@ -26,13 +26,10 @@ DOCS_DIR = os.path.join(REPO_DIR, "docs")
 DB_PATH = os.path.join(DATA_DIR, "football.db")
 
 # ─── 算法常量 ──────────────────────────────────────
-BASE_TOTAL_GOALS = 2.0       # 基准总进球（从2.5下调）
-HOME_ADV = 0.03              # 主场加成（极小，避免虚高）
-LAMBDA_MIN, LAMBDA_MAX = 0.01, 4.0      # λ下限几乎取消，避免人为撑高
-POISSON_WEIGHT = 0.7         # final = 0.7*poisson + 0.3*implied（旧版final权重）
-EV_TANH_SCALE = 0.50         # EV软压缩
-MIN_EV_THRESHOLD = 0.03      # 最小EV阈值（3%）
-MAX_GOALS = 10               # 泊松积分上限
+SMOOTH_ALPHA = 0.01           # 贝叶斯平滑强度：模型 = (1-α)×隐含 + α/3（极小，仅用于正则化）
+HOME_ADJ = 0.01               # 主场调整量：加到模型主胜，从平/负各扣0.003
+EV_TANH_SCALE = 0.50          # EV软压缩
+MIN_EV_THRESHOLD = 0.03       # 最小EV阈值（3%）
 
 # ─── 日志 ──────────────────────────────────────────
 logger = logging.getLogger("ai_analysis")
@@ -50,28 +47,6 @@ logger = setup_logging()
 
 # ─── 核心数学 ──────────────────────────────────────
 
-def poisson_pmf(lam: float, k: int) -> float:
-    """泊松概率 P(X=k)"""
-    if lam <= 0:
-        return 1.0 if k == 0 else 0.0
-    return (lam ** k) * math.exp(-lam) / math.factorial(k)
-
-def poisson_match_probs(lam_h: float, lam_a: float) -> Tuple[float, float, float]:
-    """泊松分布 → P(主胜/平/客胜)"""
-    p_h = [poisson_pmf(lam_h, k) for k in range(MAX_GOALS + 1)]
-    p_a = [poisson_pmf(lam_a, k) for k in range(MAX_GOALS + 1)]
-    pw = pd = pl = 0.0
-    for k in range(MAX_GOALS + 1):
-        for j in range(MAX_GOALS + 1):
-            p = p_h[k] * p_a[j]
-            if k > j:
-                pw += p
-            elif k == j:
-                pd += p
-            else:
-                pl += p
-    return pw, pd, pl
-
 def implied_from_odds(odds_w: float, odds_d: float, odds_l: float) -> Tuple[Optional[float], ...]:
     """从赔率反推隐含概率（去抽水归一化）"""
     if odds_w <= 0 or odds_d <= 0 or odds_l <= 0:
@@ -80,21 +55,6 @@ def implied_from_odds(odds_w: float, odds_d: float, odds_l: float) -> Tuple[Opti
     total = iw + id_ + il
     margin = total - 1.0
     return iw / total, id_ / total, il / total, margin
-
-def estimate_lambdas(imp_w: float, imp_d: float, imp_l: float) -> Tuple[float, float]:
-    """从隐含概率反推泊松λ（主/客预期进球）
-    分配平局概率到主客：draw_share一半给主、一半给客
-    lam_h = (imp_w + imp_d*0.5) / total * BASE_TOTAL_GOALS + HOME_ADV
-    lam_a = (imp_l + imp_d*0.5) / total * BASE_TOTAL_GOALS
-    """
-    home_share = imp_w + imp_d * 0.5
-    away_share = imp_l + imp_d * 0.5
-    total = home_share + away_share
-    if total < 0.001:
-        return 0.0, 0.0
-    lam_h = (home_share / total) * BASE_TOTAL_GOALS + HOME_ADV
-    lam_a = (away_share / total) * BASE_TOTAL_GOALS
-    return min(LAMBDA_MAX, lam_h), min(LAMBDA_MAX, lam_a)
 
 def calc_ev(fusion_prob: float, implied_prob: float) -> float:
     """概率优势法EV: EV = fusion/implied - 1"""
@@ -219,38 +179,26 @@ def analyze_matches(matches: List[Dict]) -> List[Dict]:
             skipped += 1
             continue
 
-        # 2. 泊松λ
-        lam_h, lam_a = estimate_lambdas(imp_w, imp_d, imp_l)
+        # 2. 贝叶斯平滑隐含概率 + 主场修正（微量）
+        sw = imp_w * (1 - SMOOTH_ALPHA) + SMOOTH_ALPHA / 3 + HOME_ADJ
+        sd = imp_d * (1 - SMOOTH_ALPHA) + SMOOTH_ALPHA / 3 - HOME_ADJ * 0.3
+        sl = imp_l * (1 - SMOOTH_ALPHA) + SMOOTH_ALPHA / 3 - HOME_ADJ * 0.3
+        st = sw + sd + sl
+        model_w, model_d, model_l = sw/st, sd/st, sl/st
 
-        # 3. 泊松1X2概率
-        pois_w, pois_d, pois_l = poisson_match_probs(lam_h, lam_a)
-
-        # 3b. 主胜概率修正：主胜↓20%，分配的8%给平局，12%给客胜
-        _red = pois_w * 0.20
-        pois_w -= _red
-        pois_d += _red * 0.4   # 8/20=0.4
-        pois_l += _red * 0.6   # 12/20=0.6
-
-        # 4. 融合概率
-        fusion_w = POISSON_WEIGHT * pois_w + (1 - POISSON_WEIGHT) * imp_w
-        fusion_d = POISSON_WEIGHT * pois_d + (1 - POISSON_WEIGHT) * imp_d
-        fusion_l = POISSON_WEIGHT * pois_l + (1 - POISSON_WEIGHT) * imp_l
-        ft = fusion_w + fusion_d + fusion_l
-        fusion_w, fusion_d, fusion_l = fusion_w/ft, fusion_d/ft, fusion_l/ft
-
-        # 5. EV（主赔率源）
-        ev_w = calc_ev(fusion_w, imp_w)
-        ev_d = calc_ev(fusion_d, imp_d)
-        ev_l = calc_ev(fusion_l, imp_l)
+        # 3. EV（模型概率 vs 市场隐含概率）
+        ev_w = calc_ev(model_w, imp_w)
+        ev_d = calc_ev(model_d, imp_d)
+        ev_l = calc_ev(model_l, imp_l)
         ev_w_c = tanh_compress(ev_w)
         ev_d_c = tanh_compress(ev_d)
         ev_l_c = tanh_compress(ev_l)
 
-        # 6. 推荐方向
+        # 4. 推荐方向
         dir_cn, dir_en, best_ev = determine_direction(ev_w_c, ev_d_c, ev_l_c)
 
-        # 7. 最大概率方向
-        max_prob_val = max(fusion_w, fusion_d, fusion_l)
+        # 5. 最大概率方向
+        max_prob_val = max(model_w, model_d, model_l)
 
         # 比分 → 实际结果方向
         score_raw = m.get('score', '')
@@ -280,9 +228,9 @@ def analyze_matches(matches: List[Dict]) -> List[Dict]:
             if o_w > 1 and o_d > 1 and o_l > 1:
                 iw, id_, il, _ = implied_from_odds(o_w, o_d, o_l) or (None, None, None, 0)
                 if iw:
-                    ew = tanh_compress(calc_ev(fusion_w, iw))
-                    ed = tanh_compress(calc_ev(fusion_d, id_))
-                    el = tanh_compress(calc_ev(fusion_l, il))
+                    ew = tanh_compress(calc_ev(model_w, iw))
+                    ed = tanh_compress(calc_ev(model_d, id_))
+                    el = tanh_compress(calc_ev(model_l, il))
                     dc, _, _ = determine_direction(ew, ed, el)
                     entry = {
                         'odds': [round(o_w,2), round(o_d,2), round(o_l,2)],
@@ -310,14 +258,9 @@ def analyze_matches(matches: List[Dict]) -> List[Dict]:
             'implied_win': round(imp_w, 4),
             'implied_draw': round(imp_d, 4),
             'implied_loss': round(imp_l, 4),
-            'home_lambda': round(lam_h, 3),
-            'away_lambda': round(lam_a, 3),
-            'poisson_win': round(pois_w, 4),
-            'poisson_draw': round(pois_d, 4),
-            'poisson_loss': round(pois_l, 4),
-            'fusion_win': round(fusion_w, 4),
-            'fusion_draw': round(fusion_d, 4),
-            'fusion_loss': round(fusion_l, 4),
+            'model_win': round(model_w, 4),
+            'model_draw': round(model_d, 4),
+            'model_loss': round(model_l, 4),
             'ev_win': round(ev_w_c, 4),
             'ev_draw': round(ev_d_c, 4),
             'ev_loss': round(ev_l_c, 4),
@@ -416,20 +359,18 @@ def generate_frontend(results: List[Dict]):
           <th>客队</th>
           <th data-sort="odds">赔率(W/D/L)</th>
           <th>平博/Bet365</th>
-          <th data-sort="poisson">泊松(W/D/L)</th>
-          <th data-sort="fusion">融合(W/D/L)</th>
+          <th data-sort="model">模型(W/D/L)</th>
           <th data-sort="ev">EV(W/D/L)</th>
           <th data-sort="direction">方向</th>
           <th>比分</th>
           <th>命中</th>
-          <th data-sort="lambda">λ</th>
         </tr>
       </thead>
       <tbody id="matchBody"></tbody>
     </table>
   </div>
 </div>
-<script src="script.js?v=20260713v2"></script>
+<script src="script.js?v=20260713v3"></script>
 </body>
 </html>'''
     with open(os.path.join(DOCS_DIR, 'index.html'), 'w', encoding='utf-8') as f:
@@ -611,13 +552,11 @@ function renderTable(matches){
       '<td class="team-name">'+m.away_team+'</td>'+
       '<td class="odds-cell"><span class="odds-source-tag tag-'+m.odds_source+'">'+({pinnacle:'平博',bet365:'B365'}[m.odds_source]||'')+'</span><span class="odds-val odds-w">'+fmtOdds(m.odds_win)+'</span> <span class="odds-val odds-d">'+fmtOdds(m.odds_draw)+'</span> <span class="odds-val odds-l">'+fmtOdds(m.odds_loss)+'</span></td>'+
       '<td class="odds-cell cmp-cell">'+renderCmp(m.comparison)+'</td>'+
-      '<td class="odds-cell"><span class="odds-val odds-w">'+fmtPct(m.poisson_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.poisson_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.poisson_loss)+'</span></td>'+
-      '<td class="odds-cell"><span class="odds-val odds-w">'+fmtPct(m.fusion_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.fusion_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.fusion_loss)+'</span></td>'+
+      '<td class="odds-cell"><span class="odds-val odds-w">'+fmtPct(m.model_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.model_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.model_loss)+'</span></td>'+
       '<td class="odds-cell"><span class="odds-val '+evClass(m.ev_win)+'">'+fmtEv(m.ev_win)+'</span> <span class="odds-val '+evClass(m.ev_draw)+'">'+fmtEv(m.ev_draw)+'</span> <span class="odds-val '+evClass(m.ev_loss)+'">'+fmtEv(m.ev_loss)+'</span></td>'+
       '<td><span class="'+dirClass(m.prediction)+'">'+dirText(m.prediction)+'</span></td>'+
       '<td class="score-cell">'+(m.score||'-')+'</td>'+
-      '<td class="'+hc+'">'+(m.hit||'')+'</td>'+
-      '<td class="lambda-cell">'+m.home_lambda+' / '+m.away_lambda+'</td>';
+      '<td class="'+hc+'">'+(m.hit||'')+'</td>';
     tbody.appendChild(tr);
   });
   document.getElementById('matchCount').textContent = matches.length+' 场';
