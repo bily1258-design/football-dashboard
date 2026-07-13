@@ -371,7 +371,7 @@ def generate_frontend(results: List[Dict]):
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>足彩价值投注看板</title>
-<link rel="stylesheet" href="style.css?v=20260713v1">
+<link rel="stylesheet" href="style.css?v=20260713v2">
 </head>
 <body>
 <div class="container">
@@ -425,7 +425,7 @@ def generate_frontend(results: List[Dict]):
     </table>
   </div>
 </div>
-<script src="script.js?v=20260713v1"></script>
+<script src="script.js?v=20260713v2"></script>
 </body>
 </html>'''
     with open(os.path.join(DOCS_DIR, 'index.html'), 'w', encoding='utf-8') as f:
