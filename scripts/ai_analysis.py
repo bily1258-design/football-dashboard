@@ -155,21 +155,13 @@ def analyze_matches(matches: List[Dict]) -> List[Dict]:
     skipped = 0
 
     for m in matches:
-        # 赔率优先级：平博 → Bet365
-        ow_pin = float(m.get('odds_pinnacle_win', 0) or 0)
-        od_pin = float(m.get('odds_pinnacle_draw', 0) or 0)
-        ol_pin = float(m.get('odds_pinnacle_loss', 0) or 0)
-        ow_bet = float(m.get('odds_bet365_win', 0) or 0)
-        od_bet = float(m.get('odds_bet365_draw', 0) or 0)
-        ol_bet = float(m.get('odds_bet365_loss', 0) or 0)
+        # 赔率源：平博
+        ow = float(m.get('odds_pinnacle_win', 0) or 0)
+        od = float(m.get('odds_pinnacle_draw', 0) or 0)
+        ol = float(m.get('odds_pinnacle_loss', 0) or 0)
+        odds_source = 'pinnacle'
 
-        # 选主赔率源（平博→Bet365）
-        ow, od, ol, odds_source = 0, 0, 0, ''
-        if ow_pin > 1 and od_pin > 1 and ol_pin > 1:
-            ow, od, ol, odds_source = ow_pin, od_pin, ol_pin, 'pinnacle'
-        elif ow_bet > 1 and od_bet > 1 and ol_bet > 1:
-            ow, od, ol, odds_source = ow_bet, od_bet, ol_bet, 'bet365'
-        else:
+        if not (ow > 1 and od > 1 and ol > 1):
             skipped += 1
             continue
 
@@ -210,36 +202,26 @@ def analyze_matches(matches: List[Dict]) -> List[Dict]:
             actual = ''
         hit = '✅' if actual and actual == dir_en else ('❌' if actual else '')
 
-        # 8. 赔率对比数据（平博 vs Bet365）
-        #    每条含开盘赔率和最新赔率（即时数据）
+        # 8. 赔率对比数据（平博开盘 vs 平博即时）
         comparison = {}
-        for src_name, src_o, src_open in [
-            ('pinnacle', (ow_pin, od_pin, ol_pin), 
-             (float(m.get('odds_pinnacle_open_win', 0) or 0),
-              float(m.get('odds_pinnacle_open_draw', 0) or 0),
-              float(m.get('odds_pinnacle_open_loss', 0) or 0))),
-            ('bet365', (ow_bet, od_bet, ol_bet),
-             (float(m.get('odds_bet365_open_win', 0) or 0),
-              float(m.get('odds_bet365_open_draw', 0) or 0),
-              float(m.get('odds_bet365_open_loss', 0) or 0))),
-        ]:
-            o_w, o_d, o_l = src_o
-            op_w, op_d, op_l = src_open
-            if o_w > 1 and o_d > 1 and o_l > 1:
-                iw, id_, il, _ = implied_from_odds(o_w, o_d, o_l) or (None, None, None, 0)
-                if iw:
-                    ew = tanh_compress(calc_ev(model_w, iw))
-                    ed = tanh_compress(calc_ev(model_d, id_))
-                    el = tanh_compress(calc_ev(model_l, il))
-                    dc, _, _ = determine_direction(ew, ed, el)
-                    entry = {
-                        'odds': [round(o_w,2), round(o_d,2), round(o_l,2)],
-                        'ev': [round(ew,4), round(ed,4), round(el,4)],
-                        'dir': dc,
-                    }
-                    if op_w > 1 and op_d > 1 and op_l > 1:
-                        entry['open'] = [round(op_w,2), round(op_d,2), round(op_l,2)]
-                    comparison[src_name] = entry
+        if ow > 1 and od > 1 and ol > 1:
+            iw, id_, il, _ = implied_from_odds(ow, od, ol) or (None, None, None, 0)
+            if iw:
+                ew = tanh_compress(calc_ev(model_w, iw))
+                ed = tanh_compress(calc_ev(model_d, id_))
+                el = tanh_compress(calc_ev(model_l, il))
+                dc, _, _ = determine_direction(ew, ed, el)
+                entry = {
+                    'odds': [round(ow,2), round(od,2), round(ol,2)],
+                    'ev': [round(ew,4), round(ed,4), round(el,4)],
+                    'dir': dc,
+                }
+                op_w = float(m.get('odds_pinnacle_open_win', 0) or 0)
+                op_d = float(m.get('odds_pinnacle_open_draw', 0) or 0)
+                op_l = float(m.get('odds_pinnacle_open_loss', 0) or 0)
+                if op_w > 1 and op_d > 1 and op_l > 1:
+                    entry['open'] = [round(op_w,2), round(op_d,2), round(op_l,2)]
+                comparison['pinnacle'] = entry
 
         results.append({
             'date': m.get('date', ''),
@@ -358,7 +340,7 @@ def generate_frontend(results: List[Dict]):
           <th>主队</th>
           <th>客队</th>
           <th data-sort="odds">赔率(W/D/L)</th>
-          <th>平博/Bet365</th>
+          <th>平博初盘vs即时</th>
           <th data-sort="model">模型(W/D/L)</th>
           <th data-sort="ev">EV(W/D/L)</th>
           <th data-sort="direction">方向</th>
@@ -370,7 +352,7 @@ def generate_frontend(results: List[Dict]):
     </table>
   </div>
 </div>
-<script src="script.js?v=20260713v3"></script>
+<script src="script.js?v=20260713v4"></script>
 </body>
 </html>'''
     with open(os.path.join(DOCS_DIR, 'index.html'), 'w', encoding='utf-8') as f:
@@ -419,7 +401,6 @@ tr:hover{background:#1a2a3a}
 .tag-jingcai{background:#3a2a1e;color:#fbbf24}
 .odds-source-tag{display:inline-block;padding:0 4px;border-radius:3px;font-size:10px;margin-right:4px;font-weight:700}
 .tag-pinnacle{background:#1a3a2a;color:#4ade80}
-.tag-bet365{background:#2a1e3a;color:#a78bfa}
 .cmp-cell{font-size:11px;line-height:1.6;position:relative;text-align:center;min-width:70px}
 .cmp-hint-wrap{cursor:pointer;position:relative;display:inline-block}
 .cmp-hint{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;cursor:pointer;transition:all .15s}
@@ -470,51 +451,31 @@ function fmtEv(v){return v===0?'0%':(v>0?'+':'')+(v*100).toFixed(1)+'%'}
 function evClass(v){return v>0.03?'ev-pos':v<-0.03?'ev-neg':'ev-zero'}
 function dirClass(d){return d==='home'?'dir-home':d==='draw'?'dir-draw':d==='away'?'dir-away':'dir-wait'}
 function dirText(d){return d==='home'?'主胜':d==='draw'?'平局':d==='away'?'客胜':'观望'}
-function srcLabel(s){return {pinnacle:'平博',bet365:'B365'}[s]||s}
+function srcLabel(s){return '平博'}
 function srcEvClass(v){return v>0.03?'ev-pos':v<-0.03?'ev-neg':'ev-zero'}
 function renderCmp(c){
   if(!c) return '<span class="cmp-na">--</span>';
-  var keys = ['pinnacle','bet365'];
-  var pinDir = c.pinnacle?c.pinnacle.dir:'';
-  var betDir = c.bet365?c.bet365.dir:'';
+  var d = c.pinnacle;
+  if(!d) return '<span class="cmp-na">--</span>';
   var hint = '', hintClass = '';
-  if(pinDir && betDir && pinDir===betDir && pinDir!=='观望'){
-    hint = '✅一致'; hintClass = 'cmp-hint-agree';
-  } else if(pinDir && betDir && pinDir!=='观望' && betDir!=='观望' && pinDir!==betDir){
-    hint = '⚠️分歧'; hintClass = 'cmp-hint-conflict';
-  } else if(pinDir==='观望' && betDir==='观望'){
-    hint = '◻️观望'; hintClass = 'cmp-hint-wait';
-  } else {
-    hint = '🔄分歧'; hintClass = 'cmp-hint-conflict';
-  }
-  // 弹窗内容
+  var dirDot = '';
+  if(d.dir==='主胜') dirDot='👑H';
+  else if(d.dir==='平局') dirDot='⚖️D';
+  else if(d.dir==='客胜') dirDot='👑A';
+  hint = dirDot || '◻️';
+  hintClass = dirDot ? 'cmp-hint-agree' : 'cmp-hint-wait';
   var popup = '';
-  for(var i=0;i<keys.length;i++){
-    var s = keys[i], d = c[s];
-    var label = s==='pinnacle'?'平博':'B365';
-    if(!d) {popup+= '<div class="cmp-pop-row cmp-na">'+label+' --</div>'; continue;}
-    var bestEv = Math.max(d.ev[0],d.ev[1],d.ev[2]);
-    var dirDot = '';
-    if(d.dir==='主胜') dirDot=' 👑H';
-    else if(d.dir==='平局') dirDot=' ⚖️D';
-    else if(d.dir==='客胜') dirDot=' 👑A';
-    popup+= '<div class="cmp-pop-row"><span class="cmp-pop-source">'+label+'</span> <span class="cmp-pop-latest">'+d.odds[0].toFixed(2)+'/'+d.odds[1].toFixed(2)+'/'+d.odds[2].toFixed(2)+'</span>'+dirDot+'</div>';
-    if(d.open){
-      popup+= '<div class="cmp-pop-row cmp-pop-open"><span class="cmp-pop-source">开盘</span> '+d.open[0].toFixed(2)+'/'+d.open[1].toFixed(2)+'/'+d.open[2].toFixed(2)+'</div>';
-    }
-  }
-  // 分歧对比：平博 vs Bet365 即时赔率
-  if(c.pinnacle && c.bet365){
-    var po = c.pinnacle.odds, bo = c.bet365.odds;
+  popup+= '<div class="cmp-pop-row"><span class="cmp-pop-source">即时</span> <span class="cmp-pop-latest">'+d.odds[0].toFixed(2)+'/'+d.odds[1].toFixed(2)+'/'+d.odds[2].toFixed(2)+'</span> '+dirDot+'</div>';
+  if(d.open){
+    popup+= '<div class="cmp-pop-row cmp-pop-open"><span class="cmp-pop-source">初盘</span> '+d.open[0].toFixed(2)+'/'+d.open[1].toFixed(2)+'/'+d.open[2].toFixed(2)+'</div>';
     var oLabels = ['胜','平','负'];
-    popup+= '<div class="cmp-divider"></div><div class="cmp-div-title">即时分歧</div>';
+    popup+= '<div class="cmp-divider"></div><div class="cmp-div-title">初盘→即时变化</div>';
     for(var di=0;di<3;di++){
-      var higherCls = '';
-      var diffNote = '';
-      if(po[di] > bo[di]){higherCls=' cmp-div-higher'; diffNote='↑';}
-      else if(bo[di] > po[di]){higherCls=' cmp-div-lower'; diffNote='↓';}
-      else{diffNote='=';}
-      popup+= '<div class="cmp-pop-row"><span class="cmp-pop-source">'+oLabels[di]+'</span> <span class="cmp-div-val'+higherCls+' cmp-div-pin">'+po[di].toFixed(2)+'</span><span class="cmp-div-sep">|</span><span class="cmp-div-val cmp-div-bet">'+bo[di].toFixed(2)+'</span><span class="cmp-div-diff">'+diffNote+'</span></div>';
+      var curVal = d.odds[di], openVal = d.open[di];
+      var diff = curVal - openVal;
+      var diffNote = diff > 0.01 ? '↑' : (diff < -0.01 ? '↓' : '=');
+      var higherCls = diff > 0 ? ' cmp-div-higher' : (diff < 0 ? ' cmp-div-lower' : '');
+      popup+= '<div class="cmp-pop-row"><span class="cmp-pop-source">'+oLabels[di]+'</span> <span class="cmp-div-val cmp-div-open">'+openVal.toFixed(2)+'</span><span class="cmp-div-sep">→</span><span class="cmp-div-val'+higherCls+'">'+curVal.toFixed(2)+'</span><span class="cmp-div-diff">'+diffNote+'</span></div>';
     }
   }
   return '<div class="cmp-hint-wrap"><span class="cmp-hint '+hintClass+'">'+hint+'</span><div class="cmp-popup">'+popup+'</div></div>';
@@ -550,7 +511,7 @@ function renderTable(matches){
       '<td><span class="tag tag-'+m.source+'">'+(m.event||m.source)+'</span></td>'+
       '<td class="team-name">'+m.home_team+'</td>'+
       '<td class="team-name">'+m.away_team+'</td>'+
-      '<td class="odds-cell"><span class="odds-source-tag tag-'+m.odds_source+'">'+({pinnacle:'平博',bet365:'B365'}[m.odds_source]||'')+'</span><span class="odds-val odds-w">'+fmtOdds(m.odds_win)+'</span> <span class="odds-val odds-d">'+fmtOdds(m.odds_draw)+'</span> <span class="odds-val odds-l">'+fmtOdds(m.odds_loss)+'</span></td>'+
+      '<td class="odds-cell"><span class="odds-source-tag tag-'+m.odds_source+'">+'平博+'</span><span class="odds-val odds-w">'+fmtOdds(m.odds_win)+'</span> <span class="odds-val odds-d">'+fmtOdds(m.odds_draw)+'</span> <span class="odds-val odds-l">'+fmtOdds(m.odds_loss)+'</span></td>'+
       '<td class="odds-cell cmp-cell">'+renderCmp(m.comparison)+'</td>'+
       '<td class="odds-cell"><span class="odds-val odds-w">'+fmtPct(m.model_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.model_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.model_loss)+'</span></td>'+
       '<td class="odds-cell"><span class="odds-val '+evClass(m.ev_win)+'">'+fmtEv(m.ev_win)+'</span> <span class="odds-val '+evClass(m.ev_draw)+'">'+fmtEv(m.ev_draw)+'</span> <span class="odds-val '+evClass(m.ev_loss)+'">'+fmtEv(m.ev_loss)+'</span></td>'+

@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""fetch_zqdc.py — 从500.com抓取北单+平博+Bet365赔率数据
+"""fetch_zqdc.py — 从500.com抓取zqdc(北单/竞彩)+平博赔率数据
 
 抓取zqdc期号页面，提取比赛信息+北单赔率(liveOddsList["3"])，
-再通过odds.500.com API获取平博(1055)和Bet365(3)的1X2收盘赔率。
+再通过odds.500.com API获取平博(1055)的1X2开盘/即时赔率。
 
 用法:
   python3 scripts/fetch_zqdc.py                                     # 今天
   python3 scripts/fetch_zqdc.py --date 2026-07-12                   # 指定日期
   python3 scripts/fetch_zqdc.py --date 2026-07-12 --period 26074    # 指定期号
-  python3 scripts/fetch_zqdc.py --date 2026-07-12 --no-pinnacle     # 跳过平博/Bet365
+  python3 scripts/fetch_zqdc.py --date 2026-07-12 --no-pinnacle     # 跳过平博
 
 输出: data/matches_{YYYYMMDD}.json
 """
@@ -118,11 +118,11 @@ def parse(html, date_str):
 
     return sorted(matches, key=lambda x: x['match_time'])
 
-# ========== 追加平博/Bet365赔率 ==========
+# ========== 追加平博赔率 ==========
 
-def enhance_with_pinnacle_bet365(matches, delay=0.3):
-    """为每场比赛获取平博(cid=1055)和Bet365(cid=3)的收盘赔率"""
-    pinnacle_ok = bet365_ok = 0
+def enhance_with_pinnacle(matches, delay=0.3):
+    """为每场比赛获取平博(cid=1055)的收盘赔率"""
+    pinnacle_ok = 0
     total = len(matches)
 
     for i, m in enumerate(matches):
@@ -139,28 +139,14 @@ def enhance_with_pinnacle_bet365(matches, delay=0.3):
             m['odds_pinnacle_draw'] = p['latest']['d']
             m['odds_pinnacle_loss'] = p['latest']['l']
             pinnacle_ok += 1
-            print(f"平博开盘{p['open']['w']}/{p['open']['d']}/{p['open']['l']} 最新{p['latest']['w']}/{p['latest']['d']}/{p['latest']['l']}", end='  ', flush=True)
+            print(f"平博开盘{p['open']['w']}/{p['open']['d']}/{p['open']['l']} 最新{p['latest']['w']}/{p['latest']['d']}/{p['latest']['l']}")
         else:
-            print("平博-", end='  ', flush=True)
-
-        # Bet365
-        b = fetch_1x2_odds(fid, 3)
-        if b:
-            m['odds_bet365_open_win'] = b['open']['w']
-            m['odds_bet365_open_draw'] = b['open']['d']
-            m['odds_bet365_open_loss'] = b['open']['l']
-            m['odds_bet365_win'] = b['latest']['w']
-            m['odds_bet365_draw'] = b['latest']['d']
-            m['odds_bet365_loss'] = b['latest']['l']
-            bet365_ok += 1
-            print(f"Bet365开盘{b['open']['w']}/{b['open']['d']}/{b['open']['l']} 最新{b['latest']['w']}/{b['latest']['d']}/{b['latest']['l']}")
-        else:
-            print("Bet365-")
+            print("平博-")
 
         if delay > 0 and i < total - 1:
             time.sleep(delay)
 
-    return pinnacle_ok, bet365_ok
+    return pinnacle_ok
 
 # ========== 期号查找 ==========
 
@@ -179,7 +165,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--date', default=date.today().isoformat())
     parser.add_argument('--period')
-    parser.add_argument('--no-pinnacle', action='store_true', help='跳过平博/Bet365抓取')
+    parser.add_argument('--no-pinnacle', action='store_true', help='跳过平博抓取')
     args = parser.parse_args()
 
     if args.period:
@@ -195,11 +181,11 @@ def main():
         print(f"[WARN] {args.date} 无比赛数据")
         return
 
-    # 追加平博/Bet365赔率
+    # 追加平博赔率
     if not args.no_pinnacle:
-        print("[INFO] 抓取平博和Bet365赔率(收盘)...")
-        p_ok, b_ok = enhance_with_pinnacle_bet365(ms)
-        print(f"[INFO] 平博 {p_ok}/{len(ms)}, Bet365 {b_ok}/{len(ms)}")
+        print("[INFO] 抓取平博赔率(收盘)...")
+        p_ok = enhance_with_pinnacle(ms)
+        print(f"[INFO] 平博 {p_ok}/{len(ms)}")
 
     out = {
         'date': args.date,
