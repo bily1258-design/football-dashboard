@@ -423,6 +423,11 @@ tr:hover{background:#1a2a3a}
 .cmp-div-higher{color:#fbbf24;font-weight:700}
 .cmp-div-lower{color:#7a8a9a}
 .cmp-div-diff{font-size:9px;margin-left:2px;color:#8899aa}
+.cmp-div-compact{font-size:11px;text-align:center;padding:4px 2px;line-height:1.5}
+.cmp-pct{font-weight:500;margin:0 1px}
+.cmp-pct-pos{color:#f87171}
+.cmp-pct-neg{color:#4ade80}
+.cmp-div-big{color:#fbbf24;font-weight:700;font-size:10px}
 .lambda-cell{font-size:12px;color:#8899aa}
 .hit-yes{color:#4ade80;font-weight:700;font-size:1.1em;text-align:center}
 .hit-no{color:#f87171;font-weight:700;font-size:1.1em;text-align:center}
@@ -467,16 +472,18 @@ function renderCmp(c){
   if(d.open){
     popup+= '<div class="cmp-pop-row cmp-pop-open"><span class="cmp-pop-source">初盘</span> '+d.open[0].toFixed(2)+'/'+d.open[1].toFixed(2)+'/'+d.open[2].toFixed(2)+'</div>';
     var oLabels = ['胜','平','负'];
-    popup+= '<div class="cmp-divider"></div><div class="cmp-div-title">即时分歧</div>';
+    popup+= '<div class="cmp-divider"></div><div class="cmp-div-title">初盘 vs 即时 分歧</div><div class="cmp-pop-row cmp-div-compact">';
+    var pctStrs = [], hasBig = false;
     for(var di=0;di<3;di++){
       var curVal = d.odds[di], openVal = d.open[di];
-      var openCls = '', curCls = '';
-      var diffNote = '';
-      if(openVal > curVal){openCls=' cmp-div-higher'; curCls=' cmp-div-lower'; diffNote='↑';}
-      else if(curVal > openVal){openCls=' cmp-div-lower'; curCls=' cmp-div-higher'; diffNote='↓';}
-      else{diffNote='=';}
-      popup+= '<div class="cmp-pop-row"><span class="cmp-pop-source">'+oLabels[di]+'</span> <span class="cmp-div-val'+openCls+'">'+openVal.toFixed(2)+'</span><span class="cmp-div-sep">|</span><span class="cmp-div-val'+curCls+'">'+curVal.toFixed(2)+'</span><span class="cmp-div-diff">'+diffNote+'</span></div>';
+      var pct = (curVal - openVal) / openVal * 100;
+      var cls = pct > 0.5 ? ' cmp-pct-pos' : (pct < -0.5 ? ' cmp-pct-neg' : '');
+      pctStrs.push('<span class="cmp-pct'+cls+'">'+oLabels[di]+(pct>=0?'+':'')+pct.toFixed(1)+'%</span>');
+      if(Math.abs(pct) > 10) hasBig = true;
     }
+    popup+= pctStrs.join('<span class="cmp-div-sep">|</span>');
+    if(hasBig) popup+= '<span class="cmp-div-big"> △分歧大</span>';
+    popup+= '</div>';
   }
   return '<div class="cmp-hint-wrap"><span class="cmp-hint '+hintClass+'">'+hint+'</span><div class="cmp-popup">'+popup+'</div></div>';
 }

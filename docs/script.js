@@ -26,16 +26,18 @@ function renderCmp(c){
   if(d.open){
     popup+= '<div class="cmp-pop-row cmp-pop-open"><span class="cmp-pop-source">初盘</span> '+d.open[0].toFixed(2)+'/'+d.open[1].toFixed(2)+'/'+d.open[2].toFixed(2)+'</div>';
     var oLabels = ['胜','平','负'];
-    popup+= '<div class="cmp-divider"></div><div class="cmp-div-title">即时分歧</div>';
+    popup+= '<div class="cmp-divider"></div><div class="cmp-div-title">初盘 vs 即时 分歧</div><div class="cmp-pop-row cmp-div-compact">';
+    var pctStrs = [], hasBig = false;
     for(var di=0;di<3;di++){
       var curVal = d.odds[di], openVal = d.open[di];
-      var openCls = '', curCls = '';
-      var diffNote = '';
-      if(openVal > curVal){openCls=' cmp-div-higher'; curCls=' cmp-div-lower'; diffNote='↑';}
-      else if(curVal > openVal){openCls=' cmp-div-lower'; curCls=' cmp-div-higher'; diffNote='↓';}
-      else{diffNote='=';}
-      popup+= '<div class="cmp-pop-row"><span class="cmp-pop-source">'+oLabels[di]+'</span> <span class="cmp-div-val'+openCls+'">'+openVal.toFixed(2)+'</span><span class="cmp-div-sep">|</span><span class="cmp-div-val'+curCls+'">'+curVal.toFixed(2)+'</span><span class="cmp-div-diff">'+diffNote+'</span></div>';
+      var pct = (curVal - openVal) / openVal * 100;
+      var cls = pct > 0.5 ? ' cmp-pct-pos' : (pct < -0.5 ? ' cmp-pct-neg' : '');
+      pctStrs.push('<span class="cmp-pct'+cls+'">'+oLabels[di]+(pct>=0?'+':'')+pct.toFixed(1)+'%</span>');
+      if(Math.abs(pct) > 10) hasBig = true;
     }
+    popup+= pctStrs.join('<span class="cmp-div-sep">|</span>');
+    if(hasBig) popup+= '<span class="cmp-div-big"> △分歧大</span>';
+    popup+= '</div>';
   }
   return '<div class="cmp-hint-wrap"><span class="cmp-hint '+hintClass+'">'+hint+'</span><div class="cmp-popup">'+popup+'</div></div>';
 }
