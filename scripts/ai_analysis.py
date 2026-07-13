@@ -29,7 +29,7 @@ DB_PATH = os.path.join(DATA_DIR, "football.db")
 SMOOTH_ALPHA = 0.01           # 贝叶斯平滑强度：模型 = (1-α)×隐含 + α/3（极小，仅用于正则化）
 HOME_ADJ = 0.01               # 主场调整量：加到模型主胜，从平/负各扣0.003
 EV_TANH_SCALE = 0.50          # EV软压缩
-MIN_EV_THRESHOLD = 0.03       # 最小EV阈值（3%）
+
 
 # ─── 日志 ──────────────────────────────────────────
 logger = logging.getLogger("ai_analysis")
