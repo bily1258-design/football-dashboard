@@ -41,7 +41,6 @@ tr:hover{background:#1a2a3a}
 .odds-source-tag{display:inline-block;padding:0 4px;border-radius:3px;font-size:10px;margin-right:4px;font-weight:700}
 .tag-pinnacle{background:#1a3a2a;color:#4ade80}
 .tag-bet365{background:#2a1e3a;color:#a78bfa}
-.tag-zqdc{background:#1e3a5f;color:#60a5fa}
 .cmp-cell{font-size:11px;line-height:1.6;position:relative;text-align:center;min-width:70px}
 .cmp-hint-wrap{cursor:pointer;position:relative;display:inline-block}
 .cmp-hint{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;cursor:pointer;transition:all .15s}
@@ -51,9 +50,12 @@ tr:hover{background:#1a2a3a}
 .cmp-hint-wait{background:#1a1a2a;color:#667788;border:1px solid #2a2a3a}
 .cmp-popup{display:none;position:absolute;top:100%;left:50%;transform:translateX(-50%);z-index:100;background:#0d1b2a;border:1px solid #2a4a6a;border-radius:8px;padding:8px 12px;white-space:nowrap;min-width:130px;box-shadow:0 8px 24px rgba(0,0,0,0.6);margin-top:4px}
 .cmp-hint-wrap:hover .cmp-popup{display:block}
-.cmp-pop-row{font-size:11px;padding:3px 0;color:#c0c8d0;border-bottom:1px solid #1a2a3a}
+.cmp-pop-row{font-size:11px;padding:2px 0;color:#c0c8d0;border-bottom:1px solid #1a2a3a}
 .cmp-pop-row:last-child{border-bottom:none}
 .cmp-pop-row .cmp-na{color:#556677}
+.cmp-pop-source{display:inline-block;width:28px;color:#60a5fa;font-weight:600}
+.cmp-pop-latest{font-weight:500;color:#e0e8f0}
+.cmp-pop-open{font-size:10px;color:#7a8a9a;padding-left:28px;border-bottom:1px solid #1a2a3a}
 .lambda-cell{font-size:12px;color:#8899aa}
 .hit-yes{color:#4ade80;font-weight:700;font-size:1.1em;text-align:center}
 .hit-no{color:#f87171;font-weight:700;font-size:1.1em;text-align:center}

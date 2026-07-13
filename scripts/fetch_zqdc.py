@@ -79,16 +79,7 @@ def fetch_1x2_odds(fid, cid):
 def parse(html, date_str):
     target_md = date_str[5:]  # MM-DD
 
-    # 1) 解析 liveOddsList — 北单赔率 {fid: {"3": [w,d,l], ...}}
-    odds_data = {}
-    m = re.search(r'var liveOddsList\s*=\s*(\{.*?\});', html, re.DOTALL)
-    if m:
-        try:
-            odds_data = json.loads(m.group(1))
-        except Exception as e:
-            print(f"[WARN] liveOddsList解析失败: {e}")
-
-    # 2) 解析比赛行 <tr id="aXXXX" ...>
+    # 1) 解析比赛行 <tr id="aXXXX" ...>
     matches = []
     for tr_m in re.finditer(r'<tr\s+id="a(\d+)"[^>]*status="(\d+)"[^>]*gy="([^"]*)"[^>]*yy="([^"]*)"[^>]*>.*?</tr>', html, re.DOTALL):
         fid, status, gy_str, yy_str = tr_m.group(1), tr_m.group(2), tr_m.group(3), tr_m.group(4)
@@ -112,11 +103,6 @@ def parse(html, date_str):
         score_m = re.search(r'<td[^>]*align="center"[^>]*class="[^"]*red[^"]*"[^>]*>(\d+)\s*-\s*(\d+)</td>', row)
         score = f"{score_m.group(1)}-{score_m.group(2)}" if score_m else ''
 
-        # 3) 北单赔率 liveOddsList[fid]["3"]
-        o3 = odds_data.get(fid, {}).get("3", [])
-        zw = float(o3[0]) if len(o3) >= 1 and o3[0] else 0.0
-        zd = float(o3[1]) if len(o3) >= 2 and o3[1] else 0.0
-        zl = float(o3[2]) if len(o3) >= 3 and o3[2] else 0.0
 
         matches.append({
             'fid': fid,
@@ -128,12 +114,6 @@ def parse(html, date_str):
             'score': score,
             'status': status,
             'source': 'beidan',
-            'odds_win': zw,
-            'odds_draw': zd,
-            'odds_loss': zl,
-            'odds_zqdc_win': zw,
-            'odds_zqdc_draw': zd,
-            'odds_zqdc_loss': zl,
         })
 
     return sorted(matches, key=lambda x: x['match_time'])

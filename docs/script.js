@@ -8,11 +8,11 @@ function fmtEv(v){return v===0?'0%':(v>0?'+':'')+(v*100).toFixed(1)+'%'}
 function evClass(v){return v>0.03?'ev-pos':v<-0.03?'ev-neg':'ev-zero'}
 function dirClass(d){return d==='home'?'dir-home':d==='draw'?'dir-draw':d==='away'?'dir-away':'dir-wait'}
 function dirText(d){return d==='home'?'主胜':d==='draw'?'平局':d==='away'?'客胜':'观望'}
-function srcLabel(s){return {pinnacle:'平博',bet365:'B365',zqdc:'北单'}[s]||s}
+function srcLabel(s){return {pinnacle:'平博',bet365:'B365'}[s]||s}
 function srcEvClass(v){return v>0.03?'ev-pos':v<-0.03?'ev-neg':'ev-zero'}
 function renderCmp(c){
   if(!c) return '<span class="cmp-na">--</span>';
-  var keys = ['pinnacle','bet365','zqdc'];
+  var keys = ['pinnacle','bet365'];
   var pinDir = c.pinnacle?c.pinnacle.dir:'';
   var betDir = c.bet365?c.bet365.dir:'';
   var hint = '', hintClass = '';
@@ -29,13 +29,17 @@ function renderCmp(c){
   var popup = '';
   for(var i=0;i<keys.length;i++){
     var s = keys[i], d = c[s];
-    if(!d) {popup+= '<div class="cmp-pop-row cmp-na">'+(s==='pinnacle'?'平博':s==='bet365'?'B365':'北单')+' --</div>'; continue;}
+    var label = s==='pinnacle'?'平博':'B365';
+    if(!d) {popup+= '<div class="cmp-pop-row cmp-na">'+label+' --</div>'; continue;}
     var bestEv = Math.max(d.ev[0],d.ev[1],d.ev[2]);
     var dirDot = '';
     if(d.dir==='主胜') dirDot=' 👑H';
     else if(d.dir==='平局') dirDot=' ⚖️D';
     else if(d.dir==='客胜') dirDot=' 👑A';
-    popup+= '<div class="cmp-pop-row">'+(s==='pinnacle'?'平博':s==='bet365'?'B365':'北单')+' '+d.odds[0].toFixed(2)+'/'+d.odds[1].toFixed(2)+'/'+d.odds[2].toFixed(2)+dirDot+'</div>';
+    popup+= '<div class="cmp-pop-row"><span class="cmp-pop-source">'+label+'</span> <span class="cmp-pop-latest">'+d.odds[0].toFixed(2)+'/'+d.odds[1].toFixed(2)+'/'+d.odds[2].toFixed(2)+'</span>'+dirDot+'</div>';
+    if(d.open){
+      popup+= '<div class="cmp-pop-row cmp-pop-open"><span class="cmp-pop-source">开盘</span> '+d.open[0].toFixed(2)+'/'+d.open[1].toFixed(2)+'/'+d.open[2].toFixed(2)+'</div>';
+    }
   }
   return '<span class="cmp-hint-wrap"><span class="cmp-hint '+hintClass+'">'+hint+'</span><div class="cmp-popup">'+popup+'</div></span>';
 }
@@ -70,7 +74,7 @@ function renderTable(matches){
       '<td><span class="tag tag-'+m.source+'">'+(m.event||m.source)+'</span></td>'+
       '<td class="team-name">'+m.home_team+'</td>'+
       '<td class="team-name">'+m.away_team+'</td>'+
-      '<td class="odds-cell"><span class="odds-source-tag tag-'+m.odds_source+'">'+'平博Bet365北单'.match(/.{2}/g)[{pinnacle:0,bet365:1,zqdc:2}[m.odds_source]||0]+'</span><span class="odds-val odds-w">'+fmtOdds(m.odds_win)+'</span> <span class="odds-val odds-d">'+fmtOdds(m.odds_draw)+'</span> <span class="odds-val odds-l">'+fmtOdds(m.odds_loss)+'</span></td>'+
+      '<td class="odds-cell"><span class="odds-source-tag tag-'+m.odds_source+'">'+{pinnacle:'平博',bet365:'B365'}[m.odds_source]||''+'</span><span class="odds-val odds-w">'+fmtOdds(m.odds_win)+'</span> <span class="odds-val odds-d">'+fmtOdds(m.odds_draw)+'</span> <span class="odds-val odds-l">'+fmtOdds(m.odds_loss)+'</span></td>'+
       '<td class="odds-cell cmp-cell">'+renderCmp(m.comparison)+'</td>'+
       '<td class="odds-cell"><span class="odds-val odds-w">'+fmtPct(m.poisson_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.poisson_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.poisson_loss)+'</span></td>'+
       '<td class="odds-cell"><span class="odds-val odds-w">'+fmtPct(m.fusion_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.fusion_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.fusion_loss)+'</span></td>'+
