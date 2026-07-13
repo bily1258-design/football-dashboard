@@ -28,7 +28,6 @@ DB_PATH = os.path.join(DATA_DIR, "football.db")
 # ─── 算法常量 ──────────────────────────────────────
 SMOOTH_ALPHA = 0.01           # 贝叶斯平滑强度：模型 = (1-α)×隐含 + α/3（极小，仅用于正则化）
 HOME_ADJ = 0.01               # 主场调整量：加到模型主胜，从平/负各扣0.003
-EV_TANH_SCALE = 0.50          # EV软压缩
 
 
 # ─── 日志 ──────────────────────────────────────────
@@ -56,22 +55,11 @@ def implied_from_odds(odds_w: float, odds_d: float, odds_l: float) -> Tuple[Opti
     margin = total - 1.0
     return iw / total, id_ / total, il / total, margin
 
-def calc_ev(fusion_prob: float, implied_prob: float) -> float:
-    """概率优势法EV: EV = fusion/implied - 1"""
-    if implied_prob <= 0 or fusion_prob <= 0:
-        return 0.0
-    return fusion_prob / implied_prob - 1
-
-def tanh_compress(ev: float, scale: float = EV_TANH_SCALE) -> float:
-    """tanh软压缩"""
-    return scale * math.tanh(ev / scale)
-
-def determine_direction(ev_w: float, ev_d: float, ev_l: float) -> Tuple[str, str, float]:
-    """确定推荐方向（选EV最小的方向 — 最被低估/价值最大）"""
-    items = [('主胜', ev_w, 'home'), ('平局', ev_d, 'draw'), ('客胜', ev_l, 'away')]
-    sorted_items = sorted(items, key=lambda x: x[1])  # 升序，最负排第一
-    dir_cn, best_ev, dir_en = sorted_items[0]
-    return dir_cn, dir_en, round(best_ev, 4)
+def determine_direction(mw: float, md: float, ml: float) -> Tuple[str, str, float]:
+    """确定推荐方向（取模型概率最大的方向）"""
+    items = [('主胜', mw, 'home'), ('平局', md, 'draw'), ('客胜', ml, 'away')]
+    dir_cn, prob, dir_en = max(items, key=lambda x: x[1])
+    return dir_cn, dir_en, round(prob, 4)
 
 # ─── 数据加载 ──────────────────────────────────────
 
@@ -164,18 +152,10 @@ def analyze_matches(matches: List[Dict]) -> List[Dict]:
         st = sw + sd + sl
         model_w, model_d, model_l = sw/st, sd/st, sl/st
 
-        # 3. EV（模型概率 vs 市场隐含概率）
-        ev_w = calc_ev(model_w, imp_w)
-        ev_d = calc_ev(model_d, imp_d)
-        ev_l = calc_ev(model_l, imp_l)
-        ev_w_c = tanh_compress(ev_w)
-        ev_d_c = tanh_compress(ev_d)
-        ev_l_c = tanh_compress(ev_l)
+        # 3. 推荐方向（取最大模型概率）
+        dir_cn, dir_en, dir_prob = determine_direction(model_w, model_d, model_l)
 
-        # 4. 推荐方向
-        dir_cn, dir_en, best_ev = determine_direction(ev_w_c, ev_d_c, ev_l_c)
-
-        # 5. 最大概率方向
+        # 4. 最大概率值
         max_prob_val = max(model_w, model_d, model_l)
 
         # 比分 → 实际结果方向
@@ -191,23 +171,19 @@ def analyze_matches(matches: List[Dict]) -> List[Dict]:
         # 8. 赔率对比数据（平博开盘 vs 平博即时）
         comparison = {}
         if ow > 1 and od > 1 and ol > 1:
-            iw, id_, il, _ = implied_from_odds(ow, od, ol) or (None, None, None, 0)
-            if iw:
-                ew = tanh_compress(calc_ev(model_w, iw))
-                ed = tanh_compress(calc_ev(model_d, id_))
-                el = tanh_compress(calc_ev(model_l, il))
-                dc, _, _ = determine_direction(ew, ed, el)
-                entry = {
-                    'odds': [round(ow,2), round(od,2), round(ol,2)],
-                    'ev': [round(ew,4), round(ed,4), round(el,4)],
-                    'dir': dc,
+            op_w = float(m.get('odds_pinnacle_open_win', 0) or 0)
+            op_d = float(m.get('odds_pinnacle_open_draw', 0) or 0)
+            op_l = float(m.get('odds_pinnacle_open_loss', 0) or 0)
+            if op_w > 1 and op_d > 1 and op_l > 1:
+                # 分歧百分比
+                pct_w = (ow - op_w) / op_w * 100
+                pct_d = (od - op_d) / op_d * 100
+                pct_l = (ol - op_l) / ol * 100
+                comparison = {
+                    'open': [round(op_w,2), round(op_d,2), round(op_l,2)],
+                    'current': [round(ow,2), round(od,2), round(ol,2)],
+                    'div_pct': [round(pct_w,1), round(pct_d,1), round(pct_l,1)],
                 }
-                op_w = float(m.get('odds_pinnacle_open_win', 0) or 0)
-                op_d = float(m.get('odds_pinnacle_open_draw', 0) or 0)
-                op_l = float(m.get('odds_pinnacle_open_loss', 0) or 0)
-                if op_w > 1 and op_d > 1 and op_l > 1:
-                    entry['open'] = [round(op_w,2), round(op_d,2), round(op_l,2)]
-                comparison['pinnacle'] = entry
 
         results.append({
             'date': m.get('date', ''),
@@ -223,15 +199,9 @@ def analyze_matches(matches: List[Dict]) -> List[Dict]:
             'odds_draw': round(od, 2),
             'odds_loss': round(ol, 2),
             'margin': round(margin, 4),
-            'implied_win': round(imp_w, 4),
-            'implied_draw': round(imp_d, 4),
-            'implied_loss': round(imp_l, 4),
             'model_win': round(model_w, 4),
             'model_draw': round(model_d, 4),
             'model_loss': round(model_l, 4),
-            'ev_win': round(ev_w_c, 4),
-            'ev_draw': round(ev_d_c, 4),
-            'ev_loss': round(ev_l_c, 4),
             'prediction': dir_en,
             'prediction_cn': dir_cn,
             'prediction_prob': round(max_prob_val, 4),
@@ -266,11 +236,9 @@ def generate_frontend(results: List[Dict]):
     }
     for d in dates:
         ms = by_date[d]
-        ev_pos = sum(1 for m in ms if m['ev_win'] > 0 or m['ev_draw'] > 0 or m['ev_loss'] > 0)
         output['daily_stats'].append({
             'date': d,
             'count': len(ms),
-            'positive_ev': ev_pos,
         })
 
     # 写入 results.json
@@ -286,7 +254,8 @@ def generate_frontend(results: List[Dict]):
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>足彩价值投注看板</title>
-<link rel="stylesheet" href="style.css?v=20260713v2">
+<link rel="stylesheet" href="style.css?v=20260713v5">
+<script src="script.js?v=20260713v5"></script>
 </head>
 <body>
 <div class="container">
@@ -307,8 +276,6 @@ def generate_frontend(results: List[Dict]):
         <option value="jingcai">竞彩</option>
       </select>
       <select id="sortBy" onchange="applyFilters()">
-        <option value="ev_desc">按EV ↓</option>
-        <option value="ev_asc">按EV ↑</option>
         <option value="time">按时间</option>
         <option value="odds">按赔率</option>
       </select>
@@ -326,12 +293,10 @@ def generate_frontend(results: List[Dict]):
           <th>主队</th>
           <th>比分</th>
           <th>客队</th>
-          <th data-sort="direction">方向</th>
+          <th>方向</th>
           <th>命中</th>
-          <th>平博初盘vs即时</th>
-          <th data-sort="odds">赔率(W/D/L)</th>
-          <th data-sort="model">模型(W/D/L)</th>
-          <th data-sort="ev">EV(W/D/L)</th>
+          <th>赔率(初/即/分歧)</th>
+          <th>模型(W/D/L)</th>
         </tr>
       </thead>
       <tbody id="matchBody"></tbody>
@@ -375,9 +340,6 @@ tr:hover{background:#1a2a3a}
 .odds-w{color:#4ade80}
 .odds-d{color:#fbbf24}
 .odds-l{color:#f87171}
-.ev-pos{color:#4ade80;font-weight:600}
-.ev-neg{color:#f87171}
-.ev-zero{color:#667788}
 .dir-home{color:#4ade80;font-weight:700}
 .dir-draw{color:#fbbf24;font-weight:700}
 .dir-away{color:#f87171;font-weight:700}
@@ -385,41 +347,20 @@ tr:hover{background:#1a2a3a}
 .tag{display:inline-block;padding:1px 6px;border-radius:3px;font-size:11px;background:#2a3a4a;color:#8899aa}
 .tag-beidan{background:#1e3a5f;color:#60a5fa}
 .tag-jingcai{background:#3a2a1e;color:#fbbf24}
-.odds-source-tag{display:inline-block;padding:0 4px;border-radius:3px;font-size:10px;margin-right:4px;font-weight:700}
-.tag-pinnacle{background:#1a3a2a;color:#4ade80}
-.cmp-cell{font-size:11px;line-height:1.6;position:relative;text-align:center;min-width:70px}
-.cmp-hint-wrap{cursor:pointer;position:relative;display:inline-block}
-.cmp-hint{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;cursor:pointer;transition:all .15s}
-.cmp-hint:hover{filter:brightness(1.3)}
-.cmp-hint-agree{background:#0a2a1a;color:#4ade80;border:1px solid #1a4a2a}
-.cmp-hint-conflict{background:#2a1a0a;color:#fbbf24;border:1px solid #4a3a1a}
-.cmp-hint-wait{background:#1a1a2a;color:#667788;border:1px solid #2a2a3a}
-.cmp-popup{display:none;position:absolute;top:100%;left:50%;transform:translateX(-50%);z-index:100;background:#0d1b2a;border:1px solid #2a4a6a;border-radius:8px;padding:8px 12px;white-space:nowrap;min-width:130px;box-shadow:0 8px 24px rgba(0,0,0,0.6);margin-top:4px}
-.cmp-hint-wrap:hover .cmp-popup{display:block}
-.cmp-pop-row{font-size:11px;padding:2px 0;color:#c0c8d0;border-bottom:1px solid #1a2a3a}
-.cmp-pop-row:last-child{border-bottom:none}
-.cmp-pop-row .cmp-na{color:#556677}
-.cmp-pop-source{display:inline-block;width:28px;color:#60a5fa;font-weight:600}
-.cmp-pop-latest{font-weight:500;color:#e0e8f0}
-.cmp-pop-open{font-size:10px;color:#7a8a9a;padding-left:28px;border-bottom:1px solid #1a2a3a}
-.cmp-divider{border-top:1px solid #2a4a6a;margin:4px 0}
-.cmp-div-title{font-size:10px;color:#8899aa;text-align:center;padding:2px 0}
-.cmp-div-sep{color:#445566;margin:0 2px}
-.cmp-div-val{font-weight:500;color:#e0e8f0}
-.cmp-div-higher{color:#fbbf24;font-weight:700}
-.cmp-div-lower{color:#7a8a9a}
-.cmp-div-diff{font-size:9px;margin-left:2px;color:#8899aa}
-.cmp-div-compact{font-size:11px;text-align:center;padding:4px 2px;line-height:1.5}
-.cmp-pct{font-weight:500;margin:0 1px}
-.cmp-pct-pos{color:#f87171}
-.cmp-pct-neg{color:#4ade80}
-.cmp-div-big{color:#fbbf24;font-weight:700;font-size:10px}
-.lambda-cell{font-size:12px;color:#8899aa}
 .hit-yes{color:#4ade80;font-weight:700;font-size:1.1em;text-align:center}
 .hit-no{color:#f87171;font-weight:700;font-size:1.1em;text-align:center}
 .score-cell{text-align:center;font-weight:500}
-.high-ev{animation:glow 2s ease-in-out infinite}
-@keyframes glow{0%,100%{opacity:1}50%{opacity:0.6}}
+/* 合并赔率列 */
+.odds-combined{font-size:11px;line-height:1.7;white-space:nowrap}
+.odds-combined .oc-line{display:flex;gap:4px;align-items:center}
+.odds-combined .oc-label{display:inline-block;width:14px;color:#8899aa;font-size:10px;text-align:right}
+.odds-combined .oc-open{color:#667788}
+.odds-combined .oc-cur{color:#e0e8f0;font-weight:500}
+.odds-combined .oc-div{font-size:10px}
+.odds-combined .oc-pct-down{color:#f87171;font-weight:600}
+.odds-combined .oc-pct-up{color:#4ade80;font-weight:600}
+.odds-combined .oc-pct-flat{color:#556677}
+.odds-combined .oc-sep{color:#445566;margin:0 1px}
 @media(max-width:768px){
   .container{padding:8px}
   table{font-size:11px}
@@ -430,48 +371,28 @@ tr:hover{background:#1a2a3a}
         f.write(css)
 
     # ─── script.js ──────────────────────────
-    js = '''// script.js — 足彩价值投注看板
+    js = '''// script.js — 足彩价值投注看板 v4
 var allData = null;
 var allMatches = [];
 
 function fmtOdds(v){return v>0?v.toFixed(2):'-'}
 function fmtPct(v){return (v*100).toFixed(1)+'%'}
-function fmtEv(v){return v===0?'0%':(v>0?'+':'')+(v*100).toFixed(1)+'%'}
-function evClass(v){return v>0.03?'ev-pos':v<-0.03?'ev-neg':'ev-zero'}
+function fmtPctSign(v){return v===0?'0%':(v>0?'+':'')+v.toFixed(1)+'%'}
 function dirClass(d){return d==='home'?'dir-home':d==='draw'?'dir-draw':d==='away'?'dir-away':'dir-wait'}
 function dirText(d){return d==='home'?'主胜':d==='draw'?'平局':d==='away'?'客胜':'观望'}
-function srcLabel(s){return '平博'}
-function srcEvClass(v){return v>0.03?'ev-pos':v<-0.03?'ev-neg':'ev-zero'}
-function renderCmp(c){
-  if(!c) return '<span class="cmp-na">--</span>';
-  var d = c.pinnacle;
-  if(!d) return '<span class="cmp-na">--</span>';
-  var hint = '', hintClass = '';
-  var dirDot = '';
-  if(d.dir==='主胜') dirDot='👑H';
-  else if(d.dir==='平局') dirDot='⚖️D';
-  else if(d.dir==='客胜') dirDot='👑A';
-  hint = dirDot || '◻️';
-  hintClass = dirDot ? 'cmp-hint-agree' : 'cmp-hint-wait';
-  var popup = '';
-  popup+= '<div class="cmp-pop-row"><span class="cmp-pop-source">即时</span> <span class="cmp-pop-latest">'+d.odds[0].toFixed(2)+'/'+d.odds[1].toFixed(2)+'/'+d.odds[2].toFixed(2)+'</span> '+dirDot+'</div>';
-  if(d.open){
-    popup+= '<div class="cmp-pop-row cmp-pop-open"><span class="cmp-pop-source">初盘</span> '+d.open[0].toFixed(2)+'/'+d.open[1].toFixed(2)+'/'+d.open[2].toFixed(2)+'</div>';
-    var oLabels = ['胜','平','负'];
-    popup+= '<div class="cmp-divider"></div><div class="cmp-div-title">初盘 vs 即时 分歧</div><div class="cmp-pop-row cmp-div-compact">';
-    var pctStrs = [], hasBig = false;
-    for(var di=0;di<3;di++){
-      var curVal = d.odds[di], openVal = d.open[di];
-      var pct = (curVal - openVal) / openVal * 100;
-      var cls = pct > 0.5 ? ' cmp-pct-pos' : (pct < -0.5 ? ' cmp-pct-neg' : '');
-      pctStrs.push('<span class="cmp-pct'+cls+'">'+oLabels[di]+(pct>=0?'+':'')+pct.toFixed(1)+'%</span>');
-      if(Math.abs(pct) > 10) hasBig = true;
-    }
-    popup+= pctStrs.join('<span class="cmp-div-sep">|</span>');
-    if(hasBig) popup+= '<span class="cmp-div-big"> △分歧大</span>';
-    popup+= '</div>';
+function renderOdds(c){
+  if(!c||!c.current) return '<span class="odds-val odds-w">--</span>';
+  var o=c.open, cur=c.current, d=c.div_pct;
+  var divStr = '';
+  for(var i=0;i<3;i++){
+    var cls = d[i] < -0.3 ? 'oc-pct-down' : (d[i] > 0.3 ? 'oc-pct-up' : 'oc-pct-flat');
+    divStr += '<span class="'+cls+'">'+fmtPctSign(d[i])+'</span>' + (i<2?'<span class="oc-sep">|</span>':'');
   }
-  return '<div class="cmp-hint-wrap"><span class="cmp-hint '+hintClass+'">'+hint+'</span><div class="cmp-popup">'+popup+'</div></div>';
+  return '<div class="odds-combined">'+
+    '<div class="oc-line"><span class="oc-label">初</span><span class="oc-open">'+o[0].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-open">'+o[1].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-open">'+o[2].toFixed(2)+'</span></div>'+
+    '<div class="oc-line"><span class="oc-label">即</span><span class="oc-cur">'+cur[0].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+cur[1].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+cur[2].toFixed(2)+'</span></div>'+
+    '<div class="oc-line oc-div"><span class="oc-label">分</span>'+divStr+'</div>'+
+    '</div>';
 }
 function fmtTime(t){return t?t.replace(/^\\d{2}-/,''):''}
 
@@ -484,9 +405,7 @@ function applyFilters(){
     if(srcVal!=='all' && m.source!==srcVal) return false;
     return true;
   });
-  if(sortVal==='ev_desc') filtered.sort(function(a,b){return Math.max(b.ev_win,b.ev_draw,b.ev_loss)-Math.max(a.ev_win,a.ev_draw,a.ev_loss)});
-  else if(sortVal==='ev_asc') filtered.sort(function(a,b){return Math.max(a.ev_win,a.ev_draw,a.ev_loss)-Math.max(b.ev_win,b.ev_draw,b.ev_loss)});
-  else if(sortVal==='time') filtered.sort(function(a,b){return a.match_time.localeCompare(b.match_time)});
+  if(sortVal==='time') filtered.sort(function(a,b){return a.match_time.localeCompare(b.match_time)});
   else if(sortVal==='odds') filtered.sort(function(a,b){return b.odds_win-a.odds_win});
   renderTable(filtered);
 }
@@ -495,10 +414,8 @@ function renderTable(matches){
   var tbody = document.getElementById('matchBody');
   tbody.innerHTML = '';
   matches.forEach(function(m){
-    var maxEv = Math.max(m.ev_win,m.ev_draw,m.ev_loss);
     var tr = document.createElement('tr');
-    if(maxEv>0.08) tr.style.background='rgba(74,222,128,0.05)';
-    var hc=m.hit==='\u2705'?'hit-yes':m.hit==='\u274c'?'hit-no':'';
+    var hc=m.hit==='\\u2705'?'hit-yes':m.hit==='\\u274c'?'hit-no':'';
     tr.innerHTML =
       '<td>'+fmtTime(m.match_time)+'</td>'+
       '<td><span class="tag tag-'+m.source+'">'+(m.event||m.source)+'</span></td>'+
@@ -507,10 +424,8 @@ function renderTable(matches){
       '<td class="team-name">'+m.away_team+'</td>'+
       '<td><span class="'+dirClass(m.prediction)+'">'+dirText(m.prediction)+'</span></td>'+
       '<td class="'+hc+'">'+(m.hit||'')+'</td>'+
-      '<td class="odds-cell cmp-cell">'+renderCmp(m.comparison)+'</td>'+
-      '<td class="odds-cell"><span class="odds-source-tag tag-'+m.odds_source+'">平博</span><span class="odds-val odds-w">'+fmtOdds(m.odds_win)+'</span> <span class="odds-val odds-d">'+fmtOdds(m.odds_draw)+'</span> <span class="odds-val odds-l">'+fmtOdds(m.odds_loss)+'</span></td>'+
-      '<td class="odds-cell"><span class="odds-val odds-w">'+fmtPct(m.model_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.model_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.model_loss)+'</span></td>'+
-      '<td class="odds-cell"><span class="odds-val '+evClass(m.ev_win)+'">'+fmtEv(m.ev_win)+'</span> <span class="odds-val '+evClass(m.ev_draw)+'">'+fmtEv(m.ev_draw)+'</span> <span class="odds-val '+evClass(m.ev_loss)+'">'+fmtEv(m.ev_loss)+'</span></td>';
+      '<td class="odds-cell">'+renderOdds(m.comparison)+'</td>'+
+      '<td class="odds-cell"><span class="odds-val odds-w">'+fmtPct(m.model_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.model_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.model_loss)+'</span></td>';
     tbody.appendChild(tr);
   });
   document.getElementById('matchCount').textContent = matches.length+' 场';
@@ -523,7 +438,7 @@ function renderStats(data){
   data.daily_stats.forEach(function(ds){
     var card = document.createElement('div');
     card.className = 'stat-card';
-    card.innerHTML = '<div class="stat-val">'+ds.count+'</div><div class="stat-label">'+ds.date+'<br>EV+ '+ds.positive_ev+'</div>';
+    card.innerHTML = '<div class="stat-val">'+ds.count+'</div><div class="stat-label">'+ds.date+'</div>';
     bar.appendChild(card);
   });
 }
@@ -575,7 +490,7 @@ def main():
         return
 
     # 2. 分析
-    logger.info(f"\n🔬 [2/3] EV/泊松分析 ({len(matches)} 场)...")
+    logger.info(f"\n🔬 [2/3] 分析 ({len(matches)} 场)...")
     results = analyze_matches(matches)
 
     if not results:
@@ -587,8 +502,7 @@ def main():
     generate_frontend(results)
 
     # 统计
-    pos_ev = sum(1 for r in results if r['ev_win'] > 0.03 or r['ev_draw'] > 0.03 or r['ev_loss'] > 0.03)
-    logger.info(f"\n✅ 完成! {len(results)} 场, 正EV {pos_ev} 场")
+    logger.info(f"\n✅ 完成! {len(results)} 场")
     logger.info(f"   结果: docs/data/results.json")
     logger.info(f"   看板: docs/index.html")
 

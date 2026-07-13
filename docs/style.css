@@ -28,9 +28,6 @@ tr:hover{background:#1a2a3a}
 .odds-w{color:#4ade80}
 .odds-d{color:#fbbf24}
 .odds-l{color:#f87171}
-.ev-pos{color:#4ade80;font-weight:600}
-.ev-neg{color:#f87171}
-.ev-zero{color:#667788}
 .dir-home{color:#4ade80;font-weight:700}
 .dir-draw{color:#fbbf24;font-weight:700}
 .dir-away{color:#f87171;font-weight:700}
@@ -38,41 +35,20 @@ tr:hover{background:#1a2a3a}
 .tag{display:inline-block;padding:1px 6px;border-radius:3px;font-size:11px;background:#2a3a4a;color:#8899aa}
 .tag-beidan{background:#1e3a5f;color:#60a5fa}
 .tag-jingcai{background:#3a2a1e;color:#fbbf24}
-.odds-source-tag{display:inline-block;padding:0 4px;border-radius:3px;font-size:10px;margin-right:4px;font-weight:700}
-.tag-pinnacle{background:#1a3a2a;color:#4ade80}
-.cmp-cell{font-size:11px;line-height:1.6;position:relative;text-align:center;min-width:70px}
-.cmp-hint-wrap{cursor:pointer;position:relative;display:inline-block}
-.cmp-hint{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;cursor:pointer;transition:all .15s}
-.cmp-hint:hover{filter:brightness(1.3)}
-.cmp-hint-agree{background:#0a2a1a;color:#4ade80;border:1px solid #1a4a2a}
-.cmp-hint-conflict{background:#2a1a0a;color:#fbbf24;border:1px solid #4a3a1a}
-.cmp-hint-wait{background:#1a1a2a;color:#667788;border:1px solid #2a2a3a}
-.cmp-popup{display:none;position:absolute;top:100%;left:50%;transform:translateX(-50%);z-index:100;background:#0d1b2a;border:1px solid #2a4a6a;border-radius:8px;padding:8px 12px;white-space:nowrap;min-width:130px;box-shadow:0 8px 24px rgba(0,0,0,0.6);margin-top:4px}
-.cmp-hint-wrap:hover .cmp-popup{display:block}
-.cmp-pop-row{font-size:11px;padding:2px 0;color:#c0c8d0;border-bottom:1px solid #1a2a3a}
-.cmp-pop-row:last-child{border-bottom:none}
-.cmp-pop-row .cmp-na{color:#556677}
-.cmp-pop-source{display:inline-block;width:28px;color:#60a5fa;font-weight:600}
-.cmp-pop-latest{font-weight:500;color:#e0e8f0}
-.cmp-pop-open{font-size:10px;color:#7a8a9a;padding-left:28px;border-bottom:1px solid #1a2a3a}
-.cmp-divider{border-top:1px solid #2a4a6a;margin:4px 0}
-.cmp-div-title{font-size:10px;color:#8899aa;text-align:center;padding:2px 0}
-.cmp-div-sep{color:#445566;margin:0 2px}
-.cmp-div-val{font-weight:500;color:#e0e8f0}
-.cmp-div-higher{color:#fbbf24;font-weight:700}
-.cmp-div-lower{color:#7a8a9a}
-.cmp-div-diff{font-size:9px;margin-left:2px;color:#8899aa}
-.cmp-div-compact{font-size:11px;text-align:center;padding:4px 2px;line-height:1.5}
-.cmp-pct{font-weight:500;margin:0 1px}
-.cmp-pct-pos{color:#f87171}
-.cmp-pct-neg{color:#4ade80}
-.cmp-div-big{color:#fbbf24;font-weight:700;font-size:10px}
-.lambda-cell{font-size:12px;color:#8899aa}
 .hit-yes{color:#4ade80;font-weight:700;font-size:1.1em;text-align:center}
 .hit-no{color:#f87171;font-weight:700;font-size:1.1em;text-align:center}
 .score-cell{text-align:center;font-weight:500}
-.high-ev{animation:glow 2s ease-in-out infinite}
-@keyframes glow{0%,100%{opacity:1}50%{opacity:0.6}}
+/* 合并赔率列 */
+.odds-combined{font-size:11px;line-height:1.7;white-space:nowrap}
+.odds-combined .oc-line{display:flex;gap:4px;align-items:center}
+.odds-combined .oc-label{display:inline-block;width:14px;color:#8899aa;font-size:10px;text-align:right}
+.odds-combined .oc-open{color:#667788}
+.odds-combined .oc-cur{color:#e0e8f0;font-weight:500}
+.odds-combined .oc-div{font-size:10px}
+.odds-combined .oc-pct-down{color:#f87171;font-weight:600}
+.odds-combined .oc-pct-up{color:#4ade80;font-weight:600}
+.odds-combined .oc-pct-flat{color:#556677}
+.odds-combined .oc-sep{color:#445566;margin:0 1px}
 @media(max-width:768px){
   .container{padding:8px}
   table{font-size:11px}

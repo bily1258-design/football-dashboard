@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>足彩价值投注看板</title>
-<link rel="stylesheet" href="style.css?v=20260713v2">
+<link rel="stylesheet" href="style.css?v=20260713v5">
+<script src="script.js?v=20260713v5"></script>
 </head>
 <body>
 <div class="container">
@@ -25,8 +26,6 @@
         <option value="jingcai">竞彩</option>
       </select>
       <select id="sortBy" onchange="applyFilters()">
-        <option value="ev_desc">按EV ↓</option>
-        <option value="ev_asc">按EV ↑</option>
         <option value="time">按时间</option>
         <option value="odds">按赔率</option>
       </select>
@@ -44,12 +43,10 @@
           <th>主队</th>
           <th>比分</th>
           <th>客队</th>
-          <th data-sort="direction">方向</th>
+          <th>方向</th>
           <th>命中</th>
-          <th>平博初盘vs即时</th>
-          <th data-sort="odds">赔率(W/D/L)</th>
-          <th data-sort="model">模型(W/D/L)</th>
-          <th data-sort="ev">EV(W/D/L)</th>
+          <th>赔率(初/即/分歧)</th>
+          <th>模型(W/D/L)</th>
         </tr>
       </thead>
       <tbody id="matchBody"></tbody>
