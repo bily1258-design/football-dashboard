@@ -71,13 +71,13 @@ function renderTable(matches){
       '<td>'+fmtTime(m.match_time)+'</td>'+
       '<td><span class="tag tag-'+m.source+'">'+(m.event||m.source)+'</span></td>'+
       '<td class="team-name">'+m.home_team+'</td>'+
+      '<td class="score-cell">'+(m.score||'-')+'</td>'+
       '<td class="team-name">'+m.away_team+'</td>'+
       '<td class="odds-cell"><span class="odds-source-tag tag-'+m.odds_source+'">平博</span><span class="odds-val odds-w">'+fmtOdds(m.odds_win)+'</span> <span class="odds-val odds-d">'+fmtOdds(m.odds_draw)+'</span> <span class="odds-val odds-l">'+fmtOdds(m.odds_loss)+'</span></td>'+
       '<td class="odds-cell cmp-cell">'+renderCmp(m.comparison)+'</td>'+
       '<td class="odds-cell"><span class="odds-val odds-w">'+fmtPct(m.model_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.model_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.model_loss)+'</span></td>'+
       '<td class="odds-cell"><span class="odds-val '+evClass(m.ev_win)+'">'+fmtEv(m.ev_win)+'</span> <span class="odds-val '+evClass(m.ev_draw)+'">'+fmtEv(m.ev_draw)+'</span> <span class="odds-val '+evClass(m.ev_loss)+'">'+fmtEv(m.ev_loss)+'</span></td>'+
       '<td><span class="'+dirClass(m.prediction)+'">'+dirText(m.prediction)+'</span></td>'+
-      '<td class="score-cell">'+(m.score||'-')+'</td>'+
       '<td class="'+hc+'">'+(m.hit||'')+'</td>';
     tbody.appendChild(tr);
   });
