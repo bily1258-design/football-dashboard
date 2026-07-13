@@ -107,22 +107,21 @@ def tanh_compress(ev: float, scale: float = EV_TANH_SCALE) -> float:
     return scale * math.tanh(ev / scale)
 
 def determine_direction(ev_w: float, ev_d: float, ev_l: float) -> Tuple[str, str, float]:
-    """确定推荐方向
-    1. 默认取EV最小的方向
-    2. 若中间值EV与最小值EV相差<5% → 改推中间值方向
+    """确定推荐方向（选EV最大的方向 — 最有价值）
+    1. 默认取EV最大的方向
+    2. 若中间值EV与最大值EV相差<5% → 改推中间值方向
     """
     items = [('主胜', ev_w, 'home'), ('平局', ev_d, 'draw'), ('客胜', ev_l, 'away')]
-    # 按EV升序（最小到最大）
-    sorted_items = sorted(items, key=lambda x: x[1])
-    min_dir_cn, min_ev, min_dir_en = sorted_items[0]
+    # 按EV降序（最大到最小）
+    sorted_items = sorted(items, key=lambda x: x[1], reverse=True)
+    max_dir_cn, max_ev, max_dir_en = sorted_items[0]
     mid_dir_cn, mid_ev, mid_dir_en = sorted_items[1]
-    max_dir_cn, max_ev, max_dir_en = sorted_items[2]
 
-    # 默认：推最小值方向
-    best_dir_cn, best_dir_en = min_dir_cn, min_dir_en
+    # 默认：推最大值方向（最正EV）
+    best_dir_cn, best_dir_en = max_dir_cn, max_dir_en
 
-    # 若中间值与最小值相差不到5% → 改推中间值
-    if abs(mid_ev - min_ev) < 0.05:
+    # 若中间值与最大值相差不到5% → 改推中间值（分岐大时保守）
+    if abs(mid_ev - max_ev) < 0.05:
         best_dir_cn, best_dir_en = mid_dir_cn, mid_dir_en
 
     best_ev = ev_w if best_dir_en == 'home' else ev_d if best_dir_en == 'draw' else ev_l
