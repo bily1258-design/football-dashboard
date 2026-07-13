@@ -57,16 +57,20 @@ def fetch_json(url, retries=2, referer=None):
             time.sleep(1)
     return None
 
-def fetch_1x2_close(fid, cid):
-    """获取指定公司的1X2收盘赔率，返回{w,d,l}或None"""
-    url = f'https://odds.500.com/fenxi/json/ouzhi.php?fid={fid}&cid={cid}&type=europe&r=1'
+def fetch_1x2_odds(fid, cid):
+    """获取指定公司的1X2开盘和最新赔率，返回{open: {w,d,l}, latest: {w,d,l}}或None"""
+    url = f'https://odds.500.com/fenxi/json/ouzhi.php?fid={fid}&cid={cid}&type=europe'
     referer = f'https://odds.500.com/fenxi/ouzhi-{fid}.shtml'
     data = fetch_json(url, referer=referer)
     if not data or not isinstance(data, list) or len(data) < 1:
         return None
     try:
-        close = data[0]  # 最新=收盘
-        return {'w': float(close[0]), 'd': float(close[1]), 'l': float(close[2])}
+        opening = data[0]
+        latest = data[-1]
+        return {
+            'open': {'w': float(opening[0]), 'd': float(opening[1]), 'l': float(opening[2])},
+            'latest': {'w': float(latest[0]), 'd': float(latest[1]), 'l': float(latest[2])},
+        }
     except (IndexError, ValueError, TypeError):
         return None
 
@@ -146,24 +150,30 @@ def enhance_with_pinnacle_bet365(matches, delay=0.3):
         print(f"  [{i+1}/{total}] fid={fid} {m['home_team']} vs {m['away_team']}...", end=' ', flush=True)
 
         # 平博
-        p = fetch_1x2_close(fid, 1055)
+        p = fetch_1x2_odds(fid, 1055)
         if p:
-            m['odds_pinnacle_win'] = p['w']
-            m['odds_pinnacle_draw'] = p['d']
-            m['odds_pinnacle_loss'] = p['l']
+            m['odds_pinnacle_open_win'] = p['open']['w']
+            m['odds_pinnacle_open_draw'] = p['open']['d']
+            m['odds_pinnacle_open_loss'] = p['open']['l']
+            m['odds_pinnacle_win'] = p['latest']['w']
+            m['odds_pinnacle_draw'] = p['latest']['d']
+            m['odds_pinnacle_loss'] = p['latest']['l']
             pinnacle_ok += 1
-            print(f"平博{p['w']}/{p['d']}/{p['l']}", end='  ', flush=True)
+            print(f"平博开盘{p['open']['w']}/{p['open']['d']}/{p['open']['l']} 最新{p['latest']['w']}/{p['latest']['d']}/{p['latest']['l']}", end='  ', flush=True)
         else:
             print("平博-", end='  ', flush=True)
 
         # Bet365
-        b = fetch_1x2_close(fid, 3)
+        b = fetch_1x2_odds(fid, 3)
         if b:
-            m['odds_bet365_win'] = b['w']
-            m['odds_bet365_draw'] = b['d']
-            m['odds_bet365_loss'] = b['l']
+            m['odds_bet365_open_win'] = b['open']['w']
+            m['odds_bet365_open_draw'] = b['open']['d']
+            m['odds_bet365_open_loss'] = b['open']['l']
+            m['odds_bet365_win'] = b['latest']['w']
+            m['odds_bet365_draw'] = b['latest']['d']
+            m['odds_bet365_loss'] = b['latest']['l']
             bet365_ok += 1
-            print(f"Bet365{b['w']}/{b['d']}/{b['l']}")
+            print(f"Bet365开盘{b['open']['w']}/{b['open']['d']}/{b['open']['l']} 最新{b['latest']['w']}/{b['latest']['d']}/{b['latest']['l']}")
         else:
             print("Bet365-")
 
