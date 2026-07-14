@@ -251,10 +251,18 @@ def generate_frontend(results: List[Dict]):
     all_counts = sum(len(v) for v in by_date.values())
 
     # 构建输出JSON
+    # 统计命中率
+    hit_count = sum(1 for r in results if r.get('hit') == '✅')
+    total_scored = hit_count + sum(1 for r in results if r.get('hit') == '❌')
+    hit_rate = round(hit_count / total_scored, 3) if total_scored > 0 else 0.0
+
     output = {
         'generated_at': datetime.now(timezone(timedelta(hours=8))).strftime('%Y-%m-%d %H:%M:%S'),
         'total_matches': all_counts,
         'date_range': f"{min(dates)} ~ {max(dates)}" if dates else '无数据',
+        'hit_count': hit_count,
+        'total_scored': total_scored,
+        'hit_rate': hit_rate,
         'daily_stats': [],
         'matches': results,
     }
