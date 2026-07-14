@@ -153,13 +153,14 @@ def analyze_matches(matches: List[Dict]) -> List[Dict]:
         st = sw + sd + sl
         model_w, model_d, model_l = sw/st, sd/st, sl/st
 
-        # 2b. 平局偏置：从最大概率方向移DRAW_BIAS给平局（减弱热门）
-        max_p = max(model_w, model_d, model_l)
-        if model_d < max_p:
-            shift = min(DRAW_BIAS, (max_p - model_d) / 2)
-            if model_w == max_p:
+        # 2b. 平局偏置：从最大非平局方向移DRAW_BIAS给平局（减弱热门）
+        non_draw = [(p, i) for i, p in enumerate([model_w, model_d, model_l]) if i != 1]
+        max_nd_p, max_nd_idx = max(non_draw, key=lambda x: x[0])
+        shift = min(DRAW_BIAS, max_nd_p)  # 不超源方向
+        if shift > 0 and max_nd_p > model_d:
+            if max_nd_idx == 0:
                 model_w -= shift
-            elif model_l == max_p:
+            else:
                 model_l -= shift
             model_d += shift
 
