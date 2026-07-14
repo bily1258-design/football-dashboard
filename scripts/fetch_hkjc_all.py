@@ -246,10 +246,11 @@ def main():
             existing_matches = []
             existing_obj = {'matches': [], 'generated_at': '', 'total_matches': 0, 'date_range': '', 'daily_stats': []}
 
-        existing_fids = {m.get('fid') for m in existing_matches}
+        existing_keys = {(m.get('home_team',''), m.get('away_team',''), m.get('date','')) for m in existing_matches}
         new_count = 0
         for m in hkjc_matches:
-            if m['fid'] not in existing_fids:
+            key = (m.get('home_team',''), m.get('away_team',''), m.get('date',''))
+            if key not in existing_keys:
                 existing_matches.append(m)
                 new_count += 1
 

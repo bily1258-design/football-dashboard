@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>足彩价值投注看板</title>
-<link rel="stylesheet" href="style.css?v=20260714v9">
+<link rel="stylesheet" href="style.css?v=20260714v6">
+<script src="script.js?v=20260714v6"></script>
 </head>
 <body>
 <div class="container">
@@ -15,13 +16,14 @@
       <span id="matchCount">—</span>
       <span id="dateRange">—</span>
     </div>
-    <div class="tabs">
-      <button class="tab active" data-tab="beidan" onclick="switchTab('beidan')">北单</button>
-      <button class="tab" data-tab="hkjc" onclick="switchTab('hkjc')">香港马会</button>
-    </div>
     <div class="controls">
       <select id="dateFilter" onchange="applyFilters()">
         <option value="all">全部日期</option>
+      </select>
+      <select id="sourceFilter" onchange="applyFilters()">
+        <option value="all">全部来源</option>
+
+        <option value="jingcai">竞彩</option>
       </select>
       <select id="sortBy" onchange="applyFilters()">
         <option value="time">按时间</option>
@@ -32,9 +34,7 @@
   </header>
   <div id="stats-bar"></div>
   <div id="loading">加载中...</div>
-
-  <!-- 北单表 -->
-  <div id="table-wrap-beidan" class="table-wrap" style="display:none">
+  <div id="table-wrap" style="display:none">
     <table id="matchTable">
       <thead>
         <tr>
@@ -52,24 +52,7 @@
       <tbody id="matchBody"></tbody>
     </table>
   </div>
-
-  <!-- 香港马会表 -->
-  <div id="table-wrap-hkjc" class="table-wrap" style="display:none">
-    <table id="hkjcTable">
-      <thead>
-        <tr>
-          <th>时间</th>
-          <th>赛事</th>
-          <th>主队</th>
-          <th>比分</th>
-          <th>客队</th>
-          <th>马会赔率(初/即/分歧)</th>
-        </tr>
-      </thead>
-      <tbody id="hkjcBody"></tbody>
-    </table>
-  </div>
 </div>
-<script src="script.js?v=20260714v9"></script>
+<script src="script.js?v=20260713v4"></script>
 </body>
 </html>

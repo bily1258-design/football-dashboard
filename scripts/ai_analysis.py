@@ -204,6 +204,7 @@ def analyze_matches(matches: List[Dict]) -> List[Dict]:
                 }
 
         results.append({
+            'fid': m.get('fid', ''),
             'date': m.get('date', ''),
             'match_time': m.get('match_time', ''),
             'event': m.get('event', ''),
