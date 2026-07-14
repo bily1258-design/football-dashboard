@@ -29,6 +29,8 @@ DB_PATH = os.path.join(DATA_DIR, "football.db")
 SMOOTH_ALPHA_BASE = 0.02      # 贝叶斯平滑基值（均衡比赛用）
 SMOOTH_ALPHA_SKEW = 0.35      # 方差自适应系数：偏离均衡每0.1加权0.035
 HOME_ADJ = 0.01               # 主场调整量：加到模型主胜，从平/负各扣0.003
+LEAGUE_PRIOR_LAMBDA = 0.15    # 联赛基准率混合权重（0=不使用，0.15=15%基准+85%市场）
+LEAGUE_PRIOR_MIN_MATCHES = 10  # 联赛基准最小样本量
 
 
 # ─── 日志 ──────────────────────────────────────────
@@ -122,12 +124,57 @@ def load_db_matches(db_path: str = DB_PATH, days: int = 14) -> List[Dict]:
         logger.warning(f"数据库读取失败: {e}")
         return []
 
+# ─── 联赛基准率 ────────────────────────────────────
+GLOBAL_PRIOR = (0.45, 0.24, 0.31)  # 全局默认（主/平/客）
+
+def load_league_priors(db_path: str = DB_PATH) -> Dict[str, Tuple[float, float, float]]:
+    """从历史数据库统计各联赛胜平负率作为贝叶斯先验"""
+    priors = {}
+    if not os.path.exists(db_path):
+        logger.warning(f"联赛基准：DB不存在 {db_path}，使用全局默认")
+        return priors
+    try:
+        conn = sqlite3.connect(db_path)
+        cur = conn.execute("""
+            SELECT league,
+                   COUNT(*) as total,
+                   SUM(CASE WHEN CAST(SUBSTR(reference_score, 1, INSTR(reference_score, '-')-1) AS INTEGER) >
+                                  CAST(SUBSTR(reference_score, INSTR(reference_score, '-')+1) AS INTEGER)
+                             THEN 1 ELSE 0 END) as home_wins,
+                   SUM(CASE WHEN CAST(SUBSTR(reference_score, 1, INSTR(reference_score, '-')-1) AS INTEGER) =
+                                  CAST(SUBSTR(reference_score, INSTR(reference_score, '-')+1) AS INTEGER)
+                             THEN 1 ELSE 0 END) as draws,
+                   SUM(CASE WHEN CAST(SUBSTR(reference_score, 1, INSTR(reference_score, '-')-1) AS INTEGER) <
+                                  CAST(SUBSTR(reference_score, INSTR(reference_score, '-')+1) AS INTEGER)
+                             THEN 1 ELSE 0 END) as away_wins
+            FROM poisson_predictions
+            WHERE reference_score IS NOT NULL AND reference_score != ''
+            GROUP BY league
+        """)
+        for row in cur.fetchall():
+            league, total, hw, d, aw = row
+            if total < LEAGUE_PRIOR_MIN_MATCHES:
+                continue
+            priors[league] = (round(hw/total, 4), round(d/total, 4), round(aw/total, 4))
+        conn.close()
+        logger.info(f"联赛基准率: 加载 {len(priors)} 个联赛 (最少{LEAGUE_PRIOR_MIN_MATCHES}场)")
+        if priors:
+            for k, v in sorted(priors.items(), key=lambda x: -x[1][0]):
+                logger.debug(f"  {k}: W{v[0]:.1%} D{v[1]:.1%} L{v[2]:.1%}")
+        return priors
+    except Exception as e:
+        logger.warning(f"联赛基准率加载失败: {e}")
+        return priors
+
 # ─── 分析引擎 ──────────────────────────────────────
 
-def analyze_matches(matches: List[Dict]) -> List[Dict]:
+def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, float, float]] = None) -> List[Dict]:
     """对比赛列表执行EV/泊松分析"""
     results = []
     skipped = 0
+    if league_priors is None:
+        league_priors = {}
+    lambda_ = LEAGUE_PRIOR_LAMBDA
 
     for m in matches:
         # 赔率源：平博
@@ -155,6 +202,21 @@ def analyze_matches(matches: List[Dict]) -> List[Dict]:
         sl = imp_l * (1 - alpha) + alpha / 3 - HOME_ADJ * 0.3
         st = sw + sd + sl
         model_w, model_d, model_l = sw/st, sd/st, sl/st
+
+        # 2b. 联赛基准率混合（贝叶斯先验校正）
+        #     联赛历史结果分布与市场概率按权重混合
+        league = m.get('event', '') or m.get('league', '')
+        league_baseline = None
+        if lambda_ > 0 and league:
+            prior = league_priors.get(league, GLOBAL_PRIOR)
+            pw, pd, pl = prior
+            # 混合：最终 = (1-λ) × 平滑模型 + λ × 联赛基准
+            fw = model_w * (1 - lambda_) + pw * lambda_
+            fd = model_d * (1 - lambda_) + pd * lambda_
+            fl = model_l * (1 - lambda_) + pl * lambda_
+            ft = fw + fd + fl
+            model_w, model_d, model_l = ft and (fw/ft, fd/ft, fl/ft) or (1/3, 1/3, 1/3)
+            league_baseline = prior
 
         # 3. 推荐方向（取最大模型概率）
         dir_cn, dir_en, dir_prob = determine_direction(model_w, model_d, model_l)
@@ -230,6 +292,7 @@ def analyze_matches(matches: List[Dict]) -> List[Dict]:
             'prediction_prob': round(max_prob_val, 4),
             'comparison': comparison,
             'hkjc_comparison': hkjc_comparison,
+            'league_baseline': league_baseline,
         })
 
     logger.info(f"分析完成: {len(results)} 场 (跳过 {skipped} 场无赔率)")
@@ -548,7 +611,8 @@ def main():
 
     # 2. 分析
     logger.info(f"\n🔬 [2/3] 分析 ({len(matches)} 场)...")
-    results = analyze_matches(matches)
+    league_priors = load_league_priors()
+    results = analyze_matches(matches, league_priors)
 
     if not results:
         logger.warning("分析后无有效结果!")
