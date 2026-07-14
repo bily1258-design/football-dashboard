@@ -17,7 +17,7 @@ from datetime import datetime, date
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(os.path.dirname(SCRIPT_DIR), "data")
-KNOWN_PERIODS = ['26072', '26073', '26074']
+KNOWN_PERIODS = ['26072', '26073', '26074', '26075']
 
 # 500.com赔率API请求头
 API_HEADERS = {

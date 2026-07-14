@@ -1,11 +1,15 @@
 {
-  "generated_at": "2026-07-15 01:10:44",
-  "total_matches": 80,
-  "date_range": "2026-07-10 ~ 2026-07-14",
+  "generated_at": "2026-07-15 01:48:45",
+  "total_matches": 85,
+  "date_range": "2026-07-10 ~ 2026-07-15",
   "hit_count": 35,
   "total_scored": 66,
   "hit_rate": 0.53,
   "daily_stats": [
+    {
+      "date": "2026-07-15",
+      "count": 5
+    },
     {
       "date": "2026-07-14",
       "count": 18
@@ -4144,6 +4148,309 @@
         0.4167,
         0.2083,
         0.375
+      ]
+    },
+    {
+      "fid": "1414900",
+      "date": "2026-07-15",
+      "match_time": "07-15 02:45",
+      "event": "苏联赛杯",
+      "home_team": "福尔柯克",
+      "away_team": "艾尔联",
+      "score": "",
+      "hit": "",
+      "source": "beidan",
+      "odds_source": "pinnacle",
+      "odds_win": 1.42,
+      "odds_draw": 4.65,
+      "odds_loss": 6.26,
+      "margin": 0.079,
+      "model_win": 0.5816,
+      "model_draw": 0.1999,
+      "model_loss": 0.2185,
+      "prediction": "home",
+      "prediction_cn": "主胜",
+      "prediction_prob": 0.5816,
+      "lgbm_prediction": "home",
+      "lgbm_prediction_cn": "主胜",
+      "lgbm_prediction_prob": 0.5653,
+      "lgbm_win": 0.5653,
+      "lgbm_draw": 0.2152,
+      "lgbm_loss": 0.2195,
+      "comparison": {
+        "open": [
+          1.53,
+          3.96,
+          4.78
+        ],
+        "current": [
+          1.42,
+          4.65,
+          6.26
+        ],
+        "div_pct": [
+          -7.2,
+          17.4,
+          23.6
+        ]
+      },
+      "hkjc_comparison": {
+        "open": [
+          1.25,
+          5.0,
+          7.5
+        ],
+        "current": [
+          1.25,
+          5.0,
+          7.5
+        ],
+        "div_pct": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "league_baseline": [
+        0.375,
+        0.125,
+        0.5
+      ]
+    },
+    {
+      "fid": "1414910",
+      "date": "2026-07-15",
+      "match_time": "07-15 02:45",
+      "event": "苏联赛杯",
+      "home_team": "基尔马诺克",
+      "away_team": "拉茨流浪者",
+      "score": "",
+      "hit": "",
+      "source": "beidan",
+      "odds_source": "pinnacle",
+      "odds_win": 1.55,
+      "odds_draw": 4.15,
+      "odds_loss": 5.2,
+      "margin": 0.0784,
+      "model_win": 0.5459,
+      "model_draw": 0.2159,
+      "model_loss": 0.2382,
+      "prediction": "home",
+      "prediction_cn": "主胜",
+      "prediction_prob": 0.5459,
+      "lgbm_prediction": "home",
+      "lgbm_prediction_cn": "主胜",
+      "lgbm_prediction_prob": 0.5648,
+      "lgbm_win": 0.5648,
+      "lgbm_draw": 0.2168,
+      "lgbm_loss": 0.2184,
+      "comparison": {
+        "open": [
+          1.68,
+          3.56,
+          4.2
+        ],
+        "current": [
+          1.55,
+          4.15,
+          5.2
+        ],
+        "div_pct": [
+          -7.7,
+          16.6,
+          19.2
+        ]
+      },
+      "hkjc_comparison": {
+        "open": [
+          1.56,
+          3.85,
+          4.3
+        ],
+        "current": [
+          1.49,
+          3.95,
+          4.8
+        ],
+        "div_pct": [
+          -4.5,
+          2.6,
+          11.6
+        ]
+      },
+      "league_baseline": [
+        0.375,
+        0.125,
+        0.5
+      ]
+    },
+    {
+      "fid": "1359162",
+      "date": "2026-07-15",
+      "match_time": "07-15 03:00",
+      "event": "世界杯",
+      "home_team": "法国",
+      "away_team": "西班牙",
+      "score": "",
+      "hit": "",
+      "source": "beidan",
+      "odds_source": "pinnacle",
+      "odds_win": 2.61,
+      "odds_draw": 3.06,
+      "odds_loss": 3.17,
+      "margin": 0.0254,
+      "model_win": 0.3931,
+      "model_draw": 0.3149,
+      "model_loss": 0.292,
+      "prediction": "home",
+      "prediction_cn": "主胜",
+      "prediction_prob": 0.3931,
+      "lgbm_prediction": "home",
+      "lgbm_prediction_cn": "主胜",
+      "lgbm_prediction_prob": 0.4509,
+      "lgbm_win": 0.4509,
+      "lgbm_draw": 0.2817,
+      "lgbm_loss": 0.2674,
+      "comparison": {
+        "open": [
+          2.36,
+          3.23,
+          3.33
+        ],
+        "current": [
+          2.61,
+          3.06,
+          3.17
+        ],
+        "div_pct": [
+          10.6,
+          -5.3,
+          -5.0
+        ]
+      },
+      "hkjc_comparison": {
+        "open": [
+          2.33,
+          2.85,
+          2.85
+        ],
+        "current": [
+          2.11,
+          2.92,
+          3.2
+        ],
+        "div_pct": [
+          -9.4,
+          2.5,
+          12.3
+        ]
+      },
+      "league_baseline": [
+        0.463,
+        0.3148,
+        0.2222
+      ]
+    },
+    {
+      "fid": "1427667",
+      "date": "2026-07-15",
+      "match_time": "07-15 03:00",
+      "event": "欧冠资格",
+      "home_team": "沙姆洛克流浪者",
+      "away_team": "弗洛里亚纳",
+      "score": "",
+      "hit": "",
+      "source": "beidan",
+      "odds_source": "pinnacle",
+      "odds_win": 1.25,
+      "odds_draw": 6.06,
+      "odds_loss": 10.6,
+      "margin": 0.0594,
+      "model_win": 0.6554,
+      "model_draw": 0.1905,
+      "model_loss": 0.154,
+      "prediction": "home",
+      "prediction_cn": "主胜",
+      "prediction_prob": 0.6554,
+      "lgbm_prediction": "home",
+      "lgbm_prediction_cn": "主胜",
+      "lgbm_prediction_prob": 0.54,
+      "lgbm_win": 0.54,
+      "lgbm_draw": 0.2309,
+      "lgbm_loss": 0.2291,
+      "comparison": {
+        "open": [
+          1.36,
+          4.42,
+          7.28
+        ],
+        "current": [
+          1.25,
+          6.06,
+          10.6
+        ],
+        "div_pct": [
+          -8.1,
+          37.1,
+          31.3
+        ]
+      },
+      "hkjc_comparison": {},
+      "league_baseline": [
+        0.45,
+        0.24,
+        0.31
+      ]
+    },
+    {
+      "fid": "1370865",
+      "date": "2026-07-15",
+      "match_time": "07-15 23:30",
+      "event": "芬甲",
+      "home_team": "吉波",
+      "away_team": "MP米凯利",
+      "score": "",
+      "hit": "",
+      "source": "beidan",
+      "odds_source": "pinnacle",
+      "odds_win": 1.54,
+      "odds_draw": 4.06,
+      "odds_loss": 5.94,
+      "margin": 0.064,
+      "model_win": 0.5499,
+      "model_draw": 0.2361,
+      "model_loss": 0.214,
+      "prediction": "home",
+      "prediction_cn": "主胜",
+      "prediction_prob": 0.5499,
+      "lgbm_prediction": "home",
+      "lgbm_prediction_cn": "主胜",
+      "lgbm_prediction_prob": 0.5235,
+      "lgbm_win": 0.5235,
+      "lgbm_draw": 0.2423,
+      "lgbm_loss": 0.2342,
+      "comparison": {
+        "open": [
+          1.41,
+          4.33,
+          6.8
+        ],
+        "current": [
+          1.54,
+          4.06,
+          5.94
+        ],
+        "div_pct": [
+          9.2,
+          -6.2,
+          -14.5
+        ]
+      },
+      "hkjc_comparison": {},
+      "league_baseline": [
+        0.3478,
+        0.2174,
+        0.4348
       ]
     },
     {
