@@ -9,6 +9,7 @@ h1{font-size:22px;color:#66b8ff;margin-bottom:8px}
 .controls select,.controls button{background:#1a2a3a;color:#e0e6ed;border:1px solid #2a3a4a;border-radius:6px;padding:6px 12px;font-size:13px;cursor:pointer}
 .controls button{background:#2563eb;border-color:#2563eb;color:#fff;font-weight:600}
 .controls button:hover{background:#1d4ed8}
+.meta-hit{background:#1a2a3a;border:1px solid #2a3a4a;border-radius:6px;padding:6px 12px;font-size:13px;color:#66b8ff;font-weight:600}
 #stats-bar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
 .stat-card{background:#1a2a3a;border:1px solid #2a3a4a;border-radius:8px;padding:8px 14px;text-align:center;min-width:80px}
 .stat-card .stat-val{font-size:18px;font-weight:700;color:#66b8ff}

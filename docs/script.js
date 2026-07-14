@@ -100,6 +100,7 @@ fetch('data/results.json?v='+Date.now())
     document.getElementById('updateTime').textContent = '🕐 '+data.generated_at;
     document.getElementById('dateRange').textContent = data.date_range;
     document.getElementById('matchCount').textContent = data.total_matches+' 场';
+    document.getElementById('hitRate').textContent = '🎯 '+data.hit_count+'/'+data.total_scored+' ('+fmtPct(data.hit_rate)+')';
     // 填充日期过滤
     var sel = document.getElementById('dateFilter');
     (data.daily_stats||[]).forEach(function(ds){

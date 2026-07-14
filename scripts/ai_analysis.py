@@ -312,6 +312,7 @@ def generate_frontend(results: List[Dict]):
         <option value="odds">按赔率</option>
       </select>
       <button id="refreshBtn" onclick="location.reload()">🔄 刷新</button>
+      <span id="hitRate" class="meta-hit"></span>
     </div>
   </header>
   <div id="stats-bar"></div>
@@ -353,6 +354,7 @@ h1{font-size:22px;color:#66b8ff;margin-bottom:8px}
 .controls select,.controls button{background:#1a2a3a;color:#e0e6ed;border:1px solid #2a3a4a;border-radius:6px;padding:6px 12px;font-size:13px;cursor:pointer}
 .controls button{background:#2563eb;border-color:#2563eb;color:#fff;font-weight:600}
 .controls button:hover{background:#1d4ed8}
+.meta-hit{background:#1a2a3a;border:1px solid #2a3a4a;border-radius:6px;padding:6px 12px;font-size:13px;color:#66b8ff;font-weight:600}
 #stats-bar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
 .stat-card{background:#1a2a3a;border:1px solid #2a3a4a;border-radius:8px;padding:8px 14px;text-align:center;min-width:80px}
 .stat-card .stat-val{font-size:18px;font-weight:700;color:#66b8ff}
@@ -508,6 +510,7 @@ fetch('data/results.json?v='+Date.now())
     document.getElementById('updateTime').textContent = '🕐 '+data.generated_at;
     document.getElementById('dateRange').textContent = data.date_range;
     document.getElementById('matchCount').textContent = data.total_matches+' 场';
+    document.getElementById('hitRate').textContent = '🎯 '+data.hit_count+'/'+data.total_scored+' ('+fmtPct(data.hit_rate)+')';
     // 填充日期过滤
     var sel = document.getElementById('dateFilter');
     (data.daily_stats||[]).forEach(function(ds){
