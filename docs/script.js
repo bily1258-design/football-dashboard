@@ -40,7 +40,7 @@ function renderOdds(c, h){
   }
   return '<div class="odds-combined">'+html+'</div>';
 }
-function fmtTime(t){return t?t.replace(/^\d{2}-/,''):''}
+function fmtTime(t){if(!t)return'';var m=t.match(/^(?:\d{4}-)?(\d{2})-(\d{2})\s+(\S+)$/);return m?m[1]+'/'+m[2]+' '+m[3]:t;}
 
 function applyFilters(){
   var dateVal = document.getElementById('dateFilter').value;

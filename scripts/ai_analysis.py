@@ -451,10 +451,23 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
                     'div_pct': [round(pct_w,1), round(pct_d,1), round(pct_l,1)],
                 }
 
+        # 统一时间格式: 北单 "07-15 02:45" → "2026-07-15 02:45"
+        raw_date = m.get('date', '')
+        raw_time = m.get('match_time', '')
+        if raw_time and re.match(r'^\d{4}-\d{2}-\d{2}\s', raw_time):
+            # HKJC: "2026-07-15 03:00" 直接用
+            norm_time = raw_time
+        elif raw_time and raw_date and len(raw_date) >= 4:
+            # 北单: "07-15 02:45" → prepend year from date
+            parts = raw_time.split(' ', 1)
+            norm_time = raw_date[:4] + '-' + raw_time if len(parts) == 2 else raw_time
+        else:
+            norm_time = raw_time or raw_date
+
         results.append({
             'fid': m.get('fid', ''),
-            'date': m.get('date', ''),
-            'match_time': m.get('match_time', ''),
+            'date': raw_date,
+            'match_time': norm_time,
             'event': m.get('event', ''),
             'home_team': m.get('home_team', ''),
             'away_team': m.get('away_team', ''),
@@ -702,7 +715,7 @@ function renderOdds(c, h){
   }
   return '<div class="odds-combined">'+html+'</div>';
 }
-function fmtTime(t){return t?t.replace(/^\\d{2}-/,''):''}
+function fmtTime(t){if(!t)return'';var m=t.match(/^(?:\\d{4}-)?(\\d{2})-(\\d{2})\\s+(\\S+)$/);return m?m[1]+'/'+m[2]+' '+m[3]:t;}
 
 function applyFilters(){
   var dateVal = document.getElementById('dateFilter').value;
