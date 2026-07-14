@@ -7,19 +7,38 @@ function fmtPct(v){return (v*100).toFixed(1)+'%'}
 function fmtPctSign(v){return v===0?'0%':(v>0?'+':'')+v.toFixed(1)+'%'}
 function dirClass(d){return d==='home'?'dir-home':d==='draw'?'dir-draw':d==='away'?'dir-away':'dir-wait'}
 function dirText(d){return d==='home'?'主胜':d==='draw'?'平局':d==='away'?'客胜':'观望'}
-function renderOdds(c){
-  if(!c||!c.current) return '<span class="odds-val odds-w">--</span>';
-  var o=c.open, cur=c.current, d=c.div_pct;
-  var divStr = '';
-  for(var i=0;i<3;i++){
-    var cls = d[i] < -0.3 ? 'oc-pct-down' : (d[i] > 0.3 ? 'oc-pct-up' : 'oc-pct-flat');
-    divStr += '<span class="'+cls+'">'+fmtPctSign(d[i])+'</span>' + (i<2?'<span class="oc-sep">|</span>':'');
+function renderOdds(c, h){
+  var html = '';
+  // 平博
+  if(c && c.current){
+    var o=c.open, cur=c.current, d=c.div_pct;
+    var divStr = '';
+    for(var i=0;i<3;i++){
+      var cls = d[i] < -0.3 ? 'oc-pct-down' : (d[i] > 0.3 ? 'oc-pct-up' : 'oc-pct-flat');
+      divStr += '<span class="'+cls+'">'+fmtPctSign(d[i])+'</span>' + (i<2?'<span class="oc-sep">|</span>':'');
+    }
+    html += '<div class="oc-source">平博</div>'+
+      '<div class="oc-line"><span class="oc-label">初</span><span class="oc-open">'+o[0].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-open">'+o[1].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-open">'+o[2].toFixed(2)+'</span></div>'+
+      '<div class="oc-line"><span class="oc-label">即</span><span class="oc-cur">'+cur[0].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+cur[1].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+cur[2].toFixed(2)+'</span></div>'+
+      '<div class="oc-line oc-div"><span class="oc-label">分</span>'+divStr+'</div>';
+  } else {
+    html += '<span class="odds-val odds-w">--</span>';
   }
-  return '<div class="odds-combined">'+
-    '<div class="oc-line"><span class="oc-label">初</span><span class="oc-open">'+o[0].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-open">'+o[1].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-open">'+o[2].toFixed(2)+'</span></div>'+
-    '<div class="oc-line"><span class="oc-label">即</span><span class="oc-cur">'+cur[0].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+cur[1].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+cur[2].toFixed(2)+'</span></div>'+
-    '<div class="oc-line oc-div"><span class="oc-label">分</span>'+divStr+'</div>'+
-    '</div>';
+  // 香港马会
+  if(h && h.current){
+    var o=h.open, cur=h.current, d=h.div_pct;
+    var divStr = '';
+    for(var i=0;i<3;i++){
+      var cls = d[i] < -0.3 ? 'oc-pct-down' : (d[i] > 0.3 ? 'oc-pct-up' : 'oc-pct-flat');
+      divStr += '<span class="'+cls+'">'+fmtPctSign(d[i])+'</span>' + (i<2?'<span class="oc-sep">|</span>':'');
+    }
+    html += '<div class="oc-sep-line"></div>'+
+      '<div class="oc-source oc-source-hkjc">马会</div>'+
+      '<div class="oc-line"><span class="oc-label">初</span><span class="oc-open">'+o[0].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-open">'+o[1].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-open">'+o[2].toFixed(2)+'</span></div>'+
+      '<div class="oc-line"><span class="oc-label">即</span><span class="oc-cur">'+cur[0].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+cur[1].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+cur[2].toFixed(2)+'</span></div>'+
+      '<div class="oc-line oc-div"><span class="oc-label">分</span>'+divStr+'</div>';
+  }
+  return '<div class="odds-combined">'+html+'</div>';
 }
 function fmtTime(t){return t?t.replace(/^\d{2}-/,''):''}
 
@@ -51,7 +70,7 @@ function renderTable(matches){
       '<td class="team-name">'+m.away_team+'</td>'+
       '<td><span class="'+dirClass(m.prediction)+'">'+dirText(m.prediction)+'</span></td>'+
       '<td class="'+hc+'">'+(m.hit||'')+'</td>'+
-      '<td class="odds-cell">'+renderOdds(m.comparison)+'</td>'+
+      '<td class="odds-cell">'+renderOdds(m.comparison, m.hkjc_comparison)+'</td>'+
       '<td class="odds-cell"><span class="odds-val odds-w">'+fmtPct(m.model_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.model_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.model_loss)+'</span></td>';
     tbody.appendChild(tr);
   });

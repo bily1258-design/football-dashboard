@@ -175,13 +175,31 @@ def analyze_matches(matches: List[Dict]) -> List[Dict]:
             op_d = float(m.get('odds_pinnacle_open_draw', 0) or 0)
             op_l = float(m.get('odds_pinnacle_open_loss', 0) or 0)
             if op_w > 1 and op_d > 1 and op_l > 1:
-                # 分歧百分比
                 pct_w = (ow - op_w) / op_w * 100
                 pct_d = (od - op_d) / op_d * 100
                 pct_l = (ol - op_l) / ol * 100
                 comparison = {
                     'open': [round(op_w,2), round(op_d,2), round(op_l,2)],
                     'current': [round(ow,2), round(od,2), round(ol,2)],
+                    'div_pct': [round(pct_w,1), round(pct_d,1), round(pct_l,1)],
+                }
+
+        # 8b. 香港马会赔率对比
+        hkjc_comparison = {}
+        hw = float(m.get('odds_hkjc_win', 0) or 0)
+        hd = float(m.get('odds_hkjc_draw', 0) or 0)
+        hl = float(m.get('odds_hkjc_loss', 0) or 0)
+        if hw > 1 and hd > 1 and hl > 1:
+            hop_w = float(m.get('odds_hkjc_open_win', 0) or 0)
+            hop_d = float(m.get('odds_hkjc_open_draw', 0) or 0)
+            hop_l = float(m.get('odds_hkjc_open_loss', 0) or 0)
+            if hop_w > 1 and hop_d > 1 and hop_l > 1:
+                pct_w = (hw - hop_w) / hop_w * 100
+                pct_d = (hd - hop_d) / hop_d * 100
+                pct_l = (hl - hop_l) / hop_l * 100
+                hkjc_comparison = {
+                    'open': [round(hop_w,2), round(hop_d,2), round(hop_l,2)],
+                    'current': [round(hw,2), round(hd,2), round(hl,2)],
                     'div_pct': [round(pct_w,1), round(pct_d,1), round(pct_l,1)],
                 }
 
@@ -206,6 +224,7 @@ def analyze_matches(matches: List[Dict]) -> List[Dict]:
             'prediction_cn': dir_cn,
             'prediction_prob': round(max_prob_val, 4),
             'comparison': comparison,
+            'hkjc_comparison': hkjc_comparison,
         })
 
     logger.info(f"分析完成: {len(results)} 场 (跳过 {skipped} 场无赔率)")
@@ -254,8 +273,8 @@ def generate_frontend(results: List[Dict]):
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>足彩价值投注看板</title>
-<link rel="stylesheet" href="style.css?v=20260713v5">
-<script src="script.js?v=20260713v5"></script>
+<link rel="stylesheet" href="style.css?v=20260714v6">
+<script src="script.js?v=20260714v6"></script>
 </head>
 <body>
 <div class="container">
@@ -361,6 +380,9 @@ tr:hover{background:#1a2a3a}
 .odds-combined .oc-pct-up{color:#4ade80;font-weight:600}
 .odds-combined .oc-pct-flat{color:#556677}
 .odds-combined .oc-sep{color:#445566;margin:0 1px}
+.oc-source{font-size:10px;color:#7899bb;margin:2px 0 1px;font-weight:600}
+.oc-source-hkjc{color:#bb9977}
+.oc-sep-line{height:1px;background:#2a3a4a;margin:4px 0}
 @media(max-width:768px){
   .container{padding:8px}
   table{font-size:11px}
@@ -380,19 +402,38 @@ function fmtPct(v){return (v*100).toFixed(1)+'%'}
 function fmtPctSign(v){return v===0?'0%':(v>0?'+':'')+v.toFixed(1)+'%'}
 function dirClass(d){return d==='home'?'dir-home':d==='draw'?'dir-draw':d==='away'?'dir-away':'dir-wait'}
 function dirText(d){return d==='home'?'主胜':d==='draw'?'平局':d==='away'?'客胜':'观望'}
-function renderOdds(c){
-  if(!c||!c.current) return '<span class="odds-val odds-w">--</span>';
-  var o=c.open, cur=c.current, d=c.div_pct;
-  var divStr = '';
-  for(var i=0;i<3;i++){
-    var cls = d[i] < -0.3 ? 'oc-pct-down' : (d[i] > 0.3 ? 'oc-pct-up' : 'oc-pct-flat');
-    divStr += '<span class="'+cls+'">'+fmtPctSign(d[i])+'</span>' + (i<2?'<span class="oc-sep">|</span>':'');
+function renderOdds(c, h){
+  var html = '';
+  // 平博
+  if(c && c.current){
+    var o=c.open, cur=c.current, d=c.div_pct;
+    var divStr = '';
+    for(var i=0;i<3;i++){
+      var cls = d[i] < -0.3 ? 'oc-pct-down' : (d[i] > 0.3 ? 'oc-pct-up' : 'oc-pct-flat');
+      divStr += '<span class="'+cls+'">'+fmtPctSign(d[i])+'</span>' + (i<2?'<span class="oc-sep">|</span>':'');
+    }
+    html += '<div class="oc-source">平博</div>'+
+      '<div class="oc-line"><span class="oc-label">初</span><span class="oc-open">'+o[0].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-open">'+o[1].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-open">'+o[2].toFixed(2)+'</span></div>'+
+      '<div class="oc-line"><span class="oc-label">即</span><span class="oc-cur">'+cur[0].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+cur[1].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+cur[2].toFixed(2)+'</span></div>'+
+      '<div class="oc-line oc-div"><span class="oc-label">分</span>'+divStr+'</div>';
+  } else {
+    html += '<span class="odds-val odds-w">--</span>';
   }
-  return '<div class="odds-combined">'+
-    '<div class="oc-line"><span class="oc-label">初</span><span class="oc-open">'+o[0].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-open">'+o[1].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-open">'+o[2].toFixed(2)+'</span></div>'+
-    '<div class="oc-line"><span class="oc-label">即</span><span class="oc-cur">'+cur[0].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+cur[1].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+cur[2].toFixed(2)+'</span></div>'+
-    '<div class="oc-line oc-div"><span class="oc-label">分</span>'+divStr+'</div>'+
-    '</div>';
+  // 香港马会
+  if(h && h.current){
+    var o=h.open, cur=h.current, d=h.div_pct;
+    var divStr = '';
+    for(var i=0;i<3;i++){
+      var cls = d[i] < -0.3 ? 'oc-pct-down' : (d[i] > 0.3 ? 'oc-pct-up' : 'oc-pct-flat');
+      divStr += '<span class="'+cls+'">'+fmtPctSign(d[i])+'</span>' + (i<2?'<span class="oc-sep">|</span>':'');
+    }
+    html += '<div class="oc-sep-line"></div>'+
+      '<div class="oc-source oc-source-hkjc">马会</div>'+
+      '<div class="oc-line"><span class="oc-label">初</span><span class="oc-open">'+o[0].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-open">'+o[1].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-open">'+o[2].toFixed(2)+'</span></div>'+
+      '<div class="oc-line"><span class="oc-label">即</span><span class="oc-cur">'+cur[0].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+cur[1].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+cur[2].toFixed(2)+'</span></div>'+
+      '<div class="oc-line oc-div"><span class="oc-label">分</span>'+divStr+'</div>';
+  }
+  return '<div class="odds-combined">'+html+'</div>';
 }
 function fmtTime(t){return t?t.replace(/^\\d{2}-/,''):''}
 
@@ -424,7 +465,7 @@ function renderTable(matches){
       '<td class="team-name">'+m.away_team+'</td>'+
       '<td><span class="'+dirClass(m.prediction)+'">'+dirText(m.prediction)+'</span></td>'+
       '<td class="'+hc+'">'+(m.hit||'')+'</td>'+
-      '<td class="odds-cell">'+renderOdds(m.comparison)+'</td>'+
+      '<td class="odds-cell">'+renderOdds(m.comparison, m.hkjc_comparison)+'</td>'+
       '<td class="odds-cell"><span class="odds-val odds-w">'+fmtPct(m.model_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.model_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.model_loss)+'</span></td>';
     tbody.appendChild(tr);
   });

@@ -65,8 +65,8 @@ def fetch_1x2_odds(fid, cid):
     if not data or not isinstance(data, list) or len(data) < 1:
         return None
     try:
-        opening = data[0]
-        latest = data[-1]
+        opening = data[-1]  # API返回倒序(最新在前)，最后一条=开盘
+        latest = data[0]    # 第一条=最新
         return {
             'open': {'w': float(opening[0]), 'd': float(opening[1]), 'l': float(opening[2])},
             'latest': {'w': float(latest[0]), 'd': float(latest[1]), 'l': float(latest[2])},
@@ -148,6 +148,30 @@ def enhance_with_pinnacle(matches, delay=0.3):
 
     return pinnacle_ok
 
+def enhance_with_hkjc(matches, delay=0.3):
+    """为每场比赛获取香港马会(cid=122)的收盘赔率"""
+    hkjc_ok = 0
+    total = len(matches)
+    for i, m in enumerate(matches):
+        fid = m['fid']
+        print(f"  [{i+1}/{total}] fid={fid} {m['home_team']} vs {m['away_team']}...", end=' ', flush=True)
+        h = fetch_1x2_odds(fid, 122)
+        if h:
+            m['odds_hkjc_open_win'] = h['open']['w']
+            m['odds_hkjc_open_draw'] = h['open']['d']
+            m['odds_hkjc_open_loss'] = h['open']['l']
+            m['odds_hkjc_win'] = h['latest']['w']
+            m['odds_hkjc_draw'] = h['latest']['d']
+            m['odds_hkjc_loss'] = h['latest']['l']
+            hkjc_ok += 1
+            print(f"HKJC开盘{h['open']['w']}/{h['open']['d']}/{h['open']['l']} 最新{h['latest']['w']}/{h['latest']['d']}/{h['latest']['l']}")
+        else:
+            print("HKJC-")
+        if delay > 0 and i < total - 1:
+            time.sleep(delay)
+    return hkjc_ok
+
+
 # ========== 期号查找 ==========
 
 def find_period(date_str, known_periods):
@@ -166,6 +190,7 @@ def main():
     parser.add_argument('--date', default=date.today().isoformat())
     parser.add_argument('--period')
     parser.add_argument('--no-pinnacle', action='store_true', help='跳过平博抓取')
+    parser.add_argument('--no-hkjc', action='store_true', help='跳过香港马会抓取')
     args = parser.parse_args()
 
     if args.period:
@@ -186,6 +211,12 @@ def main():
         print("[INFO] 抓取平博赔率(收盘)...")
         p_ok = enhance_with_pinnacle(ms)
         print(f"[INFO] 平博 {p_ok}/{len(ms)}")
+
+    # 追加香港马会赔率
+    if not args.no_hkjc:
+        print("[INFO] 抓取香港马会赔率(收盘)...")
+        h_ok = enhance_with_hkjc(ms)
+        print(f"[INFO] HKJC {h_ok}/{len(ms)}")
 
     out = {
         'date': args.date,
