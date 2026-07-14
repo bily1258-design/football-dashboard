@@ -13,7 +13,7 @@
   python3 scripts/fetch_hkjc_all.py --date 2026-07-14 --merge          # 合并到已有数据
 """
 import re, json, os, argparse, urllib.request, time, sys
-from datetime import datetime, date
+from datetime import datetime, date, timezone, timedelta
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(os.path.dirname(SCRIPT_DIR), "data")
@@ -255,7 +255,7 @@ def main():
 
         existing_obj['matches'] = existing_matches
         existing_obj['total_matches'] = len(existing_matches)
-        existing_obj['generated_at'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        existing_obj['generated_at'] = datetime.now(timezone(timedelta(hours=8))).strftime('%Y-%m-%d %H:%M:%S')
 
         with open(results_path, 'w', encoding='utf-8') as f:
             json.dump(existing_obj, f, ensure_ascii=False, indent=2)

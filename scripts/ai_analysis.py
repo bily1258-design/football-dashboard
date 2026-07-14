@@ -14,7 +14,7 @@ ai_analysis.py — 足彩智能分析系统 v3.0
   python3 scripts/ai_analysis.py --fetch-only   # 只抓取，不分析
 """
 import re, json, os, sys, math, sqlite3, glob, logging, hashlib
-from datetime import datetime, date
+from datetime import datetime, date, timezone, timedelta
 from collections import defaultdict
 from typing import Dict, List, Any, Tuple, Optional
 
@@ -247,7 +247,7 @@ def generate_frontend(results: List[Dict]):
 
     # 构建输出JSON
     output = {
-        'generated_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        'generated_at': datetime.now(timezone(timedelta(hours=8))).strftime('%Y-%m-%d %H:%M:%S'),
         'total_matches': all_counts,
         'date_range': f"{min(dates)} ~ {max(dates)}" if dates else '无数据',
         'daily_stats': [],
