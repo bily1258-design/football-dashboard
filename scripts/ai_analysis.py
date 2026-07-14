@@ -28,8 +28,7 @@ DB_PATH = os.path.join(DATA_DIR, "football.db")
 # ─── 算法常量 ──────────────────────────────────────
 SMOOTH_ALPHA = 0.01           # 贝叶斯平滑强度：模型 = (1-α)×隐含 + α/3（极小，仅用于正则化）
 HOME_ADJ = 0.01               # 主场调整量：加到模型主胜，从平/负各扣0.003
-SHIFT_TO_DRAW = 0.09          # 从最大热门移9%给平局
-SHIFT_TO_AWAY = 0.03          # 再从最大热门移3%给另一方向（对家）
+DRAW_BIAS = 0.12              # 平局偏置：从最大非平局方向移DRAW_BIAS给平局（减弱热门）
 
 
 # ─── 日志 ──────────────────────────────────────────
@@ -154,34 +153,16 @@ def analyze_matches(matches: List[Dict]) -> List[Dict]:
         st = sw + sd + sl
         model_w, model_d, model_l = sw/st, sd/st, sl/st
 
-        # 2b. 平局偏置：从最大热门移SHIFT_TO_DRAW给平局 + SHIFT_TO_AWAY给对家
+        # 2b. 平局偏置：从最大非平局方向移DRAW_BIAS给平局（减弱热门）
         non_draw = [(p, i) for i, p in enumerate([model_w, model_d, model_l]) if i != 1]
         max_nd_p, max_nd_idx = max(non_draw, key=lambda x: x[0])
-        # 另一方向（非平局、非最大热门）
-        other_idx = 2 if max_nd_idx == 0 else 0
-        total_shift = SHIFT_TO_DRAW + SHIFT_TO_AWAY
-        shift = min(total_shift, max_nd_p)
+        shift = min(DRAW_BIAS, max_nd_p)  # 不超源方向
         if shift > 0 and max_nd_p > model_d:
-            # 先移给平局
-            shift_draw = min(SHIFT_TO_DRAW, shift)
             if max_nd_idx == 0:
-                model_w -= shift_draw
+                model_w -= shift
             else:
-                model_l -= shift_draw
-            model_d += shift_draw
-            # 剩余的移给对家
-            shift_away = min(shift - shift_draw, 
-                           max(0, (model_w if other_idx==0 else model_l)))
-            if shift_away > 0:
-                if other_idx == 0:
-                    model_w += shift_away
-                else:
-                    model_l += shift_away
-                # 从最大热门扣除
-                if max_nd_idx == 0:
-                    model_w -= shift_away
-                else:
-                    model_l -= shift_away
+                model_l -= shift
+            model_d += shift
 
         # 3. 推荐方向（取最大模型概率）
         dir_cn, dir_en, dir_prob = determine_direction(model_w, model_d, model_l)
