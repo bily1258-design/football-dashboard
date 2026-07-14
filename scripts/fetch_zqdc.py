@@ -99,13 +99,17 @@ def parse(html, date_str):
         home = parts[1] if len(parts) >= 2 else ''
         away = parts[2] if len(parts) >= 3 else ''
 
-        # 比分（优先取北单让球后比分）
-        bd_m = re.search(r'<div class="pk">.*?<a[^>]*class="clt1"[^>]*>(\d+)</a><span>-</span><a[^>]*class="clt3"[^>]*>(\d+)</a>', row)
-        if bd_m:
-            score = f"{bd_m.group(1)}-{bd_m.group(2)}"
+        # 比分（仅当比赛已结束时提取）
+        is_finished = bool(re.search(r'<span class="red">完</span>', row))
+        if is_finished:
+            bd_m = re.search(r'<div class="pk">.*?<a[^>]*class="clt1"[^>]*>(\d+)</a><span>-</span><a[^>]*class="clt3"[^>]*>(\d+)</a>', row)
+            if bd_m:
+                score = f"{bd_m.group(1)}-{bd_m.group(2)}"
+            else:
+                score_m = re.search(r'<td[^>]*align="center"[^>]*class="[^"]*red[^"]*"[^>]*>(\d+)\s*-\s*(\d+)</td>', row)
+                score = f"{score_m.group(1)}-{score_m.group(2)}" if score_m else ''
         else:
-            score_m = re.search(r'<td[^>]*align="center"[^>]*class="[^"]*red[^"]*"[^>]*>(\d+)\s*-\s*(\d+)</td>', row)
-            score = f"{score_m.group(1)}-{score_m.group(2)}" if score_m else ''
+            score = ''
 
 
         matches.append({
