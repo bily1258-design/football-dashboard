@@ -14,6 +14,7 @@ ai_analysis.py — 足彩智能分析系统 v3.0
   python3 scripts/ai_analysis.py --fetch-only   # 只抓取，不分析
 """
 import re, json, os, sys, math, sqlite3, glob, logging, hashlib
+import numpy as np
 from datetime import datetime, date, timezone, timedelta
 from collections import defaultdict
 from typing import Dict, List, Any, Tuple, Optional
@@ -166,6 +167,159 @@ def load_league_priors(db_path: str = DB_PATH) -> Dict[str, Tuple[float, float, 
         logger.warning(f"联赛基准率加载失败: {e}")
         return priors
 
+# ─── LGBM 方案C ─────────────────────────────────────
+LGBM_MODEL_PATH = os.path.join(DATA_DIR, 'cache', 'lgbm_model.json')
+_lgbm_model = None  # 全局缓存
+
+FEATURE_NAMES = [
+    'poisson_w','poisson_d','poisson_l',
+    'final_w','final_d','final_l',
+    'implied_w','implied_d','implied_l',
+    'pin_open_w','pin_open_d','pin_open_l',
+    'pin_close_w','pin_close_d','pin_close_l',
+    'pin_move_w','pin_move_d','pin_move_l',
+    'pin_diff_w','pin_diff_d','pin_diff_l',
+    'pin_margin',
+    'disagree_w','disagree_d','disagree_l',
+    'poisson_market_margin','poisson_market_draw_diff',
+    'odds_level','draw_premium',
+    'lambda_h','lambda_a',
+]
+
+def _implied_from_odds(ow, od, ol):
+    """赔率 → 去水隐含概率"""
+    if ow <= 0 or od <= 0 or ol <= 0:
+        return (0,)*4
+    inv = (1.0/ow, 1.0/od, 1.0/ol)
+    t = sum(inv)
+    return (inv[0]/t, inv[1]/t, inv[2]/t, t-1.0)
+
+def extract_lgbm_features(ow, od, ol, model_w, model_d, model_l, margin,
+                           open_w=None, open_d=None, open_l=None,
+                           poisson_w=None, poisson_d=None, poisson_l=None,
+                           implied_w=None, implied_d=None, implied_l=None,
+                           lambda_h=None, lambda_a=None):
+    """从当前比赛数据提取28维特征（尽可能填充，缺失填0）"""
+    # 当前赔率隐含概率
+    cw, cd, cl, _ = _implied_from_odds(ow, od, ol)
+    
+    # 开盘隐含概率
+    if open_w and open_w > 1 and open_d and open_d > 1 and open_l and open_l > 1:
+        pw, pd, pl, pin_margin = _implied_from_odds(open_w, open_d, open_l)
+    else:
+        pw, pd, pl, pin_margin = 0.0, 0.0, 0.0, 0.0
+    
+    # 赔率变动
+    move_w = cw - pw if pw > 0 else 0.0
+    move_d = cd - pd if pd > 0 else 0.0
+    move_l = cl - pl if pl > 0 else 0.0
+    diff_w = move_w / pw if pw > 0 else cw  # 变动幅度
+    diff_d = move_d / pd if pd > 0 else cd
+    diff_l = move_l / pl if pl > 0 else cl
+    
+    # 泊松概率（训练时有，推理时可能缺失）
+    p_w = float(poisson_w) if poisson_w and float(poisson_w) > 0 else 0.0
+    p_d = float(poisson_d) if poisson_d and float(poisson_d) > 0 else 0.0
+    p_l = float(poisson_l) if poisson_l and float(poisson_l) > 0 else 0.0
+    
+    # 隐含概率（如有传入，否则用当前赔率隐含）
+    iw = float(implied_w) if implied_w and float(implied_w) > 0 else cw
+    id_ = float(implied_d) if implied_d and float(implied_d) > 0 else cd
+    il = float(implied_l) if implied_l and float(implied_l) > 0 else cl
+    
+    # 分歧度：泊松 vs 市场
+    dw = p_w - iw if p_w > 0 else 0.0
+    dd = p_d - id_ if p_d > 0 else 0.0
+    dl = p_l - il if p_l > 0 else 0.0
+    
+    # 泊松 vs 市场差异
+    poisson_market_margin = abs(p_w - iw) + abs(p_d - id_) + abs(p_l - il) if p_w > 0 else 0.0
+    poisson_market_draw_diff = p_d - id_ if p_d > 0 else 0.0
+    
+    # 赔率级别
+    odds_level = 1.0 / max(ow, 1.01)
+    
+    # 平局溢价
+    draw_premium = ((od - (ow + ol)/2) / max((ow + ol)/2, 0.01)) if ow > 1.01 and ol > 1.01 else 0.0
+    
+    # λ值
+    lh = float(lambda_h) if lambda_h and float(lambda_h) > 0 else 0.0
+    la = float(lambda_a) if lambda_a and float(lambda_a) > 0 else 0.0
+    
+    return [
+        p_w, p_d, p_l,                    # poisson_w/d/l
+        model_w, model_d, model_l,         # final_w/d/l
+        iw, id_, il,                      # implied_w/d/l
+        pw, pd, pl,                       # pin_open_w/d/l
+        cw, cd, cl,                       # pin_close_w/d/l
+        move_w, move_d, move_l,           # pin_move_w/d/l
+        diff_w, diff_d, diff_l,           # pin_diff_w/d/l
+        pin_margin,                       # pin_margin
+        dw, dd, dl,                       # disagree_w/d/l
+        poisson_market_margin, poisson_market_draw_diff,
+        odds_level, draw_premium,
+        lh, la,                           # lambda_h/a
+    ]
+
+def load_lgbm_model():
+    """加载LGBM模型（线程安全缓存）"""
+    global _lgbm_model
+    if _lgbm_model is not None:
+        return _lgbm_model
+    if not os.path.exists(LGBM_MODEL_PATH):
+        logger.warning(f"LGBM模型不存在: {LGBM_MODEL_PATH}，方案C不可用")
+        return None
+    try:
+        with open(LGBM_MODEL_PATH) as f:
+            d = json.load(f)
+        model = object.__new__(object)  # 简化反序列化
+        # 直接用dict
+        logger.info(f"LGBM模型已加载: {d.get('n_estimators',0)}棵树, "
+                     f"测试准确率 {d.get('test_accuracy',0):.1%}")
+        _lgbm_model = d
+        return d
+    except Exception as e:
+        logger.warning(f"LGBM模型加载失败: {e}")
+        return None
+
+def predict_lgbm(model_dict, features):
+    """用已训练的SimpleLGBM做预测（纯Python推理）"""
+    if not model_dict:
+        return None
+    trees = model_dict.get('trees', [])
+    init_pred = model_dict.get('init_pred', [1/3]*3)
+    lr = model_dict.get('learning_rate', 0.1)
+    if not trees:
+        return None
+    
+    x = np.array(features, dtype=float)
+    x = np.nan_to_num(x, nan=0.0, posinf=0.0, neginf=0.0)
+    
+    raw = np.array([float(init_pred[0]), float(init_pred[1]), float(init_pred[2])])
+    
+    for cls in range(3):
+        if cls >= len(trees):
+            continue
+        for tree_dict in trees[cls]:
+            val = _predict_tree(x, tree_dict)
+            raw[cls] += lr * val
+    
+    # Softmax
+    exp_raw = np.exp(raw - np.max(raw))
+    proba = exp_raw / np.sum(exp_raw)
+    return proba.tolist()
+
+def _predict_tree(x, node):
+    """递归树预测"""
+    if not isinstance(node, dict) or 'feature' not in node:
+        return float(node) if not isinstance(node, dict) else float(node.get('value', 0.0))
+    feat = node['feature']
+    if feat < len(x) and x[feat] <= node['threshold']:
+        return _predict_tree(x, node.get('left', 0.0))
+    else:
+        return _predict_tree(x, node.get('right', 0.0))
+
+
 # ─── 分析引擎 ──────────────────────────────────────
 
 def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, float, float]] = None) -> List[Dict]:
@@ -218,8 +372,27 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             model_w, model_d, model_l = ft and (fw/ft, fd/ft, fl/ft) or (1/3, 1/3, 1/3)
             league_baseline = prior
 
-        # 3. 推荐方向（取最大模型概率）
+        # 3. LGBM 方案C预测
+        lgbm_model = load_lgbm_model()
+        lgbm_w, lgbm_d, lgbm_l = model_w, model_d, model_l  # 默认fallback
+        if lgbm_model:
+            # 从比赛数据提取特征（初盘/泊松等如有则用）
+            open_w = m.get('odds_pinnacle_open_win') or m.get('pinnacle_open_w')
+            open_d = m.get('odds_pinnacle_open_draw') or m.get('pinnacle_open_d')
+            open_l = m.get('odds_pinnacle_open_loss') or m.get('pinnacle_open_l')
+            feat = extract_lgbm_features(ow, od, ol, model_w, model_d, model_l, margin,
+                                          open_w=open_w, open_d=open_d, open_l=open_l,
+                                          poisson_w=m.get('poisson_win'), poisson_d=m.get('poisson_draw'), poisson_l=m.get('poisson_loss'),
+                                          implied_w=m.get('implied_prob_w'), implied_d=m.get('implied_prob_d'), implied_l=m.get('implied_prob_l'),
+                                          lambda_h=m.get('home_lambda'), lambda_a=m.get('away_lambda'))
+            proba = predict_lgbm(lgbm_model, feat)
+            if proba:
+                lgbm_w, lgbm_d, lgbm_l = proba
+
+        # 4. 推荐方向（取最大模型概率）
         dir_cn, dir_en, dir_prob = determine_direction(model_w, model_d, model_l)
+        # LGBM方向
+        lgbm_dir_cn, lgbm_dir_en, lgbm_dir_prob = determine_direction(lgbm_w, lgbm_d, lgbm_l)
 
         # 4. 最大概率值
         max_prob_val = max(model_w, model_d, model_l)
@@ -290,6 +463,12 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             'prediction': dir_en,
             'prediction_cn': dir_cn,
             'prediction_prob': round(max_prob_val, 4),
+            'lgbm_prediction': lgbm_dir_en,
+            'lgbm_prediction_cn': lgbm_dir_cn,
+            'lgbm_prediction_prob': round(lgbm_dir_prob, 4),
+            'lgbm_win': round(lgbm_w, 4),
+            'lgbm_draw': round(lgbm_d, 4),
+            'lgbm_loss': round(lgbm_l, 4),
             'comparison': comparison,
             'hkjc_comparison': hkjc_comparison,
             'league_baseline': league_baseline,
@@ -393,6 +572,8 @@ def generate_frontend(results: List[Dict]):
           <th>命中</th>
           <th>赔率(初/即/分歧)</th>
           <th>模型(W/D/L)</th>
+          <th>LGBM</th>
+          <th>LGBM</th>
         </tr>
       </thead>
       <tbody id="matchBody"></tbody>
@@ -544,7 +725,8 @@ function renderTable(matches){
       '<td><span class="'+dirClass(m.prediction)+'">'+dirText(m.prediction)+'</span></td>'+
       '<td class="'+hc+'">'+(m.hit||'')+'</td>'+
       '<td class="odds-cell">'+renderOdds(m.comparison, m.hkjc_comparison)+'</td>'+
-      '<td class="odds-cell"><span class="odds-val odds-w">'+fmtPct(m.model_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.model_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.model_loss)+'</span></td>';
+      '<td class="odds-cell"><span class="odds-val odds-w">'+fmtPct(m.model_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.model_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.model_loss)+'</span></td>'+
+      '<td class="lgbm-cell"><span class="'+dirClass(m.lgbm_prediction)+'">'+dirText(m.lgbm_prediction)+'</span></td>';
     tbody.appendChild(tr);
   });
   document.getElementById('matchCount').textContent = matches.length+' 场';
