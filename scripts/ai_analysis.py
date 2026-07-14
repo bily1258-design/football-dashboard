@@ -28,6 +28,7 @@ DB_PATH = os.path.join(DATA_DIR, "football.db")
 # ─── 算法常量 ──────────────────────────────────────
 SMOOTH_ALPHA = 0.01           # 贝叶斯平滑强度：模型 = (1-α)×隐含 + α/3（极小，仅用于正则化）
 HOME_ADJ = 0.01               # 主场调整量：加到模型主胜，从平/负各扣0.003
+DRAW_BIAS = 0.05              # 平局偏置：从最大概率方向移DRAW_BIAS给平局（减弱热门）
 
 
 # ─── 日志 ──────────────────────────────────────────
@@ -151,6 +152,16 @@ def analyze_matches(matches: List[Dict]) -> List[Dict]:
         sl = imp_l * (1 - SMOOTH_ALPHA) + SMOOTH_ALPHA / 3 - HOME_ADJ * 0.3
         st = sw + sd + sl
         model_w, model_d, model_l = sw/st, sd/st, sl/st
+
+        # 2b. 平局偏置：从最大概率方向移DRAW_BIAS给平局（减弱热门）
+        max_p = max(model_w, model_d, model_l)
+        if model_d < max_p:
+            shift = min(DRAW_BIAS, (max_p - model_d) / 2)
+            if model_w == max_p:
+                model_w -= shift
+            elif model_l == max_p:
+                model_l -= shift
+            model_d += shift
 
         # 3. 推荐方向（取最大模型概率）
         dir_cn, dir_en, dir_prob = determine_direction(model_w, model_d, model_l)
