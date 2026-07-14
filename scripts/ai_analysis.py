@@ -528,8 +528,8 @@ def generate_frontend(results: List[Dict]):
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>足彩价值投注看板</title>
-<link rel="stylesheet" href="style.css?v=20260714v6">
-<script src="script.js?v=20260714v6"></script>
+<link rel="stylesheet" href="style.css?v=20260715v1">
+<script src="script.js?v=20260715v1"></script>
 </head>
 <body>
 <div class="container">
@@ -580,7 +580,6 @@ def generate_frontend(results: List[Dict]):
     </table>
   </div>
 </div>
-<script src="script.js?v=20260713v4"></script>
 </body>
 </html>'''
     with open(os.path.join(DOCS_DIR, 'index.html'), 'w', encoding='utf-8') as f:
