@@ -26,7 +26,8 @@ DOCS_DIR = os.path.join(REPO_DIR, "docs")
 DB_PATH = os.path.join(DATA_DIR, "football.db")
 
 # ─── 算法常量 ──────────────────────────────────────
-SMOOTH_ALPHA = 0.01           # 贝叶斯平滑强度：模型 = (1-α)×隐含 + α/3（极小，仅用于正则化）
+SMOOTH_ALPHA_BASE = 0.02      # 贝叶斯平滑基值（均衡比赛用）
+SMOOTH_ALPHA_SKEW = 0.35      # 方差自适应系数：偏离均衡每0.1加权0.035
 HOME_ADJ = 0.01               # 主场调整量：加到模型主胜，从平/负各扣0.003
 
 
@@ -145,10 +146,13 @@ def analyze_matches(matches: List[Dict]) -> List[Dict]:
             skipped += 1
             continue
 
-        # 2. 贝叶斯平滑隐含概率 + 主场修正（微量）
-        sw = imp_w * (1 - SMOOTH_ALPHA) + SMOOTH_ALPHA / 3 + HOME_ADJ
-        sd = imp_d * (1 - SMOOTH_ALPHA) + SMOOTH_ALPHA / 3 - HOME_ADJ * 0.3
-        sl = imp_l * (1 - SMOOTH_ALPHA) + SMOOTH_ALPHA / 3 - HOME_ADJ * 0.3
+        # 2. 方差自适应贝叶斯平滑 + 主场修正
+        #    偏离均衡（1/3）越多，平滑越强，极端赔率自然减弱
+        skew = max(imp_w, imp_d, imp_l) - 1/3
+        alpha = min(SMOOTH_ALPHA_BASE + skew * SMOOTH_ALPHA_SKEW, 0.40)
+        sw = imp_w * (1 - alpha) + alpha / 3 + HOME_ADJ
+        sd = imp_d * (1 - alpha) + alpha / 3 - HOME_ADJ * 0.3
+        sl = imp_l * (1 - alpha) + alpha / 3 - HOME_ADJ * 0.3
         st = sw + sd + sl
         model_w, model_d, model_l = sw/st, sd/st, sl/st
 
