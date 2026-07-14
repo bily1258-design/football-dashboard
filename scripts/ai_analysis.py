@@ -84,14 +84,23 @@ def load_raw_matches() -> List[Dict]:
                 logger.debug(f"  {os.path.basename(fp)}: {len(ms)} 场")
         except Exception as e:
             logger.warning(f"读取 {fp} 失败: {e}")
-    # 去重 (按 home+away+date)
-    seen = set()
+    # 去重 (按 fid 优先, 保留数据更全的)
+    seen = {}
     deduped = []
     for m in all_ms:
-        key = (m.get('home_team',''), m.get('away_team',''), m.get('date',''))
+        fid = m.get('fid') or m.get('id')
+        if fid:
+            key = str(fid)
+        else:
+            key = f"{m.get('home_team','')}|{m.get('away_team','')}|{m.get('date','')}"
         if key not in seen:
-            seen.add(key)
+            seen[key] = len(deduped)
             deduped.append(m)
+        else:
+            # 保留字段更多的那个
+            existing = deduped[seen[key]]
+            if len(m) > len(existing):
+                deduped[seen[key]] = m
     logger.info(f"原始数据 {len(all_ms)} 场 → 去重后 {len(deduped)} 场")
     return deduped
 
