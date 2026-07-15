@@ -61,7 +61,7 @@ function renderTable(matches){
   tbody.innerHTML = '';
   matches.forEach(function(m){
     var tr = document.createElement('tr');
-    var hc=m.hit==='\u2705'?'hit-yes':m.hit==='\u274c'?'hit-no':'';
+    var hc=m.hit&&m.hit.indexOf('✓')>-1?'hit-yes':m.hit==='✘'?'hit-no':'';
     tr.innerHTML =
       '<td>'+fmtTime(m.match_time)+'</td>'+
       '<td><span class="tag tag-'+m.source+'">'+(m.event||m.source)+'</span></td>'+

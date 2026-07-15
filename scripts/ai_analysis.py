@@ -480,7 +480,18 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             actual = 'home' if sh > sa else ('draw' if sh == sa else 'away')
         else:
             actual = ''
-        hit = '✅' if actual and (actual == model_dir_en or actual == lgbm_dir_en) else ('❌' if actual else '')
+        hit_which = ''
+        if actual and actual == model_dir_en and actual == lgbm_dir_en:
+            hit_which = 'LM'
+        elif actual and actual == model_dir_en:
+            hit_which = 'M'
+        elif actual and actual == lgbm_dir_en:
+            hit_which = 'L'
+        actual_cn = ''
+        if actual == 'home': actual_cn = '胜'
+        elif actual == 'draw': actual_cn = '和'
+        elif actual == 'away': actual_cn = '负'
+        hit = f'{hit_which}·{actual_cn}✓' if hit_which else ('✘' if actual else '')
 
         # 8. 赔率对比数据（平博开盘 vs 平博即时）
         comparison = {}
@@ -582,8 +593,8 @@ def generate_frontend(results: List[Dict]):
 
     # 构建输出JSON
     # 统计命中率
-    hit_count = sum(1 for r in results if r.get('hit') == '✅')
-    total_scored = hit_count + sum(1 for r in results if r.get('hit') == '❌')
+    hit_count = sum(1 for r in results if r.get('hit', '').find('✓') > -1)
+    total_scored = hit_count + sum(1 for r in results if r.get('hit') == '✘')
     hit_rate = round(hit_count / total_scored, 3) if total_scored > 0 else 0.0
 
     output = {
@@ -802,7 +813,7 @@ function renderTable(matches){
   tbody.innerHTML = '';
   matches.forEach(function(m){
     var tr = document.createElement('tr');
-    var hc=m.hit==='\\u2705'?'hit-yes':m.hit==='\\u274c'?'hit-no':'';
+    var hc=m.hit&&m.hit.indexOf('✓')>-1?'hit-yes':m.hit==='✘'?'hit-no':'';
     tr.innerHTML =
       '<td>'+fmtTime(m.match_time)+'</td>'+
       '<td><span class="tag tag-'+m.source+'">'+(m.event||m.source)+'</span></td>'+
