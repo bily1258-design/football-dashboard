@@ -224,7 +224,44 @@ def main():
     parser.add_argument('--period')
     parser.add_argument('--no-pinnacle', action='store_true', help='跳过平博抓取')
     parser.add_argument('--no-hkjc', action='store_true', help='跳过香港马会抓取')
+    parser.add_argument('--backfill', action='store_true', help='比分回填：只更新比分，保留已有赔率')
     args = parser.parse_args()
+
+    # ===== 比分回填模式 =====
+    if args.backfill:
+        fpath = os.path.join(DATA_DIR, f'matches_{args.date.replace("-", "")}.json')
+        if not os.path.exists(fpath):
+            print(f"[WARN] {fpath} 不存在，跳过回填")
+            return
+        # 1) 读取已有数据（含赔率）
+        with open(fpath) as f:
+            existing = json.load(f)
+        existing_matches = {m['fid']: m for m in existing['matches']}
+        # 2) 抓取期号页面获取最新比分
+        if args.period:
+            html = fetch(args.period)
+        else:
+            period, ms, _ = find_period(args.date)
+            html = fetch(period)
+        fresh = parse(html, args.date)
+        updated = 0
+        for m in fresh:
+            fid = m['fid']
+            if fid in existing_matches:
+                old_scr = existing_matches[fid].get('score', '')
+                new_scr = m.get('score', '')
+                if new_scr and new_scr != old_scr:
+                    existing_matches[fid]['score'] = new_scr
+                    updated += 1
+        if updated:
+            existing['matches'] = list(existing_matches.values())
+            existing['fetched_at'] = datetime.now().isoformat()
+            with open(fpath, 'w', encoding='utf-8') as f:
+                json.dump(existing, f, ensure_ascii=False, indent=2)
+            print(f"[BACKFILL] {fpath} → {updated} 场比分已更新")
+        else:
+            print(f"[BACKFILL] {fpath} → 无变化")
+        return
 
     if args.period:
         print(f"[INFO] 获取期号 {args.period} 的 {args.date} 数据...")

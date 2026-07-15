@@ -17,6 +17,16 @@ if [ ! -f "$FILE" ]; then
     exit 0
 fi
 
+# ========== 比分回填：重新抓取前3天，更新已完赛比分 ==========
+for i in 1 2 3; do
+    BACK_DATE=$(date -d "$DATE -$i day" '+%Y-%m-%d')
+    BACK_FILE="data/matches_${BACK_DATE//-/}.json"
+    if [ -f "$BACK_FILE" ]; then
+        echo "[$(date '+%H:%M:%S')] 回填 $BACK_DATE 比分..."
+        python3 scripts/fetch_zqdc.py --date "$BACK_DATE" --backfill
+    fi
+done
+
 echo "[$(date '+%H:%M:%S')] 分析 $DATE ..."
 python3 scripts/ai_analysis.py
 
