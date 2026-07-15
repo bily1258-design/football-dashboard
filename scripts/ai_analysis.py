@@ -59,11 +59,17 @@ def implied_from_odds(odds_w: float, odds_d: float, odds_l: float) -> Tuple[Opti
     margin = total - 1.0
     return iw / total, id_ / total, il / total, margin
 
-def determine_direction(mw: float, md: float, ml: float) -> Tuple[str, str, float]:
-    """确定推荐方向（取模型概率中间的方向）"""
+def middle_direction(mw: float, md: float, ml: float) -> Tuple[str, str, float]:
+    """取中间概率方向"""
     items = [('主胜', mw, 'home'), ('平局', md, 'draw'), ('客胜', ml, 'away')]
     sorted_items = sorted(items, key=lambda x: x[1])
-    dir_cn, prob, dir_en = sorted_items[1]  # 中间值
+    dir_cn, prob, dir_en = sorted_items[1]
+    return dir_cn, dir_en, round(prob, 4)
+
+def max_direction(mw: float, md: float, ml: float) -> Tuple[str, str, float]:
+    """取最大概率方向（供LGBM使用）"""
+    items = [('主胜', mw, 'home'), ('平局', md, 'draw'), ('客胜', ml, 'away')]
+    dir_cn, prob, dir_en = max(items, key=lambda x: x[1])
     return dir_cn, dir_en, round(prob, 4)
 
 # ─── 数据加载 ──────────────────────────────────────
@@ -412,10 +418,10 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             if proba:
                 lgbm_w, lgbm_d, lgbm_l = proba
 
-        # 4. LGBM 推荐方向（主推）
-        lgbm_dir_cn, lgbm_dir_en, lgbm_dir_prob = determine_direction(lgbm_w, lgbm_d, lgbm_l)
+        # 4. LGBM 推荐方向（主推，取最大值）
+        lgbm_dir_cn, lgbm_dir_en, lgbm_dir_prob = max_direction(lgbm_w, lgbm_d, lgbm_l)
         # 模型概率方向（中间值，备选）
-        model_dir_cn, model_dir_en, model_dir_prob = determine_direction(model_w, model_d, model_l)
+        model_dir_cn, model_dir_en, model_dir_prob = middle_direction(model_w, model_d, model_l)
 
         # 4. 最大概率值
         max_prob_val = max(model_w, model_d, model_l)
