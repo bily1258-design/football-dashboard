@@ -340,15 +340,22 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
     lambda_ = LEAGUE_PRIOR_LAMBDA
 
     for m in matches:
-        # 赔率源：平博
+        # 赔率源：优先平博，fallback到HKJC
         ow = float(m.get('odds_pinnacle_win', 0) or 0)
         od = float(m.get('odds_pinnacle_draw', 0) or 0)
         ol = float(m.get('odds_pinnacle_loss', 0) or 0)
         odds_source = 'pinnacle'
 
         if not (ow > 1 and od > 1 and ol > 1):
-            skipped += 1
-            continue
+            # 尝试用HKJC赔率
+            ow = float(m.get('odds_hkjc_win', 0) or 0)
+            od = float(m.get('odds_hkjc_draw', 0) or 0)
+            ol = float(m.get('odds_hkjc_loss', 0) or 0)
+            if ow > 1 and od > 1 and ol > 1:
+                odds_source = 'hkjc'
+            else:
+                skipped += 1
+                continue
 
         # 1. 隐含概率（去抽水）
         imp_w, imp_d, imp_l, margin = implied_from_odds(ow, od, ol)
