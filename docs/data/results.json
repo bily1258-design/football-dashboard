@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-07-15 13:08:00",
-  "total_matches": 111,
+  "generated_at": "2026-07-15 14:52:07",
+  "total_matches": 112,
   "date_range": "2026-07-10 ~ 2026-07-17",
   "hit_count": 46,
   "total_scored": 82,
@@ -16,7 +16,7 @@
     },
     {
       "date": "2026-07-15",
-      "count": 16
+      "count": 17
     },
     {
       "date": "2026-07-14",
@@ -4420,24 +4420,40 @@
       "score": "",
       "hit": "",
       "source": "beidan",
-      "odds_source": "hkjc",
-      "odds_win": 2.52,
-      "odds_draw": 3.0,
-      "odds_loss": 2.48,
-      "margin": 0.1334,
-      "model_win": 0.372,
-      "model_draw": 0.2834,
-      "model_loss": 0.3446,
-      "prediction": "home",
-      "prediction_cn": "主胜",
-      "prediction_prob": 0.372,
+      "odds_source": "pinnacle",
+      "odds_win": 2.87,
+      "odds_draw": 3.05,
+      "odds_loss": 2.41,
+      "margin": 0.0912,
+      "model_win": 0.3467,
+      "model_draw": 0.2888,
+      "model_loss": 0.3644,
+      "prediction": "away",
+      "prediction_cn": "客胜",
+      "prediction_prob": 0.3644,
       "lgbm_prediction": "away",
       "lgbm_prediction_cn": "客胜",
-      "lgbm_prediction_prob": 0.3821,
-      "lgbm_win": 0.3599,
-      "lgbm_draw": 0.258,
-      "lgbm_loss": 0.3821,
-      "comparison": {},
+      "lgbm_prediction_prob": 0.4497,
+      "lgbm_win": 0.3176,
+      "lgbm_draw": 0.2327,
+      "lgbm_loss": 0.4497,
+      "comparison": {
+        "open": [
+          2.84,
+          3.13,
+          2.38
+        ],
+        "current": [
+          2.87,
+          3.05,
+          2.41
+        ],
+        "div_pct": [
+          1.1,
+          -2.6,
+          1.2
+        ]
+      },
       "hkjc_comparison": {
         "open": [
           2.46,
@@ -4445,14 +4461,14 @@
           2.54
         ],
         "current": [
-          2.52,
+          2.62,
           3.0,
-          2.48
+          2.39
         ],
         "div_pct": [
-          2.4,
+          6.5,
           0.0,
-          -2.4
+          -5.9
         ]
       },
       "league_baseline": [
@@ -4524,15 +4540,15 @@
       "source": "beidan",
       "odds_source": "pinnacle",
       "odds_win": 2.79,
-      "odds_draw": 2.89,
-      "odds_loss": 3.05,
-      "margin": 0.0323,
-      "model_win": 0.3716,
-      "model_draw": 0.3284,
-      "model_loss": 0.3,
+      "odds_draw": 2.88,
+      "odds_loss": 3.06,
+      "margin": 0.0324,
+      "model_win": 0.3715,
+      "model_draw": 0.3293,
+      "model_loss": 0.2991,
       "prediction": "home",
       "prediction_cn": "主胜",
-      "prediction_prob": 0.3716,
+      "prediction_prob": 0.3715,
       "lgbm_prediction": "draw",
       "lgbm_prediction_cn": "平局",
       "lgbm_prediction_prob": 0.4336,
@@ -4547,13 +4563,13 @@
         ],
         "current": [
           2.79,
-          2.89,
-          3.05
+          2.88,
+          3.06
         ],
         "div_pct": [
           4.5,
-          -4.9,
-          2.3
+          -5.3,
+          2.6
         ]
       },
       "hkjc_comparison": {
@@ -4563,14 +4579,14 @@
           2.72
         ],
         "current": [
-          2.46,
-          2.72,
-          2.8
+          2.42,
+          2.75,
+          2.82
         ],
         "div_pct": [
-          -4.7,
-          2.6,
-          2.9
+          -6.2,
+          3.8,
+          3.7
         ]
       },
       "league_baseline": [
@@ -4590,16 +4606,16 @@
       "hit": "",
       "source": "beidan",
       "odds_source": "pinnacle",
-      "odds_win": 4.63,
-      "odds_draw": 3.74,
-      "odds_loss": 1.68,
-      "margin": 0.0786,
-      "model_win": 0.2564,
-      "model_draw": 0.2503,
-      "model_loss": 0.4933,
+      "odds_win": 4.71,
+      "odds_draw": 3.76,
+      "odds_loss": 1.67,
+      "margin": 0.0771,
+      "model_win": 0.2541,
+      "model_draw": 0.2497,
+      "model_loss": 0.4962,
       "prediction": "away",
       "prediction_cn": "客胜",
-      "prediction_prob": 0.4933,
+      "prediction_prob": 0.4962,
       "lgbm_prediction": "away",
       "lgbm_prediction_cn": "客胜",
       "lgbm_prediction_prob": 0.5016,
@@ -4613,14 +4629,14 @@
           1.79
         ],
         "current": [
-          4.63,
-          3.74,
-          1.68
+          4.71,
+          3.76,
+          1.67
         ],
         "div_pct": [
-          19.0,
-          5.4,
-          -6.5
+          21.1,
+          5.9,
+          -7.2
         ]
       },
       "hkjc_comparison": {
@@ -4630,14 +4646,14 @@
           1.69
         ],
         "current": [
-          4.1,
-          3.7,
-          1.63
+          4.4,
+          3.8,
+          1.57
         ],
         "div_pct": [
-          6.5,
-          2.8,
-          -3.6
+          14.3,
+          5.6,
+          -7.1
         ]
       },
       "league_baseline": [
@@ -5212,22 +5228,22 @@
       "hit": "",
       "source": "beidan",
       "odds_source": "pinnacle",
-      "odds_win": 2.76,
-      "odds_draw": 3.72,
-      "odds_loss": 2.39,
+      "odds_win": 2.81,
+      "odds_draw": 3.73,
+      "odds_loss": 2.35,
       "margin": 0.0495,
-      "model_win": 0.3903,
-      "model_draw": 0.2621,
-      "model_loss": 0.3476,
+      "model_win": 0.3853,
+      "model_draw": 0.2617,
+      "model_loss": 0.353,
       "prediction": "home",
       "prediction_cn": "主胜",
-      "prediction_prob": 0.3903,
+      "prediction_prob": 0.3853,
       "lgbm_prediction": "home",
       "lgbm_prediction_cn": "主胜",
-      "lgbm_prediction_prob": 0.4484,
-      "lgbm_win": 0.4484,
-      "lgbm_draw": 0.236,
-      "lgbm_loss": 0.3155,
+      "lgbm_prediction_prob": 0.4557,
+      "lgbm_win": 0.4557,
+      "lgbm_draw": 0.2296,
+      "lgbm_loss": 0.3147,
       "comparison": {
         "open": [
           2.82,
@@ -5235,14 +5251,14 @@
           2.33
         ],
         "current": [
-          2.76,
-          3.72,
-          2.39
+          2.81,
+          3.73,
+          2.35
         ],
         "div_pct": [
-          -2.1,
-          3.0,
-          2.5
+          -0.4,
+          3.3,
+          0.9
         ]
       },
       "hkjc_comparison": {
@@ -5279,22 +5295,22 @@
       "hit": "",
       "source": "beidan",
       "odds_source": "pinnacle",
-      "odds_win": 1.43,
-      "odds_draw": 5.07,
-      "odds_loss": 6.32,
-      "margin": 0.0548,
-      "model_win": 0.622,
-      "model_draw": 0.2175,
-      "model_loss": 0.1605,
+      "odds_win": 1.42,
+      "odds_draw": 5.1,
+      "odds_loss": 6.35,
+      "margin": 0.0578,
+      "model_win": 0.6237,
+      "model_draw": 0.2165,
+      "model_loss": 0.1598,
       "prediction": "home",
       "prediction_cn": "主胜",
-      "prediction_prob": 0.622,
+      "prediction_prob": 0.6237,
       "lgbm_prediction": "home",
       "lgbm_prediction_cn": "主胜",
-      "lgbm_prediction_prob": 0.5631,
-      "lgbm_win": 0.5631,
-      "lgbm_draw": 0.2162,
-      "lgbm_loss": 0.2207,
+      "lgbm_prediction_prob": 0.5635,
+      "lgbm_win": 0.5635,
+      "lgbm_draw": 0.2156,
+      "lgbm_loss": 0.2209,
       "comparison": {
         "open": [
           1.47,
@@ -5302,14 +5318,14 @@
           5.5
         ],
         "current": [
-          1.43,
-          5.07,
-          6.32
+          1.42,
+          5.1,
+          6.35
         ],
         "div_pct": [
-          -2.7,
-          4.1,
-          13.0
+          -3.4,
+          4.7,
+          13.4
         ]
       },
       "hkjc_comparison": {
@@ -6378,22 +6394,22 @@
       "hit": "",
       "source": "hkjc",
       "odds_source": "pinnacle",
-      "odds_win": 2.82,
-      "odds_draw": 3.48,
-      "odds_loss": 2.42,
-      "margin": 0.0552,
-      "model_win": 0.3604,
-      "model_draw": 0.2661,
-      "model_loss": 0.3735,
+      "odds_win": 2.87,
+      "odds_draw": 3.32,
+      "odds_loss": 2.47,
+      "margin": 0.0545,
+      "model_win": 0.3558,
+      "model_draw": 0.2768,
+      "model_loss": 0.3674,
       "prediction": "away",
       "prediction_cn": "客胜",
-      "prediction_prob": 0.3735,
+      "prediction_prob": 0.3674,
       "lgbm_prediction": "away",
       "lgbm_prediction_cn": "客胜",
-      "lgbm_prediction_prob": 0.4417,
-      "lgbm_win": 0.3429,
-      "lgbm_draw": 0.2155,
-      "lgbm_loss": 0.4417,
+      "lgbm_prediction_prob": 0.4414,
+      "lgbm_win": 0.3355,
+      "lgbm_draw": 0.2231,
+      "lgbm_loss": 0.4414,
       "comparison": {
         "open": [
           2.68,
@@ -6401,14 +6417,14 @@
           2.41
         ],
         "current": [
-          2.82,
-          3.48,
-          2.42
+          2.87,
+          3.32,
+          2.47
         ],
         "div_pct": [
-          5.2,
-          0.3,
-          0.4
+          7.1,
+          -4.3,
+          2.4
         ]
       },
       "hkjc_comparison": {
@@ -6418,14 +6434,14 @@
           2.36
         ],
         "current": [
-          2.44,
-          3.35,
-          2.36
+          2.56,
+          3.25,
+          2.3
         ],
         "div_pct": [
-          0.0,
-          0.0,
-          0.0
+          4.9,
+          -3.0,
+          -2.5
         ]
       },
       "league_baseline": [
@@ -6445,22 +6461,22 @@
       "hit": "",
       "source": "hkjc",
       "odds_source": "pinnacle",
-      "odds_win": 4.04,
-      "odds_draw": 3.83,
-      "odds_loss": 1.82,
-      "margin": 0.0581,
-      "model_win": 0.2812,
-      "model_draw": 0.2486,
-      "model_loss": 0.4702,
+      "odds_win": 4.06,
+      "odds_draw": 3.75,
+      "odds_loss": 1.83,
+      "margin": 0.0594,
+      "model_win": 0.28,
+      "model_draw": 0.2524,
+      "model_loss": 0.4677,
       "prediction": "away",
       "prediction_cn": "客胜",
-      "prediction_prob": 0.4702,
+      "prediction_prob": 0.4677,
       "lgbm_prediction": "away",
       "lgbm_prediction_cn": "客胜",
-      "lgbm_prediction_prob": 0.5255,
-      "lgbm_win": 0.255,
-      "lgbm_draw": 0.2195,
-      "lgbm_loss": 0.5255,
+      "lgbm_prediction_prob": 0.5261,
+      "lgbm_win": 0.2553,
+      "lgbm_draw": 0.2186,
+      "lgbm_loss": 0.5261,
       "comparison": {
         "open": [
           4.2,
@@ -6468,14 +6484,14 @@
           1.72
         ],
         "current": [
-          4.04,
-          3.83,
-          1.82
+          4.06,
+          3.75,
+          1.83
         ],
         "div_pct": [
-          -3.8,
-          0.5,
-          5.5
+          -3.3,
+          -1.6,
+          6.0
         ]
       },
       "hkjc_comparison": {
@@ -6485,14 +6501,14 @@
           1.83
         ],
         "current": [
-          3.65,
-          3.2,
-          1.83
+          3.7,
+          3.35,
+          1.77
         ],
         "div_pct": [
-          0.0,
-          0.0,
-          0.0
+          1.4,
+          4.7,
+          -3.3
         ]
       },
       "league_baseline": [
@@ -6513,21 +6529,21 @@
       "source": "hkjc",
       "odds_source": "pinnacle",
       "odds_win": 1.68,
-      "odds_draw": 3.97,
-      "odds_loss": 4.71,
-      "margin": 0.0594,
-      "model_win": 0.5323,
-      "model_draw": 0.2428,
-      "model_loss": 0.2249,
+      "odds_draw": 3.87,
+      "odds_loss": 4.87,
+      "margin": 0.059,
+      "model_win": 0.5325,
+      "model_draw": 0.2476,
+      "model_loss": 0.2199,
       "prediction": "home",
       "prediction_cn": "主胜",
-      "prediction_prob": 0.5323,
+      "prediction_prob": 0.5325,
       "lgbm_prediction": "home",
       "lgbm_prediction_cn": "主胜",
-      "lgbm_prediction_prob": 0.546,
-      "lgbm_win": 0.546,
-      "lgbm_draw": 0.231,
-      "lgbm_loss": 0.223,
+      "lgbm_prediction_prob": 0.5476,
+      "lgbm_win": 0.5476,
+      "lgbm_draw": 0.2287,
+      "lgbm_loss": 0.2237,
       "comparison": {
         "open": [
           1.58,
@@ -6536,13 +6552,13 @@
         ],
         "current": [
           1.68,
-          3.97,
-          4.71
+          3.87,
+          4.87
         ],
         "div_pct": [
           6.3,
-          -2.7,
-          -2.5
+          -5.1,
+          0.8
         ]
       },
       "hkjc_comparison": {
@@ -6580,21 +6596,21 @@
       "source": "hkjc",
       "odds_source": "pinnacle",
       "odds_win": 2.57,
-      "odds_draw": 3.48,
-      "odds_loss": 2.49,
-      "margin": 0.0781,
-      "model_win": 0.3807,
-      "model_draw": 0.261,
-      "model_loss": 0.3582,
+      "odds_draw": 3.4,
+      "odds_loss": 2.54,
+      "margin": 0.0769,
+      "model_win": 0.3811,
+      "model_draw": 0.2663,
+      "model_loss": 0.3526,
       "prediction": "home",
       "prediction_cn": "主胜",
-      "prediction_prob": 0.3807,
+      "prediction_prob": 0.3811,
       "lgbm_prediction": "home",
       "lgbm_prediction_cn": "主胜",
-      "lgbm_prediction_prob": 0.4081,
-      "lgbm_win": 0.4081,
-      "lgbm_draw": 0.2084,
-      "lgbm_loss": 0.3836,
+      "lgbm_prediction_prob": 0.4412,
+      "lgbm_win": 0.4412,
+      "lgbm_draw": 0.219,
+      "lgbm_loss": 0.3399,
       "comparison": {
         "open": [
           3.35,
@@ -6603,13 +6619,13 @@
         ],
         "current": [
           2.57,
-          3.48,
-          2.49
+          3.4,
+          2.54
         ],
         "div_pct": [
           -23.3,
-          -2.5,
-          22.5
+          -4.8,
+          24.0
         ]
       },
       "hkjc_comparison": {
@@ -6619,14 +6635,14 @@
           2.14
         ],
         "current": [
-          2.76,
+          2.67,
           3.35,
-          2.14
+          2.2
         ],
         "div_pct": [
+          -3.3,
           0.0,
-          0.0,
-          0.0
+          2.8
         ]
       },
       "league_baseline": [
@@ -6646,22 +6662,22 @@
       "hit": "",
       "source": "hkjc",
       "odds_source": "pinnacle",
-      "odds_win": 1.61,
-      "odds_draw": 4.21,
-      "odds_loss": 3.74,
-      "margin": 0.126,
-      "model_win": 0.5251,
-      "model_draw": 0.222,
-      "model_loss": 0.2528,
+      "odds_win": 1.55,
+      "odds_draw": 4.32,
+      "odds_loss": 3.61,
+      "margin": 0.1537,
+      "model_win": 0.5305,
+      "model_draw": 0.2145,
+      "model_loss": 0.2551,
       "prediction": "home",
       "prediction_cn": "主胜",
-      "prediction_prob": 0.5251,
+      "prediction_prob": 0.5305,
       "lgbm_prediction": "home",
       "lgbm_prediction_cn": "主胜",
-      "lgbm_prediction_prob": 0.5417,
-      "lgbm_win": 0.5417,
-      "lgbm_draw": 0.2323,
-      "lgbm_loss": 0.2261,
+      "lgbm_prediction_prob": 0.5436,
+      "lgbm_win": 0.5436,
+      "lgbm_draw": 0.2287,
+      "lgbm_loss": 0.2278,
       "comparison": {
         "open": [
           1.48,
@@ -6669,14 +6685,14 @@
           4.69
         ],
         "current": [
-          1.61,
-          4.21,
-          3.74
+          1.55,
+          4.32,
+          3.61
         ],
         "div_pct": [
-          8.8,
-          -0.2,
-          -25.4
+          4.7,
+          2.4,
+          -29.9
         ]
       },
       "hkjc_comparison": {
@@ -6712,24 +6728,40 @@
       "score": "",
       "hit": "",
       "source": "hkjc",
-      "odds_source": "hkjc",
-      "odds_win": 1.4,
-      "odds_draw": 3.95,
-      "odds_loss": 5.9,
-      "margin": 0.1369,
-      "model_win": 0.5771,
-      "model_draw": 0.2335,
-      "model_loss": 0.1894,
+      "odds_source": "pinnacle",
+      "odds_win": 1.54,
+      "odds_draw": 3.98,
+      "odds_loss": 5.24,
+      "margin": 0.0914,
+      "model_win": 0.5549,
+      "model_draw": 0.2381,
+      "model_loss": 0.207,
       "prediction": "home",
       "prediction_cn": "主胜",
-      "prediction_prob": 0.5771,
+      "prediction_prob": 0.5549,
       "lgbm_prediction": "home",
       "lgbm_prediction_cn": "主胜",
-      "lgbm_prediction_prob": 0.5561,
-      "lgbm_win": 0.5561,
-      "lgbm_draw": 0.2201,
-      "lgbm_loss": 0.2238,
-      "comparison": {},
+      "lgbm_prediction_prob": 0.5637,
+      "lgbm_win": 0.5637,
+      "lgbm_draw": 0.2173,
+      "lgbm_loss": 0.2189,
+      "comparison": {
+        "open": [
+          1.65,
+          3.77,
+          4.51
+        ],
+        "current": [
+          1.54,
+          3.98,
+          5.24
+        ],
+        "div_pct": [
+          -6.7,
+          5.6,
+          13.9
+        ]
+      },
       "hkjc_comparison": {
         "open": [
           1.4,
@@ -6737,14 +6769,14 @@
           5.9
         ],
         "current": [
-          1.4,
-          3.95,
-          5.9
+          1.41,
+          4.05,
+          5.6
         ],
         "div_pct": [
-          0.0,
-          0.0,
-          0.0
+          0.7,
+          2.5,
+          -5.1
         ]
       },
       "league_baseline": [
@@ -6763,24 +6795,40 @@
       "score": "",
       "hit": "",
       "source": "hkjc",
-      "odds_source": "hkjc",
-      "odds_win": 1.29,
-      "odds_draw": 4.35,
-      "odds_loss": 7.75,
-      "margin": 0.1341,
-      "model_win": 0.6124,
-      "model_draw": 0.2208,
-      "model_loss": 0.1668,
+      "odds_source": "pinnacle",
+      "odds_win": 1.43,
+      "odds_draw": 4.27,
+      "odds_loss": 6.43,
+      "margin": 0.089,
+      "model_win": 0.5861,
+      "model_draw": 0.2284,
+      "model_loss": 0.1855,
       "prediction": "home",
       "prediction_cn": "主胜",
-      "prediction_prob": 0.6124,
+      "prediction_prob": 0.5861,
       "lgbm_prediction": "home",
       "lgbm_prediction_cn": "主胜",
-      "lgbm_prediction_prob": 0.5362,
-      "lgbm_win": 0.5362,
-      "lgbm_draw": 0.2373,
-      "lgbm_loss": 0.2266,
-      "comparison": {},
+      "lgbm_prediction_prob": 0.5496,
+      "lgbm_win": 0.5496,
+      "lgbm_draw": 0.2263,
+      "lgbm_loss": 0.2241,
+      "comparison": {
+        "open": [
+          1.43,
+          4.27,
+          6.43
+        ],
+        "current": [
+          1.43,
+          4.27,
+          6.43
+        ],
+        "div_pct": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
       "hkjc_comparison": {
         "open": [
           1.29,
@@ -6788,14 +6836,14 @@
           7.75
         ],
         "current": [
-          1.29,
-          4.35,
-          7.75
+          1.22,
+          4.7,
+          9.5
         ],
         "div_pct": [
-          0.0,
-          0.0,
-          0.0
+          -5.4,
+          8.0,
+          22.6
         ]
       },
       "league_baseline": [
@@ -6814,24 +6862,40 @@
       "score": "",
       "hit": "",
       "source": "hkjc",
-      "odds_source": "hkjc",
-      "odds_win": 1.68,
-      "odds_draw": 3.35,
-      "odds_loss": 4.15,
-      "margin": 0.1347,
-      "model_win": 0.506,
-      "model_draw": 0.2613,
-      "model_loss": 0.2326,
+      "odds_source": "pinnacle",
+      "odds_win": 1.88,
+      "odds_draw": 3.55,
+      "odds_loss": 3.6,
+      "margin": 0.0914,
+      "model_win": 0.4789,
+      "model_draw": 0.2567,
+      "model_loss": 0.2644,
       "prediction": "home",
       "prediction_cn": "主胜",
-      "prediction_prob": 0.506,
+      "prediction_prob": 0.4789,
       "lgbm_prediction": "home",
       "lgbm_prediction_cn": "主胜",
-      "lgbm_prediction_prob": 0.5659,
-      "lgbm_win": 0.5659,
-      "lgbm_draw": 0.2159,
-      "lgbm_loss": 0.2182,
-      "comparison": {},
+      "lgbm_prediction_prob": 0.5511,
+      "lgbm_win": 0.5511,
+      "lgbm_draw": 0.2207,
+      "lgbm_loss": 0.2281,
+      "comparison": {
+        "open": [
+          1.82,
+          3.4,
+          4.03
+        ],
+        "current": [
+          1.88,
+          3.55,
+          3.6
+        ],
+        "div_pct": [
+          3.3,
+          4.4,
+          -11.9
+        ]
+      },
       "hkjc_comparison": {
         "open": [
           1.68,
@@ -6840,13 +6904,13 @@
         ],
         "current": [
           1.68,
-          3.35,
-          4.15
+          3.4,
+          4.1
         ],
         "div_pct": [
           0.0,
-          0.0,
-          0.0
+          1.5,
+          -1.2
         ]
       },
       "league_baseline": [
@@ -6955,6 +7019,73 @@
         0.45,
         0.24,
         0.31
+      ]
+    },
+    {
+      "fid": "1446475",
+      "date": "2026-07-15",
+      "match_time": "2026-07-15 20:00",
+      "event": "球会友谊",
+      "home_team": "奥胡斯",
+      "away_team": "霍森斯",
+      "score": "",
+      "hit": "",
+      "source": "hkjc",
+      "odds_source": "pinnacle",
+      "odds_win": 1.38,
+      "odds_draw": 4.4,
+      "odds_loss": 5.68,
+      "margin": 0.128,
+      "model_win": 0.5827,
+      "model_draw": 0.2126,
+      "model_loss": 0.2047,
+      "prediction": "home",
+      "prediction_cn": "主胜",
+      "prediction_prob": 0.5827,
+      "lgbm_prediction": "home",
+      "lgbm_prediction_cn": "主胜",
+      "lgbm_prediction_prob": 0.5616,
+      "lgbm_win": 0.5616,
+      "lgbm_draw": 0.2112,
+      "lgbm_loss": 0.2272,
+      "comparison": {
+        "open": [
+          1.38,
+          4.38,
+          5.66
+        ],
+        "current": [
+          1.38,
+          4.4,
+          5.68
+        ],
+        "div_pct": [
+          0.0,
+          0.5,
+          0.4
+        ]
+      },
+      "hkjc_comparison": {
+        "open": [
+          1.32,
+          4.65,
+          6.0
+        ],
+        "current": [
+          1.32,
+          4.65,
+          6.0
+        ],
+        "div_pct": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "league_baseline": [
+        0.4258,
+        0.2017,
+        0.3725
       ]
     }
   ]
