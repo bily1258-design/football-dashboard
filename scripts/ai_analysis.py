@@ -608,7 +608,6 @@ def generate_frontend(results: List[Dict]):
           <th>赔率(初/即/分歧)</th>
           <th>模型(W/D/L)</th>
           <th>LGBM</th>
-          <th>指数</th>
         </tr>
       </thead>
       <tbody id="matchBody"></tbody>
@@ -648,7 +647,7 @@ tr:hover{background:#1a2a3a}
 .team-name{font-weight:600;color:#e0e6ed}
 .vs{color:#667788;padding:0 4px}
 .odds-cell{font-variant-numeric:tabular-nums}
-.prob-cell{font-variant-numeric:tabular-nums;font-weight:600;color:#66b8ff;text-align:center;min-width:52px}
+.lgbm-prob{margin-top:4px;padding-top:3px;border-top:1px solid #2a3a4a;font-size:11px;color:#66b8ff;text-align:center}
 .odds-val{display:inline-block;min-width:48px;text-align:center;padding:1px 4px;border-radius:3px;font-size:12px}
 .odds-w{color:#4ade80}
 .odds-d{color:#fbbf24}
