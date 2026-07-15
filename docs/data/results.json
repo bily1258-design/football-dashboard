@@ -1,14 +1,22 @@
 {
-  "generated_at": "2026-07-15 10:27:33",
-  "total_matches": 82,
-  "date_range": "2026-07-10 ~ 2026-07-15",
+  "generated_at": "2026-07-15 10:37:11",
+  "total_matches": 104,
+  "date_range": "2026-07-10 ~ 2026-07-17",
   "hit_count": 45,
   "total_scored": 81,
   "hit_rate": 0.556,
   "daily_stats": [
     {
+      "date": "2026-07-17",
+      "count": 15
+    },
+    {
+      "date": "2026-07-16",
+      "count": 2
+    },
+    {
       "date": "2026-07-15",
-      "count": 5
+      "count": 10
     },
     {
       "date": "2026-07-14",
@@ -4454,6 +4462,1097 @@
       ]
     },
     {
+      "fid": "1359168",
+      "date": "2026-07-16",
+      "match_time": "2026-07-16 03:00",
+      "event": "世界杯",
+      "home_team": "英格兰",
+      "away_team": "阿根廷",
+      "score": "",
+      "hit": "",
+      "source": "beidan",
+      "odds_source": "pinnacle",
+      "odds_win": 2.76,
+      "odds_draw": 2.91,
+      "odds_loss": 3.06,
+      "margin": 0.0328,
+      "model_win": 0.3745,
+      "model_draw": 0.3264,
+      "model_loss": 0.2991,
+      "prediction": "home",
+      "prediction_cn": "主胜",
+      "prediction_prob": 0.3745,
+      "lgbm_prediction": "draw",
+      "lgbm_prediction_cn": "平局",
+      "lgbm_prediction_prob": 0.4267,
+      "lgbm_win": 0.3013,
+      "lgbm_draw": 0.4267,
+      "lgbm_loss": 0.272,
+      "comparison": {
+        "open": [
+          2.67,
+          3.04,
+          2.98
+        ],
+        "current": [
+          2.76,
+          2.91,
+          3.06
+        ],
+        "div_pct": [
+          3.4,
+          -4.3,
+          2.6
+        ]
+      },
+      "hkjc_comparison": {
+        "open": [
+          2.58,
+          2.65,
+          2.72
+        ],
+        "current": [
+          2.48,
+          2.66,
+          2.83
+        ],
+        "div_pct": [
+          -3.9,
+          0.4,
+          4.0
+        ]
+      },
+      "league_baseline": [
+        0.463,
+        0.3148,
+        0.2222
+      ]
+    },
+    {
+      "fid": "1427669",
+      "date": "2026-07-16",
+      "match_time": "2026-07-16 03:00",
+      "event": "欧冠资格",
+      "home_team": "苏杰斯卡",
+      "away_team": "阿拉木图凯拉特",
+      "score": "",
+      "hit": "",
+      "source": "beidan",
+      "odds_source": "pinnacle",
+      "odds_win": 4.6,
+      "odds_draw": 3.82,
+      "odds_loss": 1.67,
+      "margin": 0.078,
+      "model_win": 0.2576,
+      "model_draw": 0.2465,
+      "model_loss": 0.4959,
+      "prediction": "away",
+      "prediction_cn": "客胜",
+      "prediction_prob": 0.4959,
+      "lgbm_prediction": "away",
+      "lgbm_prediction_cn": "客胜",
+      "lgbm_prediction_prob": 0.5016,
+      "lgbm_win": 0.2642,
+      "lgbm_draw": 0.2342,
+      "lgbm_loss": 0.5016,
+      "comparison": {
+        "open": [
+          3.89,
+          3.55,
+          1.79
+        ],
+        "current": [
+          4.6,
+          3.82,
+          1.67
+        ],
+        "div_pct": [
+          18.3,
+          7.6,
+          -7.2
+        ]
+      },
+      "hkjc_comparison": {
+        "open": [
+          3.85,
+          3.6,
+          1.69
+        ],
+        "current": [
+          4.0,
+          3.65,
+          1.65
+        ],
+        "div_pct": [
+          3.9,
+          1.4,
+          -2.4
+        ]
+      },
+      "league_baseline": [
+        0.45,
+        0.24,
+        0.31
+      ]
+    },
+    {
+      "fid": "1442475",
+      "date": "2026-07-17",
+      "match_time": "2026-07-17 01:00",
+      "event": "波超杯",
+      "home_team": "波兹南莱赫",
+      "away_team": "扎布热矿工",
+      "score": "",
+      "hit": "",
+      "source": "beidan",
+      "odds_source": "pinnacle",
+      "odds_win": 1.83,
+      "odds_draw": 3.79,
+      "odds_loss": 3.92,
+      "margin": 0.0654,
+      "model_win": 0.4976,
+      "model_draw": 0.2491,
+      "model_loss": 0.2533,
+      "prediction": "home",
+      "prediction_cn": "主胜",
+      "prediction_prob": 0.4976,
+      "lgbm_prediction": "home",
+      "lgbm_prediction_cn": "主胜",
+      "lgbm_prediction_prob": 0.5577,
+      "lgbm_win": 0.5577,
+      "lgbm_draw": 0.2195,
+      "lgbm_loss": 0.2228,
+      "comparison": {
+        "open": [
+          1.79,
+          3.76,
+          3.95
+        ],
+        "current": [
+          1.83,
+          3.79,
+          3.92
+        ],
+        "div_pct": [
+          2.2,
+          0.8,
+          -0.8
+        ]
+      },
+      "hkjc_comparison": {},
+      "league_baseline": [
+        0.45,
+        0.24,
+        0.31
+      ]
+    },
+    {
+      "fid": "1363485",
+      "date": "2026-07-17",
+      "match_time": "2026-07-17 01:00",
+      "event": "挪超",
+      "home_team": "瓦勒伦加",
+      "away_team": "奥勒松",
+      "score": "",
+      "hit": "",
+      "source": "beidan",
+      "odds_source": "pinnacle",
+      "odds_win": 1.73,
+      "odds_draw": 4.29,
+      "odds_loss": 4.17,
+      "margin": 0.0509,
+      "model_win": 0.5359,
+      "model_draw": 0.2252,
+      "model_loss": 0.2389,
+      "prediction": "home",
+      "prediction_cn": "主胜",
+      "prediction_prob": 0.5359,
+      "lgbm_prediction": "home",
+      "lgbm_prediction_cn": "主胜",
+      "lgbm_prediction_prob": 0.5556,
+      "lgbm_win": 0.5556,
+      "lgbm_draw": 0.2252,
+      "lgbm_loss": 0.2192,
+      "comparison": {
+        "open": [
+          1.55,
+          4.54,
+          5.0
+        ],
+        "current": [
+          1.73,
+          4.29,
+          4.17
+        ],
+        "div_pct": [
+          11.6,
+          -5.5,
+          -19.9
+        ]
+      },
+      "hkjc_comparison": {
+        "open": [
+          1.57,
+          4.0,
+          4.05
+        ],
+        "current": [
+          1.57,
+          4.0,
+          4.05
+        ],
+        "div_pct": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "league_baseline": [
+        0.5294,
+        0.2059,
+        0.2647
+      ]
+    },
+    {
+      "fid": "1440678",
+      "date": "2026-07-17",
+      "match_time": "2026-07-17 01:30",
+      "event": "欧罗巴资格",
+      "home_team": "德里城",
+      "away_team": "索非亚中央陆军",
+      "score": "",
+      "hit": "",
+      "source": "beidan",
+      "odds_source": "pinnacle",
+      "odds_win": 3.11,
+      "odds_draw": 3.58,
+      "odds_loss": 1.98,
+      "margin": 0.1059,
+      "model_win": 0.3244,
+      "model_draw": 0.2516,
+      "model_loss": 0.424,
+      "prediction": "away",
+      "prediction_cn": "客胜",
+      "prediction_prob": 0.424,
+      "lgbm_prediction": "away",
+      "lgbm_prediction_cn": "客胜",
+      "lgbm_prediction_prob": 0.4844,
+      "lgbm_win": 0.2946,
+      "lgbm_draw": 0.221,
+      "lgbm_loss": 0.4844,
+      "comparison": {
+        "open": [
+          3.35,
+          3.71,
+          1.88
+        ],
+        "current": [
+          3.11,
+          3.58,
+          1.98
+        ],
+        "div_pct": [
+          -7.2,
+          -3.5,
+          5.1
+        ]
+      },
+      "hkjc_comparison": {},
+      "league_baseline": [
+        0.45,
+        0.24,
+        0.31
+      ]
+    },
+    {
+      "fid": "1440687",
+      "date": "2026-07-17",
+      "match_time": "2026-07-17 04:00",
+      "event": "欧罗巴资格",
+      "home_team": "维斯特里",
+      "away_team": "卡拉巴赫",
+      "score": "",
+      "hit": "",
+      "source": "beidan",
+      "odds_source": "pinnacle",
+      "odds_win": 44.77,
+      "odds_draw": 16.61,
+      "odds_loss": 1.03,
+      "margin": 0.0534,
+      "model_win": 0.1536,
+      "model_draw": 0.1347,
+      "model_loss": 0.7117,
+      "prediction": "away",
+      "prediction_cn": "客胜",
+      "prediction_prob": 0.7117,
+      "lgbm_prediction": "away",
+      "lgbm_prediction_cn": "客胜",
+      "lgbm_prediction_prob": 0.4786,
+      "lgbm_win": 0.2733,
+      "lgbm_draw": 0.2481,
+      "lgbm_loss": 0.4786,
+      "comparison": {
+        "open": [
+          12.31,
+          7.36,
+          1.14
+        ],
+        "current": [
+          44.77,
+          16.61,
+          1.03
+        ],
+        "div_pct": [
+          263.7,
+          125.7,
+          -10.7
+        ]
+      },
+      "hkjc_comparison": {},
+      "league_baseline": [
+        0.45,
+        0.24,
+        0.31
+      ]
+    },
+    {
+      "fid": "1405743",
+      "date": "2026-07-17",
+      "match_time": "2026-07-17 05:45",
+      "event": "阿根廷杯",
+      "home_team": "竞技俱乐部",
+      "away_team": "防卫与正义",
+      "score": "",
+      "hit": "",
+      "source": "beidan",
+      "odds_source": "pinnacle",
+      "odds_win": 1.77,
+      "odds_draw": 3.34,
+      "odds_loss": 4.68,
+      "margin": 0.078,
+      "model_win": 0.5056,
+      "model_draw": 0.2727,
+      "model_loss": 0.2217,
+      "prediction": "home",
+      "prediction_cn": "主胜",
+      "prediction_prob": 0.5056,
+      "lgbm_prediction": "home",
+      "lgbm_prediction_cn": "主胜",
+      "lgbm_prediction_prob": 0.5941,
+      "lgbm_win": 0.5941,
+      "lgbm_draw": 0.2012,
+      "lgbm_loss": 0.2047,
+      "comparison": {
+        "open": [
+          1.9,
+          3.12,
+          3.96
+        ],
+        "current": [
+          1.77,
+          3.34,
+          4.68
+        ],
+        "div_pct": [
+          -6.8,
+          7.1,
+          15.4
+        ]
+      },
+      "hkjc_comparison": {
+        "open": [
+          1.75,
+          3.0,
+          4.35
+        ],
+        "current": [
+          1.75,
+          3.0,
+          4.35
+        ],
+        "div_pct": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "league_baseline": [
+        0.45,
+        0.24,
+        0.31
+      ]
+    },
+    {
+      "fid": "1362373",
+      "date": "2026-07-17",
+      "match_time": "2026-07-17 06:30",
+      "event": "巴西甲",
+      "home_team": "博塔弗戈",
+      "away_team": "桑托斯",
+      "score": "",
+      "hit": "",
+      "source": "beidan",
+      "odds_source": "pinnacle",
+      "odds_win": 2.04,
+      "odds_draw": 3.64,
+      "odds_loss": 3.53,
+      "margin": 0.0482,
+      "model_win": 0.4905,
+      "model_draw": 0.2421,
+      "model_loss": 0.2673,
+      "prediction": "home",
+      "prediction_cn": "主胜",
+      "prediction_prob": 0.4905,
+      "lgbm_prediction": "home",
+      "lgbm_prediction_cn": "主胜",
+      "lgbm_prediction_prob": 0.5664,
+      "lgbm_win": 0.5664,
+      "lgbm_draw": 0.2149,
+      "lgbm_loss": 0.2188,
+      "comparison": {
+        "open": [
+          1.94,
+          3.61,
+          3.88
+        ],
+        "current": [
+          2.04,
+          3.64,
+          3.53
+        ],
+        "div_pct": [
+          5.2,
+          0.8,
+          -9.9
+        ]
+      },
+      "hkjc_comparison": {
+        "open": [
+          1.86,
+          3.35,
+          3.35
+        ],
+        "current": [
+          1.86,
+          3.35,
+          3.35
+        ],
+        "div_pct": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "league_baseline": [
+        0.625,
+        0.125,
+        0.25
+      ]
+    },
+    {
+      "fid": "1362295",
+      "date": "2026-07-17",
+      "match_time": "2026-07-17 06:30",
+      "event": "巴西甲",
+      "home_team": "维多利亚",
+      "away_team": "瓦斯科达伽马",
+      "score": "",
+      "hit": "",
+      "source": "beidan",
+      "odds_source": "pinnacle",
+      "odds_win": 2.39,
+      "odds_draw": 3.31,
+      "odds_loss": 3.06,
+      "margin": 0.0473,
+      "model_win": 0.438,
+      "model_draw": 0.2621,
+      "model_loss": 0.2999,
+      "prediction": "home",
+      "prediction_cn": "主胜",
+      "prediction_prob": 0.438,
+      "lgbm_prediction": "home",
+      "lgbm_prediction_cn": "主胜",
+      "lgbm_prediction_prob": 0.519,
+      "lgbm_win": 0.519,
+      "lgbm_draw": 0.2104,
+      "lgbm_loss": 0.2706,
+      "comparison": {
+        "open": [
+          2.5,
+          3.23,
+          2.97
+        ],
+        "current": [
+          2.39,
+          3.31,
+          3.06
+        ],
+        "div_pct": [
+          -4.4,
+          2.5,
+          2.9
+        ]
+      },
+      "hkjc_comparison": {
+        "open": [
+          2.39,
+          3.0,
+          2.62
+        ],
+        "current": [
+          2.39,
+          3.0,
+          2.62
+        ],
+        "div_pct": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "league_baseline": [
+        0.625,
+        0.125,
+        0.25
+      ]
+    },
+    {
+      "fid": "1384479",
+      "date": "2026-07-17",
+      "match_time": "2026-07-17 07:00",
+      "event": "巴西乙",
+      "home_team": "巴西雷加塔斯",
+      "away_team": "累西腓航海",
+      "score": "",
+      "hit": "",
+      "source": "beidan",
+      "odds_source": "pinnacle",
+      "odds_win": 1.96,
+      "odds_draw": 3.15,
+      "odds_loss": 4.36,
+      "margin": 0.057,
+      "model_win": 0.4705,
+      "model_draw": 0.285,
+      "model_loss": 0.2445,
+      "prediction": "home",
+      "prediction_cn": "主胜",
+      "prediction_prob": 0.4705,
+      "lgbm_prediction": "home",
+      "lgbm_prediction_cn": "主胜",
+      "lgbm_prediction_prob": 0.5893,
+      "lgbm_win": 0.5893,
+      "lgbm_draw": 0.2029,
+      "lgbm_loss": 0.2078,
+      "comparison": {
+        "open": [
+          2.09,
+          3.14,
+          3.7
+        ],
+        "current": [
+          1.96,
+          3.15,
+          4.36
+        ],
+        "div_pct": [
+          -6.2,
+          0.3,
+          15.1
+        ]
+      },
+      "hkjc_comparison": {
+        "open": [
+          1.78,
+          3.35,
+          3.65
+        ],
+        "current": [
+          1.78,
+          3.35,
+          3.65
+        ],
+        "div_pct": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "league_baseline": [
+        0.4167,
+        0.2083,
+        0.375
+      ]
+    },
+    {
+      "fid": "1358412",
+      "date": "2026-07-17",
+      "match_time": "2026-07-17 07:30",
+      "event": "美职",
+      "home_team": "CF蒙特利尔",
+      "away_team": "多伦多FC",
+      "score": "",
+      "hit": "",
+      "source": "beidan",
+      "odds_source": "pinnacle",
+      "odds_win": 1.98,
+      "odds_draw": 3.84,
+      "odds_loss": 3.48,
+      "margin": 0.0528,
+      "model_win": 0.4958,
+      "model_draw": 0.2571,
+      "model_loss": 0.2472,
+      "prediction": "home",
+      "prediction_cn": "主胜",
+      "prediction_prob": 0.4958,
+      "lgbm_prediction": "home",
+      "lgbm_prediction_cn": "主胜",
+      "lgbm_prediction_prob": 0.5721,
+      "lgbm_win": 0.5721,
+      "lgbm_draw": 0.2061,
+      "lgbm_loss": 0.2217,
+      "comparison": {
+        "open": [
+          2.01,
+          3.88,
+          3.26
+        ],
+        "current": [
+          1.98,
+          3.84,
+          3.48
+        ],
+        "div_pct": [
+          -1.5,
+          -1.0,
+          6.3
+        ]
+      },
+      "hkjc_comparison": {
+        "open": [
+          1.84,
+          3.5,
+          3.3
+        ],
+        "current": [
+          1.84,
+          3.5,
+          3.3
+        ],
+        "div_pct": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "league_baseline": [
+        0.6,
+        0.3,
+        0.1
+      ]
+    },
+    {
+      "fid": "1358414",
+      "date": "2026-07-17",
+      "match_time": "2026-07-17 08:30",
+      "event": "美职",
+      "home_team": "芝加哥火焰",
+      "away_team": "温哥华白浪",
+      "score": "",
+      "hit": "",
+      "source": "beidan",
+      "odds_source": "pinnacle",
+      "odds_win": 2.76,
+      "odds_draw": 3.72,
+      "odds_loss": 2.39,
+      "margin": 0.0495,
+      "model_win": 0.3903,
+      "model_draw": 0.2621,
+      "model_loss": 0.3476,
+      "prediction": "home",
+      "prediction_cn": "主胜",
+      "prediction_prob": 0.3903,
+      "lgbm_prediction": "home",
+      "lgbm_prediction_cn": "主胜",
+      "lgbm_prediction_prob": 0.4484,
+      "lgbm_win": 0.4484,
+      "lgbm_draw": 0.236,
+      "lgbm_loss": 0.3155,
+      "comparison": {
+        "open": [
+          2.82,
+          3.61,
+          2.33
+        ],
+        "current": [
+          2.76,
+          3.72,
+          2.39
+        ],
+        "div_pct": [
+          -2.1,
+          3.0,
+          2.5
+        ]
+      },
+      "hkjc_comparison": {
+        "open": [
+          2.44,
+          3.5,
+          2.29
+        ],
+        "current": [
+          2.37,
+          3.5,
+          2.35
+        ],
+        "div_pct": [
+          -2.9,
+          0.0,
+          2.6
+        ]
+      },
+      "league_baseline": [
+        0.6,
+        0.3,
+        0.1
+      ]
+    },
+    {
+      "fid": "1358416",
+      "date": "2026-07-17",
+      "match_time": "2026-07-17 08:30",
+      "event": "美职",
+      "home_team": "圣路易斯城",
+      "away_team": "堪萨斯城体育",
+      "score": "",
+      "hit": "",
+      "source": "beidan",
+      "odds_source": "pinnacle",
+      "odds_win": 1.43,
+      "odds_draw": 5.07,
+      "odds_loss": 6.32,
+      "margin": 0.0548,
+      "model_win": 0.622,
+      "model_draw": 0.2175,
+      "model_loss": 0.1605,
+      "prediction": "home",
+      "prediction_cn": "主胜",
+      "prediction_prob": 0.622,
+      "lgbm_prediction": "home",
+      "lgbm_prediction_cn": "主胜",
+      "lgbm_prediction_prob": 0.5631,
+      "lgbm_win": 0.5631,
+      "lgbm_draw": 0.2162,
+      "lgbm_loss": 0.2207,
+      "comparison": {
+        "open": [
+          1.47,
+          4.87,
+          5.5
+        ],
+        "current": [
+          1.43,
+          5.07,
+          6.32
+        ],
+        "div_pct": [
+          -2.7,
+          4.1,
+          13.0
+        ]
+      },
+      "hkjc_comparison": {
+        "open": [
+          1.34,
+          4.65,
+          5.8
+        ],
+        "current": [
+          1.34,
+          4.65,
+          5.8
+        ],
+        "div_pct": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "league_baseline": [
+        0.6,
+        0.3,
+        0.1
+      ]
+    },
+    {
+      "fid": "1405745",
+      "date": "2026-07-17",
+      "match_time": "2026-07-17 08:45",
+      "event": "阿根廷杯",
+      "home_team": "萨米恩托",
+      "away_team": "博卡青年",
+      "score": "",
+      "hit": "",
+      "source": "beidan",
+      "odds_source": "pinnacle",
+      "odds_win": 5.31,
+      "odds_draw": 3.26,
+      "odds_loss": 1.71,
+      "margin": 0.0799,
+      "model_win": 0.2361,
+      "model_draw": 0.2778,
+      "model_loss": 0.4861,
+      "prediction": "away",
+      "prediction_cn": "客胜",
+      "prediction_prob": 0.4861,
+      "lgbm_prediction": "away",
+      "lgbm_prediction_cn": "客胜",
+      "lgbm_prediction_prob": 0.4917,
+      "lgbm_win": 0.2573,
+      "lgbm_draw": 0.2509,
+      "lgbm_loss": 0.4917,
+      "comparison": {
+        "open": [
+          5.14,
+          3.27,
+          1.67
+        ],
+        "current": [
+          5.31,
+          3.26,
+          1.71
+        ],
+        "div_pct": [
+          3.3,
+          -0.3,
+          2.3
+        ]
+      },
+      "hkjc_comparison": {
+        "open": [
+          7.0,
+          3.45,
+          1.43
+        ],
+        "current": [
+          7.0,
+          3.45,
+          1.43
+        ],
+        "div_pct": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "league_baseline": [
+        0.45,
+        0.24,
+        0.31
+      ]
+    },
+    {
+      "fid": "1417971",
+      "date": "2026-07-17",
+      "match_time": "2026-07-17 09:00",
+      "event": "墨超",
+      "home_team": "内卡萨",
+      "away_team": "亚特兰特",
+      "score": "",
+      "hit": "",
+      "source": "beidan",
+      "odds_source": "pinnacle",
+      "odds_win": 1.87,
+      "odds_draw": 3.79,
+      "odds_loss": 3.93,
+      "margin": 0.0531,
+      "model_win": 0.4939,
+      "model_draw": 0.2513,
+      "model_loss": 0.2548,
+      "prediction": "home",
+      "prediction_cn": "主胜",
+      "prediction_prob": 0.4939,
+      "lgbm_prediction": "home",
+      "lgbm_prediction_cn": "主胜",
+      "lgbm_prediction_prob": 0.5708,
+      "lgbm_win": 0.5708,
+      "lgbm_draw": 0.2107,
+      "lgbm_loss": 0.2185,
+      "comparison": {
+        "open": [
+          1.83,
+          3.76,
+          3.98
+        ],
+        "current": [
+          1.87,
+          3.79,
+          3.93
+        ],
+        "div_pct": [
+          2.2,
+          0.8,
+          -1.3
+        ]
+      },
+      "hkjc_comparison": {
+        "open": [
+          1.85,
+          3.35,
+          3.4
+        ],
+        "current": [
+          1.85,
+          3.35,
+          3.4
+        ],
+        "div_pct": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "league_baseline": [
+        0.45,
+        0.24,
+        0.31
+      ]
+    },
+    {
+      "fid": "1358418",
+      "date": "2026-07-17",
+      "match_time": "2026-07-17 10:30",
+      "event": "美职",
+      "home_team": "西雅图海湾人",
+      "away_team": "波特兰伐木者",
+      "score": "",
+      "hit": "",
+      "source": "beidan",
+      "odds_source": "pinnacle",
+      "odds_win": 1.47,
+      "odds_draw": 4.99,
+      "odds_loss": 5.64,
+      "margin": 0.058,
+      "model_win": 0.6092,
+      "model_draw": 0.2185,
+      "model_loss": 0.1724,
+      "prediction": "home",
+      "prediction_cn": "主胜",
+      "prediction_prob": 0.6092,
+      "lgbm_prediction": "home",
+      "lgbm_prediction_cn": "主胜",
+      "lgbm_prediction_prob": 0.5344,
+      "lgbm_win": 0.5344,
+      "lgbm_draw": 0.2322,
+      "lgbm_loss": 0.2335,
+      "comparison": {
+        "open": [
+          1.44,
+          4.85,
+          5.98
+        ],
+        "current": [
+          1.47,
+          4.99,
+          5.64
+        ],
+        "div_pct": [
+          2.1,
+          2.9,
+          -6.0
+        ]
+      },
+      "hkjc_comparison": {
+        "open": [
+          1.36,
+          4.65,
+          5.4
+        ],
+        "current": [
+          1.36,
+          4.65,
+          5.4
+        ],
+        "div_pct": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "league_baseline": [
+        0.6,
+        0.3,
+        0.1
+      ]
+    },
+    {
+      "fid": "1417972",
+      "date": "2026-07-17",
+      "match_time": "2026-07-17 11:10",
+      "event": "墨超",
+      "home_team": "蒂华纳",
+      "away_team": "老虎大学",
+      "score": "",
+      "hit": "",
+      "source": "beidan",
+      "odds_source": "pinnacle",
+      "odds_win": 3.67,
+      "odds_draw": 3.52,
+      "odds_loss": 2.02,
+      "margin": 0.0516,
+      "model_win": 0.2996,
+      "model_draw": 0.2658,
+      "model_loss": 0.4346,
+      "prediction": "away",
+      "prediction_cn": "客胜",
+      "prediction_prob": 0.4346,
+      "lgbm_prediction": "away",
+      "lgbm_prediction_cn": "客胜",
+      "lgbm_prediction_prob": 0.5027,
+      "lgbm_win": 0.2769,
+      "lgbm_draw": 0.2204,
+      "lgbm_loss": 0.5027,
+      "comparison": {
+        "open": [
+          3.89,
+          3.59,
+          1.89
+        ],
+        "current": [
+          3.67,
+          3.52,
+          2.02
+        ],
+        "div_pct": [
+          -5.7,
+          -1.9,
+          6.4
+        ]
+      },
+      "hkjc_comparison": {
+        "open": [
+          3.95,
+          3.35,
+          1.72
+        ],
+        "current": [
+          3.95,
+          3.35,
+          1.72
+        ],
+        "div_pct": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "league_baseline": [
+        0.45,
+        0.24,
+        0.31
+      ]
+    },
+    {
       "fid": "1414849",
       "date": "2026-07-14",
       "match_time": "2026-07-15 02:45",
@@ -5158,6 +6257,341 @@
           2.6,
           -1.3,
           -4.6
+        ]
+      },
+      "league_baseline": [
+        0.45,
+        0.24,
+        0.31
+      ]
+    },
+    {
+      "fid": "1367741",
+      "date": "2026-07-15",
+      "match_time": "2026-07-1607:00",
+      "event": "美冠",
+      "home_team": "FC迈阿密",
+      "away_team": "印地十一",
+      "score": "",
+      "hit": "",
+      "source": "hkjc",
+      "odds_source": "pinnacle",
+      "odds_win": 2.82,
+      "odds_draw": 3.48,
+      "odds_loss": 2.42,
+      "margin": 0.0552,
+      "model_win": 0.3604,
+      "model_draw": 0.2661,
+      "model_loss": 0.3735,
+      "prediction": "away",
+      "prediction_cn": "客胜",
+      "prediction_prob": 0.3735,
+      "lgbm_prediction": "away",
+      "lgbm_prediction_cn": "客胜",
+      "lgbm_prediction_prob": 0.4417,
+      "lgbm_win": 0.3429,
+      "lgbm_draw": 0.2155,
+      "lgbm_loss": 0.4417,
+      "comparison": {
+        "open": [
+          2.68,
+          3.47,
+          2.41
+        ],
+        "current": [
+          2.82,
+          3.48,
+          2.42
+        ],
+        "div_pct": [
+          5.2,
+          0.3,
+          0.4
+        ]
+      },
+      "hkjc_comparison": {
+        "open": [
+          2.44,
+          3.35,
+          2.36
+        ],
+        "current": [
+          2.44,
+          3.35,
+          2.36
+        ],
+        "div_pct": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "league_baseline": [
+        0.45,
+        0.24,
+        0.31
+      ]
+    },
+    {
+      "fid": "1367742",
+      "date": "2026-07-15",
+      "match_time": "2026-07-1607:30",
+      "event": "美冠",
+      "home_team": "运动Jax",
+      "away_team": "匹兹堡猎犬河队",
+      "score": "",
+      "hit": "",
+      "source": "hkjc",
+      "odds_source": "pinnacle",
+      "odds_win": 4.04,
+      "odds_draw": 3.83,
+      "odds_loss": 1.82,
+      "margin": 0.0581,
+      "model_win": 0.2812,
+      "model_draw": 0.2486,
+      "model_loss": 0.4702,
+      "prediction": "away",
+      "prediction_cn": "客胜",
+      "prediction_prob": 0.4702,
+      "lgbm_prediction": "away",
+      "lgbm_prediction_cn": "客胜",
+      "lgbm_prediction_prob": 0.5255,
+      "lgbm_win": 0.255,
+      "lgbm_draw": 0.2195,
+      "lgbm_loss": 0.5255,
+      "comparison": {
+        "open": [
+          4.2,
+          3.81,
+          1.72
+        ],
+        "current": [
+          4.04,
+          3.83,
+          1.82
+        ],
+        "div_pct": [
+          -3.8,
+          0.5,
+          5.5
+        ]
+      },
+      "hkjc_comparison": {
+        "open": [
+          3.65,
+          3.2,
+          1.83
+        ],
+        "current": [
+          3.65,
+          3.2,
+          1.83
+        ],
+        "div_pct": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "league_baseline": [
+        0.45,
+        0.24,
+        0.31
+      ]
+    },
+    {
+      "fid": "1367772",
+      "date": "2026-07-15",
+      "match_time": "2026-07-1607:00",
+      "event": "美冠",
+      "home_team": "列克星敦",
+      "away_team": "新墨西哥联",
+      "score": "",
+      "hit": "",
+      "source": "hkjc",
+      "odds_source": "pinnacle",
+      "odds_win": 1.68,
+      "odds_draw": 3.97,
+      "odds_loss": 4.71,
+      "margin": 0.0594,
+      "model_win": 0.5323,
+      "model_draw": 0.2428,
+      "model_loss": 0.2249,
+      "prediction": "home",
+      "prediction_cn": "主胜",
+      "prediction_prob": 0.5323,
+      "lgbm_prediction": "home",
+      "lgbm_prediction_cn": "主胜",
+      "lgbm_prediction_prob": 0.546,
+      "lgbm_win": 0.546,
+      "lgbm_draw": 0.231,
+      "lgbm_loss": 0.223,
+      "comparison": {
+        "open": [
+          1.58,
+          4.08,
+          4.83
+        ],
+        "current": [
+          1.68,
+          3.97,
+          4.71
+        ],
+        "div_pct": [
+          6.3,
+          -2.7,
+          -2.5
+        ]
+      },
+      "hkjc_comparison": {
+        "open": [
+          1.55,
+          3.7,
+          4.55
+        ],
+        "current": [
+          1.55,
+          3.7,
+          4.55
+        ],
+        "div_pct": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "league_baseline": [
+        0.45,
+        0.24,
+        0.31
+      ]
+    },
+    {
+      "fid": "1427673",
+      "date": "2026-07-15",
+      "match_time": "2026-07-1602:15",
+      "event": "欧冠",
+      "home_team": "阿特比森",
+      "away_team": "克拉斯维克",
+      "score": "",
+      "hit": "",
+      "source": "hkjc",
+      "odds_source": "pinnacle",
+      "odds_win": 2.57,
+      "odds_draw": 3.48,
+      "odds_loss": 2.49,
+      "margin": 0.0781,
+      "model_win": 0.3807,
+      "model_draw": 0.261,
+      "model_loss": 0.3582,
+      "prediction": "home",
+      "prediction_cn": "主胜",
+      "prediction_prob": 0.3807,
+      "lgbm_prediction": "home",
+      "lgbm_prediction_cn": "主胜",
+      "lgbm_prediction_prob": 0.4081,
+      "lgbm_win": 0.4081,
+      "lgbm_draw": 0.2084,
+      "lgbm_loss": 0.3836,
+      "comparison": {
+        "open": [
+          3.35,
+          3.57,
+          1.93
+        ],
+        "current": [
+          2.57,
+          3.48,
+          2.49
+        ],
+        "div_pct": [
+          -23.3,
+          -2.5,
+          22.5
+        ]
+      },
+      "hkjc_comparison": {
+        "open": [
+          2.76,
+          3.35,
+          2.14
+        ],
+        "current": [
+          2.76,
+          3.35,
+          2.14
+        ],
+        "div_pct": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "league_baseline": [
+        0.45,
+        0.24,
+        0.31
+      ]
+    },
+    {
+      "fid": "1436908",
+      "date": "2026-07-15",
+      "match_time": "2026-07-1517:30",
+      "event": "澳足杯",
+      "home_team": "白城伍德维尔",
+      "away_team": "北鹰阳光",
+      "score": "",
+      "hit": "",
+      "source": "hkjc",
+      "odds_source": "pinnacle",
+      "odds_win": 1.61,
+      "odds_draw": 4.21,
+      "odds_loss": 3.74,
+      "margin": 0.126,
+      "model_win": 0.5251,
+      "model_draw": 0.222,
+      "model_loss": 0.2528,
+      "prediction": "home",
+      "prediction_cn": "主胜",
+      "prediction_prob": 0.5251,
+      "lgbm_prediction": "home",
+      "lgbm_prediction_cn": "主胜",
+      "lgbm_prediction_prob": 0.5417,
+      "lgbm_win": 0.5417,
+      "lgbm_draw": 0.2323,
+      "lgbm_loss": 0.2261,
+      "comparison": {
+        "open": [
+          1.48,
+          4.22,
+          4.69
+        ],
+        "current": [
+          1.61,
+          4.21,
+          3.74
+        ],
+        "div_pct": [
+          8.8,
+          -0.2,
+          -25.4
+        ]
+      },
+      "hkjc_comparison": {
+        "open": [
+          1.48,
+          4.25,
+          4.5
+        ],
+        "current": [
+          1.48,
+          4.25,
+          4.5
+        ],
+        "div_pct": [
+          0.0,
+          0.0,
+          0.0
         ]
       },
       "league_baseline": [

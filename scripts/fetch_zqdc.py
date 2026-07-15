@@ -7,7 +7,8 @@
 用法:
   python3 scripts/fetch_zqdc.py                                     # 今天
   python3 scripts/fetch_zqdc.py --date 2026-07-12                   # 指定日期
-  python3 scripts/fetch_zqdc.py --date 2026-07-12 --period 26074    # 指定期号
+  python3 scripts/fetch_zqdc.py --period 26074                      # 指定期号(单日)
+  python3 scripts/fetch_zqdc.py --fetch-period 26075                # 整期抓取(所有日期)
   python3 scripts/fetch_zqdc.py --date 2026-07-12 --no-pinnacle     # 跳过平博
 
 输出: data/matches_{YYYYMMDD}.json
@@ -146,6 +147,60 @@ def parse(html, date_str):
 
     return sorted(matches, key=lambda x: x['match_time'])
 
+
+def parse_all(html):
+    """解析整个期号页面，返回 {date: [matches]} 字典，不按单日过滤"""
+    dates = {}
+    for tr_m in re.finditer(r'<tr\s+id="a(\d+)"[^>]*status="(\d+)"[^>]*gy="([^"]*)"[^>]*yy="([^"]*)"[^>]*>.*?</tr>', html, re.DOTALL):
+        fid, status, gy_str = tr_m.group(1), tr_m.group(2), tr_m.group(3)
+        row = tr_m.group(0)
+
+        t_m = re.search(r'<td[^>]*align="center"[^>]*>(\d{2}-\d{2}\s+\d{2}:\d{2})</td>', row)
+        if not t_m:
+            continue
+        t = t_m.group(1)
+
+        parts = gy_str.split(',')
+        event = parts[0] if len(parts) >= 1 else ''
+        home = parts[1] if len(parts) >= 2 else ''
+        away = parts[2] if len(parts) >= 3 else ''
+
+        is_finished = bool(re.search(r'<span class="red">完</span>', row))
+        if is_finished:
+            bd_m = re.search(r'<div class="pk">.*?<a[^>]*class="clt1"[^>]*>(\d+)</a><span>-</span><a[^>]*class="clt3"[^>]*>(\d+)</a>', row)
+            if bd_m:
+                score = f"{bd_m.group(1)}-{bd_m.group(2)}"
+            else:
+                score_m = re.search(r'<td[^>]*align="center"[^>]*class="[^"]*red[^"]*"[^>]*>(\d+)\s*-\s*(\d+)</td>', row)
+                score = f"{score_m.group(1)}-{score_m.group(2)}" if score_m else ''
+        else:
+            score = ''
+
+        # 从 t 中提取日期(MM-DD)，构造完整的 date_str
+        mm_dd = t[:5]
+        # 用当前年份；如果月份是01且当前月份12则用去年（跨年边界，极少数情况）
+        year = str(datetime.now().year)
+        date_str = f'{year}-{mm_dd}'
+
+        match = {
+            'fid': fid,
+            'date': date_str,
+            'match_time': t,
+            'event': event,
+            'home_team': home,
+            'away_team': away,
+            'score': score,
+            'status': status,
+            'source': 'beidan',
+        }
+
+        if date_str not in dates:
+            dates[date_str] = []
+        dates[date_str].append(match)
+
+    # 按日期排序，每日期内按时间排序
+    return {d: sorted(dates[d], key=lambda x: x['match_time']) for d in sorted(dates)}
+
 # ========== 追加平博赔率 ==========
 
 def enhance_with_pinnacle(matches, delay=0.3):
@@ -222,10 +277,79 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--date', default=date.today().isoformat())
     parser.add_argument('--period')
+    parser.add_argument('--fetch-period', help='整期抓取: 期号编号(如26075)，自动按日期拆文件')
     parser.add_argument('--no-pinnacle', action='store_true', help='跳过平博抓取')
     parser.add_argument('--no-hkjc', action='store_true', help='跳过香港马会抓取')
     parser.add_argument('--backfill', action='store_true', help='比分回填：只更新比分，保留已有赔率')
     args = parser.parse_args()
+
+    # ===== 整期抓取模式 =====
+    if args.fetch_period:
+        period = args.fetch_period
+        print(f"[INFO] 整期抓取: 期号 {period} ...")
+        html = fetch(period)
+        by_date = parse_all(html)
+        print(f"[INFO] 含 {len(by_date)} 个日期: {', '.join(by_date.keys())}")
+
+        # 收集所有比赛去打赔率（批量一次性打完）
+        all_matches = []
+        for date_str in sorted(by_date):
+            for m in by_date[date_str]:
+                # 标记来源日期
+                m['date'] = date_str
+                all_matches.append(m)
+        total_all = len(all_matches)
+        print(f"[INFO] 共 {total_all} 场")
+
+        # 打赔率
+        if not args.no_pinnacle:
+            print("[INFO] 抓取平博赔率...")
+            p_ok = enhance_with_pinnacle(all_matches)
+            print(f"[INFO] 平博 {p_ok}/{total_all}")
+        if not args.no_hkjc:
+            print("[INFO] 抓取香港马会赔率...")
+            h_ok = enhance_with_hkjc(all_matches)
+            print(f"[INFO] HKJC {h_ok}/{total_all}")
+
+        # 按日期拆回并保存
+        by_date_with_odds = {}
+        for m in all_matches:
+            ds = m['date']
+            if ds not in by_date_with_odds:
+                by_date_with_odds[ds] = []
+            by_date_with_odds[ds].append(m)
+
+        saved_dates = []
+        for date_str in sorted(by_date_with_odds):
+            ms = by_date_with_odds[date_str]
+            fpath = os.path.join(DATA_DIR, f'matches_{date_str.replace("-", "")}.json')
+            out = {
+                'date': date_str,
+                'period': period,
+                'fetched_at': datetime.now().isoformat(),
+                'total': len(ms),
+                'matches': ms,
+            }
+            # 如果文件已存在，合并（保留旧数据，新增/覆盖新数据）
+            if os.path.exists(fpath):
+                with open(fpath) as f:
+                    existing = json.load(f)
+                existing_fids = {m['fid']: m for m in existing['matches']}
+                existing_fids.update({m['fid']: m for m in ms})
+                merged = sorted(existing_fids.values(), key=lambda x: x.get('match_time', ''))
+                out['matches'] = merged
+                out['total'] = len(merged)
+                print(f"  [MERGE] {date_str}: 原{existing['total']}场 + 新{len(ms)}场 = {len(merged)}场")
+            else:
+                print(f"  [NEW]  {date_str}: {len(ms)}场")
+
+            os.makedirs(DATA_DIR, exist_ok=True)
+            with open(fpath, 'w', encoding='utf-8') as f:
+                json.dump(out, f, ensure_ascii=False, indent=2)
+            saved_dates.append(date_str)
+
+        print(f"[OK] 期号 {period} → {len(saved_dates)}个文件: {', '.join(saved_dates)}")
+        return
 
     # ===== 比分回填模式 =====
     if args.backfill:

@@ -126,11 +126,54 @@ def extract_match_details(fid):
     }
 
 
+def parse_all_from_2h1(html):
+    """从2h1.php页面提取所有比赛信息（整页解析，无需逐场调detail.php）
+    返回 {fid: {home_team, away_team, event, match_time, score, status}}
+    """
+    matches = {}
+    # <tr id="aFID" ... gy="联赛,主队,客队" ...> ... </tr>
+    for tr_m in re.finditer(r'<tr\s+id="a(\d+)"[^>]*status="(\d+)"[^>]*gy="([^"]*)"[^>]*>.*?</tr>', html, re.DOTALL):
+        fid = tr_m.group(1)
+        status = tr_m.group(2)
+        gy = tr_m.group(3)
+        row = tr_m.group(0)
+
+        parts = gy.split(',')
+        event = parts[0] if len(parts) >= 1 else ''
+        home = parts[1] if len(parts) >= 2 else ''
+        away = parts[2] if len(parts) >= 3 else ''
+
+        # 时间: <td align="center">07-15&nbsp;14:00</td>
+        tm_m = re.search(r'<td[^>]*align="center"[^>]*>(\d{2}-\d{2}\s*&nbsp;\s*\d{2}:\d{2})</td>', row)
+        match_time = ''
+        if tm_m:
+            raw = tm_m.group(1).replace('&nbsp;', '')
+            year = str(datetime.now().year)
+            match_time = f'{year}-{raw}'  # YYYY-MM-DD HH:MM
+
+        # 比分: <div class="pk">...clt1>N<...clt3>M<...
+        score = ''
+        pk_m = re.search(r'<div class="pk">.*?clt1[^>]*>(\d+)</a><span>-</span><a[^>]*clt3[^>]*>(\d+)</a>', row)
+        if pk_m:
+            score = f'{pk_m.group(1)}-{pk_m.group(2)}'
+
+        matches[fid] = {
+            'home_team': home or '',
+            'away_team': away or '',
+            'event': event or '',
+            'match_time': match_time,
+            'score': score or '',
+            'status': status,
+        }
+
+    return matches
+
+
 def get_fids_from_2h1():
     """从2h1.php页面提取所有fid"""
     html = fetch_url('https://live.500.com/2h1.php')
     # 使用r"..."避免内部引号问题
-    fids = list(set(re.findall(r"fid[=_\"'/]?(\d{7,8})", html)))
+    fids = list(set(re.findall(r"fid[=_\\\"'/]?(\\d{7,8})", html)))
     return sorted(fids)
 
 
@@ -187,8 +230,12 @@ def main():
 
     # ===== 正常抓取模式 =====
     print('[INFO] 从2h1.php获取全量fid...')
-    all_fids = get_fids_from_2h1()
-    print('[INFO] 共 %d 个fid' % len(all_fids))
+    html = fetch_url('https://live.500.com/2h1.php')
+
+    # 整页解析比赛信息（一次解析，用完所有数据）
+    all_match_info = parse_all_from_2h1(html)
+    all_fids = sorted(all_match_info.keys())
+    print('[INFO] 共 %d 场（来自2h1整页）' % len(all_fids))
 
     if args.max > 0:
         all_fids = all_fids[:args.max]
@@ -199,36 +246,29 @@ def main():
 
     for fid in all_fids:
         checked += 1
-        sys.stdout.write('\r  [%d/%d] fid=%s... ' % (checked, len(all_fids), fid))
+        info = all_match_info[fid]
+        sys.stdout.write('  [%d/%d] fid=%s %s vs %s... ' % (checked, len(all_fids), fid, info['home_team'], info['away_team']))
         sys.stdout.flush()
 
         h = fetch_1x2_odds(fid, 122)
         if not h:
-            print('HKJC无')
+            print('无')
             continue
 
-        print('HKJC有! 开盘%s/%s/%s 最新%s/%s/%s' % (
+        print('有! 开盘%s/%s/%s 最新%s/%s/%s' % (
             h['open']['w'], h['open']['d'], h['open']['l'],
             h['latest']['w'], h['latest']['d'], h['latest']['l']))
 
-        # 有HKJC赔率，获取比赛详情
-        details = extract_match_details(fid)
-        if not details:
-            print('  \u26a0 无法获取详情，跳过')
-            continue
-
-        # 获取平博赔率
-        p = fetch_1x2_odds(fid, 1055)
-
+        # 从整页解析数据中获取比赛详情（无需调detail.php）
         match = {
             'fid': fid,
             'date': date_str,
-            'match_time': details.get('match_time', ''),
-            'event': details.get('event', ''),
-            'home_team': details.get('home_team', ''),
-            'away_team': details.get('away_team', ''),
-            'score': details.get('score', ''),
-            'status': '',
+            'match_time': info.get('match_time', ''),
+            'event': info.get('event', ''),
+            'home_team': info.get('home_team', ''),
+            'away_team': info.get('away_team', ''),
+            'score': info.get('score', ''),
+            'status': info.get('status', ''),
             'source': 'hkjc',
         }
 
@@ -241,6 +281,7 @@ def main():
         match['odds_hkjc_loss'] = h['latest']['l']
 
         # 平博赔率
+        p = fetch_1x2_odds(fid, 1055)
         if p:
             match['odds_pinnacle_open_win'] = p['open']['w']
             match['odds_pinnacle_open_draw'] = p['open']['d']
@@ -250,10 +291,10 @@ def main():
             match['odds_pinnacle_loss'] = p['latest']['l']
 
         hkjc_matches.append(match)
-        print('  \u2713 %s %s vs %s' % (
-            details.get('event', '?'),
-            details.get('home_team', '?'),
-            details.get('away_team', '?')))
+        print('  ✓ %s %s vs %s' % (
+            info.get('event', '?'),
+            info.get('home_team', '?'),
+            info.get('away_team', '?')))
 
         if args.delay > 0:
             time.sleep(args.delay)

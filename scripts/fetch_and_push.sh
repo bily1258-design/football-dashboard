@@ -10,14 +10,28 @@ DATE="${1:-$(date +%Y-%m-%d)}"
 FILE="data/matches_${DATE//-/}.json"
 
 echo "[$(date '+%H:%M:%S')] 抓取 $DATE ..."
-python3 scripts/fetch_zqdc.py --date "$DATE"
-
-# 也抓取明天(凌晨场次在当前期号中)
-TOMORROW=$(date -d "$DATE +1 day" '+%Y-%m-%d')
-TOMORROW_FILE="data/matches_${TOMORROW//-/}.json"
-if [ ! -f "$TOMORROW_FILE" ]; then
-    echo "[$(date '+%H:%M:%S')] 抓取 $TOMORROW (凌晨场)..."
-    python3 scripts/fetch_zqdc.py --date "$TOMORROW" --no-pinnacle --no-hkjc
+# 自动发现当前期号，整期抓取（一次请求获得所有日期的比赛+赔率）
+PERIOD=$(python3 << 'PYEOF' 2>/dev/null
+import sys; sys.path.insert(0, 'scripts')
+from fetch_zqdc import fetch_available_periods
+import contextlib
+with contextlib.redirect_stdout(None):
+    ps = fetch_available_periods()
+if ps: print(ps[0])
+PYEOF
+)
+if [ -n "$PERIOD" ]; then
+    echo "[$(date '+%H:%M:%S')] 整期抓取 $PERIOD ..."
+    python3 scripts/fetch_zqdc.py --fetch-period "$PERIOD"
+else
+    # 兜底：按单日抓取
+    python3 scripts/fetch_zqdc.py --date "$DATE"
+    TOMORROW=$(date -d "$DATE +1 day" '+%Y-%m-%d')
+    TOMORROW_FILE="data/matches_${TOMORROW//-/}.json"
+    if [ ! -f "$TOMORROW_FILE" ]; then
+        echo "[$(date '+%H:%M:%S')] 抓取 $TOMORROW (凌晨场)..."
+        python3 scripts/fetch_zqdc.py --date "$TOMORROW" --no-pinnacle --no-hkjc
+    fi
 fi
 
 if [ ! -f "$FILE" ]; then
