@@ -32,6 +32,7 @@ SMOOTH_ALPHA_SKEW = 0.35      # 方差自适应系数：偏离均衡每0.1加权
 HOME_ADJ = 0.01               # 主场调整量：加到模型主胜，从平/负各扣0.003
 LEAGUE_PRIOR_LAMBDA = 0.15    # 联赛基准率混合权重（0=不使用，0.15=15%基准+85%市场）
 LEAGUE_PRIOR_MIN_MATCHES = 10  # 联赛基准最小样本量
+MOVEMENT_FACTOR = 0.3         # 初盘→即时变化调整强度：赔率变动10% → alpha调整±3%
 
 
 # ─── 日志 ──────────────────────────────────────────
@@ -374,9 +375,37 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
         #    偏离均衡（1/3）越多，平滑越强，极端赔率自然减弱
         skew = max(imp_w, imp_d, imp_l) - 1/3
         alpha = min(SMOOTH_ALPHA_BASE + skew * SMOOTH_ALPHA_SKEW, 0.40)
-        sw = imp_w * (1 - alpha) + alpha / 3 + HOME_ADJ
-        sd = imp_d * (1 - alpha) + alpha / 3 - HOME_ADJ * 0.3
-        sl = imp_l * (1 - alpha) + alpha / 3 - HOME_ADJ * 0.3
+
+        # 2a. 初盘→即时变化调整
+        #    平博最有价值的走向是"初盘回升"（赔率从低位弹回初盘之上），
+        #    说明初盘定位更准，应减少平滑信任市场
+        #    反之赔率下降可能是公众追着跑，应增加平滑
+        if odds_source == 'hkjc':
+            open_w = float(m.get('odds_hkjc_open_win', 0) or 0)
+            open_d = float(m.get('odds_hkjc_open_draw', 0) or 0)
+            open_l = float(m.get('odds_hkjc_open_loss', 0) or 0)
+        else:
+            open_w = float(m.get('odds_pinnacle_open_win', 0) or 0)
+            open_d = float(m.get('odds_pinnacle_open_draw', 0) or 0)
+            open_l = float(m.get('odds_pinnacle_open_loss', 0) or 0)
+
+        if open_w > 1 and open_d > 1 and open_l > 1:
+            div_w = (ow - open_w) / open_w  # 正=回升，负=下降
+            div_d = (od - open_d) / open_d
+            div_l = (ol - open_l) / open_l
+            # 回升(正分歧) → alpha↓减少平滑；下降(负分歧) → alpha↑增加平滑
+            d = max(-1, min(1, div_w))
+            alpha_w = max(0.01, min(0.60, alpha * (1 - MOVEMENT_FACTOR * d)))
+            d = max(-1, min(1, div_d))
+            alpha_d = max(0.01, min(0.60, alpha * (1 - MOVEMENT_FACTOR * d)))
+            d = max(-1, min(1, div_l))
+            alpha_l = max(0.01, min(0.60, alpha * (1 - MOVEMENT_FACTOR * d)))
+        else:
+            alpha_w = alpha_d = alpha_l = alpha
+
+        sw = imp_w * (1 - alpha_w) + alpha_w / 3 + HOME_ADJ
+        sd = imp_d * (1 - alpha_d) + alpha_d / 3 - HOME_ADJ * 0.3
+        sl = imp_l * (1 - alpha_l) + alpha_l / 3 - HOME_ADJ * 0.3
         st = sw + sd + sl
         model_w, model_d, model_l = sw/st, sd/st, sl/st
 
