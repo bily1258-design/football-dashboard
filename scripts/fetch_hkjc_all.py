@@ -147,7 +147,7 @@ def parse_all_from_2h1(html):
         tm_m = re.search(r'<td[^>]*align="center"[^>]*>(\d{2}-\d{2}\s*&nbsp;\s*\d{2}:\d{2})</td>', row)
         match_time = ''
         if tm_m:
-            raw = tm_m.group(1).replace('&nbsp;', '')
+            raw = tm_m.group(1).replace('&nbsp;', ' ')
             year = str(datetime.now().year)
             match_time = f'{year}-{raw}'  # YYYY-MM-DD HH:MM
 
