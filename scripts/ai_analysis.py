@@ -60,9 +60,10 @@ def implied_from_odds(odds_w: float, odds_d: float, odds_l: float) -> Tuple[Opti
     return iw / total, id_ / total, il / total, margin
 
 def determine_direction(mw: float, md: float, ml: float) -> Tuple[str, str, float]:
-    """确定推荐方向（取模型概率最大的方向）"""
+    """确定推荐方向（取模型概率中间的方向）"""
     items = [('主胜', mw, 'home'), ('平局', md, 'draw'), ('客胜', ml, 'away')]
-    dir_cn, prob, dir_en = max(items, key=lambda x: x[1])
+    sorted_items = sorted(items, key=lambda x: x[1])
+    dir_cn, prob, dir_en = sorted_items[1]  # 中间值
     return dir_cn, dir_en, round(prob, 4)
 
 # ─── 数据加载 ──────────────────────────────────────
@@ -411,10 +412,10 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             if proba:
                 lgbm_w, lgbm_d, lgbm_l = proba
 
-        # 4. 推荐方向（取最大模型概率）
-        dir_cn, dir_en, dir_prob = determine_direction(model_w, model_d, model_l)
-        # LGBM方向
+        # 4. LGBM 推荐方向（主推）
         lgbm_dir_cn, lgbm_dir_en, lgbm_dir_prob = determine_direction(lgbm_w, lgbm_d, lgbm_l)
+        # 模型概率方向（中间值，备选）
+        model_dir_cn, model_dir_en, model_dir_prob = determine_direction(model_w, model_d, model_l)
 
         # 4. 最大概率值
         max_prob_val = max(model_w, model_d, model_l)
@@ -427,7 +428,7 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             actual = 'home' if sh > sa else ('draw' if sh == sa else 'away')
         else:
             actual = ''
-        hit = '✅' if actual and actual == dir_en else ('❌' if actual else '')
+        hit = '✅' if actual and (actual == model_dir_en or actual == lgbm_dir_en) else ('❌' if actual else '')
 
         # 8. 赔率对比数据（平博开盘 vs 平博即时）
         comparison = {}
@@ -495,12 +496,12 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             'model_win': round(model_w, 4),
             'model_draw': round(model_d, 4),
             'model_loss': round(model_l, 4),
-            'prediction': dir_en,
-            'prediction_cn': dir_cn,
-            'prediction_prob': round(max_prob_val, 4),
-            'lgbm_prediction': lgbm_dir_en,
-            'lgbm_prediction_cn': lgbm_dir_cn,
-            'lgbm_prediction_prob': round(lgbm_dir_prob, 4),
+            'prediction': lgbm_dir_en,          # 主推：LGBM方向
+            'prediction_cn': lgbm_dir_cn,
+            'prediction_prob': round(lgbm_dir_prob, 4),
+            'lgbm_prediction': model_dir_en,   # 备选：模型中值方向
+            'lgbm_prediction_cn': model_dir_cn,
+            'lgbm_prediction_prob': round(model_dir_prob, 4),
             'lgbm_win': round(lgbm_w, 4),
             'lgbm_draw': round(lgbm_d, 4),
             'lgbm_loss': round(lgbm_l, 4),
@@ -759,7 +760,7 @@ function renderTable(matches){
       '<td><span class="'+dirClass(m.prediction)+'">'+dirText(m.prediction)+'</span></td>'+
       '<td class="'+hc+'">'+(m.hit||'')+'</td>'+
       '<td class="odds-cell">'+renderOdds(m.comparison, m.hkjc_comparison)+'</td>'+
-      '<td class="odds-cell"><span class="odds-val odds-w">'+fmtPct(m.model_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.model_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.model_loss)+'</span><div class="lgbm-prob">LGBM '+fmtPct(m.lgbm_prediction_prob)+'</div></td>'+
+      '<td class="odds-cell"><span class="odds-val odds-w">'+fmtPct(m.lgbm_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.lgbm_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.lgbm_loss)+'</span><div class="lgbm-prob">模型中值 '+fmtPct(m.prediction_prob)+' · '+dirText(m.lgbm_prediction)+'</div></td>'+
       '<td class="lgbm-cell"><span class="'+dirClass(m.lgbm_prediction)+'">'+dirText(m.lgbm_prediction)+'</span></td>';
     tbody.appendChild(tr);
   });

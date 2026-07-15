@@ -71,7 +71,7 @@ function renderTable(matches){
       '<td><span class="'+dirClass(m.prediction)+'">'+dirText(m.prediction)+'</span></td>'+
       '<td class="'+hc+'">'+(m.hit||'')+'</td>'+
       '<td class="odds-cell">'+renderOdds(m.comparison, m.hkjc_comparison)+'</td>'+
-      '<td class="odds-cell"><span class="odds-val odds-w">'+fmtPct(m.model_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.model_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.model_loss)+'</span><div class="lgbm-prob">LGBM '+fmtPct(m.lgbm_prediction_prob)+'</div></td>'+
+      '<td class="odds-cell"><span class="odds-val odds-w">'+fmtPct(m.lgbm_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.lgbm_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.lgbm_loss)+'</span><div class="lgbm-prob">模型中值 '+fmtPct(m.prediction_prob)+' · '+dirText(m.lgbm_prediction)+'</div></td>'+
       '<td class="lgbm-cell"><span class="'+dirClass(m.lgbm_prediction)+'">'+dirText(m.lgbm_prediction)+'</span></td>';
     tbody.appendChild(tr);
   });
