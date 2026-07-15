@@ -393,9 +393,15 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
         lgbm_w, lgbm_d, lgbm_l = model_w, model_d, model_l  # 默认fallback
         if lgbm_model:
             # 从比赛数据提取特征（初盘/泊松等如有则用）
-            open_w = m.get('odds_pinnacle_open_win') or m.get('pinnacle_open_w')
-            open_d = m.get('odds_pinnacle_open_draw') or m.get('pinnacle_open_d')
-            open_l = m.get('odds_pinnacle_open_loss') or m.get('pinnacle_open_l')
+            # 按赔率源选择开盘价
+            if odds_source == 'hkjc':
+                open_w = m.get('odds_hkjc_open_win') or m.get('odds_hkjc_win')
+                open_d = m.get('odds_hkjc_open_draw') or m.get('odds_hkjc_draw')
+                open_l = m.get('odds_hkjc_open_loss') or m.get('odds_hkjc_loss')
+            else:
+                open_w = m.get('odds_pinnacle_open_win') or m.get('pinnacle_open_w')
+                open_d = m.get('odds_pinnacle_open_draw') or m.get('pinnacle_open_d')
+                open_l = m.get('odds_pinnacle_open_loss') or m.get('pinnacle_open_l')
             feat = extract_lgbm_features(ow, od, ol, model_w, model_d, model_l, margin,
                                           open_w=open_w, open_d=open_d, open_l=open_l,
                                           poisson_w=m.get('poisson_win'), poisson_d=m.get('poisson_draw'), poisson_l=m.get('poisson_loss'),
