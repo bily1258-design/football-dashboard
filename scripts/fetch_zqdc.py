@@ -19,6 +19,26 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(os.path.dirname(SCRIPT_DIR), "data")
 KNOWN_PERIODS = ['26072', '26073', '26074', '26075']
 
+# ========== 期号自动发现 ==========
+
+def fetch_available_periods():
+    """从500.com live_expect_list 动态获取可用期号列表"""
+    starters = ['26075', '26074', '26073']
+    for p in starters:
+        try:
+            html = fetch(p)
+            m = re.search(r"window\.live_expect_list\s*=\s*\[([^\]]+)\]", html)
+            if m:
+                periods = [x.strip().strip('"\'') for x in m.group(1).split(',')]
+                periods = [x for x in periods if x.isdigit()]
+                if periods:
+                    print(f"[INFO] 发现期号: {periods[0]} ~ {periods[-1]} ({len(periods)}期)")
+                    return periods
+        except Exception:
+            continue
+    print("[WARN] 无法自动发现期号, 回退硬编码列表")
+    return list(KNOWN_PERIODS)
+
 # 500.com赔率API请求头
 API_HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
@@ -182,14 +202,19 @@ def enhance_with_hkjc(matches, delay=0.3):
 
 # ========== 期号查找 ==========
 
-def find_period(date_str, known_periods):
-    """逐个期号查找，返回(期号, 比赛列表)"""
-    for p in known_periods:
-        html = fetch(p)
-        ms = parse(html, date_str)
-        if ms:
-            return p, ms
-    return known_periods[-1], []
+def find_period(date_str):
+    """自动发现可用期号，逐个查找含指定日期的比赛，返回(期号, 比赛列表)"""
+    periods = fetch_available_periods()
+    for p in periods:
+        try:
+            html = fetch(p)
+            ms = parse(html, date_str)
+            if ms:
+                return p, ms, periods
+        except Exception:
+            continue
+    # 所有期号都无匹配 → 用最后一个期号返回空
+    return periods[-1] if periods else known_periods[-1], [], periods
 
 # ========== 主函数 ==========
 
@@ -207,7 +232,7 @@ def main():
         ms = parse(html, args.date)
         period = args.period
     else:
-        period, ms = find_period(args.date, KNOWN_PERIODS)
+        period, ms, available_periods = find_period(args.date)
         print(f"[INFO] 期号 {period} → {len(ms)} 场")
 
     if not ms:
