@@ -563,8 +563,8 @@ def generate_frontend(results: List[Dict]):
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>足彩价值投注看板</title>
-<link rel="stylesheet" href="style.css?v=20260715v1">
-<script src="script.js?v=20260715v1"></script>
+<link rel="stylesheet" href="style.css?v=20260715v2">
+<script src="script.js?v=20260715v2"></script>
 </head>
 <body>
 <div class="container">

@@ -72,8 +72,7 @@ function renderTable(matches){
       '<td class="'+hc+'">'+(m.hit||'')+'</td>'+
       '<td class="odds-cell">'+renderOdds(m.comparison, m.hkjc_comparison)+'</td>'+
       '<td class="odds-cell"><span class="odds-val odds-w">'+fmtPct(m.model_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.model_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.model_loss)+'</span></td>'+
-      '<td class="lgbm-cell"><span class="'+dirClass(m.lgbm_prediction)+'">'+dirText(m.lgbm_prediction)+'</span></td>'+
-      '<td class="prob-cell">'+fmtPct(m.lgbm_prediction_prob)+'</td>';
+      '<td class="lgbm-cell"><span class="'+dirClass(m.lgbm_prediction)+'">'+dirText(m.lgbm_prediction)+'</span></td>';
     tbody.appendChild(tr);
   });
   document.getElementById('matchCount').textContent = matches.length+' 场';
