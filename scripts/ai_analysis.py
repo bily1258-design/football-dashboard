@@ -824,9 +824,8 @@ function renderTable(matches){
       '<td><span class="'+dirClass(m.prediction)+'">'+dirText(m.prediction)+(m.prediction===m.lgbm_prediction?'':'/'+dirText(m.lgbm_prediction))+'</span></td>'+
       '<td class="'+hc+'">'+(m.hit||'')+'</td>'+
       '<td class="odds-cell">'+renderOdds(m.comparison, m.hkjc_comparison)+'</td>'+
-      '<td class="odds-cell"><div>模型: <span class="odds-val odds-w">'+fmtPct(m.model_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.model_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.model_loss)+'</span></div><div style="margin-top:3px">LGBM: <span class="odds-val odds-w">'+fmtPct(m.lgbm_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.lgbm_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.lgbm_loss)+'</span></div></td>';
-    tbody.appendChild(tr);
-  });
+      '<td class="odds-cell"><div>模型: <span class="odds-val odds-w">'+fmtPct(m.model_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.model_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.model_loss)+'</span></div><div style="margin-top:3px">LGBM: <span class="odds-val odds-w">'+fmtPct(m.lgbm_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.lgbm_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.lgbm_loss)+'</span><div style=\"margin-top:2px;font-size:11px\"><span class=\"oc-label\" style=\"margin-right:3px\">分</span><span class=\"'+((m.model_win-m.lgbm_win)<-0.003?'oc-pct-down':(m.model_win-m.lgbm_win)>0.003?'oc-pct-up':'oc-pct-flat')+'\">'+fmtPctSign(m.model_win-m.lgbm_win)+'</span> <span class=\"'+((m.model_draw-m.lgbm_draw)<-0.003?'oc-pct-down':(m.model_draw-m.lgbm_draw)>0.003?'oc-pct-up':'oc-pct-flat')+'\">'+fmtPctSign(m.model_draw-m.lgbm_draw)+'</span> <span class=\"'+((m.model_loss-m.lgbm_loss)<-0.003?'oc-pct-down':(m.model_loss-m.lgbm_loss)>0.003?'oc-pct-up':'oc-pct-flat')+'\">'+fmtPctSign(m.model_loss-m.lgbm_loss)+'</span></div></div></td>';
+    tbody.appendChild(tr);  });
   document.getElementById('matchCount').textContent = matches.length+' 场';
 }
 
