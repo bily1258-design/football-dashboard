@@ -141,9 +141,51 @@ def main():
     parser.add_argument('--max', type=int, default=0, help='最多处理N场比赛(0=全部)')
     parser.add_argument('--merge', action='store_true', help='合并到已有数据')
     parser.add_argument('--save', default='', help='输出文件名(不含日期)')
+    parser.add_argument('--backfill', action='store_true', help='比分回填：只更新比分，保留已有赔率')
     args = parser.parse_args()
 
     date_str = args.date
+    fpath = os.path.join(DATA_DIR, 'matches_hkjc_%s.json' % date_str.replace('-', ''))
+
+    # ===== 比分回填模式 =====
+    if args.backfill:
+        if not os.path.exists(fpath):
+            print('[WARN] %s 不存在，跳过回填' % fpath)
+            return
+        with open(fpath) as f:
+            existing = json.load(f)
+        existing_matches = {m['fid']: m for m in existing['matches']}
+
+        # 重新抓取2h1.php解析比分
+        print('[BACKFILL] 重新抓取2h1.php获取最新比分...')
+        html = fetch_url('https://live.500.com/2h1.php')
+        updated = 0
+        # 解析每个 <tr id="aFID"...> 块的比分
+        for tr_m in re.finditer(r'<tr[^>]*id="a(\d+)"[^>]*>.*?</tr>', html, re.DOTALL):
+            fid = tr_m.group(1)
+            row = tr_m.group(0)
+            if fid not in existing_matches:
+                continue
+            # 提取比分: <div class="pk">...clt1...N...clt3...M...
+            pk_m = re.search(r'<div class="pk">.*?clt1[^>]*>(\d+)</a><span>-</span><a[^>]*clt3[^>]*>(\d+)</a>', row)
+            if pk_m:
+                new_scr = '%s-%s' % (pk_m.group(1), pk_m.group(2))
+                old_scr = existing_matches[fid].get('score', '')
+                if new_scr != old_scr:
+                    existing_matches[fid]['score'] = new_scr
+                    updated += 1
+
+        if updated:
+            existing['matches'] = list(existing_matches.values())
+            existing['fetched_at'] = datetime.now().isoformat()
+            with open(fpath, 'w', encoding='utf-8') as f:
+                json.dump(existing, f, ensure_ascii=False, indent=2)
+            print('[BACKFILL] %s → %d 场比分已更新' % (fpath, updated))
+        else:
+            print('[BACKFILL] %s → 无变化' % fpath)
+        return
+
+    # ===== 正常抓取模式 =====
     print('[INFO] 从2h1.php获取全量fid...')
     all_fids = get_fids_from_2h1()
     print('[INFO] 共 %d 个fid' % len(all_fids))

@@ -22,8 +22,13 @@ for i in 1 2 3; do
     BACK_DATE=$(date -d "$DATE -$i day" '+%Y-%m-%d')
     BACK_FILE="data/matches_${BACK_DATE//-/}.json"
     if [ -f "$BACK_FILE" ]; then
-        echo "[$(date '+%H:%M:%S')] 回填 $BACK_DATE 比分..."
+        echo "[$(date '+%H:%M:%S')] 回填 $BACK_DATE 比分(北单)..."
         python3 scripts/fetch_zqdc.py --date "$BACK_DATE" --backfill
+    fi
+    HKJC_FILE="data/matches_hkjc_${BACK_DATE//-/}.json"
+    if [ -f "$HKJC_FILE" ]; then
+        echo "[$(date '+%H:%M:%S')] 回填 $BACK_DATE 比分(HKJC)..."
+        python3 scripts/fetch_hkjc_all.py --date "$BACK_DATE" --backfill
     fi
 done
 
