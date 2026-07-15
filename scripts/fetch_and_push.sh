@@ -12,6 +12,14 @@ FILE="data/matches_${DATE//-/}.json"
 echo "[$(date '+%H:%M:%S')] 抓取 $DATE ..."
 python3 scripts/fetch_zqdc.py --date "$DATE"
 
+# 也抓取明天(凌晨场次在当前期号中)
+TOMORROW=$(date -d "$DATE +1 day" '+%Y-%m-%d')
+TOMORROW_FILE="data/matches_${TOMORROW//-/}.json"
+if [ ! -f "$TOMORROW_FILE" ]; then
+    echo "[$(date '+%H:%M:%S')] 抓取 $TOMORROW (凌晨场)..."
+    python3 scripts/fetch_zqdc.py --date "$TOMORROW" --no-pinnacle --no-hkjc
+fi
+
 if [ ! -f "$FILE" ]; then
     echo "[$(date '+%H:%M:%S')] 无比赛数据，跳过"
     exit 0
