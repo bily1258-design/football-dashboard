@@ -1013,7 +1013,7 @@ function renderTable(matches){
       '<td class="team-name">'+m.home_team+'</td>'+
       '<td class="score-cell"><span>'+(m.score||'-')+'</span></td>'+
       '<td class="team-name">'+m.away_team+'</td>'+
-      '<td><span class="'+dirClass(m.lgbm_prediction)+'">'+dirText(m.lgbm_prediction)+'</span> <span style="font-size:11px;color:#999">'+dirText(m.prediction)+'</span>'+renderWarning(m.warning)+'</td>'+
+      '<td><span class="'+dirClass(m.lgbm_prediction)+'">'+dirText(m.lgbm_prediction)+'</span> <span style="font-size:11px;color:#999">'+dirText(m.model_prediction)+'</span>'+renderWarning(m.warning)+'</td>'+
       '<td class="'+hc+'">'+(m.hit||'')+'</td>'+
       '<td class="form-cell">'+renderForm(m.stats)+'</td>'+
       '<td class="odds-cell">'+renderOdds(m.comparison, m.hkjc_comparison)+'</td>'+
