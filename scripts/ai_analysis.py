@@ -13,7 +13,7 @@ ai_analysis.py — 足彩智能分析系统 v3.0
   python3 scripts/ai_analysis.py --db data/football.db
   python3 scripts/ai_analysis.py --fetch-only   # 只抓取，不分析
 """
-import re, json, os, sys, math, sqlite3, glob, logging, hashlib
+import re, json, os, sys, math, sqlite3, glob, logging, hashlib, time
 import numpy as np
 from datetime import datetime, date, timezone, timedelta
 from collections import defaultdict
@@ -25,6 +25,10 @@ REPO_DIR = os.path.dirname(SCRIPT_DIR)
 DATA_DIR = os.path.join(REPO_DIR, "data")
 DOCS_DIR = os.path.join(REPO_DIR, "docs")
 DB_PATH = os.path.join(DATA_DIR, "football.db")
+
+# ─── 统计模块（H2H+近期战绩）─────────────────────────
+sys.path.insert(0, SCRIPT_DIR)
+from fetch_stats import fetch_match_stats, extract_h2h_features, extract_form_features as fs_extract_form_features
 
 # ─── 算法常量 ──────────────────────────────────────
 SMOOTH_ALPHA_BASE = 0.02      # 贝叶斯平滑基值（均衡比赛用）
@@ -406,6 +410,26 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
     except Exception as e:
         logger.warning(f"排名预取失败: {e}，将使用默认值")
 
+    # 预取H2H+近期战绩
+    stats_fetched = 0; total_stats = sum(1 for m in matches if m.get('fid'))
+    logger.info(f"预取近期战绩 ({total_stats}场)...")
+    for i, m in enumerate(matches):
+        fid = m.get('fid')
+        if not fid:
+            continue
+        try:
+            stats = fetch_match_stats(fid)
+            if stats:
+                m['match_stats'] = stats
+                stats_fetched += 1
+            if stats_fetched % 10 == 0 and stats_fetched > 0:
+                logger.info(f"  统计预取进度: {stats_fetched}/{total_stats}场")
+            time.sleep(0.2)
+        except Exception as e:
+            logger.warning(f"统计获取失败 fid={fid}: {e}")
+    if stats_fetched:
+        logger.info(f"统计预取完成: {stats_fetched}/{len(matches)}场")
+
     for m in matches:
         # 赔率源：优先平博，fallback到HKJC
         ow = float(m.get('odds_pinnacle_win', 0) or 0)
@@ -693,6 +717,8 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             'home_pts': m.get('home_pts', 0),
             'away_pts': m.get('away_pts', 0),
             'warning': warning,
+            # 近期战绩
+            'stats': m.get('match_stats', None),
         })
 
     logger.info(f"分析完成: {len(results)} 场 (跳过 {skipped} 场无赔率)")
@@ -854,6 +880,7 @@ tr:hover{background:#f0f6ff}
 .hit-no{color:#dc2626;font-weight:700;font-size:1.1em;text-align:center}
 .score-cell{text-align:center}
 .score-cell span{display:inline-block;padding:1px 8px;border-radius:3px;font-size:12px;background:#dbeafe;color:#2563eb;font-weight:600}
+.form-cell{font-size:0;padding:8px 6px;text-align:center;line-height:1.2}
 /* 合并赔率列 */
 .odds-combined{font-size:11px;line-height:1.7;white-space:nowrap}
 .odds-combined .oc-line{display:flex;gap:4px;align-items:center}
