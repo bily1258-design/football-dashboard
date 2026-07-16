@@ -400,7 +400,39 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
         #     ⚠️ 存一份调整前的概率给LGBM用（LGBM训练时没吃过调整特征）
         lgbm_feat_w, lgbm_feat_d, lgbm_feat_l = model_w, model_d, model_l
 
-        #     用户经验：
+        # 3. LGBM 方案C预测（先于分歧调整，以便获取分歧信号）
+        lgbm_model = load_lgbm_model()
+        lgbm_w, lgbm_d, lgbm_l = lgbm_feat_w, lgbm_feat_d, lgbm_feat_l  # 默认fallback
+        if lgbm_model:
+            if odds_source == 'hkjc':
+                open_w_lgbm = m.get('odds_hkjc_open_win') or m.get('odds_hkjc_win')
+                open_d_lgbm = m.get('odds_hkjc_open_draw') or m.get('odds_hkjc_draw')
+                open_l_lgbm = m.get('odds_hkjc_open_loss') or m.get('odds_hkjc_loss')
+            else:
+                open_w_lgbm = m.get('odds_pinnacle_open_win') or m.get('odds_pinnacle_win')
+                open_d_lgbm = m.get('odds_pinnacle_open_draw') or m.get('odds_pinnacle_draw')
+                open_l_lgbm = m.get('odds_pinnacle_open_loss') or m.get('odds_pinnacle_loss')
+            feat = extract_lgbm_features(ow, od, ol, lgbm_feat_w, lgbm_feat_d, lgbm_feat_l, margin,
+                                          open_w=open_w_lgbm, open_d=open_d_lgbm, open_l=open_l_lgbm,
+                                          poisson_w=m.get('poisson_win'), poisson_d=m.get('poisson_draw'), poisson_l=m.get('poisson_loss'),
+                                          implied_w=m.get('implied_prob_w'), implied_d=m.get('implied_prob_d'), implied_l=m.get('implied_prob_l'),
+                                          lambda_h=m.get('home_lambda'), lambda_a=m.get('away_lambda'))
+            proba = predict_lgbm(lgbm_model, feat)
+            if proba:
+                    lgbm_w, lgbm_d, lgbm_l = proba
+
+        # LGBM主推方向（分歧信号用）
+        lgbm_final = [lgbm_w, lgbm_d, lgbm_l]
+        lgbm_dir_idx = lgbm_final.index(max(lgbm_final))
+        dir_names = ['home', 'draw', 'away']
+        lgbm_max_dir = dir_names[lgbm_dir_idx]
+
+        # 模型最大值方向（分歧信号用，用调整前的原始概率）
+        raw_model_probs = [lgbm_feat_w, lgbm_feat_d, lgbm_feat_l]
+        model_max_dir = dir_names[raw_model_probs.index(max(raw_model_probs))]
+        lgbm_disagree = (lgbm_max_dir != model_max_dir)
+
+        #     用户经验（优化后v2）：
         #       · 升大必死99%（大幅回升 → 市场失真）
         #       · 小幅降水必死80%（公众噪音，不真实）
         #       · 大降水 → 市场真方向，不惩罚
@@ -428,41 +460,25 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
                     distrust = 0.85
                 else:
                     d = max(-1, min(1, divs[i]))
-                    if d > 0.10:                     # 回升 ≥10% → 不可信
-                        distrust = min(0.95, d * 1.5)  # 轻力度惩罚
-                    elif d < -0.10:                  # 降水≥10% → 市场真方向，不惩罚
+                    if d > 0.15:                     # 大幅回升 >15%
+                        distrust = 0.60               # 高度不信任
+                    elif d > 0.08:                   # 中幅回升 8~15%
+                        distrust = 0.30               # 中度不信任
+                    elif d > 0.04:                   # 小幅回升 4~8%
+                        distrust = 0.10               # 轻度不信任
+                    elif d < -0.10:                  # 大幅降水 ≥10% → 市场真方向，不惩罚
                         distrust = 0
                     elif d < 0:                      # 小幅降水 0~-10%
                         distrust = abs(d) / 0.10 * 0.50  # 最大50%惩罚
-                    else:                            # 小幅回升 <10% → 忽略
+                    else:                            # 无变化
                         distrust = 0
+                # 分歧惩罚：LGBM主推≠模型最大值方向，额外+20%
+                if distrust > 0 and lgbm_disagree and d > 0:
+                    distrust = min(0.95, distrust + 0.20)
                 probs[i] *= max(0.05, 1 - distrust)
-            # 重归一化（惩罚方向腾出的概率分配给其它方向）
+            # 重归一化
             t = sum(probs)
             model_w, model_d, model_l = probs[0]/t, probs[1]/t, probs[2]/t
-
-        # 3. LGBM 方案C预测
-        lgbm_model = load_lgbm_model()
-        lgbm_w, lgbm_d, lgbm_l = lgbm_feat_w, lgbm_feat_d, lgbm_feat_l  # 默认fallback（未调整概率）
-        if lgbm_model:
-            # 从比赛数据提取特征（初盘/泊松等如有则用）
-            # 按赔率源选择开盘价
-            if odds_source == 'hkjc':
-                open_w = m.get('odds_hkjc_open_win') or m.get('odds_hkjc_win')
-                open_d = m.get('odds_hkjc_open_draw') or m.get('odds_hkjc_draw')
-                open_l = m.get('odds_hkjc_open_loss') or m.get('odds_hkjc_loss')
-            else:
-                open_w = m.get('odds_pinnacle_open_win') or m.get('pinnacle_open_w')
-                open_d = m.get('odds_pinnacle_open_draw') or m.get('pinnacle_open_d')
-                open_l = m.get('odds_pinnacle_open_loss') or m.get('pinnacle_open_l')
-            feat = extract_lgbm_features(ow, od, ol, lgbm_feat_w, lgbm_feat_d, lgbm_feat_l, margin,
-                                          open_w=open_w, open_d=open_d, open_l=open_l,
-                                          poisson_w=m.get('poisson_win'), poisson_d=m.get('poisson_draw'), poisson_l=m.get('poisson_loss'),
-                                          implied_w=m.get('implied_prob_w'), implied_d=m.get('implied_prob_d'), implied_l=m.get('implied_prob_l'),
-                                          lambda_h=m.get('home_lambda'), lambda_a=m.get('away_lambda'))
-            proba = predict_lgbm(lgbm_model, feat)
-            if proba:
-                lgbm_w, lgbm_d, lgbm_l = proba
 
         # 4. LGBM 推荐方向（主推，取最大值）
         lgbm_dir_cn, lgbm_dir_en, lgbm_dir_prob = max_direction(lgbm_w, lgbm_d, lgbm_l)
@@ -559,6 +575,12 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             'model_win': round(model_w, 4),
             'model_draw': round(model_d, 4),
             'model_loss': round(model_l, 4),
+            'raw_model_win': round(lgbm_feat_w, 4),
+            'raw_model_draw': round(lgbm_feat_d, 4),
+            'raw_model_loss': round(lgbm_feat_l, 4),
+            'open_win_pin': round(open_w, 2) if open_w > 1 else 0,
+            'open_draw_pin': round(open_d, 2) if open_d > 1 else 0,
+            'open_loss_pin': round(open_l, 2) if open_l > 1 else 0,
             'prediction': lgbm_dir_en,          # 主推：LGBM方向
             'prediction_cn': lgbm_dir_cn,
             'prediction_prob': round(lgbm_dir_prob, 4),
@@ -630,8 +652,8 @@ def generate_frontend(results: List[Dict]):
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>足彩价值投注看板</title>
-<link rel="stylesheet" href="style.css?v=20260716v5">
-<script src="script.js?v=20260716v5"></script>
+<link rel="stylesheet" href="style.css?v=20260716v7">
+<script src="script.js?v=20260716v7"></script>
 </head>
 <body>
 <div class="container">
