@@ -202,10 +202,12 @@ FEATURE_NAMES = [
     'poisson_market_margin','poisson_market_draw_diff',
     'odds_level','draw_premium',
     'lambda_h','lambda_a',
+    # 新增积分特征
+    'home_rank','away_rank','home_pts','away_pts',
 ]
 
 def extract_features(row):
-    """28维特征，与旧系统一致"""
+    """32维特征（28原版+4新增积分特征）"""
     pw = _safe_float(row.get('poisson_win'))
     pd_ = _safe_float(row.get('poisson_draw'))
     pl = _safe_float(row.get('poisson_loss'))
@@ -280,6 +282,12 @@ def extract_features(row):
     lambda_h = _safe_float(row.get('had_lambda_h'))
     lambda_a = _safe_float(row.get('had_lambda_a'))
     
+    # 新增积分特征
+    hr = _safe_float(row.get('home_ranking'))
+    ar = _safe_float(row.get('away_ranking'))
+    hp = _safe_float(row.get('home_points'))
+    ap = _safe_float(row.get('away_points'))
+    
     return [
         pw, pd_, pl,
         fw, fd_, fl,
@@ -293,6 +301,8 @@ def extract_features(row):
         poisson_market_margin, poisson_market_draw_diff,
         odds_level, draw_premium,
         lambda_h, lambda_a,
+        # 新增积分特征
+        hr, ar, hp, ap,
     ]
 
 

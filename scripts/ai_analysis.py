@@ -215,9 +215,9 @@ def extract_lgbm_features(ow, od, ol, model_w, model_d, model_l, margin,
                            open_w=None, open_d=None, open_l=None,
                            poisson_w=None, poisson_d=None, poisson_l=None,
                            implied_w=None, implied_d=None, implied_l=None,
-                           lambda_h=None, lambda_a=None):
-    """从当前比赛数据提取28维特征（尽可能填充，缺失填0）"""
-    # 当前赔率隐含概率
+                           lambda_h=None, lambda_a=None,
+                           home_rank=None, away_rank=None):
+    """从当前比赛数据提取32维特征（28原版+4新增积分特征）"""
     cw, cd, cl, _ = _implied_from_odds(ow, od, ol)
     
     # 开盘隐含概率
@@ -263,6 +263,10 @@ def extract_lgbm_features(ow, od, ol, model_w, model_d, model_l, margin,
     lh = float(lambda_h) if lambda_h and float(lambda_h) > 0 else 0.0
     la = float(lambda_a) if lambda_a and float(lambda_a) > 0 else 0.0
     
+    # 积分特征
+    hr = float(home_rank) if home_rank and float(home_rank) > 0 else 0.0
+    ar = float(away_rank) if away_rank and float(away_rank) > 0 else 0.0
+    
     return [
         p_w, p_d, p_l,                    # poisson_w/d/l
         model_w, model_d, model_l,         # final_w/d/l
@@ -276,6 +280,7 @@ def extract_lgbm_features(ow, od, ol, model_w, model_d, model_l, margin,
         poisson_market_margin, poisson_market_draw_diff,
         odds_level, draw_premium,
         lh, la,                           # lambda_h/a
+        hr, ar, 0.0, 0.0,                 # home_rank, away_rank (pts用0占位，训练时有实际值但live暂时不可用)
     ]
 
 def load_lgbm_model():
@@ -337,6 +342,44 @@ def _predict_tree(x, node):
         return _predict_tree(x, node.get('right', 0.0))
 
 
+# ─── 实时排名获取 ──────────────────────────────────
+
+def fetch_live_rankings(matches: List[Dict]) -> None:
+    """批量从detail.php获取每场比赛的主客队排名，注入match dict"""
+    import urllib.request
+    import re
+    import time
+    
+    cache = {}
+    for m in matches:
+        fid = m.get('fid')
+        if not fid:
+            continue
+        fid_s = str(int(fid))
+        if fid_s in cache:
+            r = cache[fid_s]
+            if r:
+                m['home_rank'], m['away_rank'] = r
+            continue
+        try:
+            html = urllib.request.urlopen(
+                urllib.request.Request(
+                    f'https://live.500.com/detail.php?fid={fid_s}',
+                    headers={'User-Agent': 'Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36'}
+                ), timeout=10
+            ).read().decode('gbk', errors='replace')
+            ranks = re.findall(r'当前排名:(\d+)', html)
+            if len(ranks) >= 2:
+                hr, ar = int(ranks[0]), int(ranks[1])
+                cache[fid_s] = (hr, ar)
+                m['home_rank'], m['away_rank'] = hr, ar
+            else:
+                cache[fid_s] = None
+        except Exception:
+            cache[fid_s] = None
+        time.sleep(0.15)
+
+
 # ─── 分析引擎 ──────────────────────────────────────
 
 def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, float, float]] = None) -> List[Dict]:
@@ -346,6 +389,13 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
     if league_priors is None:
         league_priors = {}
     lambda_ = LEAGUE_PRIOR_LAMBDA
+    
+    # 预取排名
+    try:
+        fetch_live_rankings(matches)
+        logger.debug(f"排名预取完成 ({len(matches)}场)")
+    except Exception as e:
+        logger.warning(f"排名预取失败: {e}，将使用默认值")
 
     for m in matches:
         # 赔率源：优先平博，fallback到HKJC
@@ -416,7 +466,8 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
                                           open_w=open_w_lgbm, open_d=open_d_lgbm, open_l=open_l_lgbm,
                                           poisson_w=m.get('poisson_win'), poisson_d=m.get('poisson_draw'), poisson_l=m.get('poisson_loss'),
                                           implied_w=m.get('implied_prob_w'), implied_d=m.get('implied_prob_d'), implied_l=m.get('implied_prob_l'),
-                                          lambda_h=m.get('home_lambda'), lambda_a=m.get('away_lambda'))
+                                          lambda_h=m.get('home_lambda'), lambda_a=m.get('away_lambda'),
+                                          home_rank=m.get('home_rank'), away_rank=m.get('away_rank'))
             proba = predict_lgbm(lgbm_model, feat)
             if proba:
                     lgbm_w, lgbm_d, lgbm_l = proba
