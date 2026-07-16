@@ -663,12 +663,15 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             'open_win_pin': round(open_w, 2) if open_w > 1 else 0,
             'open_draw_pin': round(open_d, 2) if open_d > 1 else 0,
             'open_loss_pin': round(open_l, 2) if open_l > 1 else 0,
-            'prediction': lgbm_dir_en,          # 主推：LGBM方向
+            'lgbm_prediction': lgbm_dir_en,      # LGBM方向（主推）
+            'lgbm_prediction_cn': lgbm_dir_cn,
+            'lgbm_prediction_prob': round(lgbm_dir_prob, 4),
+            'prediction': lgbm_dir_en,           # 兼容别名（同lgbm_prediction）
             'prediction_cn': lgbm_dir_cn,
             'prediction_prob': round(lgbm_dir_prob, 4),
-            'lgbm_prediction': model_dir_en,   # 备选：模型中值方向
-            'lgbm_prediction_cn': model_dir_cn,
-            'lgbm_prediction_prob': round(model_dir_prob, 4),
+            'model_prediction': model_dir_en,    # 模型中值方向（备选）
+            'model_prediction_cn': model_dir_cn,
+            'model_prediction_prob': round(model_dir_prob, 4),
             'lgbm_win': round(lgbm_w, 4),
             'lgbm_draw': round(lgbm_d, 4),
             'lgbm_loss': round(lgbm_l, 4),
