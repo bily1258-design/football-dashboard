@@ -223,9 +223,114 @@ def main():
             existing['fetched_at'] = datetime.now().isoformat()
             with open(fpath, 'w', encoding='utf-8') as f:
                 json.dump(existing, f, ensure_ascii=False, indent=2)
-            print('[BACKFILL] %s → %d 场比分已更新' % (fpath, updated))
+            print('[BACKFILL] %s → %d 场比分已更新(2h1.php)' % (fpath, updated))
         else:
-            print('[BACKFILL] %s → 无变化' % fpath)
+            print('[BACKFILL] %s → 2h1.php无变化' % fpath)
+
+        # ===== ESPN API 兜底：2h1.php没找到的已完赛比分 =====
+        unscored = [(fid, m) for fid, m in existing_matches.items()
+                    if not m.get('score') and 'match_time' in m]
+        if unscored:
+            print('[BACKFILL] ESPN API兜底: %d 场待补…' % len(unscored))
+            # 中文赛事名→ESPN联赛ID映射
+            LEAGUE_MAP = [
+                ('美女职', 'usa.nwsl'), ('美职联', 'usa.1'), ('美乙', 'usa.2'),
+                ('英超', 'eng.1'), ('英冠', 'eng.2'), ('英甲', 'eng.3'),
+                ('苏超', 'sco.1'), ('苏冠', 'sco.2'),
+                ('意甲', 'ita.1'), ('意乙', 'ita.2'),
+                ('西甲', 'esp.1'), ('西乙', 'esp.2'),
+                ('德甲', 'ger.1'), ('德乙', 'ger.2'),
+                ('法甲', 'fra.1'), ('法乙', 'fra.2'),
+                ('荷甲', 'ned.1'), ('葡超', 'por.1'),
+                ('日职', 'jpn.1'), ('日乙', 'jpn.2'),
+                ('K联赛', 'kor.1'), ('K2', 'kor.2'),
+                ('澳超', 'aus.1'), ('中超', 'chn.1'),
+                ('巴甲', 'bra.1'), ('阿甲', 'arg.1'),
+                ('墨西联', 'mex.1'), ('比甲', 'bel.1'),
+                ('瑞超', 'swe.1'), ('挪超', 'nor.1'),
+                ('丹超', 'den.1'), ('土超', 'tur.1'),
+                ('奥甲', 'aut.1'), ('瑞士超', 'sui.1'),
+                ('乌超', 'ukr.1'), ('俄超', 'rus.1'),
+            ]
+            espn_updated = 0
+            for fid, m in unscored:
+                mt = m.get('match_time', '')
+                event = m.get('event', '')
+                if not mt:
+                    continue
+                try:
+                    match_dt = datetime.fromisoformat(mt[:16].replace(' ', 'T'))
+                    # 假定match_time是北京时间(UTC+8)，转UTC
+                    match_utc = match_dt - timedelta(hours=8)
+                    if match_utc > datetime.utcnow():
+                        continue  # 还没开赛
+                except:
+                    continue
+
+                # ESPN用UTC/US日期：取当天UTC和前一天
+                espn_dates = [match_utc.strftime('%Y%m%d')]
+                prev = match_utc - timedelta(days=1)
+                espn_dates.append(prev.strftime('%Y%m%d'))
+
+                # 找匹配的联赛
+                league_ids = [lid for e, lid in LEAGUE_MAP if e in event]
+                if not league_ids:
+                    continue
+
+                found = False
+                for ed in espn_dates:
+                    for lid in league_ids:
+                        url = 'https://site.api.espn.com/apis/site/v2/sports/soccer/%s/scoreboard?dates=%s' % (lid, ed)
+                        try:
+                            raw = urllib.request.urlopen(
+                                urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'}), timeout=10).read()
+                            api_data = json.loads(raw)
+                        except:
+                            continue
+                        # 找最接近的一场（可能有同联赛同时间段多场比赛）
+                        best_match = None
+                        best_diff = 99999
+                        for ev in api_data.get('events', []):
+                            comp = ev.get('competitions', [{}])[0]
+                            comps = comp.get('competitors', [])
+                            if len(comps) < 2:
+                                continue
+                            status = comp.get('status', {}).get('type', {}).get('state', '')
+                            if status != 'post':
+                                continue
+                            # 对比时间（ESPN UTC时间 vs 转换后的UTC时间）
+                            espn_date_str = comp.get('date', '')
+                            try:
+                                espn_utc = datetime.fromisoformat(espn_date_str.replace('Z', '+00:00'))
+                                diff = abs((espn_utc - match_utc.replace(tzinfo=timezone.utc)).total_seconds())
+                            except:
+                                continue
+                            if diff < best_diff:
+                                best_diff = diff
+                                best_match = comps
+                        if best_match and best_diff < 3600:  # 1小时内最近的一场
+                            s1 = best_match[0].get('score', '')
+                            s2 = best_match[1].get('score', '')
+                            if s1 and s2:
+                                m['score'] = '%s-%s' % (s1, s2)
+                                espn_updated += 1
+                                print('  ✓ %s %s-%s (ESPN %s, diff=%.0fmin)' % (
+                                    m.get('home_team',''), s1, s2, lid, best_diff/60))
+                                found = True
+                                break
+                        if found:
+                            break
+                    if found:
+                        break
+
+            if espn_updated:
+                existing['matches'] = list(existing_matches.values())
+                existing['fetched_at'] = datetime.now().isoformat()
+                with open(fpath, 'w', encoding='utf-8') as f:
+                    json.dump(existing, f, ensure_ascii=False, indent=2)
+                print('[BACKFILL] ESPN → %d 场比分已更新' % espn_updated)
+            else:
+                print('[BACKFILL] ESPN兜底→无新比分')
         return
 
     # ===== 正常抓取模式 =====
