@@ -532,20 +532,61 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             t = sum(probs)
             model_w, model_d, model_l = probs[0]/t, probs[1]/t, probs[2]/t
 
-        # ─── 硬编码平局方向增强 ──────────────────────────
-        # 统计结论: LGBM平局概率≥35%时实际平率85%（41场, 3.8x提升）
-        # 直接覆盖模型中值方向 = 平局
-        draw_lgbm_boosted = lgbm_d >= 0.35
+        # ─── 硬编码概率封顶分配 ──────────────────────────
+        # 统计结论: 将模型最大值封顶40%，按LGB平局区间比例分给剩余两方
+        # 分配比例基于DB历史数据的实际赛果统计
+        draw_boosted = False
+        prob_list = [model_w, model_d, model_l]  # [H=0, D=1, A=2]
+        max_val = max(prob_list)
+        max_idx = prob_list.index(max_val)
+        max_side = ['home', 'draw', 'away'][max_idx]
+        excess = max_val - 0.40
+
+        if excess > 0 and lgbm_d >= 0.24:
+            draw_boosted = True
+            prob_list[max_idx] = 0.40  # 封顶
+
+            if lgbm_d >= 0.40:
+                # LGB平≥40%: 多余量全给平局
+                prob_list[1] += excess
+            elif lgbm_d >= 0.30:
+                # LGB平30-39%: 多余量主要给平局
+                if max_side == 'home':
+                    prob_list[1] += excess * 0.60   # D得60%
+                    prob_list[2] += excess * 0.40   # A得40%
+                elif max_side == 'away':
+                    prob_list[1] += excess * 0.50   # D得50%
+                    prob_list[0] += excess * 0.50   # H得50%
+                else:  # draw
+                    prob_list[0] += excess * 0.70   # H得70%
+                    prob_list[2] += excess * 0.30   # A得30%
+            else:
+                # LGB平24-29%: 多余量主要给对面（最小值方）
+                if max_side == 'home':
+                    prob_list[1] += excess * 0.20   # D得20%
+                    prob_list[2] += excess * 0.80   # A得80%
+                elif max_side == 'away':
+                    prob_list[1] += excess * 0.02   # D得2%
+                    prob_list[0] += excess * 0.98   # H得98%
+                else:  # draw
+                    prob_list[0] += excess * 0.80   # H得80%
+                    prob_list[2] += excess * 0.20   # A得20%
+
+            # 各自不超过39%检查
+            for i in range(3):
+                if i != max_idx and prob_list[i] > 0.39:
+                    overflow = prob_list[i] - 0.39
+                    prob_list[i] = 0.39
+                    other = [j for j in range(3) if j != max_idx and j != i][0]
+                    prob_list[other] += overflow
+
+            t = sum(prob_list)
+            model_w, model_d, model_l = prob_list[0]/t, prob_list[1]/t, prob_list[2]/t
 
         # 4. LGBM 推荐方向（主推，取最大值）
         lgbm_dir_cn, lgbm_dir_en, lgbm_dir_prob = max_direction(lgbm_w, lgbm_d, lgbm_l)
         # 模型概率方向（中间值，备选）
         model_dir_cn, model_dir_en, model_dir_prob = middle_direction(model_w, model_d, model_l)
-        # 硬编码平局增强 LGBM平局≥35% → 模型中值方向强制=平局
-        if draw_lgbm_boosted and model_dir_en != 'draw':
-            model_dir_en = 'draw'
-            model_dir_cn = '和'
-            model_dir_prob = model_d
 
         # 4. 最大概率值
         max_prob_val = max(model_w, model_d, model_l)
@@ -683,7 +724,7 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             'model_prediction': model_dir_en,    # 模型中值方向（备选）
             'model_prediction_cn': model_dir_cn,
             'model_prediction_prob': round(model_dir_prob, 4),
-            'draw_boosted': draw_lgbm_boosted,
+            'draw_boosted': draw_boosted,
             'lgbm_win': round(lgbm_w, 4),
             'lgbm_draw': round(lgbm_d, 4),
             'lgbm_loss': round(lgbm_l, 4),
