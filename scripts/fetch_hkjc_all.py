@@ -166,6 +166,12 @@ def parse_all_from_2h1(html):
             'status': status,
         }
 
+        # 排名: <span class="gray">[11]</span> 在队伍anchor前后
+        rank_m = re.findall(r'<span class="gray">\[(\d+)\]</span>', row)
+        if len(rank_m) >= 2:
+            matches[fid]['home_rank'] = int(rank_m[0])
+            matches[fid]['away_rank'] = int(rank_m[1])
+
     return matches
 
 

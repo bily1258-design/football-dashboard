@@ -345,13 +345,22 @@ def _predict_tree(x, node):
 # ─── 实时排名获取 ──────────────────────────────────
 
 def fetch_live_rankings(matches: List[Dict]) -> None:
-    """批量从detail.php获取每场比赛的主客队排名，注入match dict"""
+    """批量获取每场比赛的主客队排名
+    优先用2h1.php自带的排名(src)，兜底调detail.php"""
     import urllib.request
     import re
     import time
     
+    # 先统计已带排名的场次
+    from_data = sum(1 for m in matches if m.get('home_rank') and m.get('away_rank'))
+    if from_data:
+        logger.info(f"排名: {from_data}/{len(matches)} 场来自2h1.php数据")
+    
     cache = {}
     for m in matches:
+        # 已有排名（从2h1.php行HTML提取的）-> 跳过HTTP
+        if m.get('home_rank') and m.get('away_rank'):
+            continue
         fid = m.get('fid')
         if not fid:
             continue
