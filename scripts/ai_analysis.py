@@ -542,7 +542,7 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
         max_side = ['home', 'draw', 'away'][max_idx]
         excess = max_val - 0.40
 
-        if excess > 0 and lgbm_d >= 0.24:
+        if excess > 0 and lgbm_d >= 0.05:
             draw_boosted = True
             prob_list[max_idx] = 0.40  # 封顶
 
