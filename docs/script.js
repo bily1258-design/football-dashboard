@@ -18,13 +18,12 @@ function renderForm(s){
   if(!s||!s.home_recent||s.home_recent.length===0)return'';
   var hf=s.home_recent, af=s.away_recent;
   function icons(arr){
-    return arr.map(function(m){
-      var r=m.result||'';
-      // 结果是从队伍角度: 胜/平/负
-      return r==='胜'?'🟢':r==='平'?'🟡':r==='负'?'🔴':'⚪';
+    return arr.map(function(r){
+      var c=r.result;
+      return c==='胜'?'🟢':c==='负'?'🔴':c==='平'?'🟡':'⚪';
     }).join('');
   }
-  return '<div class="form-icons"><span style="color:#999;font-size:10px">主</span>'+icons(hf)+' <span style="color:#999;font-size:10px">客</span>'+icons(af)+'</div>';
+  return '<div class="form-icons"><span class="fi-label">主</span>'+icons(hf)+'</div><div class="form-icons"><span class="fi-label">客</span>'+icons(af)+'</div>';
 }
 var showWarnedOnly = false;
 function toggleWarnFilter(){

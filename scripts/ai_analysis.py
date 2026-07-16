@@ -783,8 +783,8 @@ def generate_frontend(results: List[Dict]):
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>足彩价值投注看板</title>
-<link rel="stylesheet" href="style.css?v=20260716v7">
-<script src="script.js?v=20260716v7"></script>
+<link rel="stylesheet" href="style.css?v=20260716v8">
+<script src="script.js?v=20260716v8"></script>
 </head>
 <body>
 <div class="container">
@@ -826,6 +826,7 @@ def generate_frontend(results: List[Dict]):
           <th>客队</th>
           <th>方向</th>
           <th>命中</th>
+          <th>走势</th>
           <th>赔率(初/即/分歧)</th>
           <th>模型/LGBM</th>
         </tr>
@@ -886,6 +887,7 @@ tr:hover{background:#f0f6ff}
 .score-cell{text-align:center}
 .score-cell span{display:inline-block;padding:1px 8px;border-radius:3px;font-size:12px;background:#dbeafe;color:#2563eb;font-weight:600}
 .form-cell{font-size:0;padding:8px 6px;text-align:center;line-height:1.2}
+.form-icons{font-size:13px;letter-spacing:1px;white-space:nowrap}
 /* 合并赔率列 */
 .odds-combined{font-size:11px;line-height:1.7;white-space:nowrap}
 .odds-combined .oc-line{display:flex;gap:4px;align-items:center}
@@ -930,6 +932,17 @@ function renderWarning(w){
   if(w.indexOf('🚩')>-1) h+='<span class="warn-trap" title="热门降水+冷门大涨: 可能分歧陷阱">🚩</span>';
   if(w.indexOf('⚠️')>-1) h+='<span class="warn-uncert" title="模型犹豫或LGBM低置信">⚠️</span>';
   return h+'</span>';
+}
+function renderForm(s){
+  if(!s||!s.home_recent||s.home_recent.length===0)return'';
+  var hf=s.home_recent, af=s.away_recent;
+  function icons(arr){
+    return arr.map(function(r){
+      var c=r.result;
+      return c==='胜'?'🟢':c==='负'?'🔴':c==='平'?'🟡':'⚪';
+    }).join('');
+  }
+  return '<div class=\"form-icons\"><span class=\"fi-label\">主</span>'+icons(hf)+'</div><div class=\"form-icons\"><span class=\"fi-label\">客</span>'+icons(af)+'</div>';
 }
 var showWarnedOnly = false;
 function toggleWarnFilter(){
@@ -1000,8 +1013,9 @@ function renderTable(matches){
       '<td class="team-name">'+m.home_team+'</td>'+
       '<td class="score-cell"><span>'+(m.score||'-')+'</span></td>'+
       '<td class="team-name">'+m.away_team+'</td>'+
-      '<td><span class="'+dirClass(m.prediction)+'">'+dirText(m.prediction)+(m.prediction===m.lgbm_prediction?'':'/'+dirText(m.lgbm_prediction))+'</span>'+renderWarning(m.warning)+'</td>'+
+      '<td><span class="'+dirClass(m.lgbm_prediction)+'">'+dirText(m.lgbm_prediction)+'</span> <span style="font-size:11px;color:#999">'+dirText(m.prediction)+'</span>'+renderWarning(m.warning)+'</td>'+
       '<td class="'+hc+'">'+(m.hit||'')+'</td>'+
+      '<td class="form-cell">'+renderForm(m.stats)+'</td>'+
       '<td class="odds-cell">'+renderOdds(m.comparison, m.hkjc_comparison)+'</td>'+
       '<td class="odds-cell"><div>模型: <span class="odds-val odds-w">'+fmtPct(m.model_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.model_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.model_loss)+'</span></div><div style="margin-top:3px">LGBM: <span class="odds-val odds-w">'+fmtPct(m.lgbm_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.lgbm_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.lgbm_loss)+'</span><div style=\"margin-top:2px;font-size:11px\"><span class=\"oc-label\" style=\"margin-right:3px\">分</span><span class=\"'+((m.model_win-m.lgbm_win)<-0.003?'oc-pct-down':(m.model_win-m.lgbm_win)>0.003?'oc-pct-up':'oc-pct-flat')+'\">'+fmtPctSign((m.model_win-m.lgbm_win)*100)+'</span> <span class=\"'+((m.model_draw-m.lgbm_draw)<-0.003?'oc-pct-down':(m.model_draw-m.lgbm_draw)>0.003?'oc-pct-up':'oc-pct-flat')+'\">'+fmtPctSign((m.model_draw-m.lgbm_draw)*100)+'</span> <span class=\"'+((m.model_loss-m.lgbm_loss)<-0.003?'oc-pct-down':(m.model_loss-m.lgbm_loss)>0.003?'oc-pct-up':'oc-pct-flat')+'\">'+fmtPctSign((m.model_loss-m.lgbm_loss)*100)+'</span></div></div></td>';
     tbody.appendChild(tr);  });
