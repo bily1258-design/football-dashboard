@@ -532,10 +532,20 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             t = sum(probs)
             model_w, model_d, model_l = probs[0]/t, probs[1]/t, probs[2]/t
 
+        # ─── 硬编码平局方向增强 ──────────────────────────
+        # 统计结论: LGBM平局概率≥35%时实际平率85%（41场, 3.8x提升）
+        # 直接覆盖模型中值方向 = 平局
+        draw_lgbm_boosted = lgbm_d >= 0.35
+
         # 4. LGBM 推荐方向（主推，取最大值）
         lgbm_dir_cn, lgbm_dir_en, lgbm_dir_prob = max_direction(lgbm_w, lgbm_d, lgbm_l)
         # 模型概率方向（中间值，备选）
         model_dir_cn, model_dir_en, model_dir_prob = middle_direction(model_w, model_d, model_l)
+        # 硬编码平局增强 LGBM平局≥35% → 模型中值方向强制=平局
+        if draw_lgbm_boosted and model_dir_en != 'draw':
+            model_dir_en = 'draw'
+            model_dir_cn = '和'
+            model_dir_prob = model_d
 
         # 4. 最大概率值
         max_prob_val = max(model_w, model_d, model_l)
@@ -673,6 +683,7 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             'model_prediction': model_dir_en,    # 模型中值方向（备选）
             'model_prediction_cn': model_dir_cn,
             'model_prediction_prob': round(model_dir_prob, 4),
+            'draw_boosted': draw_lgbm_boosted,
             'lgbm_win': round(lgbm_w, 4),
             'lgbm_draw': round(lgbm_d, 4),
             'lgbm_loss': round(lgbm_l, 4),
