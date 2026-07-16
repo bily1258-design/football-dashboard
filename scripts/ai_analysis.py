@@ -687,35 +687,35 @@ def generate_frontend(results: List[Dict]):
 
     # ─── style.css ──────────────────────────
     css = '''*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#1a2332;color:#e0e6ed;min-height:100vh}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#243447;color:#e0e6ed;min-height:100vh}
 .container{max-width:1400px;margin:0 auto;padding:16px}
-header{background:linear-gradient(135deg,#222d3d,#1a2332);border-radius:12px;padding:20px 24px;margin-bottom:16px;border:1px solid #2d3a4d}
+header{background:linear-gradient(135deg,#2a3a4a,#243447);border-radius:12px;padding:20px 24px;margin-bottom:16px;border:1px solid #364a5c}
 h1{font-size:22px;color:#66b8ff;margin-bottom:8px}
 .meta{display:flex;gap:20px;font-size:13px;color:#8899aa;flex-wrap:wrap}
-.meta span{background:#222d3d;padding:4px 12px;border-radius:6px}
+.meta span{background:#2a3a4a;padding:4px 12px;border-radius:6px}
 .controls{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
-.controls select,.controls button{background:#222d3d;color:#e0e6ed;border:1px solid #2d3a4d;border-radius:6px;padding:6px 12px;font-size:13px;cursor:pointer}
+.controls select,.controls button{background:#2a3a4a;color:#e0e6ed;border:1px solid #364a5c;border-radius:6px;padding:6px 12px;font-size:13px;cursor:pointer}
 .controls button{background:#2563eb;border-color:#2563eb;color:#fff;font-weight:600}
 .controls button:hover{background:#1d4ed8}
-.meta-hit{background:#222d3d;border:1px solid #2d3a4d;border-radius:6px;padding:6px 12px;font-size:13px;color:#66b8ff;font-weight:600}
+.meta-hit{background:#2a3a4a;border:1px solid #364a5c;border-radius:6px;padding:6px 12px;font-size:13px;color:#66b8ff;font-weight:600}
 #stats-bar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
-.stat-card{background:#222d3d;border:1px solid #2d3a4d;border-radius:8px;padding:8px 14px;text-align:center;min-width:80px}
+.stat-card{background:#2a3a4a;border:1px solid #364a5c;border-radius:8px;padding:8px 14px;text-align:center;min-width:80px}
 .stat-card .stat-val{font-size:18px;font-weight:700;color:#66b8ff}
 .stat-card .stat-label{font-size:11px;color:#667788;margin-top:2px}
 #loading{text-align:center;padding:40px;color:#667788;font-size:16px}
 #table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 #table-wrap::before{content:'← 左右滑动查看更多 →';display:block;text-align:center;font-size:11px;color:#556677;padding:4px 0}
 table{width:100%;border-collapse:collapse;font-size:13px}
-th{background:#222d3d;padding:8px 10px;text-align:left;font-weight:600;color:#8899aa;border-bottom:2px solid #2d3a4d;cursor:pointer;white-space:nowrap;user-select:none}
+th{background:#2a3a4a;padding:8px 10px;text-align:left;font-weight:600;color:#8899aa;border-bottom:2px solid #364a5c;cursor:pointer;white-space:nowrap;user-select:none}
 th:hover{color:#66b8ff}
-td{padding:8px 10px;border-bottom:1px solid #222d3d;white-space:nowrap}
-tr:hover{background:#222d3d}
+td{padding:8px 10px;border-bottom:1px solid #2a3a4a;white-space:nowrap}
+tr:hover{background:#2a3a4a}
 .team-name{font-weight:600;color:#e0e6ed}
 .vs{color:#667788;padding:0 4px}
 .odds-cell{font-variant-numeric:tabular-nums}
 .lgbm-cell{font-variant-numeric:tabular-nums}
-.lgbm-prob{margin-top:4px;padding-top:3px;border-top:1px solid #2d3a4d;font-size:11px;color:#66b8ff;text-align:center}
-.lgbm-sub{margin-top:4px;padding-top:3px;border-top:1px solid #2d3a4d;font-size:11px;color:#f59e0b;text-align:center}
+.lgbm-prob{margin-top:4px;padding-top:3px;border-top:1px solid #364a5c;font-size:11px;color:#66b8ff;text-align:center}
+.lgbm-sub{margin-top:4px;padding-top:3px;border-top:1px solid #364a5c;font-size:11px;color:#f59e0b;text-align:center}
 .odds-val{display:inline-block;min-width:48px;text-align:center;padding:1px 4px;border-radius:3px;font-size:12px}
 .odds-w{color:#4ade80}
 .odds-d{color:#fbbf24}
@@ -724,7 +724,7 @@ tr:hover{background:#222d3d}
 .dir-draw{color:#fbbf24;font-weight:700}
 .dir-away{color:#f87171;font-weight:700}
 .dir-wait{color:#667788}
-.tag{display:inline-block;padding:1px 6px;border-radius:3px;font-size:11px;background:#2d3a4d;color:#8899aa}
+.tag{display:inline-block;padding:1px 6px;border-radius:3px;font-size:11px;background:#364a5c;color:#8899aa}
 .tag-beidan{background:#1e3a5f;color:#60a5fa}
 .tag-jingcai{background:#3a2a1e;color:#fbbf24}
 .hit-yes{color:#4ade80;font-weight:700;font-size:1.1em;text-align:center}
@@ -743,7 +743,7 @@ tr:hover{background:#222d3d}
 .odds-combined .oc-sep{color:#445566;margin:0 1px}
 .oc-source{font-size:10px;color:#7899bb;margin:2px 0 1px;font-weight:600}
 .oc-source-hkjc{color:#bb9977}
-.oc-sep-line{height:1px;background:#2d3a4d;margin:4px 0}
+.oc-sep-line{height:1px;background:#364a5c;margin:4px 0}
 @media(max-width:768px){
   .container{padding:8px}
   table{font-size:11px}
