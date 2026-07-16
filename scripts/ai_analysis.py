@@ -544,6 +544,37 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
                     'div_pct': [round(pct_w,1), round(pct_d,1), round(pct_l,1)],
                 }
 
+        # ─── 风险标记 ──────────────────────────────────
+        # 🚩分歧陷阱: 热门降水+冷门大涨+LGBM推热门
+        # ⚠️模型犹豫: 模型top1-top2差距<10% 或 LGBM主推概率<45%
+        warning = ''
+        try:
+            # 开盘赔率（优先平博，fallback到当前赔率）
+            op_w = float(m.get('odds_pinnacle_open_win', 0) or 0) or ow
+            op_d = float(m.get('odds_pinnacle_open_draw', 0) or 0) or od
+            op_l = float(m.get('odds_pinnacle_open_loss', 0) or 0) or ol
+            if op_w > 1 and op_d > 1 and op_l > 1:
+                divs = [(ow - op_w) / op_w, (od - op_d) / op_d, (ol - op_l) / op_l]
+                odds = [ow, od, ol]
+                fav_idx = odds.index(min(odds))
+                third_idx = odds.index(max(odds))
+                lmax = max(lgbm_w, lgbm_d, lgbm_l)
+                ldir_idx = [lgbm_w, lgbm_d, lgbm_l].index(lmax)
+                raw_vals = sorted([lgbm_feat_w, lgbm_feat_d, lgbm_feat_l], reverse=True)
+                gap = raw_vals[0] - raw_vals[1]
+
+                # 🚩分歧陷阱
+                trap = (divs[fav_idx] < -0.05 and divs[third_idx] > 0.20 and ldir_idx == fav_idx)
+                # ⚠️模型犹豫
+                uncer = (gap < 0.10 or lmax < 0.45)
+
+                parts = []
+                if trap: parts.append('🚩')
+                if uncer: parts.append('⚠️')
+                warning = ''.join(parts)
+        except Exception:
+            pass
+
         # 统一时间格式: 北单 "07-15 02:45" → "2026-07-15 02:45"
         raw_date = m.get('date', '')
         raw_time = m.get('match_time', '')
@@ -593,6 +624,7 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             'comparison': comparison,
             'hkjc_comparison': hkjc_comparison,
             'league_baseline': league_baseline,
+            'warning': warning,
         })
 
     logger.info(f"分析完成: {len(results)} 场 (跳过 {skipped} 场无赔率)")
@@ -678,6 +710,7 @@ def generate_frontend(results: List[Dict]):
         <option value="odds">按赔率</option>
       </select>
       <button id="refreshBtn" onclick="location.reload()">🔄 刷新</button>
+      <span id="warnToggle" class="warn-filter-btn" onclick="toggleWarnFilter()" title="仅显示有风险标记的比赛">⚠️ 全部</span>
       <span id="hitRate" class="meta-hit"></span>
     </div>
   </header>
@@ -766,6 +799,11 @@ tr:hover{background:#f0f6ff}
 .oc-source{font-size:10px;color:#667788;margin:2px 0 1px;font-weight:600}
 .oc-source-hkjc{color:#92400e}
 .oc-sep-line{height:1px;background:#e0e4e8;margin:4px 0}
+.warn-badge{display:inline-block;margin-left:3px;vertical-align:middle}
+.warn-badge .warn-trap{cursor:help;font-size:12px}
+.warn-badge .warn-uncert{cursor:help;font-size:12px;margin-left:1px}
+.warn-filter-btn{cursor:pointer;padding:3px 8px;border-radius:4px;color:#666;font-size:12px}
+.warn-filter-btn.active{background:#fff3cd;color:#856404;font-weight:bold}
 @media(max-width:768px){
   .container{padding:8px}
   table{font-size:11px}
@@ -785,6 +823,20 @@ function fmtPct(v){return (v*100).toFixed(1)+'%'}
 function fmtPctSign(v){return v===0?'0%':(v>0?'+':'')+v.toFixed(1)+'%'}
 function dirClass(d){return d==='home'?'dir-home':d==='draw'?'dir-draw':d==='away'?'dir-away':'dir-wait'}
 function dirText(d){return d==='home'?'主胜':d==='draw'?'平局':d==='away'?'客胜':'观望'}
+function renderWarning(w){
+  if(!w)return'';
+  var h='<span class="warn-badge">';
+  if(w.indexOf('🚩')>-1) h+='<span class="warn-trap" title="热门降水+冷门大涨: 可能分歧陷阱">🚩</span>';
+  if(w.indexOf('⚠️')>-1) h+='<span class="warn-uncert" title="模型犹豫或LGBM低置信">⚠️</span>';
+  return h+'</span>';
+}
+var showWarnedOnly = false;
+function toggleWarnFilter(){
+  showWarnedOnly = !showWarnedOnly;
+  document.getElementById('warnToggle').textContent = showWarnedOnly?'⚠️ 仅标记':'⚠️ 全部';
+  document.getElementById('warnToggle').className = 'warn-filter-btn'+(showWarnedOnly?' active':'');
+  applyFilters();
+}
 function renderOdds(c, h){
   var html = '';
   // 平博
@@ -827,6 +879,7 @@ function applyFilters(){
   var filtered = allMatches.filter(function(m){
     if(dateVal!=='all' && m.date!==dateVal) return false;
     if(srcVal!=='all' && m.source!==srcVal) return false;
+    if(showWarnedOnly && !m.warning) return false;
     return true;
   });
   if(sortVal==='time') filtered.sort(function(a,b){return a.match_time.localeCompare(b.match_time)});
@@ -846,7 +899,7 @@ function renderTable(matches){
       '<td class="team-name">'+m.home_team+'</td>'+
       '<td class="score-cell">'+(m.score||'-')+'</td>'+
       '<td class="team-name">'+m.away_team+'</td>'+
-      '<td><span class="'+dirClass(m.prediction)+'">'+dirText(m.prediction)+(m.prediction===m.lgbm_prediction?'':'/'+dirText(m.lgbm_prediction))+'</span></td>'+
+      '<td><span class="'+dirClass(m.prediction)+'">'+dirText(m.prediction)+(m.prediction===m.lgbm_prediction?'':'/'+dirText(m.lgbm_prediction))+'</span>'+renderWarning(m.warning)+'</td>'+
       '<td class="'+hc+'">'+(m.hit||'')+'</td>'+
       '<td class="odds-cell">'+renderOdds(m.comparison, m.hkjc_comparison)+'</td>'+
       '<td class="odds-cell"><div>模型: <span class="odds-val odds-w">'+fmtPct(m.model_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.model_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.model_loss)+'</span></div><div style="margin-top:3px">LGBM: <span class="odds-val odds-w">'+fmtPct(m.lgbm_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.lgbm_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.lgbm_loss)+'</span><div style=\"margin-top:2px;font-size:11px\"><span class=\"oc-label\" style=\"margin-right:3px\">分</span><span class=\"'+((m.model_win-m.lgbm_win)<-0.003?'oc-pct-down':(m.model_win-m.lgbm_win)>0.003?'oc-pct-up':'oc-pct-flat')+'\">'+fmtPctSign((m.model_win-m.lgbm_win)*100)+'</span> <span class=\"'+((m.model_draw-m.lgbm_draw)<-0.003?'oc-pct-down':(m.model_draw-m.lgbm_draw)>0.003?'oc-pct-up':'oc-pct-flat')+'\">'+fmtPctSign((m.model_draw-m.lgbm_draw)*100)+'</span> <span class=\"'+((m.model_loss-m.lgbm_loss)<-0.003?'oc-pct-down':(m.model_loss-m.lgbm_loss)>0.003?'oc-pct-up':'oc-pct-flat')+'\">'+fmtPctSign((m.model_loss-m.lgbm_loss)*100)+'</span></div></div></td>';
