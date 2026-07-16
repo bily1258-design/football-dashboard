@@ -134,6 +134,11 @@ fetch('data/results.json?v='+Date.now())
       opt.value = ds.date; opt.textContent = ds.date+' ('+ds.count+')';
       sel.appendChild(opt);
     });
+    // 默认选中今天
+    var today = new Date().toISOString().slice(0,10);
+    if (sel.querySelector('option[value="'+today+'"]')) {
+      sel.value = today;
+    }
     renderStats(data);
     applyFilters();
   })
