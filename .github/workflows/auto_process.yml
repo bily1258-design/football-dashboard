@@ -6,6 +6,7 @@ on:
       - 'data/matches_*.json'
       - 'scripts/ai_analysis.py'
       - 'scripts/fetch_zqdc.py'
+      - 'docs/**'
       - '.github/workflows/auto_process.yml'
   workflow_dispatch:
   schedule:
