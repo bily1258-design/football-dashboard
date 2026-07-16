@@ -675,6 +675,11 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             'comparison': comparison,
             'hkjc_comparison': hkjc_comparison,
             'league_baseline': league_baseline,
+            'league': m.get('league', ''),
+            'home_rank': m.get('home_rank', 0),
+            'away_rank': m.get('away_rank', 0),
+            'home_pts': m.get('home_pts', 0),
+            'away_pts': m.get('away_pts', 0),
             'warning': warning,
         })
 
