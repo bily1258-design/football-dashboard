@@ -399,7 +399,7 @@ def main():
             h['open']['w'], h['open']['d'], h['open']['l'],
             h['latest']['w'], h['latest']['d'], h['latest']['l']))
 
-        # 从整页解析数据中获取比赛详情（无需调detail.php）
+        # 从整页解析数据中获取比赛详情（含排名，直接来自2h1.php HTML）
         match = {
             'fid': fid,
             'date': date_str,
@@ -410,6 +410,8 @@ def main():
             'score': info.get('score', ''),
             'status': info.get('status', ''),
             'source': 'hkjc',
+            'home_rank': info.get('home_rank', 0),
+            'away_rank': info.get('away_rank', 0),
         }
 
         # HKJC赔率

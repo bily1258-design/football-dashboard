@@ -133,6 +133,12 @@ def parse(html, date_str):
             score = ''
 
 
+        # 排名: <span class="gray">[N]</span> 在队伍anchor前后
+        rank_m = re.findall(r'<span class="gray">\[(\d+)\]</span>', row)
+        home_rank, away_rank = 0, 0
+        if len(rank_m) >= 2:
+            home_rank, away_rank = int(rank_m[0]), int(rank_m[1])
+        
         matches.append({
             'fid': fid,
             'date': date_str,
@@ -140,6 +146,8 @@ def parse(html, date_str):
             'event': event,
             'home_team': home,
             'away_team': away,
+            'home_rank': home_rank,
+            'away_rank': away_rank,
             'score': score,
             'status': status,
             'source': 'beidan',
@@ -176,6 +184,9 @@ def parse_all(html):
         else:
             score = ''
 
+        # 排名: <span class="gray">[N]</span>
+        rank_m = re.findall(r'<span class="gray">\[(\d+)\]</span>', row)
+
         # 从 t 中提取日期(MM-DD)，构造完整的 date_str
         mm_dd = t[:5]
         # 用当前年份；如果月份是01且当前月份12则用去年（跨年边界，极少数情况）
@@ -189,6 +200,8 @@ def parse_all(html):
             'event': event,
             'home_team': home,
             'away_team': away,
+            'home_rank': int(rank_m[0]) if len(rank_m) >= 2 else 0,
+            'away_rank': int(rank_m[1]) if len(rank_m) >= 2 else 0,
             'score': score,
             'status': status,
             'source': 'beidan',
