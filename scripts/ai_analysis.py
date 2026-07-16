@@ -26,9 +26,8 @@ DATA_DIR = os.path.join(REPO_DIR, "data")
 DOCS_DIR = os.path.join(REPO_DIR, "docs")
 DB_PATH = os.path.join(DATA_DIR, "football.db")
 
-# ─── 统计模块（H2H+近期战绩）─────────────────────────
 sys.path.insert(0, SCRIPT_DIR)
-from fetch_stats import fetch_match_stats, extract_h2h_features, extract_form_features as fs_extract_form_features
+from fetch_stats import fetch_match_stats
 
 # ─── 算法常量 ──────────────────────────────────────
 SMOOTH_ALPHA_BASE = 0.02      # 贝叶斯平滑基值（均衡比赛用）
@@ -219,72 +218,59 @@ def extract_lgbm_features(ow, od, ol, model_w, model_d, model_l, margin,
                            open_w=None, open_d=None, open_l=None,
                            poisson_w=None, poisson_d=None, poisson_l=None,
                            implied_w=None, implied_d=None, implied_l=None,
-                           lambda_h=None, lambda_a=None,
-                           home_rank=None, away_rank=None):
-    """从当前比赛数据提取32维特征（28原版+4新增积分特征）"""
+                           home_rank=None, away_rank=None,
+                           home_pts=None, away_pts=None):
+    """从当前比赛数据提取27维特征（与 train_lgbm.py 一致）"""
     cw, cd, cl, _ = _implied_from_odds(ow, od, ol)
-    
+
     # 开盘隐含概率
     if open_w and open_w > 1 and open_d and open_d > 1 and open_l and open_l > 1:
-        pw, pd, pl, pin_margin = _implied_from_odds(open_w, open_d, open_l)
+        pw, pd_, pl, pin_margin = _implied_from_odds(open_w, open_d, open_l)
     else:
-        pw, pd, pl, pin_margin = 0.0, 0.0, 0.0, 0.0
-    
-    # 赔率变动
-    move_w = cw - pw if pw > 0 else 0.0
-    move_d = cd - pd if pd > 0 else 0.0
-    move_l = cl - pl if pl > 0 else 0.0
-    diff_w = move_w / pw if pw > 0 else cw  # 变动幅度
-    diff_d = move_d / pd if pd > 0 else cd
-    diff_l = move_l / pl if pl > 0 else cl
-    
-    # 泊松概率（训练时有，推理时可能缺失）
+        pw = pd_ = pl = pin_margin = 0.0
+
+    # 赔率变动幅度 = 收盘 - 开盘 (pin_diff)
+    diff_w = cw - pw if pw > 0 else 0.0
+    diff_d = cd - pd_ if pd_ > 0 else 0.0
+    diff_l = cl - pl if pl > 0 else 0.0
+
+    # 泊松概率
     p_w = float(poisson_w) if poisson_w and float(poisson_w) > 0 else 0.0
     p_d = float(poisson_d) if poisson_d and float(poisson_d) > 0 else 0.0
     p_l = float(poisson_l) if poisson_l and float(poisson_l) > 0 else 0.0
-    
-    # 隐含概率（如有传入，否则用当前赔率隐含）
+
+    # 隐含概率
     iw = float(implied_w) if implied_w and float(implied_w) > 0 else cw
     id_ = float(implied_d) if implied_d and float(implied_d) > 0 else cd
     il = float(implied_l) if implied_l and float(implied_l) > 0 else cl
-    
-    # 分歧度：泊松 vs 市场
-    dw = p_w - iw if p_w > 0 else 0.0
-    dd = p_d - id_ if p_d > 0 else 0.0
-    dl = p_l - il if p_l > 0 else 0.0
-    
+
     # 泊松 vs 市场差异
     poisson_market_margin = abs(p_w - iw) + abs(p_d - id_) + abs(p_l - il) if p_w > 0 else 0.0
     poisson_market_draw_diff = p_d - id_ if p_d > 0 else 0.0
-    
+
     # 赔率级别
     odds_level = 1.0 / max(ow, 1.01)
-    
+
     # 平局溢价
     draw_premium = ((od - (ow + ol)/2) / max((ow + ol)/2, 0.01)) if ow > 1.01 and ol > 1.01 else 0.0
-    
-    # λ值
-    lh = float(lambda_h) if lambda_h and float(lambda_h) > 0 else 0.0
-    la = float(lambda_a) if lambda_a and float(lambda_a) > 0 else 0.0
-    
-    # 积分特征
+
+    # 排名/积分
     hr = float(home_rank) if home_rank and float(home_rank) > 0 else 0.0
     ar = float(away_rank) if away_rank and float(away_rank) > 0 else 0.0
-    
+    hp = float(home_pts) if home_pts and float(home_pts) > 0 else 0.0
+    ap = float(away_pts) if away_pts and float(away_pts) > 0 else 0.0
+
     return [
         p_w, p_d, p_l,                    # poisson_w/d/l
         model_w, model_d, model_l,         # final_w/d/l
-        iw, id_, il,                      # implied_w/d/l
-        pw, pd, pl,                       # pin_open_w/d/l
-        cw, cd, cl,                       # pin_close_w/d/l
-        move_w, move_d, move_l,           # pin_move_w/d/l
-        diff_w, diff_d, diff_l,           # pin_diff_w/d/l
-        pin_margin,                       # pin_margin
-        dw, dd, dl,                       # disagree_w/d/l
+        iw, id_, il,                       # implied_w/d/l
+        pw, pd_, pl,                       # pin_open_w/d/l
+        cw, cd, cl,                        # pin_close_w/d/l
+        diff_w, diff_d, diff_l,            # pin_diff_w/d/l
+        pin_margin,                        # pin_margin
         poisson_market_margin, poisson_market_draw_diff,
         odds_level, draw_premium,
-        lh, la,                           # lambda_h/a
-        hr, ar, 0.0, 0.0,                 # home_rank, away_rank (pts用0占位，训练时有实际值但live暂时不可用)
+        hr, ar, hp, ap,                    # home/away_rank, home/away_pts
     ]
 
 def load_lgbm_model():
@@ -412,29 +398,6 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
         except Exception as e:
             logger.warning(f"排名预取失败: {e}，将使用默认值")
 
-    # 预取H2H+近期战绩（仅在本地运行，GA上跳过以节省时间）
-    if in_gha:
-        logger.info("GitHub Actions环境，跳过统计异常。")
-    else:
-        stats_fetched = 0; total_stats = sum(1 for m in matches if m.get('fid'))
-        logger.info(f"预取近期战绩 ({total_stats}场)...")
-        for i, m in enumerate(matches):
-            fid = m.get('fid')
-            if not fid:
-                continue
-            try:
-                stats = fetch_match_stats(fid)
-                if stats:
-                    m['match_stats'] = stats
-                    stats_fetched += 1
-                if stats_fetched % 10 == 0 and stats_fetched > 0:
-                    logger.info(f"  统计预取进度: {stats_fetched}/{total_stats}场")
-                time.sleep(0.2)
-            except Exception as e:
-                logger.warning(f"统计获取失败 fid={fid}: {e}")
-        if stats_fetched:
-            logger.info(f"统计预取完成: {stats_fetched}/{len(matches)}场")
-
     for m in matches:
         # 赔率源：优先平博，fallback到HKJC
         ow = float(m.get('odds_pinnacle_win', 0) or 0)
@@ -504,8 +467,8 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
                                           open_w=open_w_lgbm, open_d=open_d_lgbm, open_l=open_l_lgbm,
                                           poisson_w=m.get('poisson_win'), poisson_d=m.get('poisson_draw'), poisson_l=m.get('poisson_loss'),
                                           implied_w=m.get('implied_prob_w'), implied_d=m.get('implied_prob_d'), implied_l=m.get('implied_prob_l'),
-                                          lambda_h=m.get('home_lambda'), lambda_a=m.get('away_lambda'),
-                                          home_rank=m.get('home_rank'), away_rank=m.get('away_rank'))
+                                          home_rank=m.get('home_rank'), away_rank=m.get('away_rank'),
+                                          home_pts=m.get('home_points'), away_pts=m.get('away_points'))
             proba = predict_lgbm(lgbm_model, feat)
             if proba:
                     lgbm_w, lgbm_d, lgbm_l = proba

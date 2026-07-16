@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 LGBM 模型训练脚本
-从 football.db 提取28维特征，训练 SimpleLGBM，保存模型JSON
+从 football.db 提取27维特征，训练 SimpleLGBM，保存模型JSON
 """
 import os
 import sys
@@ -10,8 +10,6 @@ import sqlite3
 import numpy as np
 from collections import defaultdict
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'football-odds-api'))
-# 复用旧仓库的 SimpleLGBM 和特征提取
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 DB_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'football.db')
@@ -195,19 +193,14 @@ FEATURE_NAMES = [
     'implied_w','implied_d','implied_l',
     'pin_open_w','pin_open_d','pin_open_l',
     'pin_close_w','pin_close_d','pin_close_l',
-    'pin_move_w','pin_move_d','pin_move_l',
     'pin_diff_w','pin_diff_d','pin_diff_l',
     'pin_margin',
-    'disagree_w','disagree_d','disagree_l',
     'poisson_market_margin','poisson_market_draw_diff',
     'odds_level','draw_premium',
-    'lambda_h','lambda_a',
-    # 新增积分特征
     'home_rank','away_rank','home_pts','away_pts',
 ]
 
-def extract_features(row):
-    """32维特征（28原版+4新增积分特征）"""
+def extract_features(row, stats=None):
     pw = _safe_float(row.get('poisson_win'))
     pd_ = _safe_float(row.get('poisson_draw'))
     pl = _safe_float(row.get('poisson_loss'))
@@ -238,36 +231,11 @@ def extract_features(row):
     else:
         close_w = close_d = close_l = 0.0
     
-    # Movement
-    move_str = row.get('pinnacle_movement', '')
-    move_w = move_d_ = move_l = 0
-    if move_str:
-        try:
-            m = json.loads(move_str) if isinstance(move_str, str) else move_str
-            dmap = {'down': -1, 'stable': 0, 'up': 1}
-            move_w = dmap.get(m.get('w', 'stable'), 0)
-            move_d_ = dmap.get(m.get('d', 'stable'), 0)
-            move_l = dmap.get(m.get('l', 'stable'), 0)
-        except Exception:
-            pass
-    
     diff_w = (close_w - open_w) if has_open and has_close else 0.0
     diff_d = (close_d - open_d) if has_open and has_close else 0.0
     diff_l = (close_l - open_l) if has_open and has_close else 0.0
     
     pin_margin = _safe_float(row.get('pinnacle_margin'))
-    
-    # Disagreement (百家隐含 vs Pinnacle)
-    if has_close and imp_w > 0:
-        dis_w = imp_w - close_w
-        dis_d = imp_d_ - close_d
-        dis_l = imp_l - close_l
-    elif has_open and imp_w > 0:
-        dis_w = imp_w - open_w
-        dis_d = imp_d_ - open_d
-        dis_l = imp_l - open_l
-    else:
-        dis_w = dis_d = dis_l = 0.0
     
     poisson_market_margin = (pw - pl) - (imp_w - imp_l) if imp_w > 0 else 0.0
     poisson_market_draw_diff = pd_ - imp_d_ if imp_d_ > 0 else 0.0
@@ -278,9 +246,6 @@ def extract_features(row):
     odds_level = 1.0 / max(odds_w, 1.01) if odds_w > 1.01 else 0.0
     draw_premium = ((odds_d - (odds_w + odds_l)/2) / max((odds_w + odds_l)/2, 0.01)
                     if odds_w > 1.01 and odds_l > 1.01 else 0.0)
-    
-    lambda_h = _safe_float(row.get('had_lambda_h'))
-    lambda_a = _safe_float(row.get('had_lambda_a'))
     
     # 新增积分特征
     hr = _safe_float(row.get('home_ranking'))
@@ -294,14 +259,10 @@ def extract_features(row):
         imp_w, imp_d_, imp_l,
         open_w, open_d, open_l,
         close_w, close_d, close_l,
-        float(move_w), float(move_d_), float(move_l),
         diff_w, diff_d, diff_l,
         pin_margin,
-        dis_w, dis_d, dis_l,
         poisson_market_margin, poisson_market_draw_diff,
         odds_level, draw_premium,
-        lambda_h, lambda_a,
-        # 新增积分特征
         hr, ar, hp, ap,
     ]
 
@@ -429,8 +390,8 @@ def main():
     os.makedirs(CACHE_DIR, exist_ok=True)
     model_dict = model.to_dict()
     model_dict['feature_names'] = FEATURE_NAMES
-    model_dict['version'] = 3
-    model_dict['train_date'] = '2026-07-14'
+    model_dict['version'] = 6
+    model_dict['train_date'] = '2026-07-17'
     model_dict['train_samples'] = len(X_train)
     model_dict['test_accuracy'] = round(test_acc, 4)
     model_dict['baseline_accuracy'] = round(baseline_acc, 4)
