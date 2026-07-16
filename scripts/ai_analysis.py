@@ -403,17 +403,18 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
         league_priors = {}
     lambda_ = LEAGUE_PRIOR_LAMBDA
     
-    # 预取排名
-    try:
-        fetch_live_rankings(matches)
-        logger.debug(f"排名预取完成 ({len(matches)}场)")
-    except Exception as e:
-        logger.warning(f"排名预取失败: {e}，将使用默认值")
+    # 预取排名（GA上跳过，500.com封GitHub IP）
+    in_gha = os.environ.get('GITHUB_ACTIONS') == 'true'
+    if not in_gha:
+        try:
+            fetch_live_rankings(matches)
+            logger.debug(f"排名预取完成 ({len(matches)}场)")
+        except Exception as e:
+            logger.warning(f"排名预取失败: {e}，将使用默认值")
 
     # 预取H2H+近期战绩（仅在本地运行，GA上跳过以节省时间）
-    in_gha = os.environ.get('GITHUB_ACTIONS') == 'true'
     if in_gha:
-        logger.info("GitHub Actions环境，跳过统计预取")
+        logger.info("GitHub Actions环境，跳过统计异常。")
     else:
         stats_fetched = 0; total_stats = sum(1 for m in matches if m.get('fid'))
         logger.info(f"预取近期战绩 ({total_stats}场)...")
