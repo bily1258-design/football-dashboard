@@ -396,8 +396,50 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             model_w, model_d, model_l = ft and (fw/ft, fd/ft, fl/ft) or (1/3, 1/3, 1/3)
             league_baseline = prior
 
-        # 2c. 保存调整前的概率给LGBM用（LGBM训练时没吃过调整特征）
+        # 2c. 初盘→即时变化直接调整
+        #     ⚠️ 存一份调整前的概率给LGBM用（LGBM训练时没吃过调整特征）
         lgbm_feat_w, lgbm_feat_d, lgbm_feat_l = model_w, model_d, model_l
+
+        #     用户经验：
+        #       · 升大必死99%（大幅回升 → 市场失真）
+        #       · 小幅降水必死80%（公众噪音，不真实）
+        #       · 大降水 → 市场真方向，不惩罚
+        #       · 7倍以上 → 升降都很难开出
+        #     核心：赔率大幅波动（尤其回升）说明市场不可信
+        if odds_source == 'hkjc':
+            open_w = float(m.get('odds_hkjc_open_win', 0) or 0)
+            open_d = float(m.get('odds_hkjc_open_draw', 0) or 0)
+            open_l = float(m.get('odds_hkjc_open_loss', 0) or 0)
+        else:
+            open_w = float(m.get('odds_pinnacle_open_win', 0) or 0)
+            open_d = float(m.get('odds_pinnacle_open_draw', 0) or 0)
+            open_l = float(m.get('odds_pinnacle_open_loss', 0) or 0)
+
+        if open_w > 1 and open_d > 1 and open_l > 1:
+            div_w = (ow - open_w) / open_w  # 正=回升，负=下降
+            div_d = (od - open_d) / open_d
+            div_l = (ol - open_l) / open_l
+            cur_odds = [ow, od, ol]
+            probs = [model_w, model_d, model_l]
+            divs = [div_w, div_d, div_l]
+            for i in range(3):
+                # Rule 1: 7倍以上 → 升降都很难开出，直接85%不信任
+                if cur_odds[i] >= 7.0:
+                    distrust = 0.85
+                else:
+                    d = max(-1, min(1, divs[i]))
+                    if d > 0.10:                     # 回升 ≥10% → 不可信
+                        distrust = min(0.95, d * 1.5)  # 轻力度惩罚
+                    elif d < -0.10:                  # 降水≥10% → 市场真方向，不惩罚
+                        distrust = 0
+                    elif d < 0:                      # 小幅降水 0~-10%
+                        distrust = abs(d) / 0.10 * 0.50  # 最大50%惩罚
+                    else:                            # 小幅回升 <10% → 忽略
+                        distrust = 0
+                probs[i] *= max(0.05, 1 - distrust)
+            # 重归一化（惩罚方向腾出的概率分配给其它方向）
+            t = sum(probs)
+            model_w, model_d, model_l = probs[0]/t, probs[1]/t, probs[2]/t
 
         # 3. LGBM 方案C预测
         lgbm_model = load_lgbm_model()
@@ -424,45 +466,6 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
 
         # 4. LGBM 推荐方向（主推，取最大值）
         lgbm_dir_cn, lgbm_dir_en, lgbm_dir_prob = max_direction(lgbm_w, lgbm_d, lgbm_l)
-        
-        # 5. 赔率分歧调整（B3分级 + 模型vsLGBM分歧惩罚）
-        if open_w > 1 and open_d > 1 and open_l > 1:
-            # 模型最大值方向（vs LGBM主推做分歧检测）
-            model_max_cn, model_max_en, _ = max_direction(model_w, model_d, model_l)
-            lgbm_model_disagree = (lgbm_dir_en != model_max_en)
-            
-            div_w = (ow - open_w) / open_w
-            div_d = (od - open_d) / open_d
-            div_l = (ol - open_l) / open_l
-            cur_odds = [ow, od, ol]
-            probs = [model_w, model_d, model_l]
-            divs = [div_w, div_d, div_l]
-            for i in range(3):
-                if cur_odds[i] >= 7.0:
-                    distrust = 0.85
-                else:
-                    d = max(-1, min(1, divs[i]))
-                    if d > 0:
-                        # B3分级惩罚: 回升分4档
-                        if d > 0.20:
-                            distrust = 0.65
-                        elif d > 0.10:
-                            distrust = 0.40
-                        elif d > 0.05:
-                            distrust = 0.20
-                        elif d > 0.03:
-                            distrust = 0.10
-                        else:
-                            distrust = 0
-                        # 模型vsLGBM分歧时额外+25%
-                        if lgbm_model_disagree:
-                            distrust = min(0.95, distrust + 0.25)
-                    else:
-                        distrust = 0
-                probs[i] *= max(0.05, 1 - distrust)
-            t = sum(probs)
-            model_w, model_d, model_l = probs[0]/t, probs[1]/t, probs[2]/t
-        
         # 模型概率方向（中间值，备选）
         model_dir_cn, model_dir_en, model_dir_prob = middle_direction(model_w, model_d, model_l)
 
@@ -627,8 +630,8 @@ def generate_frontend(results: List[Dict]):
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>足彩价值投注看板</title>
-<link rel="stylesheet" href="style.css?v=20260716v6">
-<script src="script.js?v=20260716v6"></script>
+<link rel="stylesheet" href="style.css?v=20260716v5">
+<script src="script.js?v=20260716v5"></script>
 </head>
 <body>
 <div class="container">
