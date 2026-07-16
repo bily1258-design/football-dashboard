@@ -227,6 +227,35 @@ def main():
         else:
             print('[BACKFILL] %s → 2h1.php无变化' % fpath)
 
+        # ===== wanchang.php 兜底：2h1.php已下线的已完赛 =====
+        wc_unscored = [(fid, m) for fid, m in existing_matches.items()
+                       if not m.get('score') and 'match_time' in m]
+        if wc_unscored:
+            print('[BACKFILL] wanchang.php兜底: %d 场待补…' % len(wc_unscored))
+            try:
+                wc_html = fetch_url('https://live.500.com/wanchang.php')
+                # wanchang.php与2h1.php结构相同：<div class="pk">比分</div>
+                wc_scores = {}
+                for pk_div in re.finditer(
+                    r'<div\s+class="pk">.*?<a[^>]*fid=(\d+)[^>]*>(\d+)</a>\s*<span>-</span>\s*<a[^>]*fid=\1[^>]*>(\d+)</a>',
+                    wc_html, re.DOTALL | re.IGNORECASE):
+                    wc_scores[pk_div.group(1)] = '%s-%s' % (pk_div.group(2), pk_div.group(3))
+                wc_updated = 0
+                for fid, m in wc_unscored:
+                    if fid in wc_scores:
+                        m['score'] = wc_scores[fid]
+                        wc_updated += 1
+                if wc_updated:
+                    existing['matches'] = list(existing_matches.values())
+                    existing['fetched_at'] = datetime.now().isoformat()
+                    with open(fpath, 'w', encoding='utf-8') as f:
+                        json.dump(existing, f, ensure_ascii=False, indent=2)
+                    print('[BACKFILL] %s → %d 场比分已更新(wanchang.php)' % (fpath, wc_updated))
+                else:
+                    print('[BACKFILL] wanchang.php→未找到匹配比分')
+            except Exception as e:
+                print('[BACKFILL] wanchang.php抓取失败: %s' % e)
+
         # ===== ESPN API 兜底：2h1.php没找到的已完赛比分 =====
         unscored = [(fid, m) for fid, m in existing_matches.items()
                     if not m.get('score') and 'match_time' in m]
