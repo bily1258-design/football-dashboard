@@ -784,7 +784,8 @@ tr:hover{background:#f0f6ff}
 .tag-jingcai{background:#fef3c7;color:#d97706}
 .hit-yes{color:#16a34a;font-weight:700;font-size:1.1em;text-align:center}
 .hit-no{color:#dc2626;font-weight:700;font-size:1.1em;text-align:center}
-.score-cell{text-align:center;font-weight:500}
+.score-cell{text-align:center}
+.score-cell span{display:inline-block;padding:1px 8px;border-radius:3px;font-size:12px;background:#dbeafe;color:#2563eb;font-weight:600}
 /* 合并赔率列 */
 .odds-combined{font-size:11px;line-height:1.7;white-space:nowrap}
 .odds-combined .oc-line{display:flex;gap:4px;align-items:center}
@@ -897,7 +898,7 @@ function renderTable(matches){
       '<td>'+fmtTime(m.match_time)+'</td>'+
       '<td><span class="tag tag-'+m.source+'">'+(m.event||m.source)+'</span></td>'+
       '<td class="team-name">'+m.home_team+'</td>'+
-      '<td class="score-cell">'+(m.score||'-')+'</td>'+
+      '<td class="score-cell"><span>'+(m.score||'-')+'</span></td>'+
       '<td class="team-name">'+m.away_team+'</td>'+
       '<td><span class="'+dirClass(m.prediction)+'">'+dirText(m.prediction)+(m.prediction===m.lgbm_prediction?'':'/'+dirText(m.lgbm_prediction))+'</span>'+renderWarning(m.warning)+'</td>'+
       '<td class="'+hc+'">'+(m.hit||'')+'</td>'+

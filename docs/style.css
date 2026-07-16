@@ -41,7 +41,8 @@ tr:hover{background:#f0f6ff}
 .tag-jingcai{background:#fef3c7;color:#d97706}
 .hit-yes{color:#16a34a;font-weight:700;font-size:1.1em;text-align:center}
 .hit-no{color:#dc2626;font-weight:700;font-size:1.1em;text-align:center}
-.score-cell{text-align:center;font-weight:500}
+.score-cell{text-align:center}
+.score-cell span{display:inline-block;padding:1px 8px;border-radius:3px;font-size:12px;background:#dbeafe;color:#2563eb;font-weight:600}
 /* 合并赔率列 */
 .odds-combined{font-size:11px;line-height:1.7;white-space:nowrap}
 .odds-combined .oc-line{display:flex;gap:4px;align-items:center}
