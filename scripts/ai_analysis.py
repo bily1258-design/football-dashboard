@@ -335,48 +335,14 @@ def _predict_tree(x, node):
 # ─── 实时排名获取 ──────────────────────────────────
 
 def fetch_live_rankings(matches: List[Dict]) -> None:
-    """批量获取每场比赛的主客队排名
-    优先用2h1.php自带的排名(src)，兜底调detail.php"""
-    import urllib.request
-    import re
-    import time
+    """获取联赛排名（500.com已封，此项已废弃）
     
-    # 先统计已带排名的场次
+    排名特征在模型训练中已固定为0，不影响预测结果。
+    保留函数签名以兼容调用代码。
+    """
     from_data = sum(1 for m in matches if m.get('home_rank') and m.get('away_rank'))
     if from_data:
-        logger.info(f"排名: {from_data}/{len(matches)} 场来自2h1.php数据")
-    
-    cache = {}
-    for m in matches:
-        # 已有排名（从2h1.php行HTML提取的）-> 跳过HTTP
-        if m.get('home_rank') and m.get('away_rank'):
-            continue
-        fid = m.get('fid')
-        if not fid:
-            continue
-        fid_s = str(int(fid))
-        if fid_s in cache:
-            r = cache[fid_s]
-            if r:
-                m['home_rank'], m['away_rank'] = r
-            continue
-        try:
-            html = urllib.request.urlopen(
-                urllib.request.Request(
-                    f'https://live.500.com/detail.php?fid={fid_s}',
-                    headers={'User-Agent': 'Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36'}
-                ), timeout=10
-            ).read().decode('gbk', errors='replace')
-            ranks = re.findall(r'当前排名:(\d+)', html)
-            if len(ranks) >= 2:
-                hr, ar = int(ranks[0]), int(ranks[1])
-                cache[fid_s] = (hr, ar)
-                m['home_rank'], m['away_rank'] = hr, ar
-            else:
-                cache[fid_s] = None
-        except Exception:
-            cache[fid_s] = None
-        time.sleep(0.15)
+        logger.info(f"排名: {from_data}/{len(matches)} 场已有排名（来自历史数据）")
 
 
 # ─── 分析引擎 ──────────────────────────────────────

@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-"""fetch_hkjc_all.py — 从500.com获取所有有香港马会(HKJC)赔率的比赛
+"""fetch_hkjc_all.py — 从titan007获取所有有HKJC赔率的比赛
 
-思路:
-1. 从 live.500.com/2h1.php 页面提取所有比赛fid
-2. 逐个检查是否有HKJC赔率(cid=122)
-3. 有则获取比赛详情(联赛/队伍/时间/比分)和平博赔率
+替代：原500.com版(已废弃)
+
+数据流:
+1. 从 titan007 CommonInterface type=2 获取当日所有比赛
+2. 逐个检查是否有HKJC赔率(cid=177)
+3. 有则获取平博赔率(cid=432)
 4. 输出到 data/matches_hkjc_{日期}.json
 
 用法:
@@ -19,440 +21,300 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(os.path.dirname(SCRIPT_DIR), "data")
 DOCS_DATA_DIR = os.path.join(os.path.dirname(SCRIPT_DIR), "docs", "data")
 
-API_HEADERS = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-    'Accept': 'application/json, text/javascript, */*; q=0.01',
-    'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
-    'X-Requested-With': 'XMLHttpRequest',
-}
+# 导入titan007工具
+sys.path.insert(0, SCRIPT_DIR)
+from titan007_utils import get_match_list, get_odds_history, fetch_url
+
+# titan007 cid映射: 432=平博, 177=HKJC
+CID_PINNACLE = 432
+CID_HKJC = 177
 
 
-def fetch_url(url, encoding='gbk', timeout=15):
-    """通用抓取"""
-    req = urllib.request.Request(url, headers={
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-        'Accept-Language': 'zh-CN,zh;q=0.9',
-    })
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        return resp.read().decode(encoding, errors='replace')
-
-
-def fetch_json(url, retries=2, referer=None):
-    """请求500.com JSON接口"""
-    for attempt in range(retries + 1):
-        try:
-            headers = dict(API_HEADERS)
-            if referer:
-                headers['Referer'] = referer
-            req = urllib.request.Request(url, headers=headers)
-            with urllib.request.urlopen(req, timeout=15) as resp:
-                raw = resp.read().decode('utf-8', errors='replace').strip()
-                if raw.startswith('(') and raw.endswith(')'):
-                    raw = raw[1:-1]
-                return json.loads(raw) if raw else None
-        except Exception:
-            if attempt == retries:
-                return None
-            time.sleep(1)
-    return None
-
-
-def fetch_1x2_odds(fid, cid):
-    """获取指定公司的1X2开盘和最新赔率"""
-    url = 'https://odds.500.com/fenxi/json/ouzhi.php?fid=%s&cid=%s&type=europe' % (fid, cid)
-    referer = 'https://odds.500.com/fenxi/ouzhi-%s.shtml' % fid
-    data = fetch_json(url, referer=referer)
-    if not data or not isinstance(data, list) or len(data) < 1:
-        return None
-    try:
-        opening = data[-1]
-        latest = data[0]
-        return {
-            'open': {'w': float(opening[0]), 'd': float(opening[1]), 'l': float(opening[2])},
-            'latest': {'w': float(latest[0]), 'd': float(latest[1]), 'l': float(latest[2])},
-        }
-    except (IndexError, ValueError, TypeError):
-        return None
-
-
-def extract_match_details(fid):
-    """从 detail.php 提取比赛详情"""
-    try:
-        html = fetch_url('https://live.500.com/detail.php?fid=%s' % fid)
-    except Exception:
-        return None
-
-    # 从<title>提取队伍名
-    title_m = re.search(r'<title>([^<]+)</title>', html)
-    if not title_m:
-        return None
-    title = title_m.group(1)
-
-    # 拆分队伍名: "XXXVSYYY足球比赛直播..."
-    vs_m = re.search(r'^(.+?)VS(.+?)(?:足球|\d)', title)
-    if not vs_m:
-        return None
-    home_team = vs_m.group(1).strip()
-    away_raw = vs_m.group(2).strip()
-    away_team = re.split(r'[足球比赛直播在线_\-]', away_raw)[0].strip()
-
-    # 从页面body找联赛
-    league_prefixes = [
-        '瑞典超', '挪超', '芬超', '巴甲', '爱超', '韩K联', '韩K2联',
-        '日职', '日乙', 'J联赛', 'K联赛', 'K2联赛',
-        '英超', '西甲', '意甲', '德甲', '法甲', '欧冠', '欧联', '欧协',
-        '澳超', '美职', '荷甲', '比甲', '土超', '丹超', '瑞超',
-        '罗甲', '捷甲', '俄超', '乌超', '希超', '奥甲', '瑞士超',
-        '巴西乙', '苏超', '德乙', '西乙', '意乙', '法乙', '英冠',
-        '阿甲', '墨超', '哥伦甲', '葡超', '荷乙', '波兰超', '冰岛超',
-        '中超', '中甲', '沙特联', '泰超',
-    ]
-    league_name = ''
-    for lp in league_prefixes:
-        if lp in html:
-            league_name = lp
-            break
-
-    # 比赛时间
-    time_m = re.search(r'(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2})', html)
-    match_time = time_m.group(1) if time_m else ''
-
-    return {
-        'home_team': home_team,
-        'away_team': away_team,
-        'event': league_name,
-        'match_time': match_time,
-        'score': '',
-    }
-
-
-def parse_all_from_2h1(html):
-    """从2h1.php页面提取所有比赛信息（整页解析，无需逐场调detail.php）
-    返回 {fid: {home_team, away_team, event, match_time, score, status}}
+def fetch_hkjc_matches(date_str, max_matches=0, delay=0.3, workers=3):
+    """核心：从titan007获取有HKJC赔率的所有比赛
+    
+    返回 [{sid, date, match_time, event, home_team, away_team, odds_*}]
     """
-    matches = {}
-    # <tr id="aFID" ... gy="联赛,主队,客队" ...> ... </tr>
-    for tr_m in re.finditer(r'<tr\s+id="a(\d+)"[^>]*status="(\d+)"[^>]*gy="([^"]*)"[^>]*>.*?</tr>', html, re.DOTALL):
-        fid = tr_m.group(1)
-        status = tr_m.group(2)
-        gy = tr_m.group(3)
-        row = tr_m.group(0)
-
-        parts = gy.split(',')
-        event = parts[0] if len(parts) >= 1 else ''
-        home = parts[1] if len(parts) >= 2 else ''
-        away = parts[2] if len(parts) >= 3 else ''
-
-        # 时间: <td align="center">07-15&nbsp;14:00</td>
-        tm_m = re.search(r'<td[^>]*align="center"[^>]*>(\d{2}-\d{2}\s*&nbsp;\s*\d{2}:\d{2})</td>', row)
-        match_time = ''
-        if tm_m:
-            raw = tm_m.group(1).replace('&nbsp;', ' ')
-            year = str(datetime.now().year)
-            match_time = f'{year}-{raw}'  # YYYY-MM-DD HH:MM
-
-        # 比分: <div class="pk">...clt1>N<...clt3>M<...
-        score = ''
-        pk_m = re.search(r'<div class="pk">.*?clt1[^>]*>(\d+)</a><span>-</span><a[^>]*clt3[^>]*>(\d+)</a>', row)
-        if pk_m:
-            score = f'{pk_m.group(1)}-{pk_m.group(2)}'
-
-        matches[fid] = {
-            'home_team': home or '',
-            'away_team': away or '',
-            'event': event or '',
-            'match_time': match_time,
-            'score': score or '',
-            'status': status,
+    matches = []
+    
+    # 1. 获取当日所有比赛
+    print('[INFO] 从titan007获取比赛...')
+    all_matches = get_match_list(date_str)
+    print(f'[INFO] 共 {len(all_matches)} 场比赛')
+    
+    if max_matches > 0:
+        all_matches = all_matches[:max_matches]
+    
+    total = len(all_matches)
+    
+    # 2. 并行检查HKJC赔率
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    
+    def check_one(m):
+        sid = m['sid']
+        hkjc = get_odds_history(sid, CID_HKJC)
+        if not hkjc:
+            return None
+        
+        # 有HKJC赔率，构建比赛记录
+        match = {
+            'fid': sid,  # 用sid代替fid（保持下游兼容）
+            'date': date_str,
+            'match_time': m.get('match_time', ''),
+            'event': m.get('event', m.get('league', '')),
+            'home_team': m.get('home_team', ''),
+            'away_team': m.get('away_team', ''),
+            'score': '',
+            'status': '',
+            'source': 'hkjc',
+            'home_rank': 0,
+            'away_rank': 0,
+            # HKJC赔率
+            'odds_hkjc_open_win': hkjc['open']['win'],
+            'odds_hkjc_open_draw': hkjc['open']['draw'],
+            'odds_hkjc_open_loss': hkjc['open']['loss'],
+            'odds_hkjc_win': hkjc['latest']['win'],
+            'odds_hkjc_draw': hkjc['latest']['draw'],
+            'odds_hkjc_loss': hkjc['latest']['loss'],
+            'odds_hkjc_changes': hkjc.get('changes', 1),
         }
+        
+        # 提取比赛时间（从OddsHistory页面的时间戳）
+        if not match['match_time']:
+            # 取开盘时间的日=比赛日
+            open_data = hkjc.get('open', {})
+            match['match_time'] = f'{date_str} 00:00'
+        
+        # 赔率公司名
+        match['odds_hkjc_company'] = 'HKJC'
+        
+        # 3. 获取平博赔率
+        pinnacle = get_odds_history(sid, CID_PINNACLE)
+        if pinnacle:
+            match['odds_pinnacle_open_win'] = pinnacle['open']['win']
+            match['odds_pinnacle_open_draw'] = pinnacle['open']['draw']
+            match['odds_pinnacle_open_loss'] = pinnacle['open']['loss']
+            match['odds_pinnacle_win'] = pinnacle['latest']['win']
+            match['odds_pinnacle_draw'] = pinnacle['latest']['draw']
+            match['odds_pinnacle_loss'] = pinnacle['latest']['loss']
+            match['odds_pinnacle_changes'] = pinnacle.get('changes', 1)
+            match['odds_pinnacle_company'] = 'Pinnacle'
+        
+        return match
+    
+    hkjc_matches = []
+    total_hkjc = 0
+    processed = 0
+    
+    with ThreadPoolExecutor(max_workers=workers) as executor:
+        fut_map = {executor.submit(check_one, m): m for m in all_matches}
+        for fut in as_completed(fut_map):
+            processed += 1
+            m = fut_map[fut]
+            match = fut.result()
+            if match is None:
+                print(f'  [{processed}/{total}] sid={m["sid"]} {m.get("home_team","?")} vs {m.get("away_team","?")}... 无HKJC盘口')
+                continue
+            hkjc_matches.append(match)
+            total_hkjc += 1
+            hw = match.get('odds_hkjc_open_win', '?')
+            hd = match.get('odds_hkjc_open_draw', '?')
+            hl = match.get('odds_hkjc_open_loss', '?')
+            print(f'  [{processed}/{total}] ✓ {match["event"]} {match["home_team"]} vs {match["away_team"]}  HKJC: {hw}/{hd}/{hl}')
+            if delay > 0:
+                time.sleep(delay / workers)
+    
+    print(f'\n[INFO] 有HKJC赔率的比赛: {len(hkjc_matches)}/{total}')
+    return hkjc_matches
 
-        # 排名: <span class="gray">[11]</span> 在队伍anchor前后
-        rank_m = re.findall(r'<span class="gray">\[(\d+)\]</span>', row)
-        if len(rank_m) >= 2:
-            matches[fid]['home_rank'] = int(rank_m[0])
-            matches[fid]['away_rank'] = int(rank_m[1])
 
-    return matches
-
-
-def get_fids_from_2h1():
-    """从2h1.php页面提取所有fid"""
-    html = fetch_url('https://live.500.com/2h1.php')
-    # 使用r"..."避免内部引号问题
-    fids = list(set(re.findall(r"fid[=_\\\"'/]?(\\d{7,8})", html)))
-    return sorted(fids)
-
-
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--date', default=date.today().isoformat())
-    parser.add_argument('--delay', type=float, default=0.3, help='请求间隔(秒)')
-    parser.add_argument('--parallel', type=int, default=3, help='并行抓取数(默认3)')
-    parser.add_argument('--max', type=int, default=0, help='最多处理N场比赛(0=全部)')
-    parser.add_argument('--merge', action='store_true', help='合并到已有数据')
-    parser.add_argument('--save', default='', help='输出文件名(不含日期)')
-    parser.add_argument('--backfill', action='store_true', help='比分回填：只更新比分，保留已有赔率')
-    args = parser.parse_args()
-
-    date_str = args.date
-    fpath = os.path.join(DATA_DIR, 'matches_hkjc_%s.json' % date_str.replace('-', ''))
-
-    # ===== 比分回填模式 =====
-    if args.backfill:
-        if not os.path.exists(fpath):
-            print('[WARN] %s 不存在，跳过回填' % fpath)
+def do_backfill(fpath, date_str):
+    """比分回填模式(保留原500.com逻辑，用sid兼容)"""
+    if not os.path.exists(fpath):
+        print(f'[WARN] {fpath} 不存在，跳过回填')
+        return
+    
+    with open(fpath, encoding='utf-8') as f:
+        raw = f.read()
+    try:
+        existing = json.loads(raw)
+    except json.JSONDecodeError:
+        m = re.search(r'\{.*\}', raw, re.DOTALL)
+        if m:
+            existing = json.loads(m.group())
+            print(f'[WARN] {fpath} 文件损坏，已修复读取')
+        else:
+            print(f'[WARN] {fpath} 文件严重损坏，跳过回填')
             return
-        with open(fpath) as f:
-            raw = f.read()
+    
+    existing_matches = {m['fid']: m for m in existing.get('matches', [])}
+    
+    # wanchang兜底（500.com，仍可用）
+    wc_unscored = [(fid, m) for fid, m in existing_matches.items()
+                   if not m.get('score') and m.get('match_time')]
+    if wc_unscored:
+        print(f'[BACKFILL] wanchang.php兜底: {len(wc_unscored)} 场待补…')
         try:
-            existing = json.loads(raw)
-        except json.JSONDecodeError:
-            m = re.search(r'\{.*\}', raw, re.DOTALL)
-            if m:
-                existing = json.loads(m.group())
-                print('[WARN] %s 文件损坏，已修复读取' % fpath)
-            else:
-                print('[WARN] %s 文件严重损坏，跳过回填' % fpath)
-                return
-        existing_matches = {m['fid']: m for m in existing['matches']}
-
-        # ===== wanchang.php 兜底：已完赛但缺比分 =====
-        wc_unscored = [(fid, m) for fid, m in existing_matches.items()
-                       if not m.get('score') and 'match_time' in m]
-        if wc_unscored:
-            print('[BACKFILL] wanchang.php兜底: %d 场待补…' % len(wc_unscored))
-            try:
-                wc_html = fetch_url('https://live.500.com/wanchang.php')
-                # wanchang.php与2h1.php结构相同：<div class="pk">比分</div>
-                wc_scores = {}
-                for pk_div in re.finditer(
-                    r'<div\s+class="pk">.*?<a[^>]*fid=(\d+)[^>]*>(\d+)</a>\s*<span>-</span>\s*<a[^>]*fid=\1[^>]*>(\d+)</a>',
-                    wc_html, re.DOTALL | re.IGNORECASE):
-                    wc_scores[pk_div.group(1)] = '%s-%s' % (pk_div.group(2), pk_div.group(3))
-                wc_updated = 0
-                for fid, m in wc_unscored:
-                    if fid in wc_scores:
-                        m['score'] = wc_scores[fid]
-                        wc_updated += 1
-                if wc_updated:
-                    existing['matches'] = list(existing_matches.values())
-                    existing['fetched_at'] = datetime.now().isoformat()
-                    with open(fpath, 'w', encoding='utf-8') as f:
-                        json.dump(existing, f, ensure_ascii=False, indent=2)
-                    print('[BACKFILL] %s → %d 场比分已更新(wanchang.php)' % (fpath, wc_updated))
-                else:
-                    print('[BACKFILL] wanchang.php→未找到匹配比分')
-            except Exception as e:
-                print('[BACKFILL] wanchang.php抓取失败: %s' % e)
-
-        # ===== ESPN API 兜底：wanchang.php没找到的已完赛比分 =====
-        unscored = [(fid, m) for fid, m in existing_matches.items()
-                    if not m.get('score') and 'match_time' in m]
-        if unscored:
-            print('[BACKFILL] ESPN API兜底: %d 场待补…' % len(unscored))
-            # 中文赛事名→ESPN联赛ID映射
-            LEAGUE_MAP = [
-                ('美女职', 'usa.nwsl'), ('美职联', 'usa.1'), ('美乙', 'usa.2'),
-                ('英超', 'eng.1'), ('英冠', 'eng.2'), ('英甲', 'eng.3'),
-                ('苏超', 'sco.1'), ('苏冠', 'sco.2'),
-                ('意甲', 'ita.1'), ('意乙', 'ita.2'),
-                ('西甲', 'esp.1'), ('西乙', 'esp.2'),
-                ('德甲', 'ger.1'), ('德乙', 'ger.2'),
-                ('法甲', 'fra.1'), ('法乙', 'fra.2'),
-                ('荷甲', 'ned.1'), ('葡超', 'por.1'),
-                ('日职', 'jpn.1'), ('日乙', 'jpn.2'),
-                ('K联赛', 'kor.1'), ('K2', 'kor.2'),
-                ('澳超', 'aus.1'), ('中超', 'chn.1'),
-                ('巴甲', 'bra.1'), ('阿甲', 'arg.1'),
-                ('墨西联', 'mex.1'), ('比甲', 'bel.1'),
-                ('瑞超', 'swe.1'), ('挪超', 'nor.1'),
-                ('丹超', 'den.1'), ('土超', 'tur.1'),
-                ('奥甲', 'aut.1'), ('瑞士超', 'sui.1'),
-                ('乌超', 'ukr.1'), ('俄超', 'rus.1'),
-            ]
-            espn_updated = 0
-            for fid, m in unscored:
-                mt = m.get('match_time', '')
-                event = m.get('event', '')
-                if not mt:
-                    continue
-                try:
-                    match_dt = datetime.fromisoformat(mt[:16].replace(' ', 'T'))
-                    # 假定match_time是北京时间(UTC+8)，转UTC
-                    match_utc = match_dt - timedelta(hours=8)
-                    if match_utc > datetime.utcnow():
-                        continue  # 还没开赛
-                except:
-                    continue
-
-                # ESPN用UTC/US日期：取比赛日±1天 + 当天和前一天（完场有时挪到当天board）
-                espn_dates = set()
-                for base in [match_utc, datetime.utcnow()]:
-                    espn_dates.add(base.strftime('%Y%m%d'))
-                    espn_dates.add((base - timedelta(days=1)).strftime('%Y%m%d'))
-                espn_dates = sorted(espn_dates)
-
-                # 找匹配的联赛
-                league_ids = [lid for e, lid in LEAGUE_MAP if e in event]
-                if not league_ids:
-                    continue
-
-                found = False
-                for ed in espn_dates:
-                    for lid in league_ids:
-                        url = 'https://site.api.espn.com/apis/site/v2/sports/soccer/%s/scoreboard?dates=%s' % (lid, ed)
-                        try:
-                            raw = urllib.request.urlopen(
-                                urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'}), timeout=10).read()
-                            api_data = json.loads(raw)
-                        except:
-                            continue
-                        # 找最接近的一场（可能有同联赛同时间段多场比赛）
-                        best_match = None
-                        best_diff = 99999
-                        for ev in api_data.get('events', []):
-                            comp = ev.get('competitions', [{}])[0]
-                            comps = comp.get('competitors', [])
-                            if len(comps) < 2:
-                                continue
-                            status = comp.get('status', {}).get('type', {}).get('state', '')
-                            if status != 'post':
-                                continue
-                            # 对比时间（ESPN UTC时间 vs 转换后的UTC时间）
-                            espn_date_str = comp.get('date', '')
-                            try:
-                                espn_utc = datetime.fromisoformat(espn_date_str.replace('Z', '+00:00'))
-                                diff = abs((espn_utc - match_utc.replace(tzinfo=timezone.utc)).total_seconds())
-                            except:
-                                continue
-                            if diff < best_diff:
-                                best_diff = diff
-                                best_match = comps
-                        if best_match and best_diff < 3600:  # 1小时内最近的一场
-                            s1 = best_match[0].get('score', '')
-                            s2 = best_match[1].get('score', '')
-                            if s1 and s2:
-                                m['score'] = '%s-%s' % (s1, s2)
-                                espn_updated += 1
-                                print('  ✓ %s %s-%s (ESPN %s, diff=%.0fmin)' % (
-                                    m.get('home_team',''), s1, s2, lid, best_diff/60))
-                                found = True
-                                break
-                        if found:
-                            break
-                    if found:
-                        break
-
-            if espn_updated:
+            wc_html = fetch_url('https://live.500.com/wanchang.php')
+            wc_scores = {}
+            for pk_div in re.finditer(
+                r'<div\s+class="pk">.*?<a[^>]*fid=(\d+)[^>]*>(\d+)</a>\s*<span>-</span>\s*<a[^>]*fid=\1[^>]*>(\d+)</a>',
+                wc_html, re.DOTALL | re.IGNORECASE):
+                wc_scores[pk_div.group(1)] = f'{pk_div.group(2)}-{pk_div.group(3)}'
+            wc_updated = 0
+            for fid, m in wc_unscored:
+                if fid in wc_scores:
+                    m['score'] = wc_scores[fid]
+                    wc_updated += 1
+            if wc_updated:
                 existing['matches'] = list(existing_matches.values())
                 existing['fetched_at'] = datetime.now().isoformat()
                 with open(fpath, 'w', encoding='utf-8') as f:
                     json.dump(existing, f, ensure_ascii=False, indent=2)
-                print('[BACKFILL] ESPN → %d 场比分已更新' % espn_updated)
+                print(f'[BACKFILL] wanchang.php → {wc_updated} 场比分已更新')
             else:
-                print('[BACKFILL] ESPN兜底→无新比分')
-        return
-
-    # ===== 正常抓取模式 =====
-    print('[INFO] 从2h1.php获取全量fid...')
-    html = fetch_url('https://live.500.com/2h1.php')
-
-    # 整页解析比赛信息（一次解析，用完所有数据）
-    all_match_info = parse_all_from_2h1(html)
-    all_fids = sorted(all_match_info.keys())
-    print('[INFO] 共 %d 场（来自2h1整页）' % len(all_fids))
-
-    if args.max > 0:
-        all_fids = all_fids[:args.max]
-
-    # 逐个检查HKJC赔率（并行）
-    from concurrent.futures import ThreadPoolExecutor, as_completed
-    hkjc_matches = []
-    total = len(all_fids)
-    total_hkjc = 0
-
-    def fetch_one(fid):
-        """为单个fid抓取HKJC+平博赔率"""
-        info = all_match_info[fid]
-        h = fetch_1x2_odds(fid, 122)
-        if not h:
-            return None
-        match = {
-            'fid': fid,
-            'date': date_str,
-            'match_time': info.get('match_time', ''),
-            'event': info.get('event', ''),
-            'home_team': info.get('home_team', ''),
-            'away_team': info.get('away_team', ''),
-            'score': info.get('score', ''),
-            'status': info.get('status', ''),
-            'source': 'hkjc',
-            'home_rank': info.get('home_rank', 0),
-            'away_rank': info.get('away_rank', 0),
-            'odds_hkjc_open_win': h['open']['w'],
-            'odds_hkjc_open_draw': h['open']['d'],
-            'odds_hkjc_open_loss': h['open']['l'],
-            'odds_hkjc_win': h['latest']['w'],
-            'odds_hkjc_draw': h['latest']['d'],
-            'odds_hkjc_loss': h['latest']['l'],
-        }
-        p = fetch_1x2_odds(fid, 1055)
-        if p:
-            match['odds_pinnacle_open_win'] = p['open']['w']
-            match['odds_pinnacle_open_draw'] = p['open']['d']
-            match['odds_pinnacle_open_loss'] = p['open']['l']
-            match['odds_pinnacle_win'] = p['latest']['w']
-            match['odds_pinnacle_draw'] = p['latest']['d']
-            match['odds_pinnacle_loss'] = p['latest']['l']
-        return match
-
-    workers = args.parallel
-    with ThreadPoolExecutor(max_workers=workers) as executor:
-        fut_map = {executor.submit(fetch_one, fid): fid for fid in all_fids}
-        done = 0
-        for fut in as_completed(fut_map):
-            done += 1
-            fid = fut_map[fut]
-            match = fut.result()
-            if match is None:
-                print('  [%d/%d] fid=%s %s vs %s... 无HKJC盘口' % (
-                    done, total, fid,
-                    all_match_info[fid].get('home_team', '?'),
-                    all_match_info[fid].get('away_team', '?')))
+                print('[BACKFILL] wanchang.php→未找到匹配比分')
+        except Exception as e:
+            print(f'[BACKFILL] wanchang.php抓取失败: {e}')
+    
+    # 已完赛比分(仍用500.com wanchang + ESPN)
+    unscored = [(fid, m) for fid, m in existing_matches.items()
+                if not m.get('score') and m.get('match_time')]
+    if unscored:
+        print(f'[BACKFILL] ESPN API兜底: {len(unscored)} 场待补…')
+        LEAGUE_MAP = [
+            ('美女职', 'usa.nwsl'), ('美职联', 'usa.1'), ('美乙', 'usa.2'),
+            ('英超', 'eng.1'), ('英冠', 'eng.2'), ('英甲', 'eng.3'),
+            ('苏超', 'sco.1'), ('苏冠', 'sco.2'),
+            ('意甲', 'ita.1'), ('意乙', 'ita.2'),
+            ('西甲', 'esp.1'), ('西乙', 'esp.2'),
+            ('德甲', 'ger.1'), ('德乙', 'ger.2'),
+            ('法甲', 'fra.1'), ('法乙', 'fra.2'),
+            ('荷甲', 'ned.1'), ('葡超', 'por.1'),
+            ('日职', 'jpn.1'), ('日乙', 'jpn.2'),
+            ('K联赛', 'kor.1'), ('K2', 'kor.2'),
+            ('澳超', 'aus.1'), ('中超', 'chn.1'),
+            ('巴甲', 'bra.1'), ('阿甲', 'arg.1'),
+            ('墨西联', 'mex.1'), ('比甲', 'bel.1'),
+            ('瑞超', 'swe.1'), ('挪超', 'nor.1'),
+            ('丹超', 'den.1'), ('土超', 'tur.1'),
+            ('奥甲', 'aut.1'), ('瑞士超', 'sui.1'),
+            ('乌超', 'ukr.1'), ('俄超', 'rus.1'),
+        ]
+        espn_updated = 0
+        for fid, m in unscored:
+            mt = m.get('match_time', '')
+            event = m.get('event', '')
+            if not mt:
                 continue
-            hkjc_matches.append(match)
-            total_hkjc += 1
-            ev = match.get('event', '?')
-            ht = match.get('home_team', '?')
-            at = match.get('away_team', '?')
-            print('  [%d/%d] ✓ %s %s vs %s  HKJC: %s/%s/%s' % (
-                done, total, ev, ht, at,
-                match.get('odds_hkjc_open_win', '?'),
-                match.get('odds_hkjc_open_draw', '?'),
-                match.get('odds_hkjc_open_loss', '?')))
-            if args.delay > 0:
-                time.sleep(args.delay / workers)
+            try:
+                match_dt = datetime.fromisoformat(mt[:16].replace(' ', 'T'))
+                match_utc = match_dt - timedelta(hours=8)
+                if match_utc > datetime.utcnow():
+                    continue
+            except:
+                continue
+            
+            espn_dates = set()
+            for base in [match_utc, datetime.utcnow()]:
+                espn_dates.add(base.strftime('%Y%m%d'))
+                espn_dates.add((base - timedelta(days=1)).strftime('%Y%m%d'))
+            espn_dates = sorted(espn_dates)
+            
+            league_ids = [lid for e, lid in LEAGUE_MAP if e in event]
+            if not league_ids:
+                continue
+            
+            found = False
+            for ed in espn_dates:
+                for lid in league_ids:
+                    url = f'https://site.api.espn.com/apis/site/v2/sports/soccer/{lid}/scoreboard?dates={ed}'
+                    try:
+                        raw = urllib.request.urlopen(
+                            urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'}), timeout=10).read()
+                        api_data = json.loads(raw)
+                    except:
+                        continue
+                    best_match = None
+                    best_diff = 99999
+                    for ev in api_data.get('events', []):
+                        comp = ev.get('competitions', [{}])[0]
+                        comps = comp.get('competitors', [])
+                        if len(comps) < 2:
+                            continue
+                        status = comp.get('status', {}).get('type', {}).get('state', '')
+                        if status != 'post':
+                            continue
+                        espn_date_str = comp.get('date', '')
+                        try:
+                            espn_utc = datetime.fromisoformat(espn_date_str.replace('Z', '+00:00'))
+                            diff = abs((espn_utc - match_utc.replace(tzinfo=timezone.utc)).total_seconds())
+                        except:
+                            continue
+                        if diff < best_diff:
+                            best_diff = diff
+                            best_match = comps
+                    if best_match and best_diff < 3600:
+                        s1 = best_match[0].get('score', '')
+                        s2 = best_match[1].get('score', '')
+                        if s1 and s2:
+                            m['score'] = f'{s1}-{s2}'
+                            espn_updated += 1
+                            print(f'  ✓ {m.get("home_team","")} {s1}-{s2} (ESPN {lid}, diff={best_diff/60:.0f}min)')
+                            found = True
+                            break
+                    if found:
+                        break
+                if found:
+                    break
+        
+        if espn_updated:
+            existing['matches'] = list(existing_matches.values())
+            existing['fetched_at'] = datetime.now().isoformat()
+            with open(fpath, 'w', encoding='utf-8') as f:
+                json.dump(existing, f, ensure_ascii=False, indent=2)
+            print(f'[BACKFILL] ESPN → {espn_updated} 场比分已更新')
+        else:
+            print('[BACKFILL] ESPN兜底→无新比分')
 
-    print('\n[INFO] 有HKJC赔率的比赛: %d/%d' % (len(hkjc_matches), total))
 
-
+def main():
+    parser = argparse.ArgumentParser(description='从titan007获取HKJC赔率比赛')
+    parser.add_argument('--date', default=date.today().isoformat())
+    parser.add_argument('--delay', type=float, default=0.3)
+    parser.add_argument('--parallel', type=int, default=3)
+    parser.add_argument('--max', type=int, default=0)
+    parser.add_argument('--merge', action='store_true')
+    parser.add_argument('--save', default='')
+    parser.add_argument('--backfill', action='store_true')
+    args = parser.parse_args()
+    
+    date_str = args.date
+    basename = args.save or ('matches_hkjc_' + date_str.replace('-', ''))
+    fpath = os.path.join(DATA_DIR, f'{basename}.json')
+    
+    if args.backfill:
+        do_backfill(fpath, date_str)
+        return
+    
+    # 正常抓取
+    hkjc_matches = fetch_hkjc_matches(date_str, args.max, args.delay, args.parallel)
+    
     # 输出
     out = {
         'date': date_str,
         'fetched_at': datetime.now().isoformat(),
         'total': len(hkjc_matches),
-        'source': 'all(2h1.php)',
+        'source': 'titan007',
         'matches': hkjc_matches,
     }
-
-    basename = args.save or ('matches_hkjc_' + date_str.replace('-', ''))
-    fpath = os.path.join(DATA_DIR, '%s.json' % basename)
+    
     os.makedirs(DATA_DIR, exist_ok=True)
     with open(fpath, 'w', encoding='utf-8') as f:
         json.dump(out, f, ensure_ascii=False, indent=2)
-    print('[OK] %d 场 \u2192 %s' % (len(hkjc_matches), fpath))
-
-    # 如果--merge，合并到results.json
+    print(f'[OK] {len(hkjc_matches)} 场 → {fpath}')
+    
+    # --merge
     if args.merge:
         results_path = os.path.join(DOCS_DATA_DIR, 'results.json')
         if os.path.exists(results_path):
@@ -469,11 +331,10 @@ def main():
                     print('[WARN] results.json 严重损坏，重建')
                     existing = {'matches': []}
             existing_matches = existing.get('matches', [])
-            existing_obj = existing
         else:
             existing_matches = []
-            existing_obj = {'matches': [], 'generated_at': '', 'total_matches': 0, 'date_range': '', 'daily_stats': []}
-
+            existing = {'matches': [], 'generated_at': '', 'total_matches': 0, 'date_range': '', 'daily_stats': []}
+        
         existing_keys = {(m.get('home_team',''), m.get('away_team',''), m.get('date','')) for m in existing_matches}
         new_count = 0
         for m in hkjc_matches:
@@ -481,14 +342,14 @@ def main():
             if key not in existing_keys:
                 existing_matches.append(m)
                 new_count += 1
-
-        existing_obj['matches'] = existing_matches
-        existing_obj['total_matches'] = len(existing_matches)
-        existing_obj['generated_at'] = datetime.now(timezone(timedelta(hours=8))).strftime('%Y-%m-%d %H:%M:%S')
-
+        
+        existing['matches'] = existing_matches
+        existing['total_matches'] = len(existing_matches)
+        existing['generated_at'] = datetime.now(timezone(timedelta(hours=8))).strftime('%Y-%m-%d %H:%M:%S')
+        
         with open(results_path, 'w', encoding='utf-8') as f:
-            json.dump(existing_obj, f, ensure_ascii=False, indent=2)
-        print('[MERGE] 新增 %d 场 → docs/data/results.json (共 %d 场)' % (new_count, len(existing_matches)))
+            json.dump(existing, f, ensure_ascii=False, indent=2)
+        print(f'[MERGE] 新增 {new_count} 场 → docs/data/results.json (共 {len(existing_matches)} 场)')
 
 
 if __name__ == '__main__':
