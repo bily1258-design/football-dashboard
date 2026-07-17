@@ -134,13 +134,17 @@ def do_backfill(fpath, date_str):
     existing_matches = {m['fid']: m for m in existing.get('matches', [])}
     updated = 0
     
-    # 1. titan007分析页 — 仅用于新sid (29xxxxx)
+    # 1. titan007分析页 — 仅用于新sid (29xxxxx)，且只查2小时前的比赛(已结束)
+    now = datetime.now(timezone(timedelta(hours=8)))
     t7_unscored = [(fid, m) for fid, m in existing_matches.items()
                    if fid.startswith('29') and not m.get('score') and m.get('match_time')]
-    if t7_unscored:
-        print(f'[BACKFILL] titan007分析页: {len(t7_unscored)} 场待补…')
+    # 只查已超过开赛时间2小时的比赛
+    t7_ready = [(fid, m) for fid, m in t7_unscored
+                if m['match_time'][:16] <= (now - timedelta(hours=2)).strftime('%Y-%m-%d %H:%M')]
+    if t7_ready:
+        print(f'[BACKFILL] titan007分析页: {len(t7_ready)} 场待补(跳过{len(t7_unscored)-len(t7_ready)}场未开赛)…')
         t7_ok = 0
-        for fid, m in t7_unscored:
+        for fid, m in t7_ready:
             score = get_score_from_titan007(fid)
             if score:
                 m['score'] = score
