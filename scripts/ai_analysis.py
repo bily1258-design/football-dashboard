@@ -907,9 +907,31 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
         if stats_hit[0] > 0:
             logger.info(f"近期战绩: {stats_hit[1]}/{stats_hit[0]} 场来自缓存 ({stats_hit[1]*100//stats_hit[0]}%)")
     else:
-        # GA上跳过或没有结果
-        for r in results:
-            r['match_stats'] = None
+        # GA上跳过统计抓取，但保留旧 results.json 中已有的 match_stats
+        try:
+            old_rp = os.path.join(DOCS_DIR, 'data', 'results.json')
+            if os.path.exists(old_rp):
+                with open(old_rp, 'r', encoding='utf-8') as f:
+                    old_data = json.load(f)
+                old_map = {str(m.get('fid', '')): m.get('match_stats') for m in old_data.get('matches', [])}
+                preserved = 0
+                for r in results:
+                    fid_str = str(r.get('fid', ''))
+                    old_stats = old_map.get(fid_str)
+                    if old_stats is not None:
+                        r['match_stats'] = old_stats
+                        preserved += 1
+                    else:
+                        r['match_stats'] = None
+                if preserved:
+                    logger.info(f"  保留 {preserved} 场旧 match_stats（GA 跳过统计抓取）")
+            else:
+                for r in results:
+                    r['match_stats'] = None
+        except Exception as e:
+            logger.warning(f"读取旧 results.json 失败: {e}")
+            for r in results:
+                r['match_stats'] = None
     
     return results
 
