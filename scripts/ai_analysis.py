@@ -626,11 +626,24 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             elif draw_chg > 0.08:      # 大幅回升→市场不看好
                 draw_conf['score'] -= 5
 
-        # 4) LGB推平（draw为最大值）
+        # ─── LGB推平时三向再分配 ────────────────────
+        # 当LGB认为平局最可能时，模型三向趋于均值分布
+        # 将优势方的多余置信度转移给弱势方（和少量draw）
         if lgbm_max_dir == 'draw':
-            draw_conf['score'] += 20
+            h_vs_a_diff = abs(model_w - model_l)
+            if h_vs_a_diff >= 0.06:  # 主客明显不平衡
+                transfer = min(0.04, h_vs_a_diff * 0.3)
+                to_underdog = transfer * 0.75  # 75%→弱势方
+                to_draw = transfer * 0.25      # 25%→draw
+                if model_w > model_l:
+                    model_w -= transfer
+                    model_l += to_underdog
+                else:
+                    model_l -= transfer
+                    model_w += to_underdog
+                model_d += to_draw
 
-        # 根据分数调整概率
+        # 4. LGBM 推荐方向（主推，取最大值）
         # 只有当LGB认为平局≥模型时（分歧≥0）才向LGB靠拢
         # 如果分歧为负，说明模型已给出更高平局概率，维持原值
         if draw_conf['score'] >= 50 and diff_lgb_poisson > 0:
