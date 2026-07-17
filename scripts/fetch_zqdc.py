@@ -123,6 +123,47 @@ def get_score_from_titan007(sid):
         return None
 
 
+def get_scores_from_over_page(date_str):
+    """从titan007 Over_日期.htm 页面获取当天所有完场比分
+    
+    返回: { (home_team, away_team): score_str } 字典
+    """
+    import re, urllib.request
+    try:
+        url = f'https://bf.titan007.com/football/Over_{date_str.replace("-", "")}.htm'
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        resp = urllib.request.urlopen(req, timeout=10)
+        raw = resp.read()
+        html = raw.decode('gb2312', errors='replace')
+        
+        scores = {}
+        rows = re.findall(r'<tr[^>]*>.*?</tr>', html, re.DOTALL|re.IGNORECASE)
+        for row in rows:
+            tds = re.findall(r'<td[^>]*>(.*?)</td>', row, re.DOTALL|re.IGNORECASE)
+            if len(tds) >= 6:
+                tds_clean = []
+                for td in tds:
+                    c = re.sub(r'<[^>]+>', ' ', td).strip()
+                    c = re.sub(r'\s+', ' ', c)
+                    tds_clean.append(c)
+                # 格式: 联赛 | 时间 | 状态 | 主队 | 比分 | 客队
+                home = tds_clean[3].strip()
+                score = tds_clean[4].strip()
+                away = tds_clean[5].strip()
+                # 格式如 "6 - 1", "0 - 0"等
+                if re.match(r'^\d+\s*-\s*\d+$', score):
+                    # 去掉排名(如 [1]) 对比
+                    home_clean = re.sub(r'\s*\[[^\]]*\]', '', home).strip()
+                    away_clean = re.sub(r'\s*\[[^\]]*\]', '', away).strip()
+                    home_clean = re.sub(r'\([^)]*\)', '', home_clean).strip()
+                    away_clean = re.sub(r'\([^)]*\)', '', away_clean).strip()
+                    scores[(home_clean, away_clean)] = score
+        return scores
+    except Exception as e:
+        print(f'[WARN] Over页面抓取失败: {e}')
+        return {}
+
+
 def do_backfill(fpath, date_str):
     """比分回填：新sid→titan007分析页，旧sid→500.com wanchang兜底"""
     if not os.path.exists(fpath):
@@ -134,25 +175,35 @@ def do_backfill(fpath, date_str):
     existing_matches = {m['fid']: m for m in existing.get('matches', [])}
     updated = 0
     
-    # 1. titan007分析页 — 仅用于新sid (29xxxxx)，且只查2小时前的比赛(已结束)
-    now = datetime.now(timezone(timedelta(hours=8)))
-    t7_unscored = [(fid, m) for fid, m in existing_matches.items()
-                   if fid.startswith('29') and not m.get('score') and m.get('match_time')]
-    # 只查已超过开赛时间2小时的比赛
-    t7_ready = [(fid, m) for fid, m in t7_unscored
-                if m['match_time'][:16] <= (now - timedelta(hours=2)).strftime('%Y-%m-%d %H:%M')]
-    if t7_ready:
-        print(f'[BACKFILL] titan007分析页: {len(t7_ready)} 场待补(跳过{len(t7_unscored)-len(t7_ready)}场未开赛)…')
-        t7_ok = 0
-        for fid, m in t7_ready:
-            score = get_score_from_titan007(fid)
-            if score:
-                m['score'] = score
-                t7_ok += 1
-                updated += 1
-        print(f'[BACKFILL] titan007 → {t7_ok}/{len(t7_unscored)} 场')
+    # 1. titan007 Over页完整比分表 — 所有sid通用，按队名匹配
+    unscored = [(fid, m) for fid, m in existing_matches.items()
+                if not m.get('score') and m.get('match_time')]
+    if unscored:
+        scores = get_scores_from_over_page(date_str)
+        if scores:
+            over_ok = 0
+            for fid, m in unscored:
+                home = m.get('home_team', '').strip()
+                away = m.get('away_team', '').strip()
+                key = (home, away)
+                if key in scores:
+                    m['score'] = scores[key]
+                    over_ok += 1
+                    updated += 1
+                else:
+                    # 模糊匹配: 看主客互换
+                    if (away, home) in scores:
+                        m['score'] = scores[(away, home)]
+                        over_ok += 1
+                        updated += 1
+            if over_ok:
+                print(f'[BACKFILL] titan007 Over页 → {over_ok}/{len(unscored)} 场')
+            else:
+                print(f'[BACKFILL] titan007 Over页 → 未匹配到比分')
+        else:
+            print(f'[BACKFILL] titan007 Over页 → 页面无完场数据')
     
-    # 2. wanchang.php兜底（500.com，仅用于旧sid）
+    # 2. wanchang.php兜底（500.com，补Over页漏掉的旧sid）
     wc_unscored = [(fid, m) for fid, m in existing_matches.items()
                    if not fid.startswith('29') and not m.get('score') and m.get('match_time')]
     if wc_unscored:
