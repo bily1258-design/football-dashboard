@@ -853,7 +853,7 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             'away_pts': m.get('away_pts', 0),
             'warning': warning,
             # 近期战绩
-            'stats': m.get('match_stats', None),
+            'stats': None,
         })
 
     logger.info(f"分析完成: {len(results)} 场 (跳过 {skipped} 场无赔率)")
@@ -866,7 +866,7 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             fid_str = str(r.get('fid', ''))
             raw = stats_cache.get(fid_str)
             if raw:
-                r['match_stats'] = _format_stats(raw)
+                r['stats'] = _format_stats(raw)
                 stats_hit[0] += 1
                 stats_hit[1] += 1
             else:
@@ -879,12 +879,12 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
                 try:
                     stats = fetch_match_stats(fid_str)
                     if stats and (stats.get('h2h') or stats.get('home_form') or stats.get('away_form')):
-                        r['match_stats'] = _format_stats(stats)
+                        r['stats'] = _format_stats(stats)
                         stats_cache[fid_str] = stats
                         return True
                 except:
                     pass
-                r['match_stats'] = None
+                r['stats'] = None
                 stats_cache[fid_str] = None
                 return False
             
@@ -907,31 +907,37 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
         if stats_hit[0] > 0:
             logger.info(f"近期战绩: {stats_hit[1]}/{stats_hit[0]} 场来自缓存 ({stats_hit[1]*100//stats_hit[0]}%)")
     else:
-        # GA上跳过统计抓取，但保留旧 results.json 中已有的 match_stats
+        # GA上跳过统计抓取，但保留旧 results.json 中已有的 stats
         try:
             old_rp = os.path.join(DOCS_DIR, 'data', 'results.json')
             if os.path.exists(old_rp):
                 with open(old_rp, 'r', encoding='utf-8') as f:
                     old_data = json.load(f)
-                old_map = {str(m.get('fid', '')): m.get('match_stats') for m in old_data.get('matches', [])}
+                # 兼容旧格式：旧文件用 match_stats，新文件用 stats
+                old_map = {}
+                for m in old_data.get('matches', []):
+                    fid = str(m.get('fid', ''))
+                    s = m.get('stats') or m.get('match_stats')
+                    if s is not None:
+                        old_map[fid] = s
                 preserved = 0
                 for r in results:
                     fid_str = str(r.get('fid', ''))
                     old_stats = old_map.get(fid_str)
                     if old_stats is not None:
-                        r['match_stats'] = old_stats
+                        r['stats'] = old_stats
                         preserved += 1
                     else:
-                        r['match_stats'] = None
+                        r['stats'] = None
                 if preserved:
-                    logger.info(f"  保留 {preserved} 场旧 match_stats（GA 跳过统计抓取）")
+                    logger.info(f"  保留 {preserved} 场旧 stats（GA 跳过统计抓取）")
             else:
                 for r in results:
-                    r['match_stats'] = None
+                    r['stats'] = None
         except Exception as e:
             logger.warning(f"读取旧 results.json 失败: {e}")
             for r in results:
-                r['match_stats'] = None
+                r['stats'] = None
     
     return results
 
