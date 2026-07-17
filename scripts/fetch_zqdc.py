@@ -366,7 +366,19 @@ def main():
             # 如果文件已存在，合并（保留旧数据，新增/覆盖新数据）
             if os.path.exists(fpath):
                 with open(fpath) as f:
-                    existing = json.load(f)
+                    raw = f.read()
+                try:
+                    existing = json.loads(raw)
+                except json.JSONDecodeError:
+                    # 文件损坏（如Extra data），尝试取第一个有效JSON对象
+                    import re
+                    m = re.search(r'\{.*\}', raw, re.DOTALL)
+                    if m:
+                        existing = json.loads(m.group())
+                        print(f'  [WARN] {fpath} 文件损坏，已修复读取')
+                    else:
+                        print(f'  [WARN] {fpath} 文件严重损坏，跳过合并')
+                        existing = {'matches': [], 'total': 0}
                 existing_fids = {m['fid']: m for m in existing['matches']}
                 existing_fids.update({m['fid']: m for m in ms})
                 merged = sorted(existing_fids.values(), key=lambda x: x.get('match_time', ''))

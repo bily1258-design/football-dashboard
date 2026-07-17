@@ -203,7 +203,18 @@ def main():
             print('[WARN] %s 不存在，跳过回填' % fpath)
             return
         with open(fpath) as f:
-            existing = json.load(f)
+            raw = f.read()
+        try:
+            existing = json.loads(raw)
+        except json.JSONDecodeError:
+            import re
+            m = re.search(r'\{.*\}', raw, re.DOTALL)
+            if m:
+                existing = json.loads(m.group())
+                print('[WARN] %s 文件损坏，已修复读取' % fpath)
+            else:
+                print('[WARN] %s 文件严重损坏，跳过回填' % fpath)
+                return
         existing_matches = {m['fid']: m for m in existing['matches']}
 
         # 重新抓取2h1.php解析比分
@@ -475,7 +486,18 @@ def main():
         results_path = os.path.join(DOCS_DATA_DIR, 'results.json')
         if os.path.exists(results_path):
             with open(results_path, 'r', encoding='utf-8') as f:
-                existing = json.load(f)
+                raw = f.read()
+            try:
+                existing = json.loads(raw)
+            except json.JSONDecodeError:
+                import re
+                m = re.search(r'\{.*\}', raw, re.DOTALL)
+                if m:
+                    existing = json.loads(m.group())
+                    print('[WARN] results.json 文件损坏，已修复读取')
+                else:
+                    print('[WARN] results.json 严重损坏，重建')
+                    existing = {'matches': []}
             existing_matches = existing.get('matches', [])
             existing_obj = existing
         else:
