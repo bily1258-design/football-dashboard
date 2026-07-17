@@ -302,10 +302,12 @@ def main():
                 except:
                     continue
 
-                # ESPN用UTC/US日期：取当天UTC和前一天
-                espn_dates = [match_utc.strftime('%Y%m%d')]
-                prev = match_utc - timedelta(days=1)
-                espn_dates.append(prev.strftime('%Y%m%d'))
+                # ESPN用UTC/US日期：取比赛日±1天 + 当天和前一天（完场有时挪到当天board）
+                espn_dates = set()
+                for base in [match_utc, datetime.utcnow()]:
+                    espn_dates.add(base.strftime('%Y%m%d'))
+                    espn_dates.add((base - timedelta(days=1)).strftime('%Y%m%d'))
+                espn_dates = sorted(espn_dates)
 
                 # 找匹配的联赛
                 league_ids = [lid for e, lid in LEAGUE_MAP if e in event]
