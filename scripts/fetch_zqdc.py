@@ -108,8 +108,23 @@ def fetch_odds(m, delay=0.3, workers=3):
     return enriched
 
 
+def get_score_from_titan007(sid):
+    """从titan007分析页提取比分 (homeScoreStr, guestScoreStr, totalScoreStr)"""
+    import re
+    try:
+        url = f'https://zq.titan007.com/Analysis/{sid}.htm'
+        html = fetch_url(url, timeout=10)
+        home_m = re.search(r'var\s+homeScoreStr\s*=\s*\["(\d+)"\]', html)
+        guest_m = re.search(r'var\s+guestScoreStr\s*=\s*\["(\d+)"\]', html)
+        if home_m and guest_m:
+            return f'{home_m.group(1)}-{guest_m.group(1)}'
+        return None
+    except Exception as e:
+        return None
+
+
 def do_backfill(fpath, date_str):
-    """比分回填（保留原500.com wanchang兜底）"""
+    """比分回填：新sid→titan007分析页，旧sid→500.com wanchang兜底"""
     if not os.path.exists(fpath):
         print(f'[WARN] {fpath} 不存在，跳过回填')
         return
@@ -119,9 +134,23 @@ def do_backfill(fpath, date_str):
     existing_matches = {m['fid']: m for m in existing.get('matches', [])}
     updated = 0
     
-    # wanchang.php兜底
+    # 1. titan007分析页 — 仅用于新sid (29xxxxx)
+    t7_unscored = [(fid, m) for fid, m in existing_matches.items()
+                   if fid.startswith('29') and not m.get('score') and m.get('match_time')]
+    if t7_unscored:
+        print(f'[BACKFILL] titan007分析页: {len(t7_unscored)} 场待补…')
+        t7_ok = 0
+        for fid, m in t7_unscored:
+            score = get_score_from_titan007(fid)
+            if score:
+                m['score'] = score
+                t7_ok += 1
+                updated += 1
+        print(f'[BACKFILL] titan007 → {t7_ok}/{len(t7_unscored)} 场')
+    
+    # 2. wanchang.php兜底（500.com，仅用于旧sid）
     wc_unscored = [(fid, m) for fid, m in existing_matches.items()
-                   if not m.get('score') and m.get('match_time')]
+                   if not fid.startswith('29') and not m.get('score') and m.get('match_time')]
     if wc_unscored:
         print(f'[BACKFILL] wanchang.php兜底: {len(wc_unscored)} 场待补…')
         try:
@@ -131,14 +160,13 @@ def do_backfill(fpath, date_str):
                 r'<div\s+class="pk">.*?<a[^>]*fid=(\d+)[^>]*>(\d+)</a>\s*<span>-</span>\s*<a[^>]*fid=\1[^>]*>(\d+)</a>',
                 wc_html, re.DOTALL | re.IGNORECASE):
                 wc_scores[pk_div.group(1)] = f'{pk_div.group(2)}-{pk_div.group(3)}'
+            wc_updated = 0
             for fid, m in wc_unscored:
                 if fid in wc_scores:
                     m['score'] = wc_scores[fid]
+                    wc_updated += 1
                     updated += 1
-            if updated:
-                print(f'[BACKFILL] wanchang.php → {updated} 场')
-            else:
-                print('[BACKFILL] wanchang.php→未找到匹配比分')
+            print(f'[BACKFILL] wanchang.php → {wc_updated}/{len(wc_unscored)} 场')
         except Exception as e:
             print(f'[BACKFILL] wanchang.php抓取失败: {e}')
     

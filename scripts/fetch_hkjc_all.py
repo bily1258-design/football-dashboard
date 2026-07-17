@@ -128,6 +128,21 @@ def fetch_hkjc_matches(date_str, max_matches=0, delay=0.3, workers=3):
     return hkjc_matches
 
 
+def get_score_from_titan007(sid):
+    """从titan007分析页提取比分"""
+    import re
+    try:
+        url = f'https://zq.titan007.com/Analysis/{sid}.htm'
+        html = fetch_url(url, timeout=10)
+        home_m = re.search(r'var\s+homeScoreStr\s*=\s*\["(\d+)"\]', html)
+        guest_m = re.search(r'var\s+guestScoreStr\s*=\s*\["(\d+)"\]', html)
+        if home_m and guest_m:
+            return f'{home_m.group(1)}-{guest_m.group(1)}'
+        return None
+    except Exception as e:
+        return None
+
+
 def do_backfill(fpath, date_str):
     """比分回填模式(保留原500.com逻辑，用sid兼容)"""
     if not os.path.exists(fpath):
@@ -149,7 +164,25 @@ def do_backfill(fpath, date_str):
     
     existing_matches = {m['fid']: m for m in existing.get('matches', [])}
     
-    # wanchang兜底（500.com，仍可用）
+    # 1. titan007分析页 — 仅用于新sid (29xxxxx)
+    t7_unscored = [(fid, m) for fid, m in existing_matches.items()
+                   if fid.startswith('29') and not m.get('score') and m.get('match_time')]
+    if t7_unscored:
+        print(f'[BACKFILL] titan007分析页: {len(t7_unscored)} 场待补…')
+        t7_ok = 0
+        for fid, m in t7_unscored:
+            score = get_score_from_titan007(fid)
+            if score:
+                m['score'] = score
+                t7_ok += 1
+        if t7_ok:
+            existing['matches'] = list(existing_matches.values())
+            existing['fetched_at'] = datetime.now().isoformat()
+            with open(fpath, 'w', encoding='utf-8') as f:
+                json.dump(existing, f, ensure_ascii=False, indent=2)
+            print(f'[BACKFILL] titan007 → {t7_ok}/{len(t7_unscored)} 场')
+    
+    # 2. wanchang兜底（500.com，仅用于旧sid）
     wc_unscored = [(fid, m) for fid, m in existing_matches.items()
                    if not m.get('score') and m.get('match_time')]
     if wc_unscored:
