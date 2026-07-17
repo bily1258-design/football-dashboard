@@ -583,6 +583,83 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             t = sum(prob_list)
             model_w, model_d, model_l = prob_list[0]/t, prob_list[1]/t, prob_list[2]/t
 
+        # ─── 硬编码平局衡量（Draw Confidence）───────────────
+        # 基于1512场训练数据统计规律:
+        #   · LGB draw≥34% → 71%平局率 / ≥36% → 84%
+        #   · LGB-Poisson分歧≥6% → 50%平局率 / ≥10% → 57%
+        #   · LGB推平(draw为最大值) → 70%平局率
+        #   · 组合: d≥32%+分歧≥6% → 63% | d≥34%+分歧≥4% → 73%
+        #   · Pin draw↓ + d≥32%+分歧≥6% → 66%
+        draw_conf = {'score': 0, 'signal': 'none', 'diff_lgb_poisson': 0}
+
+        # 1) LGB draw概率评分（最强单一信号）
+        if lgbm_d >= 0.36:
+            draw_conf['score'] += 30
+        elif lgbm_d >= 0.34:
+            draw_conf['score'] += 25
+        elif lgbm_d >= 0.32:
+            draw_conf['score'] += 20
+        elif lgbm_d >= 0.30:
+            draw_conf['score'] += 10
+        elif lgbm_d < 0.28:
+            draw_conf['score'] -= 5
+
+        # 2) LGB-Poisson分歧评分（次强信号）
+        diff_lgb_poisson = lgbm_d - model_d
+        draw_conf['diff_lgb_poisson'] = diff_lgb_poisson
+        if diff_lgb_poisson >= 0.10:
+            draw_conf['score'] += 25
+        elif diff_lgb_poisson >= 0.08:
+            draw_conf['score'] += 18
+        elif diff_lgb_poisson >= 0.06:
+            draw_conf['score'] += 12
+        elif diff_lgb_poisson >= 0.04:
+            draw_conf['score'] += 8
+        elif diff_lgb_poisson >= 0.02:
+            draw_conf['score'] += 3
+
+        # 3) Pinnacle draw赔率变化
+        if open_d > 1 and od > 1:
+            draw_chg = (od - open_d) / open_d
+            if draw_chg < 0:           # 赔率下降→市场看好平局
+                draw_conf['score'] += 10
+            elif draw_chg > 0.08:      # 大幅回升→市场不看好
+                draw_conf['score'] -= 5
+
+        # 4) LGB推平（draw为最大值）
+        if lgbm_max_dir == 'draw':
+            draw_conf['score'] += 20
+
+        # 根据分数调整概率
+        # 只有当LGB认为平局≥模型时（分歧≥0）才向LGB靠拢
+        # 如果分歧为负，说明模型已给出更高平局概率，维持原值
+        if draw_conf['score'] >= 50 and diff_lgb_poisson > 0:
+            draw_conf['signal'] = 'strong'
+            blend = 0.50  # 强信号：大幅向LGB靠拢
+            boosted_d = model_d * (1 - blend) + lgbm_d * blend
+            # 不设上限，让draw有机会从第三→第二
+            remaining = 1 - boosted_d
+            other_total = model_w + model_l
+            if other_total > 0:
+                model_w = model_w / other_total * remaining
+                model_l = model_l / other_total * remaining
+            model_d = boosted_d
+        elif draw_conf['score'] >= 35 and diff_lgb_poisson > 0:
+            draw_conf['signal'] = 'moderate'
+            blend = 0.35
+            boosted_d = model_d * (1 - blend) + lgbm_d * blend
+            remaining = 1 - boosted_d
+            other_total = model_w + model_l
+            if other_total > 0:
+                model_w = model_w / other_total * remaining
+                model_l = model_l / other_total * remaining
+            model_d = boosted_d
+        elif draw_conf['score'] >= 50:
+            # 高分但负分歧：不调整概率，仅标记strong信号
+            draw_conf['signal'] = 'strong'
+        elif draw_conf['score'] >= 35:
+            draw_conf['signal'] = 'moderate'
+
         # 4. LGBM 推荐方向（主推，取最大值）
         lgbm_dir_cn, lgbm_dir_en, lgbm_dir_prob = max_direction(lgbm_w, lgbm_d, lgbm_l)
         # 模型概率方向（中间值，备选）
@@ -725,6 +802,9 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             'model_prediction_cn': model_dir_cn,
             'model_prediction_prob': round(model_dir_prob, 4),
             'draw_boosted': draw_boosted,
+            'draw_confidence': round(draw_conf['score']),
+            'draw_signal': draw_conf['signal'],
+            'diff_lgb_poisson': round(draw_conf['diff_lgb_poisson'], 4),
             'lgbm_win': round(lgbm_w, 4),
             'lgbm_draw': round(lgbm_d, 4),
             'lgbm_loss': round(lgbm_l, 4),
