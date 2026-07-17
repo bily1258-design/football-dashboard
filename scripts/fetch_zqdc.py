@@ -216,16 +216,14 @@ def parse_all(html):
 
 # ========== 追加平博赔率 ==========
 
-def enhance_with_pinnacle(matches, delay=0.3):
-    """为每场比赛获取平博(cid=1055)的收盘赔率"""
+def enhance_with_pinnacle(matches, delay=0.3, parallel=3):
+    """为每场比赛获取平博(cid=1055)的收盘赔率（并行）"""
+    from concurrent.futures import ThreadPoolExecutor, as_completed
     pinnacle_ok = 0
     total = len(matches)
 
-    for i, m in enumerate(matches):
+    def fetch_one(m):
         fid = m['fid']
-        print(f"  [{i+1}/{total}] fid={fid} {m['home_team']} vs {m['away_team']}...", end=' ', flush=True)
-
-        # 平博
         p = fetch_1x2_odds(fid, 1055)
         if p:
             m['odds_pinnacle_open_win'] = p['open']['w']
@@ -234,23 +232,34 @@ def enhance_with_pinnacle(matches, delay=0.3):
             m['odds_pinnacle_win'] = p['latest']['w']
             m['odds_pinnacle_draw'] = p['latest']['d']
             m['odds_pinnacle_loss'] = p['latest']['l']
-            pinnacle_ok += 1
-            print(f"平博开盘{p['open']['w']}/{p['open']['d']}/{p['open']['l']} 最新{p['latest']['w']}/{p['latest']['d']}/{p['latest']['l']}")
-        else:
-            print("平博-")
+            return m, True
+        return m, False
 
-        if delay > 0 and i < total - 1:
-            time.sleep(delay)
+    with ThreadPoolExecutor(max_workers=parallel) as executor:
+        fut_map = {executor.submit(fetch_one, m): m for m in matches}
+        for fut in as_completed(fut_map):
+            m, ok = fut.result()
+            pinnacle_ok += 1 if ok else 0
+            ht = m.get('home_team', '?')
+            at = m.get('away_team', '?')
+            if ok:
+                print(f'  ✓ fid={m["fid"]} {ht} vs {at}  平博: {m["odds_pinnacle_open_win"]}/{m["odds_pinnacle_open_draw"]}/{m["odds_pinnacle_open_loss"]}')
+            else:
+                print(f'  ✗ fid={m["fid"]} {ht} vs {at}  平博-')
+            if delay > 0:
+                time.sleep(delay / parallel)
 
     return pinnacle_ok
 
-def enhance_with_hkjc(matches, delay=0.3):
-    """为每场比赛获取香港马会(cid=122)的收盘赔率"""
+
+def enhance_with_hkjc(matches, delay=0.3, parallel=3):
+    """为每场比赛获取香港马会(cid=122)的收盘赔率（并行）"""
+    from concurrent.futures import ThreadPoolExecutor, as_completed
     hkjc_ok = 0
     total = len(matches)
-    for i, m in enumerate(matches):
+
+    def fetch_one(m):
         fid = m['fid']
-        print(f"  [{i+1}/{total}] fid={fid} {m['home_team']} vs {m['away_team']}...", end=' ', flush=True)
         h = fetch_1x2_odds(fid, 122)
         if h:
             m['odds_hkjc_open_win'] = h['open']['w']
@@ -259,12 +268,23 @@ def enhance_with_hkjc(matches, delay=0.3):
             m['odds_hkjc_win'] = h['latest']['w']
             m['odds_hkjc_draw'] = h['latest']['d']
             m['odds_hkjc_loss'] = h['latest']['l']
-            hkjc_ok += 1
-            print(f"HKJC开盘{h['open']['w']}/{h['open']['d']}/{h['open']['l']} 最新{h['latest']['w']}/{h['latest']['d']}/{h['latest']['l']}")
-        else:
-            print("HKJC-")
-        if delay > 0 and i < total - 1:
-            time.sleep(delay)
+            return m, True
+        return m, False
+
+    with ThreadPoolExecutor(max_workers=parallel) as executor:
+        fut_map = {executor.submit(fetch_one, m): m for m in matches}
+        for fut in as_completed(fut_map):
+            m, ok = fut.result()
+            hkjc_ok += 1 if ok else 0
+            ht = m.get('home_team', '?')
+            at = m.get('away_team', '?')
+            if ok:
+                print(f'  ✓ fid={m["fid"]} {ht} vs {at}  HKJC: {m["odds_hkjc_open_win"]}/{m["odds_hkjc_open_draw"]}/{m["odds_hkjc_open_loss"]}')
+            else:
+                print(f'  ✗ fid={m["fid"]} {ht} vs {at}  HKJC-')
+            if delay > 0:
+                time.sleep(delay / parallel)
+
     return hkjc_ok
 
 

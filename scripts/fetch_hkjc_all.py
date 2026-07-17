@@ -187,6 +187,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--date', default=date.today().isoformat())
     parser.add_argument('--delay', type=float, default=0.3, help='请求间隔(秒)')
+    parser.add_argument('--parallel', type=int, default=3, help='并行抓取数(默认3)')
     parser.add_argument('--max', type=int, default=0, help='最多处理N场比赛(0=全部)')
     parser.add_argument('--merge', action='store_true', help='合并到已有数据')
     parser.add_argument('--save', default='', help='输出文件名(不含日期)')
@@ -382,26 +383,18 @@ def main():
     if args.max > 0:
         all_fids = all_fids[:args.max]
 
-    # 逐个检查HKJC赔率
+    # 逐个检查HKJC赔率（并行）
+    from concurrent.futures import ThreadPoolExecutor, as_completed
     hkjc_matches = []
-    checked = 0
+    total = len(all_fids)
+    total_hkjc = 0
 
-    for fid in all_fids:
-        checked += 1
+    def fetch_one(fid):
+        """为单个fid抓取HKJC+平博赔率"""
         info = all_match_info[fid]
-        sys.stdout.write('  [%d/%d] fid=%s %s vs %s... ' % (checked, len(all_fids), fid, info['home_team'], info['away_team']))
-        sys.stdout.flush()
-
         h = fetch_1x2_odds(fid, 122)
         if not h:
-            print('无')
-            continue
-
-        print('有! 开盘%s/%s/%s 最新%s/%s/%s' % (
-            h['open']['w'], h['open']['d'], h['open']['l'],
-            h['latest']['w'], h['latest']['d'], h['latest']['l']))
-
-        # 从整页解析数据中获取比赛详情（含排名，直接来自2h1.php HTML）
+            return None
         match = {
             'fid': fid,
             'date': date_str,
@@ -414,17 +407,13 @@ def main():
             'source': 'hkjc',
             'home_rank': info.get('home_rank', 0),
             'away_rank': info.get('away_rank', 0),
+            'odds_hkjc_open_win': h['open']['w'],
+            'odds_hkjc_open_draw': h['open']['d'],
+            'odds_hkjc_open_loss': h['open']['l'],
+            'odds_hkjc_win': h['latest']['w'],
+            'odds_hkjc_draw': h['latest']['d'],
+            'odds_hkjc_loss': h['latest']['l'],
         }
-
-        # HKJC赔率
-        match['odds_hkjc_open_win'] = h['open']['w']
-        match['odds_hkjc_open_draw'] = h['open']['d']
-        match['odds_hkjc_open_loss'] = h['open']['l']
-        match['odds_hkjc_win'] = h['latest']['w']
-        match['odds_hkjc_draw'] = h['latest']['d']
-        match['odds_hkjc_loss'] = h['latest']['l']
-
-        # 平博赔率
         p = fetch_1x2_odds(fid, 1055)
         if p:
             match['odds_pinnacle_open_win'] = p['open']['w']
@@ -433,17 +422,37 @@ def main():
             match['odds_pinnacle_win'] = p['latest']['w']
             match['odds_pinnacle_draw'] = p['latest']['d']
             match['odds_pinnacle_loss'] = p['latest']['l']
+        return match
 
-        hkjc_matches.append(match)
-        print('  ✓ %s %s vs %s' % (
-            info.get('event', '?'),
-            info.get('home_team', '?'),
-            info.get('away_team', '?')))
+    workers = args.parallel
+    with ThreadPoolExecutor(max_workers=workers) as executor:
+        fut_map = {executor.submit(fetch_one, fid): fid for fid in all_fids}
+        done = 0
+        for fut in as_completed(fut_map):
+            done += 1
+            fid = fut_map[fut]
+            match = fut.result()
+            if match is None:
+                print('  [%d/%d] fid=%s %s vs %s... 无HKJC盘口' % (
+                    done, total, fid,
+                    all_match_info[fid].get('home_team', '?'),
+                    all_match_info[fid].get('away_team', '?')))
+                continue
+            hkjc_matches.append(match)
+            total_hkjc += 1
+            ev = match.get('event', '?')
+            ht = match.get('home_team', '?')
+            at = match.get('away_team', '?')
+            print('  [%d/%d] ✓ %s %s vs %s  HKJC: %s/%s/%s' % (
+                done, total, ev, ht, at,
+                match.get('odds_hkjc_open_win', '?'),
+                match.get('odds_hkjc_open_draw', '?'),
+                match.get('odds_hkjc_open_loss', '?')))
+            if args.delay > 0:
+                time.sleep(args.delay / workers)
 
-        if args.delay > 0:
-            time.sleep(args.delay)
+    print('\n[INFO] 有HKJC赔率的比赛: %d/%d' % (len(hkjc_matches), total))
 
-    print('\n[INFO] 有HKJC赔率的比赛: %d/%d' % (len(hkjc_matches), len(all_fids)))
 
     # 输出
     out = {
