@@ -371,7 +371,6 @@ def main():
                     existing = json.loads(raw)
                 except json.JSONDecodeError:
                     # 文件损坏（如Extra data），尝试取第一个有效JSON对象
-                    import re
                     m = re.search(r'\{.*\}', raw, re.DOTALL)
                     if m:
                         existing = json.loads(m.group())

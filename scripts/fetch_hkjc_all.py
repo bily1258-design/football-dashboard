@@ -207,7 +207,6 @@ def main():
         try:
             existing = json.loads(raw)
         except json.JSONDecodeError:
-            import re
             m = re.search(r'\{.*\}', raw, re.DOTALL)
             if m:
                 existing = json.loads(m.group())
@@ -490,7 +489,6 @@ def main():
             try:
                 existing = json.loads(raw)
             except json.JSONDecodeError:
-                import re
                 m = re.search(r'\{.*\}', raw, re.DOTALL)
                 if m:
                     existing = json.loads(m.group())
