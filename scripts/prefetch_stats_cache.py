@@ -30,15 +30,47 @@ def main():
     else:
         print("新建缓存" if force else "新建缓存")
     
-    # 从DB获取所有fid
+    # 从DB获取所有fid (含旧500.com fids)
     conn = sqlite3.connect(DB_PATH)
     cur = conn.execute(
         "SELECT DISTINCT fid_500, home_team, away_team, date FROM poisson_predictions "
         "WHERE fid_500 IS NOT NULL ORDER BY date"
     )
-    rows = cur.fetchall()
+    db_rows = cur.fetchall()
     conn.close()
-    print(f"DB中共 {len(rows)} 个唯一fid\n")
+    print(f"DB中共 {len(db_rows)} 个唯一fid")
+    
+    # 也从数据JSON文件提取fid（新格式sid）
+    data_dir = os.path.join(os.path.dirname(DB_PATH))
+    json_fids = set()
+    for fn in os.listdir(data_dir):
+        if fn.endswith('.json') and not fn.startswith('cache') and not fn.startswith('results'):
+            try:
+                with open(os.path.join(data_dir, fn), 'r') as f:
+                    data = json.load(f)
+                items = data if isinstance(data, list) else data.get('matches', data.get('data', []))
+                if isinstance(items, list):
+                    for m in items:
+                        fid = m.get('fid', m.get('sid', ''))
+                        if fid:
+                            json_fids.add(str(fid))
+            except:
+                pass
+    
+    # 合并: DB fid + JSON fid
+    seen = set()
+    rows = []
+    for fid, home, away, date in db_rows:
+        key = str(fid)
+        if key not in seen:
+            seen.add(key)
+            rows.append((fid, home, away, date))
+    for fid_str in sorted(json_fids):
+        if fid_str not in seen:
+            seen.add(fid_str)
+            rows.append((int(fid_str), '', '', ''))
+    
+    print(f"合并JSON文件后共 {len(rows)} 个唯一fid\n")
     
     new_count = 0
     fail_count = 0

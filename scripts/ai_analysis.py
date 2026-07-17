@@ -29,6 +29,60 @@ DB_PATH = os.path.join(DATA_DIR, "football.db")
 sys.path.insert(0, SCRIPT_DIR)
 from fetch_stats import fetch_match_stats
 
+STATS_CACHE_PATH = os.path.join(DATA_DIR, 'cache', 'stats_cache.json')
+
+def _load_stats_cache() -> dict:
+    """加载统计缓存（H2H+近期战绩）"""
+    if not os.path.exists(STATS_CACHE_PATH):
+        return {}
+    try:
+        with open(STATS_CACHE_PATH, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except Exception as e:
+        logger.warning(f"加载统计缓存失败: {e}")
+        return {}
+
+def _format_stats(raw: dict) -> dict:
+    """将缓存原始格式转为前端需要的 {home_recent, away_recent, h2h}
+
+    旧缓存中 result 是盘路结果（赢/输），用比分重新计算比赛结果（胜/负/平）。
+    """
+    def _result(hs, vs):
+        if hs > vs: return '胜'
+        if hs < vs: return '负'
+        return '平'
+
+    out = {}
+    for key_in, key_out in [('home_form', 'home_recent'), ('away_form', 'away_recent')]:
+        items = raw.get(key_in, [])
+        cleaned = []
+        for m in items[:10]:   # 最多10场
+            hs = int(m.get('home_score', 0) or 0)
+            vs = int(m.get('away_score', 0) or 0)
+            cleaned.append({
+                'result': _result(hs, vs),
+                'league': m.get('league', ''),
+                'date': m.get('date', ''),
+                'home': m.get('home', ''),
+                'away': m.get('away', ''),
+                'home_score': hs,
+                'away_score': vs,
+            })
+        out[key_out] = cleaned
+
+    h2h = raw.get('h2h', [])
+    out['h2h'] = [{
+        'result': _result(int(m.get('home_score',0) or 0), int(m.get('away_score',0) or 0)),
+        'league': m.get('league', ''),
+        'date': m.get('date', ''),
+        'home': m.get('home', ''),
+        'away': m.get('away', ''),
+        'home_score': int(m.get('home_score',0) or 0),
+        'away_score': int(m.get('away_score',0) or 0),
+    } for m in h2h[:10]]
+
+    return out
+
 # ─── 算法常量 ──────────────────────────────────────
 SMOOTH_ALPHA_BASE = 0.02      # 贝叶斯平滑基值（均衡比赛用）
 SMOOTH_ALPHA_SKEW = 0.35      # 方差自适应系数：偏离均衡每0.1加权0.035
@@ -354,8 +408,10 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
     if league_priors is None:
         league_priors = {}
     lambda_ = LEAGUE_PRIOR_LAMBDA
-    
-    # 预取排名（GA上跳过，500.com封GitHub IP）
+    stats_cache = _load_stats_cache()
+    stats_hit = [0, 0]  # [total, cache_hit]
+
+    # 预取排名（GA上跳过）
     in_gha = os.environ.get('GITHUB_ACTIONS') == 'true'
     if not in_gha:
         try:
@@ -801,6 +857,60 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
         })
 
     logger.info(f"分析完成: {len(results)} 场 (跳过 {skipped} 场无赔率)")
+
+    # ─── 赛后统计获取（并行） ──────────────────────
+    if results and not os.environ.get('GITHUB_ACTIONS'):
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+        miss_fids = []
+        for r in results:
+            fid_str = str(r.get('fid', ''))
+            raw = stats_cache.get(fid_str)
+            if raw:
+                r['match_stats'] = _format_stats(raw)
+                stats_hit[0] += 1
+                stats_hit[1] += 1
+            else:
+                stats_hit[0] += 1
+                miss_fids.append((r, fid_str))
+        
+        if miss_fids:
+            logger.info(f"  即时抓取 {len(miss_fids)}/{stats_hit[0]} 场H2H/战绩...")
+            def _fetch_one(r, fid_str):
+                try:
+                    stats = fetch_match_stats(fid_str)
+                    if stats and (stats.get('h2h') or stats.get('home_form') or stats.get('away_form')):
+                        r['match_stats'] = _format_stats(stats)
+                        stats_cache[fid_str] = stats
+                        return True
+                except:
+                    pass
+                r['match_stats'] = None
+                stats_cache[fid_str] = None
+                return False
+            
+            with ThreadPoolExecutor(max_workers=5) as pool:
+                futs = {pool.submit(_fetch_one, r, fid_str): fid_str for r, fid_str in miss_fids}
+                done_ok = 0
+                for fut in as_completed(futs):
+                    if fut.result():
+                        done_ok += 1
+                logger.info(f"  即时抓取完成: {done_ok}/{len(miss_fids)} 场成功, 缓存已更新")
+            
+            # 保存回缓存文件
+            try:
+                os.makedirs(os.path.dirname(STATS_CACHE_PATH), exist_ok=True)
+                with open(STATS_CACHE_PATH, 'w', encoding='utf-8') as f:
+                    json.dump(stats_cache, f)
+            except Exception as e:
+                logger.warning(f"保存统计缓存失败: {e}")
+        
+        if stats_hit[0] > 0:
+            logger.info(f"近期战绩: {stats_hit[1]}/{stats_hit[0]} 场来自缓存 ({stats_hit[1]*100//stats_hit[0]}%)")
+    else:
+        # GA上跳过或没有结果
+        for r in results:
+            r['match_stats'] = None
+    
     return results
 
 # ─── 前端生成 ──────────────────────────────────────
