@@ -59,6 +59,16 @@ def fetch(period):
     with urllib.request.urlopen(req, timeout=20) as resp:
         return resp.read().decode('gbk', errors='replace')
 
+
+def fetch_url(url, encoding='gbk', timeout=15):
+    """通用页面抓取"""
+    req = urllib.request.Request(url, headers={
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'Accept-Language': 'zh-CN,zh;q=0.9',
+    })
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        return resp.read().decode(encoding, errors='replace')
+
 def fetch_json(url, retries=2, referer=None):
     """请求500.com JSON接口"""
     for attempt in range(retries + 1):
@@ -421,6 +431,32 @@ def main():
                 if new_scr and new_scr != old_scr:
                     existing_matches[fid]['score'] = new_scr
                     updated += 1
+
+        # 3) wanchang.php 兜底：期号页面已下线的已完赛
+        wc_unscored = [(fid, m) for fid, m in existing_matches.items()
+                       if not m.get('score') and 'match_time' in m]
+        wc_updated = 0
+        if wc_unscored:
+            print(f"[BACKFILL] wanchang.php兜底: {len(wc_unscored)} 场待补…")
+            try:
+                wc_html = fetch_url('https://live.500.com/wanchang.php')
+                wc_scores = {}
+                for pk_div in re.finditer(
+                    r'<div\s+class="pk">.*?<a[^>]*fid=(\d+)[^>]*>(\d+)</a>\s*<span>-</span>\s*<a[^>]*fid=\1[^>]*>(\d+)</a>',
+                    wc_html, re.DOTALL | re.IGNORECASE):
+                    wc_scores[pk_div.group(1)] = '%s-%s' % (pk_div.group(2), pk_div.group(3))
+                for fid, m in wc_unscored:
+                    if fid in wc_scores:
+                        m['score'] = wc_scores[fid]
+                        wc_updated += 1
+                if wc_updated:
+                    updated += wc_updated
+                    print(f"[BACKFILL] wanchang.php → {wc_updated} 场")
+                else:
+                    print(f"[BACKFILL] wanchang.php→未找到匹配比分")
+            except Exception as e:
+                print(f"[BACKFILL] wanchang.php抓取失败: {e}")
+
         if updated:
             existing['matches'] = list(existing_matches.values())
             existing['fetched_at'] = datetime.now().isoformat()
