@@ -216,35 +216,7 @@ def main():
                 return
         existing_matches = {m['fid']: m for m in existing['matches']}
 
-        # 重新抓取2h1.php解析比分
-        print('[BACKFILL] 重新抓取2h1.php获取最新比分...')
-        html = fetch_url('https://live.500.com/2h1.php')
-        updated = 0
-        # 解析每个 <tr id="aFID"...> 块的比分
-        for tr_m in re.finditer(r'<tr[^>]*id="a(\d+)"[^>]*>.*?</tr>', html, re.DOTALL):
-            fid = tr_m.group(1)
-            row = tr_m.group(0)
-            if fid not in existing_matches:
-                continue
-            # 提取比分: <div class="pk">...clt1...N...clt3...M...
-            pk_m = re.search(r'<div class="pk">.*?clt1[^>]*>(\d+)</a><span>-</span><a[^>]*clt3[^>]*>(\d+)</a>', row)
-            if pk_m:
-                new_scr = '%s-%s' % (pk_m.group(1), pk_m.group(2))
-                old_scr = existing_matches[fid].get('score', '')
-                if new_scr != old_scr:
-                    existing_matches[fid]['score'] = new_scr
-                    updated += 1
-
-        if updated:
-            existing['matches'] = list(existing_matches.values())
-            existing['fetched_at'] = datetime.now().isoformat()
-            with open(fpath, 'w', encoding='utf-8') as f:
-                json.dump(existing, f, ensure_ascii=False, indent=2)
-            print('[BACKFILL] %s → %d 场比分已更新(2h1.php)' % (fpath, updated))
-        else:
-            print('[BACKFILL] %s → 2h1.php无变化' % fpath)
-
-        # ===== wanchang.php 兜底：2h1.php已下线的已完赛 =====
+        # ===== wanchang.php 兜底：已完赛但缺比分 =====
         wc_unscored = [(fid, m) for fid, m in existing_matches.items()
                        if not m.get('score') and 'match_time' in m]
         if wc_unscored:
@@ -273,7 +245,7 @@ def main():
             except Exception as e:
                 print('[BACKFILL] wanchang.php抓取失败: %s' % e)
 
-        # ===== ESPN API 兜底：2h1.php没找到的已完赛比分 =====
+        # ===== ESPN API 兜底：wanchang.php没找到的已完赛比分 =====
         unscored = [(fid, m) for fid, m in existing_matches.items()
                     if not m.get('score') and 'match_time' in m]
         if unscored:
