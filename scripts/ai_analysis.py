@@ -167,7 +167,33 @@ def load_raw_matches() -> List[Dict]:
             if len(m) > len(existing):
                 deduped[seen[key]] = m
     logger.info(f"原始数据 {len(all_ms)} 场 → 去重后 {len(deduped)} 场")
-    return deduped
+
+    # 第二道去重: 按(主队,客队)去重 — 同一场比赛在不同日期文件里出现(不同fid)
+    # 只对尚未有比分的比赛做此去重(有比分的是已完场的, 可能真的是两场)
+    seen_pair = {}
+    pair_deduped = []
+    for m in deduped:
+        home = m.get('home_team', '').strip()
+        away = m.get('away_team', '').strip()
+        score = (m.get('score') or '').strip()
+        if not score:
+            key = f'{home}|{away}'
+            if key in seen_pair:
+                # 保留时间更合理的那条(非00:00优先)
+                idx = seen_pair[key]
+                existing = pair_deduped[idx]
+                old_mt = existing.get('match_time', '')
+                new_mt = m.get('match_time', '')
+                # 如果现有条目时间是00:00且新条目有合理时间, 替换
+                if ('00:00' in old_mt or not old_mt) and '00:00' not in new_mt and new_mt:
+                    pair_deduped[idx] = m
+                continue
+            seen_pair[key] = len(pair_deduped)
+        pair_deduped.append(m)
+
+    if len(pair_deduped) < len(deduped):
+        logger.info(f"交叉文件去重: {len(deduped)} → {len(pair_deduped)} 场")
+    return pair_deduped
 
 def load_db_matches(db_path: str = DB_PATH, days: int = 14) -> List[Dict]:
     """从数据库加载已有预测（用于合并）"""
