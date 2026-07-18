@@ -100,12 +100,15 @@ def fetch_hkjc_matches(date_str, max_matches=0, delay=0.3, workers=3):
             match['odds_pinnacle_changes'] = pinnacle.get('changes', 1)
             match['odds_pinnacle_company'] = 'Pinnacle'
         
-        # 从分析页提取比赛时间
+        # 从分析页提取比赛时间（仅当strTime日期与比赛日期一致）
+        # 防止世界杯跨轮时引用上一轮时间
         try:
             from titan007_utils import get_analysis_data
             ad = get_analysis_data(sid)
             if ad and ad.get('match_time'):
-                match['match_time'] = ad['match_time']
+                mt = ad['match_time'].strip()
+                if mt[:10] == match['date']:
+                    match['match_time'] = mt
         except Exception:
             pass  # 保持00:00兜底
 

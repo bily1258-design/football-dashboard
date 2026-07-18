@@ -89,12 +89,17 @@ def fetch_odds(m, delay=0.3, workers=3):
             match_out['odds_hkjc_company'] = 'HKJC'
         
         # 从分析页提取比赛时间(仅当有赔率时)
+        # 注意：titan007分析页的strTime可能引用上一轮时间
+        # （世界杯同对阵跨两轮时，strTime还是旧日期）
+        # 所以仅当 strTime 日期与比赛日期一致时才使用
         if p or h:
             try:
                 from titan007_utils import get_analysis_data
                 ad = get_analysis_data(sid)
                 if ad and ad.get('match_time'):
-                    match_out['match_time'] = ad['match_time']
+                    mt = ad['match_time'].strip()
+                    if mt[:10] == match_out['date']:
+                        match_out['match_time'] = mt
             except Exception:
                 pass  # 保持00:00兜底
 
