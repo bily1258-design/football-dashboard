@@ -32,36 +32,39 @@ function toggleWarnFilter(){
   document.getElementById('warnToggle').className = 'warn-filter-btn'+(showWarnedOnly?' active':'');
   applyFilters();
 }
-function renderOdds(c, h){
+function renderOdds(c, p){
   var html = '';
-  // 平博
+  // 主赔率（动态标源）
   if(c && c.current){
     var o=c.open, cur=c.current, d=c.div_pct;
+    var srcLabel = c.source === 'pinnacle' ? '平博' : '马会';
     var divStr = '';
     for(var i=0;i<3;i++){
       var cls = d[i] < -0.3 ? 'oc-pct-down' : (d[i] > 0.3 ? 'oc-pct-up' : 'oc-pct-flat');
       divStr += '<span class="'+cls+'">'+fmtPctSign(d[i])+'</span>' + (i<2?'<span class="oc-sep">|</span>':'');
     }
-    html += '<div class="oc-source">平博</div>'+
+    html += '<div class="oc-source oc-source-hkjc">'+srcLabel+'</div>'+
       '<div class="oc-line"><span class="oc-label">初</span><span class="oc-open">'+o[0].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-open">'+o[1].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-open">'+o[2].toFixed(2)+'</span></div>'+
       '<div class="oc-line"><span class="oc-label">即</span><span class="oc-cur">'+cur[0].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+cur[1].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+cur[2].toFixed(2)+'</span></div>'+
       '<div class="oc-line oc-div"><span class="oc-label">分</span>'+divStr+'</div>';
   } else {
     html += '<span class="odds-val odds-w">--</span>';
   }
-  // 香港马会
-  if(h && h.current){
-    var o=h.open, cur=h.current, d=h.div_pct;
+  // 备查列（另一家公司）
+  if(p && p.current){
+    var o=p.open, cur=p.current, d=p.div_pct;
+    var srcLabel = p.source === 'pinnacle' ? '平博' : '马会';
     var divStr = '';
     for(var i=0;i<3;i++){
       var cls = d[i] < -0.3 ? 'oc-pct-down' : (d[i] > 0.3 ? 'oc-pct-up' : 'oc-pct-flat');
       divStr += '<span class="'+cls+'">'+fmtPctSign(d[i])+'</span>' + (i<2?'<span class="oc-sep">|</span>':'');
     }
     html += '<div class="oc-sep-line"></div>'+
-      '<div class="oc-source oc-source-hkjc">马会</div>'+
+      '<div class="oc-source">'+srcLabel+'</div>'+
       '<div class="oc-line"><span class="oc-label">初</span><span class="oc-open">'+o[0].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-open">'+o[1].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-open">'+o[2].toFixed(2)+'</span></div>'+
       '<div class="oc-line"><span class="oc-label">即</span><span class="oc-cur">'+cur[0].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+cur[1].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+cur[2].toFixed(2)+'</span></div>'+
       '<div class="oc-line oc-div"><span class="oc-label">分</span>'+divStr+'</div>';
+
   }
   return '<div class="odds-combined">'+html+'</div>';
 }
@@ -96,7 +99,7 @@ function renderTable(matches){
       '<td class="team-name">'+m.away_team+'</td>'+
       '<td><span class="'+dirClass(m.lgbm_prediction)+'">'+dirText(m.lgbm_prediction)+'</span> <span style="font-size:11px;color:#999">'+dirText(m.model_prediction)+'</span>'+renderWarning(m.warning)+'</td>'+
       '<td class="'+hc+'">'+(m.hit||'')+'</td>'+
-      '<td class="odds-cell">'+renderOdds(m.comparison, m.hkjc_comparison)+'</td>'+
+      '<td class="odds-cell">'+renderOdds(m.comparison, m.pin_comparison)+'</td>'+
       '<td class="odds-cell"><div>模型: <span class="odds-val odds-w">'+fmtPct(m.model_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.model_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.model_loss)+'</span></div><div style="margin-top:3px">LGBM: <span class="odds-val odds-w">'+fmtPct(m.lgbm_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.lgbm_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.lgbm_loss)+'</span><div style="margin-top:2px;font-size:11px"><span class="oc-label" style="margin-right:3px">分</span><span class="'+((m.model_win-m.lgbm_win)<-0.003?'oc-pct-down':(m.model_win-m.lgbm_win)>0.003?'oc-pct-up':'oc-pct-flat')+'">'+fmtPctSign((m.model_win-m.lgbm_win)*100)+'</span> <span class="'+((m.model_draw-m.lgbm_draw)<-0.003?'oc-pct-down':(m.model_draw-m.lgbm_draw)>0.003?'oc-pct-up':'oc-pct-flat')+'">'+fmtPctSign((m.model_draw-m.lgbm_draw)*100)+'</span> <span class="'+((m.model_loss-m.lgbm_loss)<-0.003?'oc-pct-down':(m.model_loss-m.lgbm_loss)>0.003?'oc-pct-up':'oc-pct-flat')+'">'+fmtPctSign((m.model_loss-m.lgbm_loss)*100)+'</span></div></div></td>';
     tbody.appendChild(tr);  });
   document.getElementById('matchCount').textContent = matches.length+' 场';
