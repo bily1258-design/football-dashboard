@@ -302,6 +302,12 @@ def parse_analysis_vars(html):
         d = _safe_json(hm.group(1))
         data['hOdds'] = d if isinstance(d, list) else []
 
+    # 比赛时间 strTime: "YYYY-MM-DD HH:MM"
+    mtm = re.search(r'var\s+strTime\s*=\s*"([^"]+)"', html)
+    if not mtm:
+        mtm = re.search(r"var\s+strTime\s*=\s*'([^']+)'", html)
+    if mtm:
+        data['match_time'] = mtm.group(1)
     # 队伍名和联赛 - titan007 变量名
     for var_search in [('home_name', ['home_name', 'hometeam', 'home_team']),
                        ('away_name', ['away_name', 'guestteam', 'guest_team', 'away_team']),
@@ -454,6 +460,7 @@ def get_analysis_data(sid):
             'home_name': vars_data.get('home_name', ''),
             'away_name': vars_data.get('away_name', ''),
             'league_name': vars_data.get('league_name', ''),
+            'match_time': vars_data.get('match_time', ''),
         }
         return result
     except Exception as e:

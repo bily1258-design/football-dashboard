@@ -88,6 +88,16 @@ def fetch_odds(m, delay=0.3, workers=3):
             match_out['odds_hkjc_changes'] = h.get('changes', 1)
             match_out['odds_hkjc_company'] = 'HKJC'
         
+        # 从分析页提取比赛时间(仅当有赔率时)
+        if p or h:
+            try:
+                from titan007_utils import get_analysis_data
+                ad = get_analysis_data(sid)
+                if ad and ad.get('match_time'):
+                    match_out['match_time'] = ad['match_time']
+            except Exception:
+                pass  # 保持00:00兜底
+
         return match_out
     
     with ThreadPoolExecutor(max_workers=workers) as executor:

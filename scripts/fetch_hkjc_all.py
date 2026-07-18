@@ -100,6 +100,15 @@ def fetch_hkjc_matches(date_str, max_matches=0, delay=0.3, workers=3):
             match['odds_pinnacle_changes'] = pinnacle.get('changes', 1)
             match['odds_pinnacle_company'] = 'Pinnacle'
         
+        # 从分析页提取比赛时间
+        try:
+            from titan007_utils import get_analysis_data
+            ad = get_analysis_data(sid)
+            if ad and ad.get('match_time'):
+                match['match_time'] = ad['match_time']
+        except Exception:
+            pass  # 保持00:00兜底
+
         return match
     
     hkjc_matches = []
