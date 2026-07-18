@@ -142,15 +142,12 @@ def filter_beidan(matches):
 
 
 def filter_jingzu(matches):
-    """从比赛列表中过滤出竞足(f[57]含"周"或"周五"等竞彩编号)"""
+    """从比赛列表中过滤出竞足(f[58]!="")"""
     result = []
     for m in matches:
         f = m['fields']
-        if len(f) > 57 and f[57].strip():
-            # f[57] = "周六103" / "周五207" 等竞彩编号
-            jz_id = f[57].strip()
-            if any(kw in jz_id for kw in ('周', '五', '六', '日', '一', '二', '三', '四')):
-                result.append(m)
+        if len(f) > 58 and f[58].strip():
+            result.append(m)
     return result
 
 
@@ -171,63 +168,55 @@ def parse_time(fields):
 
 # ─────── 主逻辑 ───────
 
-def fetch_all_matches(date_str, max_matches=0, date_filter=True):
-    """从bfdata_ut.js获取北单+竞足比赛列表，合并去重"""
+def fetch_all_matches(date_str, max_matches=0):
+    """从bfdata_ut.js获取北单比赛列表"""
     all_matches = fetch_bfdata()
     if not all_matches:
         print(f'[WARN] bfdata_ut.js 返回空列表')
         return []
 
-    # 分别过滤
-    beidan_set = {m['sid'] for m in filter_beidan(all_matches)}
-    jingzu_set = {m['sid'] for m in filter_jingzu(all_matches)}
-    both_set = beidan_set & jingzu_set
+    # 过滤北单
+    beidan = filter_beidan(all_matches)
+    jingzu = filter_jingzu(all_matches)
 
     print(f'[INFO] bfdata_ut.js → 总{len(all_matches)}场, '
-          f'北单{len(beidan_set)}场, 竞足{len(jingzu_set)}场, '
-          f'交集{len(both_set)}场')
+          f'北单{len(beidan)}场, 竞足{len(jingzu)}场')
 
-    # 合并：竞足优先包含所有，北单补充竞足没有的
-    combined = {}
-    for m in all_matches:
-        f = m['fields']
-        sid = m['sid']
-        in_bd = sid in beidan_set
-        in_jz = sid in jingzu_set
-        if in_bd or in_jz:
-            tags = []
-            if in_bd: tags.append('北单')
-            if in_jz: tags.append('竞足')
-            combined[sid] = {
-                'sid': sid,
-                'league': m['league'],
-                'home_team': m['hometeam'],
-                'away_team': m['awayteam'],
-                'display_time': m['display_time'],
-                'match_time': parse_time(f),
-                'date': date_str if date_filter else '',
-                'source': '+'.join(tags),
-                'jingzu_id': f[57].strip() if len(f) > 57 and in_jz else '',
-                'beidan_id': f[59].strip() if len(f) > 59 and in_bd else '',
-            }
+    # 过滤非当天比赛
+    date_compact = date_str.replace('-', '')
+    filtered = []
+    for m in beidan:
+        t = m.get('time', '')  # yyyy,mm,dd,hh,mm,ss
+        if t:
+            t_parts = t.split(',')
+            if len(t_parts) >= 3:
+                md = f'{t_parts[0]}{int(t_parts[1]):02d}{int(t_parts[2]):02d}'
+                if md == date_compact:
+                    filtered.append(m)
 
-    all_combined = list(combined.values())
-    all_combined.sort(key=lambda x: x['match_time'])
-
-    if date_filter:
-        # 过滤非当天比赛（先试当天日期）
-        date_compact = date_str.replace('-', '')
-        filtered = [m for m in all_combined if m['match_time'].startswith(date_compact[:4] + '-' + date_compact[4:6] + '-' + date_compact[6:8])]
-        if not filtered:
-            print(f'[INFO] 当天({date_compact})无匹配, 取全部{len(all_combined)}场')
-            filtered = all_combined
-    else:
-        filtered = all_combined
+    # 如果当天没有匹配的（7/19凌晨的比赛是7/18晚的），放宽到所有北单
+    if not filtered and beidan:
+        print(f'[INFO] 当天({date_compact})无匹配北单, 取全部{len(beidan)}场')
+        filtered = beidan
 
     if max_matches > 0:
         filtered = filtered[:max_matches]
 
-    return filtered
+    # 转成标准格式
+    result = []
+    for m in filtered:
+        f = m['fields']
+        result.append({
+            'sid': m['sid'],
+            'league': m['league'],
+            'home_team': m['hometeam'],
+            'away_team': m['awayteam'],
+            'display_time': m['display_time'],
+            'match_time': parse_time(f),
+            'date': date_str,
+        })
+
+    return result
 
 
 def fetch_odds(matches, delay=0.3, workers=3):
@@ -249,9 +238,7 @@ def fetch_odds(matches, delay=0.3, workers=3):
             'away_team': match.get('away_team', ''),
             'score': '',
             'status': '',
-            'source': match.get('source', 'beidan'),
-            'jingzu_id': match.get('jingzu_id', ''),
-            'beidan_id': match.get('beidan_id', ''),
+            'source': 'beidan',
             'home_rank': 0,
             'away_rank': 0,
         }
@@ -297,8 +284,7 @@ def fetch_odds(matches, delay=0.3, workers=3):
             hh = match_out.get('odds_hkjc_win', '-')
             hd = match_out.get('odds_hkjc_draw', '-')
             hl = match_out.get('odds_hkjc_loss', '-')
-            src = match_out.get('source', '')
-            print(f'  [{done}/{total}] [{src:4s}] ✓ {match_out["event"]} {match_out["home_team"]} vs {match_out["away_team"]}  '
+            print(f'  [{done}/{total}] ✓ {match_out["event"]} {match_out["home_team"]} vs {match_out["away_team"]}  '
                   f'Pinnacle: {ph}/{pd}/{pl}  HKJC: {hh}/{hd}/{hl}')
             if delay > 0:
                 time.sleep(delay / workers)
@@ -313,7 +299,7 @@ def fetch_odds(matches, delay=0.3, workers=3):
 def get_scores_from_over_page(date_str):
     """从titan007 Over_日期.htm 获取当天所有完场比分
     
-    返回: { sid: score_str } — 通过 javascript:advices(SID) 匹配
+    返回: { (home_team, away_team): score_str }
     """
     try:
         url = f'https://bf.titan007.com/football/Over_{date_str.replace("-", "")}.htm'
@@ -327,12 +313,6 @@ def get_scores_from_over_page(date_str):
         scores = {}
         rows = re.findall(r'<tr[^>]*>.*?</tr>', html, re.DOTALL | re.IGNORECASE)
         for row in rows:
-            # 提取该行中的 sid
-            sid_m = re.search(r"javascript:advices\((\d+)\)", row)
-            if not sid_m:
-                continue
-            sid = sid_m.group(1)
-
             tds = re.findall(r'<td[^>]*>(.*?)</td>', row, re.DOTALL | re.IGNORECASE)
             if len(tds) >= 6:
                 tds_clean = []
@@ -340,9 +320,15 @@ def get_scores_from_over_page(date_str):
                     c = re.sub(r'<[^>]+>', ' ', td).strip()
                     c = re.sub(r'\s+', ' ', c)
                     tds_clean.append(c)
+                home = tds_clean[3].strip()
                 score = tds_clean[4].strip()
+                away = tds_clean[5].strip()
                 if re.match(r'^\d+\s*-\s*\d+$', score):
-                    scores[sid] = score.replace(' ', '')  # "0-0"
+                    home_clean = re.sub(r'\s*\[[^\]]*\]', '', home).strip()
+                    away_clean = re.sub(r'\s*\[[^\]]*\]', '', away).strip()
+                    home_clean = re.sub(r'\([^)]*\)', '', home_clean).strip()
+                    away_clean = re.sub(r'\([^)]*\)', '', away_clean).strip()
+                    scores[(home_clean, away_clean)] = score
         return scores
     except Exception as e:
         print(f'[WARN] Over页面抓取失败: {e}')
@@ -350,7 +336,7 @@ def get_scores_from_over_page(date_str):
 
 
 def do_backfill(fpath, date_str):
-    """比分回填：titan007 Over页（今天+昨天）"""
+    """比分回填：titan007 Over页"""
     if not os.path.exists(fpath):
         print(f'[WARN] {fpath} 不存在，跳过回填')
         return
@@ -362,34 +348,25 @@ def do_backfill(fpath, date_str):
 
     unscored = [(fid, m) for fid, m in existing_matches.items()
                 if not m.get('score') and m.get('match_time')]
-    if not unscored:
-        print(f'[BACKFILL] 全部已有比分，跳过')
-        return
-
-    # 回填：先查今天，再查昨天
-    today = date_str
-    yesterday_dt = datetime.strptime(date_str, '%Y-%m-%d') - timedelta(days=1)
-    yesterday = yesterday_dt.strftime('%Y-%m-%d')
-
-    all_scores = {}
-    for d in [today, yesterday]:
-        scores = get_scores_from_over_page(d)
+    if unscored:
+        scores = get_scores_from_over_page(date_str)
         if scores:
-            print(f'[BACKFILL] Over页({d}) → {len(scores)} 场完场比分')
-            all_scores.update(scores)
+            over_ok = 0
+            for fid, m in unscored:
+                home = m.get('home_team', '').strip()
+                away = m.get('away_team', '').strip()
+                key = (home, away)
+                if key in scores:
+                    m['score'] = scores[key]
+                    over_ok += 1
+                    updated += 1
+                elif (away, home) in scores:
+                    m['score'] = scores[(away, home)]
+                    over_ok += 1
+                    updated += 1
+            print(f'[BACKFILL] titan007 Over页 → {over_ok}/{len(unscored)} 场')
         else:
-            print(f'[BACKFILL] Over页({d}) → 无完场数据')
-
-    if all_scores:
-        over_ok = 0
-        for fid, m in unscored:
-            if fid in all_scores:
-                m['score'] = all_scores[fid]
-                over_ok += 1
-                updated += 1
-        print(f'[BACKFILL] titan007 Over页(今+昨) → {over_ok}/{len(unscored)} 场匹配(sid)')
-    else:
-        print(f'[BACKFILL] Over页(今+昨) → 均无完场数据')
+            print(f'[BACKFILL] titan007 Over页 → 页面无完场数据')
 
     if updated:
         existing['matches'] = list(existing_matches.values())
@@ -410,103 +387,30 @@ def main():
     parser.add_argument('--delay', type=float, default=0.3)
     parser.add_argument('--parallel', type=int, default=3)
     parser.add_argument('--backfill', action='store_true', help='比分回填')
-    parser.add_argument('--refresh', action='store_true', help='强制刷新已有数据')
     parser.add_argument('--save', default='')
     args = parser.parse_args()
 
     date_str = args.date
+    basename = args.save or ('matches_' + date_str.replace('-', ''))
+    fpath = os.path.join(DATA_DIR, f'{basename}.json')
 
     if args.backfill:
-        basename = args.save or ('matches_' + date_str.replace('-', ''))
-        fpath = os.path.join(DATA_DIR, f'{basename}.json')
         do_backfill(fpath, date_str)
         return
 
-    # 只抓一次 bfdata_ut.js
-    print(f'[INFO] 从bfdata_ut.js获取比赛 (含今天+明天)...')
-    all_matches = fetch_all_matches(date_str, args.max, date_filter=False)
+    # 1. 获取北单比赛列表
+    print(f'[INFO] 从bfdata_ut.js获取 {date_str} 北单比赛...')
+    all_matches = fetch_all_matches(date_str, args.max)
 
     if not all_matches:
-        print(f'[WARN] 无比赛数据')
+        print(f'[WARN] {date_str} 无北单比赛数据')
         return
 
-    # 按比赛日期拆分
-    today_dt = datetime.strptime(date_str, '%Y-%m-%d')
-    tomorrow_dt = today_dt + timedelta(days=1)
-    today_str = today_dt.strftime('%Y-%m-%d')
-    tomorrow_str = tomorrow_dt.strftime('%Y-%m-%d')
+    # 2. 获取赔率
+    print(f'[INFO] 获取 {len(all_matches)} 场北单赔率 (1x2d)...')
+    enriched = fetch_odds(all_matches, args.delay, args.parallel)
 
-    today_matches = [m for m in all_matches if m.get('match_time', '').startswith(today_str)]
-    tomorrow_matches = [m for m in all_matches if m.get('match_time', '').startswith(tomorrow_str)]
-
-    # 如果日期不匹配（数据源日期格式可能不同），全部放今天
-    if not today_matches and not tomorrow_matches:
-        print(f'[INFO] 日期不匹配(数据源日期与实际日期可能不一致), 全部放今天')
-        today_matches = all_matches[:]
-        tomorrow_matches = []
-
-    print(f'[INFO] 今天({today_str}): {len(today_matches)} 场, 明天({tomorrow_str}): {len(tomorrow_matches)} 场')
-
-    # 拿赔率 (所有比赛一次性拿，按sid去重)
-    seen_sids = set()
-    all_to_fetch = []
-    for batch_name, batch in [('today', today_matches), ('tomorrow', tomorrow_matches)]:
-        for m in batch:
-            if m['sid'] not in seen_sids:
-                all_to_fetch.append(m)
-                seen_sids.add(m['sid'])
-    print(f'[INFO] 获取 {len(all_to_fetch)} 场赔率 (1x2d, 去重)...')
-    enriched = fetch_odds(all_to_fetch, args.delay, args.parallel)
-
-    # 建立 sid->match 映射 (enriched里用fid)
-    enriched_by_sid = {m['fid']: m for m in enriched}
-
-    # 保存今天
-    today_enriched = [enriched_by_sid[m['sid']] for m in today_matches if m['sid'] in enriched_by_sid]
-    today_basename = args.save or ('matches_' + today_str.replace('-', ''))
-    today_fpath = os.path.join(DATA_DIR, f'{today_basename}.json')
-    os.makedirs(DATA_DIR, exist_ok=True)
-    with open(today_fpath, 'w', encoding='utf-8') as f:
-        json.dump({
-            'date': today_str,
-            'fetched_at': datetime.now().isoformat(),
-            'total': len(today_enriched),
-            'source': 'titan007',
-            'matches': today_enriched,
-        }, f, ensure_ascii=False, indent=2)
-    print(f'[OK] {len(today_enriched)} 场 → {today_fpath}')
-
-    # 保存明天
-    tomorrow_fpath = os.path.join(DATA_DIR, f'matches_{tomorrow_str.replace("-", "")}.json')
-    if tomorrow_matches and (not os.path.exists(tomorrow_fpath) or args.refresh):
-        tomorrow_enriched = [enriched_by_sid[m['sid']] for m in tomorrow_matches if m['sid'] in enriched_by_sid]
-        with open(tomorrow_fpath, 'w', encoding='utf-8') as f:
-            json.dump({
-                'date': tomorrow_str,
-                'fetched_at': datetime.now().isoformat(),
-                'total': len(tomorrow_enriched),
-                'source': 'titan007',
-                'matches': tomorrow_enriched,
-            }, f, ensure_ascii=False, indent=2)
-        print(f'[OK] {len(tomorrow_enriched)} 场 → {tomorrow_fpath}')
-    elif tomorrow_matches:
-        print(f'[SKIP] 明天文件已存在: {tomorrow_fpath}')
-
-
-def _fetch_single_day(date_str, max_matches, delay, parallel, save):
-    """(已弃用，保留兼容) 抓取并保存单日比赛数据"""
-    print(f'[INFO] 从bfdata_ut.js获取 {date_str} 北单+竞足比赛...')
-    all_matches = fetch_all_matches(date_str, max_matches)
-
-    if not all_matches:
-        print(f'[WARN] {date_str} 无比赛数据')
-        return
-
-    print(f'[INFO] 获取 {len(all_matches)} 场赔率 (1x2d)...')
-    enriched = fetch_odds(all_matches, delay, parallel)
-
-    basename = save or ('matches_' + date_str.replace('-', ''))
-    fpath = os.path.join(DATA_DIR, f'{basename}.json')
+    # 3. 输出
     out = {
         'date': date_str,
         'fetched_at': datetime.now().isoformat(),
@@ -514,6 +418,7 @@ def _fetch_single_day(date_str, max_matches, delay, parallel, save):
         'source': 'titan007',
         'matches': enriched,
     }
+
     os.makedirs(DATA_DIR, exist_ok=True)
     with open(fpath, 'w', encoding='utf-8') as f:
         json.dump(out, f, ensure_ascii=False, indent=2)
