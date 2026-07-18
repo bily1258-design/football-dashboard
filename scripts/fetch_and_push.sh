@@ -16,7 +16,7 @@ TOMORROW=$(date -d "$DATE +1 day" '+%Y-%m-%d')
 TOMORROW_FILE="data/matches_${TOMORROW//-/}.json"
 if [ ! -f "$TOMORROW_FILE" ]; then
     echo "[$(date '+%H:%M:%S')] 抓取 $TOMORROW (凌晨场)..."
-    python3 scripts/fetch_zqdc.py --date "$TOMORROW" --no-pinnacle --no-hkjc
+    python3 scripts/fetch_zqdc.py --date "$TOMORROW"
 fi
 
 if [ ! -f "$FILE" ]; then

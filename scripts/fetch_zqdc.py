@@ -1,18 +1,16 @@
 #!/usr/bin/env python3
-"""fetch_zqdc.py — 从titan007获取北单/竞彩比赛数据
+"""fetch_zqdc.py — 从titan007获取北单/竞彩比赛数据 (v2, 2026-07-19)
 
-替代：原500.com版(已废弃)
-
-数据流:
-1. 从 titan007 CommonInterface type=2 获取当日所有比赛
-2. 获取平博赔率(cid=432) + HKJC赔率(cid=177)
+数据流（新管道，替换已失效的CommonInterface+op1）:
+1. bfdata_ut.js → 解析比赛列表，过滤北单(f[59]!="")
+2. 1x2d.titan007.com/{sid}.js → 获取全公司赔率(含HKJC+Pinnacle)
 3. 输出到 data/matches_{日期}.json
 
 用法:
   python3 scripts/fetch_zqdc.py                                    # 今天
   python3 scripts/fetch_zqdc.py --date 2026-07-12                 # 指定日期
-  python3 scripts/fetch_zqdc.py --date 2026-07-12 --no-pinnacle   # 跳过平博
   python3 scripts/fetch_zqdc.py --date 2026-07-12 --backfill      # 比分回填
+  python3 scripts/fetch_zqdc.py --max 5                            # 只取前5场(测试)
 
 输出: data/matches_{YYYYMMDD}.json
 """
@@ -21,40 +19,221 @@ from datetime import datetime, date, timezone, timedelta
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(os.path.dirname(SCRIPT_DIR), "data")
-
 sys.path.insert(0, SCRIPT_DIR)
-from titan007_utils import get_match_list, get_odds_history, fetch_url
 
-# titan007 cid映射
-CID_PINNACLE = 177   # 平博
-CID_HKJC = 432       # 香港马会
+# ─────── 1x2d 赔率接口（新核心） ───────
 
-
-def fetch_all_matches(date_str, max_matches=0, delay=0.3, workers=3):
-    """从titan007获取当日所有比赛，带赔率"""
-    all_matches = get_match_list(date_str)
-    print(f'[INFO] 共 {len(all_matches)} 场比赛')
+def fetch_1x2d_odds(sid):
+    """从1x2d.titan007.com/{sid}.js获取全公司赔率
     
+    返回 {cid: {name, init_w/d/l, curr_w/d/l}} 或 None
+    """
+    ts = int(time.time() * 1000)
+    url = f'https://1x2d.titan007.com/{sid}.js?r=007{ts}'
+    req = urllib.request.Request(url, headers={
+        'User-Agent': 'Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.6099.230 Mobile Safari/537.36',
+        'Referer': f'https://1x2.titan007.com/oddslist/{sid}.htm',
+    })
+    try:
+        resp = urllib.request.urlopen(req, timeout=10)
+        text = resp.read().decode('utf-8-sig')
+    except Exception as e:
+        print(f'[WARN] 1x2d/{sid}.js 抓取失败: {e}')
+        return None
+
+    game_match = re.search(r'var game=Array\(([\s\S]*?)\);', text)
+    if not game_match:
+        print(f'[WARN] 1x2d/{sid}.js 无 game 数组')
+        return None
+
+    raw = game_match.group(1)
+    companies = re.findall(r'"([^"]*)"', raw)
+
+    odds = {}
+    for entry in companies:
+        fields = entry.split('|')
+        if len(fields) < 17:
+            continue
+        cid = fields[0]
+        try:
+            odds[cid] = {
+                'name': fields[2],
+                'init_w': f_float(fields[3]),
+                'init_d': f_float(fields[4]),
+                'init_l': f_float(fields[5]),
+                'init_rr': f_float(fields[9]),
+                'curr_w': f_float(fields[10]),
+                'curr_d': f_float(fields[11]),
+                'curr_l': f_float(fields[12]),
+                'curr_rr': f_float(fields[16]),
+            }
+        except (ValueError, IndexError):
+            pass
+    return odds
+
+
+def f_float(v):
+    """安全转float，空字符串返回None"""
+    if v and v.strip():
+        try:
+            return round(float(v), 2)
+        except ValueError:
+            return None
+    return None
+
+
+# ─────── bfdata_ut.js ───────
+
+def fetch_bfdata():
+    """获取并解析bfdata_ut.js，返回所有比赛的字段数组
+    
+    返回: [{sid, league, hometeam, awayteam, time, display_time, fields_list}]
+    """
+    ts = int(time.time() * 1000)
+    url = f'https://livestatic.titan007.com/vbsxml/bfdata_ut.js?r=007{ts}'
+    req = urllib.request.Request(url, headers={
+        'User-Agent': 'Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.6099.230 Mobile Safari/537.36',
+        'Referer': 'https://live.titan007.com/',
+        'Cookie': 'user=""; undefined=""',
+    })
+    try:
+        resp = urllib.request.urlopen(req, timeout=10)
+        raw = resp.read()
+    except Exception as e:
+        print(f'[WARN] bfdata_ut.js 抓取失败: {e}')
+        return []
+
+    if len(raw) < 100:
+        print(f'[WARN] bfdata_ut.js 返回空数据({len(raw)} bytes)')
+        return []
+
+    pattern = rb"A\[(\d+)\]=\"([^\"]*?)\"\.split\('\^'\);"
+    matches = []
+    for m in re.finditer(pattern, raw):
+        try:
+            val_bytes = m.group(2)
+            val = val_bytes.decode('utf-8')
+            fields = val.split('^')
+            if len(fields) < 3:
+                continue
+            matches.append({
+                'sid': fields[0],
+                'league': re.sub(r'<[^>]+>', '', fields[2]),
+                'hometeam': re.sub(r'<[^>]+>', '', fields[5]) if len(fields) > 5 else '',
+                'awayteam': re.sub(r'<[^>]+>', '', fields[8]) if len(fields) > 8 else '',
+                'time': fields[12] if len(fields) > 12 else '',
+                'display_time': fields[11] if len(fields) > 11 else '',
+                'fields': fields,
+            })
+        except (UnicodeDecodeError, IndexError):
+            pass
+
+    return matches
+
+
+def filter_beidan(matches):
+    """从比赛列表中过滤出北单(f[59]!="")"""
+    result = []
+    for m in matches:
+        f = m['fields']
+        if len(f) > 59 and f[59].strip():
+            result.append(m)
+    return result
+
+
+def filter_jingzu(matches):
+    """从比赛列表中过滤出竞足(f[58]!="")"""
+    result = []
+    for m in matches:
+        f = m['fields']
+        if len(f) > 58 and f[58].strip():
+            result.append(m)
+    return result
+
+
+def parse_time(fields):
+    """从fields解析比赛时间"""
+    try:
+        if len(fields) > 12 and fields[12]:
+            parts = fields[12].split(',')
+            if len(parts) >= 5:
+                y, mo, d, h, mi = parts[:5]
+                return f'{y}-{int(mo):02d}-{int(d):02d} {int(h):02d}:{int(mi):02d}'
+    except (ValueError, IndexError):
+        pass
+    if len(fields) > 11 and fields[11]:
+        return f'0000-00-00 {fields[11]}'
+    return ''
+
+
+# ─────── 主逻辑 ───────
+
+def fetch_all_matches(date_str, max_matches=0):
+    """从bfdata_ut.js获取北单比赛列表"""
+    all_matches = fetch_bfdata()
+    if not all_matches:
+        print(f'[WARN] bfdata_ut.js 返回空列表')
+        return []
+
+    # 过滤北单
+    beidan = filter_beidan(all_matches)
+    jingzu = filter_jingzu(all_matches)
+
+    print(f'[INFO] bfdata_ut.js → 总{len(all_matches)}场, '
+          f'北单{len(beidan)}场, 竞足{len(jingzu)}场')
+
+    # 过滤非当天比赛
+    date_compact = date_str.replace('-', '')
+    filtered = []
+    for m in beidan:
+        t = m.get('time', '')  # yyyy,mm,dd,hh,mm,ss
+        if t:
+            t_parts = t.split(',')
+            if len(t_parts) >= 3:
+                md = f'{t_parts[0]}{int(t_parts[1]):02d}{int(t_parts[2]):02d}'
+                if md == date_compact:
+                    filtered.append(m)
+
+    # 如果当天没有匹配的（7/19凌晨的比赛是7/18晚的），放宽到所有北单
+    if not filtered and beidan:
+        print(f'[INFO] 当天({date_compact})无匹配北单, 取全部{len(beidan)}场')
+        filtered = beidan
+
     if max_matches > 0:
-        all_matches = all_matches[:max_matches]
-    
-    return all_matches
+        filtered = filtered[:max_matches]
+
+    # 转成标准格式
+    result = []
+    for m in filtered:
+        f = m['fields']
+        result.append({
+            'sid': m['sid'],
+            'league': m['league'],
+            'home_team': m['hometeam'],
+            'away_team': m['awayteam'],
+            'display_time': m['display_time'],
+            'match_time': parse_time(f),
+            'date': date_str,
+        })
+
+    return result
 
 
-def fetch_odds(m, delay=0.3, workers=3):
-    """并发获取所有比赛的平博+HKJC赔率"""
+def fetch_odds(matches, delay=0.3, workers=3):
+    """并发获取所有比赛的1x2d赔率"""
     from concurrent.futures import ThreadPoolExecutor, as_completed
-    
-    total = len(m)
+
+    total = len(matches)
     enriched = []
-    
+
     def process_one(match):
         sid = match['sid']
         match_out = {
             'fid': sid,
             'date': match.get('date', ''),
-            'match_time': match.get('match_time', f"{match.get('date', '')} 00:00"),
-            'event': match.get('event', match.get('league', '')),
+            'match_time': match.get('match_time', ''),
+            'display_time': match.get('display_time', ''),
+            'event': match.get('league', ''),
             'home_team': match.get('home_team', ''),
             'away_team': match.get('away_team', ''),
             'score': '',
@@ -63,111 +242,88 @@ def fetch_odds(m, delay=0.3, workers=3):
             'home_rank': 0,
             'away_rank': 0,
         }
-        
-        # 平博赔率
-        p = get_odds_history(sid, CID_PINNACLE)
-        if p:
-            match_out['odds_pinnacle_open_win'] = p['open']['win']
-            match_out['odds_pinnacle_open_draw'] = p['open']['draw']
-            match_out['odds_pinnacle_open_loss'] = p['open']['loss']
-            match_out['odds_pinnacle_win'] = p['latest']['win']
-            match_out['odds_pinnacle_draw'] = p['latest']['draw']
-            match_out['odds_pinnacle_loss'] = p['latest']['loss']
-            match_out['odds_pinnacle_changes'] = p.get('changes', 1)
-            match_out['odds_pinnacle_company'] = 'Pinnacle'
-        
-        # HKJC赔率
-        h = get_odds_history(sid, CID_HKJC)
-        if h:
-            match_out['odds_hkjc_open_win'] = h['open']['win']
-            match_out['odds_hkjc_open_draw'] = h['open']['draw']
-            match_out['odds_hkjc_open_loss'] = h['open']['loss']
-            match_out['odds_hkjc_win'] = h['latest']['win']
-            match_out['odds_hkjc_draw'] = h['latest']['draw']
-            match_out['odds_hkjc_loss'] = h['latest']['loss']
-            match_out['odds_hkjc_changes'] = h.get('changes', 1)
-            match_out['odds_hkjc_company'] = 'HKJC'
-        
-        # 从分析页提取比赛时间(仅当有赔率时)
-        # 注意：titan007分析页的strTime可能引用上一轮时间
-        # （世界杯同对阵跨两轮时，strTime还是旧日期）
-        # 所以仅当 strTime 日期与比赛日期一致时才使用
-        if p or h:
-            try:
-                from titan007_utils import get_analysis_data
-                ad = get_analysis_data(sid)
-                if ad and ad.get('match_time'):
-                    mt = ad['match_time'].strip()
-                    if mt[:10] == match_out['date']:
-                        match_out['match_time'] = mt
-            except Exception:
-                pass  # 保持00:00兜底
+
+        odds = fetch_1x2d_odds(sid)
+        if odds:
+            # Pinnacle (cid=177)
+            p = odds.get('177')
+            if p:
+                match_out['odds_pinnacle_open_win'] = p['init_w']
+                match_out['odds_pinnacle_open_draw'] = p['init_d']
+                match_out['odds_pinnacle_open_loss'] = p['init_l']
+                match_out['odds_pinnacle_win'] = p['curr_w']
+                match_out['odds_pinnacle_draw'] = p['curr_d']
+                match_out['odds_pinnacle_loss'] = p['curr_l']
+                match_out['odds_pinnacle_changes'] = 0
+                match_out['odds_pinnacle_company'] = 'Pinnacle'
+
+            # HKJC (cid=432)
+            h = odds.get('432')
+            if h:
+                match_out['odds_hkjc_open_win'] = h['init_w']
+                match_out['odds_hkjc_open_draw'] = h['init_d']
+                match_out['odds_hkjc_open_loss'] = h['init_l']
+                match_out['odds_hkjc_win'] = h['curr_w']
+                match_out['odds_hkjc_draw'] = h['curr_d']
+                match_out['odds_hkjc_loss'] = h['curr_l']
+                match_out['odds_hkjc_changes'] = 0
+                match_out['odds_hkjc_company'] = 'HKJC'
 
         return match_out
-    
+
     with ThreadPoolExecutor(max_workers=workers) as executor:
-        fut_map = {executor.submit(process_one, m): m for m in m}
+        fut_map = {executor.submit(process_one, m): m for m in matches}
         done = 0
         for fut in as_completed(fut_map):
             done += 1
             match_out = fut.result()
             enriched.append(match_out)
+            ph = match_out.get('odds_pinnacle_win', '-')
+            pd = match_out.get('odds_pinnacle_draw', '-')
+            pl = match_out.get('odds_pinnacle_loss', '-')
+            hh = match_out.get('odds_hkjc_win', '-')
+            hd = match_out.get('odds_hkjc_draw', '-')
+            hl = match_out.get('odds_hkjc_loss', '-')
             print(f'  [{done}/{total}] ✓ {match_out["event"]} {match_out["home_team"]} vs {match_out["away_team"]}  '
-                  f'平博: {match_out.get("odds_pinnacle_open_win","-")}/{match_out.get("odds_pinnacle_open_draw","-")}/{match_out.get("odds_pinnacle_open_loss","-")}  '
-                  f'HKJC: {match_out.get("odds_hkjc_open_win","-")}/{match_out.get("odds_hkjc_open_draw","-")}/{match_out.get("odds_hkjc_open_loss","-")}')
+                  f'Pinnacle: {ph}/{pd}/{pl}  HKJC: {hh}/{hd}/{hl}')
             if delay > 0:
                 time.sleep(delay / workers)
-    
+
     # 按比赛时间排序
     enriched.sort(key=lambda x: x['match_time'])
     return enriched
 
 
-def get_score_from_titan007(sid):
-    """从titan007分析页提取比分 (homeScoreStr, guestScoreStr, totalScoreStr)"""
-    import re
-    try:
-        url = f'https://zq.titan007.com/Analysis/{sid}.htm'
-        html = fetch_url(url, timeout=10)
-        home_m = re.search(r'var\s+homeScoreStr\s*=\s*\["(\d+)"\]', html)
-        guest_m = re.search(r'var\s+guestScoreStr\s*=\s*\["(\d+)"\]', html)
-        if home_m and guest_m:
-            return f'{home_m.group(1)}-{guest_m.group(1)}'
-        return None
-    except Exception as e:
-        return None
-
+# ─────── 比分回填 ───────
 
 def get_scores_from_over_page(date_str):
-    """从titan007 Over_日期.htm 页面获取当天所有完场比分
+    """从titan007 Over_日期.htm 获取当天所有完场比分
     
-    返回: { (home_team, away_team): score_str } 字典
+    返回: { (home_team, away_team): score_str }
     """
-    import re, urllib.request
     try:
         url = f'https://bf.titan007.com/football/Over_{date_str.replace("-", "")}.htm'
-        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        req = urllib.request.Request(url, headers={
+            'User-Agent': 'Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36',
+        })
         resp = urllib.request.urlopen(req, timeout=10)
         raw = resp.read()
         html = raw.decode('gb2312', errors='replace')
-        
+
         scores = {}
-        rows = re.findall(r'<tr[^>]*>.*?</tr>', html, re.DOTALL|re.IGNORECASE)
+        rows = re.findall(r'<tr[^>]*>.*?</tr>', html, re.DOTALL | re.IGNORECASE)
         for row in rows:
-            tds = re.findall(r'<td[^>]*>(.*?)</td>', row, re.DOTALL|re.IGNORECASE)
+            tds = re.findall(r'<td[^>]*>(.*?)</td>', row, re.DOTALL | re.IGNORECASE)
             if len(tds) >= 6:
                 tds_clean = []
                 for td in tds:
                     c = re.sub(r'<[^>]+>', ' ', td).strip()
                     c = re.sub(r'\s+', ' ', c)
                     tds_clean.append(c)
-                # 格式: 联赛 | 时间 | 状态 | 主队 | 比分 | 客队
                 home = tds_clean[3].strip()
                 score = tds_clean[4].strip()
                 away = tds_clean[5].strip()
-                # 格式如 "6 - 1", "0 - 0"等
                 if re.match(r'^\d+\s*-\s*\d+$', score):
-                    # 去掉排名(如 [1]) 对比
                     home_clean = re.sub(r'\s*\[[^\]]*\]', '', home).strip()
                     away_clean = re.sub(r'\s*\[[^\]]*\]', '', away).strip()
                     home_clean = re.sub(r'\([^)]*\)', '', home_clean).strip()
@@ -180,17 +336,16 @@ def get_scores_from_over_page(date_str):
 
 
 def do_backfill(fpath, date_str):
-    """比分回填：新sid→titan007分析页，旧sid→500.com wanchang兜底"""
+    """比分回填：titan007 Over页"""
     if not os.path.exists(fpath):
         print(f'[WARN] {fpath} 不存在，跳过回填')
         return
-    
+
     with open(fpath, encoding='utf-8') as f:
         existing = json.load(f)
     existing_matches = {m['fid']: m for m in existing.get('matches', [])}
     updated = 0
-    
-    # 1. titan007 Over页完整比分表 — 所有sid通用，按队名匹配
+
     unscored = [(fid, m) for fid, m in existing_matches.items()
                 if not m.get('score') and m.get('match_time')]
     if unscored:
@@ -205,41 +360,14 @@ def do_backfill(fpath, date_str):
                     m['score'] = scores[key]
                     over_ok += 1
                     updated += 1
-                else:
-                    # 模糊匹配: 看主客互换
-                    if (away, home) in scores:
-                        m['score'] = scores[(away, home)]
-                        over_ok += 1
-                        updated += 1
-            if over_ok:
-                print(f'[BACKFILL] titan007 Over页 → {over_ok}/{len(unscored)} 场')
-            else:
-                print(f'[BACKFILL] titan007 Over页 → 未匹配到比分')
+                elif (away, home) in scores:
+                    m['score'] = scores[(away, home)]
+                    over_ok += 1
+                    updated += 1
+            print(f'[BACKFILL] titan007 Over页 → {over_ok}/{len(unscored)} 场')
         else:
             print(f'[BACKFILL] titan007 Over页 → 页面无完场数据')
-    
-    # 2. wanchang.php兜底（500.com，补Over页漏掉的旧sid）
-    wc_unscored = [(fid, m) for fid, m in existing_matches.items()
-                   if not fid.startswith('29') and not m.get('score') and m.get('match_time')]
-    if wc_unscored:
-        print(f'[BACKFILL] wanchang.php兜底: {len(wc_unscored)} 场待补…')
-        try:
-            wc_html = fetch_url('https://live.500.com/wanchang.php')
-            wc_scores = {}
-            for pk_div in re.finditer(
-                r'<div\s+class="pk">.*?<a[^>]*fid=(\d+)[^>]*>(\d+)</a>\s*<span>-</span>\s*<a[^>]*fid=\1[^>]*>(\d+)</a>',
-                wc_html, re.DOTALL | re.IGNORECASE):
-                wc_scores[pk_div.group(1)] = f'{pk_div.group(2)}-{pk_div.group(3)}'
-            wc_updated = 0
-            for fid, m in wc_unscored:
-                if fid in wc_scores:
-                    m['score'] = wc_scores[fid]
-                    wc_updated += 1
-                    updated += 1
-            print(f'[BACKFILL] wanchang.php → {wc_updated}/{len(wc_unscored)} 场')
-        except Exception as e:
-            print(f'[BACKFILL] wanchang.php抓取失败: {e}')
-    
+
     if updated:
         existing['matches'] = list(existing_matches.values())
         existing['fetched_at'] = datetime.now().isoformat()
@@ -250,42 +378,38 @@ def do_backfill(fpath, date_str):
         print(f'[BACKFILL] {fpath} → 无变化')
 
 
+# ─────── 入口 ───────
+
 def main():
     parser = argparse.ArgumentParser(description='从titan007获取北单/竞彩比赛数据')
     parser.add_argument('--date', default=date.today().isoformat())
     parser.add_argument('--max', type=int, default=0, help='最多处理N场(0=全部)')
     parser.add_argument('--delay', type=float, default=0.3)
     parser.add_argument('--parallel', type=int, default=3)
-    parser.add_argument('--no-pinnacle', action='store_true', help='跳过平博抓取')
-    parser.add_argument('--no-hkjc', action='store_true', help='跳过香港马会抓取')
     parser.add_argument('--backfill', action='store_true', help='比分回填')
     parser.add_argument('--save', default='')
     args = parser.parse_args()
-    
+
     date_str = args.date
     basename = args.save or ('matches_' + date_str.replace('-', ''))
     fpath = os.path.join(DATA_DIR, f'{basename}.json')
-    
+
     if args.backfill:
         do_backfill(fpath, date_str)
         return
-    
-    # 1. 获取比赛列表
-    print(f'[INFO] 从titan007获取 {date_str} 比赛...')
-    all_matches = fetch_all_matches(date_str, args.max, args.delay, args.parallel)
-    
+
+    # 1. 获取北单比赛列表
+    print(f'[INFO] 从bfdata_ut.js获取 {date_str} 北单比赛...')
+    all_matches = fetch_all_matches(date_str, args.max)
+
     if not all_matches:
-        print(f'[WARN] {date_str} 无比赛数据')
+        print(f'[WARN] {date_str} 无北单比赛数据')
         return
-    
-    # 给match补上date字段
-    for m in all_matches:
-        m['date'] = date_str
-    
-    # 2. 获取赔率（合并平博+HKJC到一次请求）
-    print('[INFO] 获取赔率...')
+
+    # 2. 获取赔率
+    print(f'[INFO] 获取 {len(all_matches)} 场北单赔率 (1x2d)...')
     enriched = fetch_odds(all_matches, args.delay, args.parallel)
-    
+
     # 3. 输出
     out = {
         'date': date_str,
@@ -294,7 +418,7 @@ def main():
         'source': 'titan007',
         'matches': enriched,
     }
-    
+
     os.makedirs(DATA_DIR, exist_ok=True)
     with open(fpath, 'w', encoding='utf-8') as f:
         json.dump(out, f, ensure_ascii=False, indent=2)
