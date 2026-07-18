@@ -206,6 +206,17 @@ def fetch_all_matches(date_str, max_matches=0):
     result = []
     for m in filtered:
         f = m['fields']
+        # 从bfdata_ut.js提取比分: f[13]=状态(-1=完场, 3=结束/其他), f[14]=主队进球, f[15]=客队进球
+        score = ''
+        if len(f) > 15:
+            try:
+                status = int(f[13])
+                hs = int(f[14])
+                aas = int(f[15])
+                if status in (-1, 3):  # 完场
+                    score = f"{hs}-{aas}"
+            except (ValueError, IndexError):
+                pass
         result.append({
             'sid': m['sid'],
             'league': m['league'],
@@ -214,6 +225,7 @@ def fetch_all_matches(date_str, max_matches=0):
             'display_time': m['display_time'],
             'match_time': parse_time(f),
             'date': date_str,
+            'score': score,
         })
 
     return result
@@ -236,7 +248,7 @@ def fetch_odds(matches, delay=0.3, workers=3):
             'event': match.get('league', ''),
             'home_team': match.get('home_team', ''),
             'away_team': match.get('away_team', ''),
-            'score': '',
+            'score': match.get('score', ''),
             'status': '',
             'source': 'beidan',
             'home_rank': 0,
@@ -350,6 +362,24 @@ def do_backfill(fpath, date_str):
                 if not m.get('score') and m.get('match_time')]
     if unscored:
         scores = get_scores_from_over_page(date_str)
+
+        # 如果主Over页无数据，尝试从比赛match_time提取日期（因源数据中时间可能跨月）
+        if not scores and unscored:
+            alt_dates = sorted(set(
+                m['match_time'][:10].replace('-', '')
+                for _, m in unscored
+                if m.get('match_time', '').startswith('20')
+            ))
+            for alt_date in alt_dates:
+                alt_date_fmt = f'{alt_date[:4]}-{alt_date[4:6]}-{alt_date[6:]}'
+                if alt_date_fmt == date_str:
+                    continue  # 已尝试过
+                alt_scores = get_scores_from_over_page(alt_date)
+                if alt_scores:
+                    scores = alt_scores
+                    print(f'[BACKFILL] 从备选日期 {alt_date} 获取 {len(scores)} 场比分')
+                    break
+
         if scores:
             over_ok = 0
             for fid, m in unscored:

@@ -24,8 +24,8 @@ if [ ! -f "$FILE" ]; then
     exit 0
 fi
 
-# ========== 比分回填：重新抓取前3天，更新已完赛比分 ==========
-for i in 1 2 3; do
+# ========== 比分回填：重新抓取今天+前3天，更新已完赛比分 ==========
+for i in 0 1 2 3; do
     BACK_DATE=$(date -d "$DATE -$i day" '+%Y-%m-%d')
     BACK_FILE="data/matches_${BACK_DATE//-/}.json"
     if [ -f "$BACK_FILE" ]; then
