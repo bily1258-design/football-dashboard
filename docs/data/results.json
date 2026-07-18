@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-18 16:14:19",
+  "generated_at": "2026-07-18 16:15:23",
   "total_matches": 202,
   "date_range": "2026-07-10 ~ 2026-07-21",
   "hit_count": 113,
@@ -21075,372 +21075,6 @@
       }
     },
     {
-      "fid": "2929659",
-      "date": "2026-07-18",
-      "match_time": "2026-06-18 18:30",
-      "event": "韩K联",
-      "home_team": "仁川联队",
-      "away_team": "全北现代",
-      "score": "",
-      "hit": "",
-      "source": "北单+竞足",
-      "odds_source": "pinnacle",
-      "odds_win": 3.53,
-      "odds_draw": 3.12,
-      "odds_loss": 2.33,
-      "margin": 0.033,
-      "model_win": 0.3132,
-      "model_draw": 0.2912,
-      "model_loss": 0.3956,
-      "raw_model_win": 0.3106,
-      "raw_model_draw": 0.2971,
-      "raw_model_loss": 0.3923,
-      "open_win_pin": 3.38,
-      "open_draw_pin": 3.2,
-      "open_loss_pin": 2.21,
-      "lgbm_prediction": "away",
-      "lgbm_prediction_cn": "客胜",
-      "lgbm_prediction_prob": 0.4173,
-      "prediction": "away",
-      "prediction_cn": "客胜",
-      "prediction_prob": 0.4173,
-      "model_prediction": "home",
-      "model_prediction_cn": "主胜",
-      "model_prediction_prob": 0.3132,
-      "draw_boosted": false,
-      "draw_confidence": 10,
-      "draw_signal": "none",
-      "diff_lgb_poisson": -0.0027,
-      "lgbm_win": 0.2942,
-      "lgbm_draw": 0.2886,
-      "lgbm_loss": 0.4173,
-      "comparison": {
-        "open": [
-          3.38,
-          3.2,
-          2.21
-        ],
-        "current": [
-          3.53,
-          3.12,
-          2.33
-        ],
-        "div_pct": [
-          4.4,
-          -2.5,
-          5.2
-        ],
-        "source": "pinnacle"
-      },
-      "pin_comparison": {
-        "open": [
-          3.3,
-          2.9,
-          2.06
-        ],
-        "current": [
-          3.3,
-          2.97,
-          2.03
-        ],
-        "div_pct": [
-          0.0,
-          2.4,
-          -1.5
-        ],
-        "source": "hkjc"
-      },
-      "league_baseline": [
-        0.45,
-        0.24,
-        0.31
-      ],
-      "league": "",
-      "home_rank": 0,
-      "away_rank": 0,
-      "home_pts": 0,
-      "away_pts": 0,
-      "warning": "⚠️",
-      "stats": {
-        "home_recent": [
-          {
-            "result": "负",
-            "league": "韓K聯",
-            "date": "26-07-12",
-            "home": "仁川聯",
-            "away": "FC安養",
-            "home_score": 0,
-            "away_score": 1
-          },
-          {
-            "result": "胜",
-            "league": "韓K聯",
-            "date": "26-07-05",
-            "home": "FC首爾",
-            "away": "仁川聯",
-            "home_score": 1,
-            "away_score": 0
-          },
-          {
-            "result": "胜",
-            "league": "韓K聯",
-            "date": "26-05-16",
-            "home": "仁川聯",
-            "away": "FC光州",
-            "home_score": 4,
-            "away_score": 0
-          },
-          {
-            "result": "负",
-            "league": "韓K聯",
-            "date": "26-05-12",
-            "home": "仁川聯",
-            "away": "浦項制鐵",
-            "home_score": 0,
-            "away_score": 1
-          },
-          {
-            "result": "平",
-            "league": "韓K聯",
-            "date": "26-05-05",
-            "home": "大田市民",
-            "away": "仁川聯",
-            "home_score": 0,
-            "away_score": 0
-          },
-          {
-            "result": "负",
-            "league": "韓K聯",
-            "date": "26-05-02",
-            "home": "仁川聯",
-            "away": "FC江原",
-            "home_score": 0,
-            "away_score": 1
-          },
-          {
-            "result": "胜",
-            "league": "韓K聯",
-            "date": "26-04-25",
-            "home": "仁川聯",
-            "away": "濟州SK",
-            "home_score": 1,
-            "away_score": 0
-          },
-          {
-            "result": "负",
-            "league": "韓K聯",
-            "date": "26-04-21",
-            "home": "全北汽車",
-            "away": "仁川聯",
-            "home_score": 1,
-            "away_score": 2
-          },
-          {
-            "result": "平",
-            "league": "韓K聯",
-            "date": "26-04-18",
-            "home": "富川FC",
-            "away": "仁川聯",
-            "home_score": 2,
-            "away_score": 2
-          },
-          {
-            "result": "负",
-            "league": "韓K聯",
-            "date": "26-04-11",
-            "home": "仁川聯",
-            "away": "蔚山HD",
-            "home_score": 1,
-            "away_score": 2
-          }
-        ],
-        "away_recent": [
-          {
-            "result": "负",
-            "league": "韓K聯",
-            "date": "26-07-11",
-            "home": "蔚山HD",
-            "away": "全北汽車",
-            "home_score": 1,
-            "away_score": 3
-          },
-          {
-            "result": "负",
-            "league": "韓K聯",
-            "date": "26-07-04",
-            "home": "全北汽車",
-            "away": "FC江原",
-            "home_score": 1,
-            "away_score": 2
-          },
-          {
-            "result": "胜",
-            "league": "韓K聯",
-            "date": "26-05-17",
-            "home": "全北汽車",
-            "away": "金泉尚武",
-            "home_score": 1,
-            "away_score": 0
-          },
-          {
-            "result": "平",
-            "league": "韓K聯",
-            "date": "26-05-13",
-            "home": "1富川FC",
-            "away": "全北汽車",
-            "home_score": 0,
-            "away_score": 0
-          },
-          {
-            "result": "平",
-            "league": "韓K聯",
-            "date": "26-05-10",
-            "home": "FC安養",
-            "away": "全北汽車",
-            "home_score": 1,
-            "away_score": 1
-          },
-          {
-            "result": "胜",
-            "league": "韓K聯",
-            "date": "26-05-05",
-            "home": "全北汽車",
-            "away": "FC光州",
-            "home_score": 4,
-            "away_score": 0
-          },
-          {
-            "result": "负",
-            "league": "韓K聯",
-            "date": "26-05-02",
-            "home": "濟州SK",
-            "away": "全北汽車",
-            "home_score": 0,
-            "away_score": 2
-          },
-          {
-            "result": "胜",
-            "league": "韓K聯",
-            "date": "26-04-26",
-            "home": "全北汽車",
-            "away": "浦項制鐵",
-            "home_score": 3,
-            "away_score": 2
-          },
-          {
-            "result": "负",
-            "league": "韓K聯",
-            "date": "26-04-21",
-            "home": "全北汽車",
-            "away": "仁川聯",
-            "home_score": 1,
-            "away_score": 2
-          },
-          {
-            "result": "平",
-            "league": "韓K聯",
-            "date": "26-04-18",
-            "home": "FC江原",
-            "away": "全北汽車",
-            "home_score": 1,
-            "away_score": 1
-          }
-        ],
-        "h2h": [
-          {
-            "result": "负",
-            "league": "韓K聯",
-            "date": "26-04-21",
-            "home": "全北汽車",
-            "away": "仁川聯",
-            "home_score": 1,
-            "away_score": 2
-          },
-          {
-            "result": "平",
-            "league": "韓K聯",
-            "date": "24-11-02",
-            "home": "全北汽車",
-            "away": "仁川聯",
-            "home_score": 0,
-            "away_score": 0
-          },
-          {
-            "result": "负",
-            "league": "韓K聯",
-            "date": "24-08-24",
-            "home": "仁川聯",
-            "away": "全北汽車",
-            "home_score": 0,
-            "away_score": 1
-          },
-          {
-            "result": "平",
-            "league": "韓K聯",
-            "date": "24-06-16",
-            "home": "全北汽車",
-            "away": "仁川聯",
-            "home_score": 2,
-            "away_score": 2
-          },
-          {
-            "result": "胜",
-            "league": "韓K聯",
-            "date": "24-05-01",
-            "home": "仁川聯",
-            "away": "全北汽車1",
-            "home_score": 3,
-            "away_score": 0
-          },
-          {
-            "result": "平",
-            "league": "韓K聯",
-            "date": "23-11-12",
-            "home": "仁川聯",
-            "away": "全北汽車",
-            "home_score": 1,
-            "away_score": 1
-          },
-          {
-            "result": "胜",
-            "league": "韓國杯",
-            "date": "23-11-01",
-            "home": "全北汽車",
-            "away": "仁川聯",
-            "home_score": 3,
-            "away_score": 1
-          },
-          {
-            "result": "胜",
-            "league": "韓K聯",
-            "date": "23-08-06",
-            "home": "全北汽車",
-            "away": "仁川聯",
-            "home_score": 2,
-            "away_score": 0
-          },
-          {
-            "result": "平",
-            "league": "韓K聯",
-            "date": "23-05-14",
-            "home": "仁川聯",
-            "away": "全北汽車",
-            "home_score": 0,
-            "away_score": 0
-          },
-          {
-            "result": "胜",
-            "league": "韓K聯",
-            "date": "23-04-09",
-            "home": "全北汽車",
-            "away": "仁川聯",
-            "home_score": 2,
-            "away_score": 0
-          }
-        ]
-      }
-    },
-    {
       "fid": "2929658",
       "date": "2026-07-18",
       "match_time": "2026-06-18 18:30",
@@ -21802,6 +21436,372 @@
             "away": "金泉尚武",
             "home_score": 0,
             "away_score": 1
+          }
+        ]
+      }
+    },
+    {
+      "fid": "2929659",
+      "date": "2026-07-18",
+      "match_time": "2026-06-18 18:30",
+      "event": "韩K联",
+      "home_team": "仁川联队",
+      "away_team": "全北现代",
+      "score": "",
+      "hit": "",
+      "source": "北单+竞足",
+      "odds_source": "pinnacle",
+      "odds_win": 3.53,
+      "odds_draw": 3.12,
+      "odds_loss": 2.33,
+      "margin": 0.033,
+      "model_win": 0.3132,
+      "model_draw": 0.2912,
+      "model_loss": 0.3956,
+      "raw_model_win": 0.3106,
+      "raw_model_draw": 0.2971,
+      "raw_model_loss": 0.3923,
+      "open_win_pin": 3.38,
+      "open_draw_pin": 3.2,
+      "open_loss_pin": 2.21,
+      "lgbm_prediction": "away",
+      "lgbm_prediction_cn": "客胜",
+      "lgbm_prediction_prob": 0.4173,
+      "prediction": "away",
+      "prediction_cn": "客胜",
+      "prediction_prob": 0.4173,
+      "model_prediction": "home",
+      "model_prediction_cn": "主胜",
+      "model_prediction_prob": 0.3132,
+      "draw_boosted": false,
+      "draw_confidence": 10,
+      "draw_signal": "none",
+      "diff_lgb_poisson": -0.0027,
+      "lgbm_win": 0.2942,
+      "lgbm_draw": 0.2886,
+      "lgbm_loss": 0.4173,
+      "comparison": {
+        "open": [
+          3.38,
+          3.2,
+          2.21
+        ],
+        "current": [
+          3.53,
+          3.12,
+          2.33
+        ],
+        "div_pct": [
+          4.4,
+          -2.5,
+          5.2
+        ],
+        "source": "pinnacle"
+      },
+      "pin_comparison": {
+        "open": [
+          3.3,
+          2.9,
+          2.06
+        ],
+        "current": [
+          3.3,
+          2.97,
+          2.03
+        ],
+        "div_pct": [
+          0.0,
+          2.4,
+          -1.5
+        ],
+        "source": "hkjc"
+      },
+      "league_baseline": [
+        0.45,
+        0.24,
+        0.31
+      ],
+      "league": "",
+      "home_rank": 0,
+      "away_rank": 0,
+      "home_pts": 0,
+      "away_pts": 0,
+      "warning": "⚠️",
+      "stats": {
+        "home_recent": [
+          {
+            "result": "负",
+            "league": "韓K聯",
+            "date": "26-07-12",
+            "home": "仁川聯",
+            "away": "FC安養",
+            "home_score": 0,
+            "away_score": 1
+          },
+          {
+            "result": "胜",
+            "league": "韓K聯",
+            "date": "26-07-05",
+            "home": "FC首爾",
+            "away": "仁川聯",
+            "home_score": 1,
+            "away_score": 0
+          },
+          {
+            "result": "胜",
+            "league": "韓K聯",
+            "date": "26-05-16",
+            "home": "仁川聯",
+            "away": "FC光州",
+            "home_score": 4,
+            "away_score": 0
+          },
+          {
+            "result": "负",
+            "league": "韓K聯",
+            "date": "26-05-12",
+            "home": "仁川聯",
+            "away": "浦項制鐵",
+            "home_score": 0,
+            "away_score": 1
+          },
+          {
+            "result": "平",
+            "league": "韓K聯",
+            "date": "26-05-05",
+            "home": "大田市民",
+            "away": "仁川聯",
+            "home_score": 0,
+            "away_score": 0
+          },
+          {
+            "result": "负",
+            "league": "韓K聯",
+            "date": "26-05-02",
+            "home": "仁川聯",
+            "away": "FC江原",
+            "home_score": 0,
+            "away_score": 1
+          },
+          {
+            "result": "胜",
+            "league": "韓K聯",
+            "date": "26-04-25",
+            "home": "仁川聯",
+            "away": "濟州SK",
+            "home_score": 1,
+            "away_score": 0
+          },
+          {
+            "result": "负",
+            "league": "韓K聯",
+            "date": "26-04-21",
+            "home": "全北汽車",
+            "away": "仁川聯",
+            "home_score": 1,
+            "away_score": 2
+          },
+          {
+            "result": "平",
+            "league": "韓K聯",
+            "date": "26-04-18",
+            "home": "富川FC",
+            "away": "仁川聯",
+            "home_score": 2,
+            "away_score": 2
+          },
+          {
+            "result": "负",
+            "league": "韓K聯",
+            "date": "26-04-11",
+            "home": "仁川聯",
+            "away": "蔚山HD",
+            "home_score": 1,
+            "away_score": 2
+          }
+        ],
+        "away_recent": [
+          {
+            "result": "负",
+            "league": "韓K聯",
+            "date": "26-07-11",
+            "home": "蔚山HD",
+            "away": "全北汽車",
+            "home_score": 1,
+            "away_score": 3
+          },
+          {
+            "result": "负",
+            "league": "韓K聯",
+            "date": "26-07-04",
+            "home": "全北汽車",
+            "away": "FC江原",
+            "home_score": 1,
+            "away_score": 2
+          },
+          {
+            "result": "胜",
+            "league": "韓K聯",
+            "date": "26-05-17",
+            "home": "全北汽車",
+            "away": "金泉尚武",
+            "home_score": 1,
+            "away_score": 0
+          },
+          {
+            "result": "平",
+            "league": "韓K聯",
+            "date": "26-05-13",
+            "home": "1富川FC",
+            "away": "全北汽車",
+            "home_score": 0,
+            "away_score": 0
+          },
+          {
+            "result": "平",
+            "league": "韓K聯",
+            "date": "26-05-10",
+            "home": "FC安養",
+            "away": "全北汽車",
+            "home_score": 1,
+            "away_score": 1
+          },
+          {
+            "result": "胜",
+            "league": "韓K聯",
+            "date": "26-05-05",
+            "home": "全北汽車",
+            "away": "FC光州",
+            "home_score": 4,
+            "away_score": 0
+          },
+          {
+            "result": "负",
+            "league": "韓K聯",
+            "date": "26-05-02",
+            "home": "濟州SK",
+            "away": "全北汽車",
+            "home_score": 0,
+            "away_score": 2
+          },
+          {
+            "result": "胜",
+            "league": "韓K聯",
+            "date": "26-04-26",
+            "home": "全北汽車",
+            "away": "浦項制鐵",
+            "home_score": 3,
+            "away_score": 2
+          },
+          {
+            "result": "负",
+            "league": "韓K聯",
+            "date": "26-04-21",
+            "home": "全北汽車",
+            "away": "仁川聯",
+            "home_score": 1,
+            "away_score": 2
+          },
+          {
+            "result": "平",
+            "league": "韓K聯",
+            "date": "26-04-18",
+            "home": "FC江原",
+            "away": "全北汽車",
+            "home_score": 1,
+            "away_score": 1
+          }
+        ],
+        "h2h": [
+          {
+            "result": "负",
+            "league": "韓K聯",
+            "date": "26-04-21",
+            "home": "全北汽車",
+            "away": "仁川聯",
+            "home_score": 1,
+            "away_score": 2
+          },
+          {
+            "result": "平",
+            "league": "韓K聯",
+            "date": "24-11-02",
+            "home": "全北汽車",
+            "away": "仁川聯",
+            "home_score": 0,
+            "away_score": 0
+          },
+          {
+            "result": "负",
+            "league": "韓K聯",
+            "date": "24-08-24",
+            "home": "仁川聯",
+            "away": "全北汽車",
+            "home_score": 0,
+            "away_score": 1
+          },
+          {
+            "result": "平",
+            "league": "韓K聯",
+            "date": "24-06-16",
+            "home": "全北汽車",
+            "away": "仁川聯",
+            "home_score": 2,
+            "away_score": 2
+          },
+          {
+            "result": "胜",
+            "league": "韓K聯",
+            "date": "24-05-01",
+            "home": "仁川聯",
+            "away": "全北汽車1",
+            "home_score": 3,
+            "away_score": 0
+          },
+          {
+            "result": "平",
+            "league": "韓K聯",
+            "date": "23-11-12",
+            "home": "仁川聯",
+            "away": "全北汽車",
+            "home_score": 1,
+            "away_score": 1
+          },
+          {
+            "result": "胜",
+            "league": "韓國杯",
+            "date": "23-11-01",
+            "home": "全北汽車",
+            "away": "仁川聯",
+            "home_score": 3,
+            "away_score": 1
+          },
+          {
+            "result": "胜",
+            "league": "韓K聯",
+            "date": "23-08-06",
+            "home": "全北汽車",
+            "away": "仁川聯",
+            "home_score": 2,
+            "away_score": 0
+          },
+          {
+            "result": "平",
+            "league": "韓K聯",
+            "date": "23-05-14",
+            "home": "仁川聯",
+            "away": "全北汽車",
+            "home_score": 0,
+            "away_score": 0
+          },
+          {
+            "result": "胜",
+            "league": "韓K聯",
+            "date": "23-04-09",
+            "home": "全北汽車",
+            "away": "仁川聯",
+            "home_score": 2,
+            "away_score": 0
           }
         ]
       }
@@ -22173,6 +22173,291 @@
       }
     },
     {
+      "fid": "2925470",
+      "date": "2026-07-18",
+      "match_time": "2026-06-18 18:30",
+      "event": "韩K2联",
+      "home_team": "金浦市民",
+      "away_team": "大邱FC",
+      "score": "",
+      "hit": "",
+      "source": "北单",
+      "odds_source": "pinnacle",
+      "odds_win": 2.99,
+      "odds_draw": 3.61,
+      "odds_loss": 2.29,
+      "margin": 0.0481,
+      "model_win": 0.3702,
+      "model_draw": 0.2653,
+      "model_loss": 0.3645,
+      "raw_model_win": 0.3192,
+      "raw_model_draw": 0.2941,
+      "raw_model_loss": 0.3867,
+      "open_win_pin": 2.82,
+      "open_draw_pin": 3.28,
+      "open_loss_pin": 2.42,
+      "lgbm_prediction": "away",
+      "lgbm_prediction_cn": "客胜",
+      "lgbm_prediction_prob": 0.435,
+      "prediction": "away",
+      "prediction_cn": "客胜",
+      "prediction_prob": 0.435,
+      "model_prediction": "away",
+      "model_prediction_cn": "客胜",
+      "model_prediction_prob": 0.3645,
+      "draw_boosted": false,
+      "draw_confidence": -10,
+      "draw_signal": "none",
+      "diff_lgb_poisson": 0.0087,
+      "lgbm_win": 0.2909,
+      "lgbm_draw": 0.274,
+      "lgbm_loss": 0.435,
+      "comparison": {
+        "open": [
+          2.82,
+          3.28,
+          2.42
+        ],
+        "current": [
+          2.99,
+          3.61,
+          2.29
+        ],
+        "div_pct": [
+          6.0,
+          10.1,
+          -5.7
+        ],
+        "source": "pinnacle"
+      },
+      "pin_comparison": {
+        "open": [
+          3.05,
+          3.1,
+          2.07
+        ],
+        "current": [
+          3.0,
+          3.2,
+          2.05
+        ],
+        "div_pct": [
+          -1.6,
+          3.2,
+          -1.0
+        ],
+        "source": "hkjc"
+      },
+      "league_baseline": [
+        0.2667,
+        0.4667,
+        0.2667
+      ],
+      "league": "",
+      "home_rank": 0,
+      "away_rank": 0,
+      "home_pts": 0,
+      "away_pts": 0,
+      "warning": "⚠️",
+      "stats": {
+        "home_recent": [
+          {
+            "result": "负",
+            "league": "韓國杯",
+            "date": "26-07-15",
+            "home": "南陽州市民",
+            "away": "金浦市民",
+            "home_score": 1,
+            "away_score": 2
+          },
+          {
+            "result": "胜",
+            "league": "韓K2聯",
+            "date": "26-07-12",
+            "home": "釜山偶像",
+            "away": "金浦市民",
+            "home_score": 2,
+            "away_score": 0
+          },
+          {
+            "result": "平",
+            "league": "韓K2聯",
+            "date": "26-06-07",
+            "home": "金浦市民",
+            "away": "全南天龍",
+            "home_score": 2,
+            "away_score": 2
+          },
+          {
+            "result": "负",
+            "league": "韓K2聯",
+            "date": "26-05-30",
+            "home": "金海",
+            "away": "金浦市民",
+            "home_score": 1,
+            "away_score": 2
+          },
+          {
+            "result": "负",
+            "league": "韓K2聯",
+            "date": "26-05-25",
+            "home": "坡州市民",
+            "away": "金浦市民",
+            "home_score": 0,
+            "away_score": 1
+          },
+          {
+            "result": "平",
+            "league": "韓K2聯",
+            "date": "26-05-09",
+            "home": "忠北清州",
+            "away": "金浦市民",
+            "home_score": 1,
+            "away_score": 1
+          },
+          {
+            "result": "平",
+            "league": "韓K2聯",
+            "date": "26-04-26",
+            "home": "水原FC",
+            "away": "金浦市民",
+            "home_score": 1,
+            "away_score": 1
+          },
+          {
+            "result": "平",
+            "league": "韓K2聯",
+            "date": "26-04-19",
+            "home": "華城FC",
+            "away": "金浦市民",
+            "home_score": 2,
+            "away_score": 2
+          },
+          {
+            "result": "负",
+            "league": "韓K2聯",
+            "date": "26-04-12",
+            "home": "水原三星",
+            "away": "金浦市民",
+            "home_score": 0,
+            "away_score": 1
+          },
+          {
+            "result": "平",
+            "league": "韓K2聯",
+            "date": "26-04-05",
+            "home": "大邱FC",
+            "away": "金浦市民",
+            "home_score": 3,
+            "away_score": 3
+          }
+        ],
+        "away_recent": [
+          {
+            "result": "负",
+            "league": "韓國杯",
+            "date": "26-07-15",
+            "home": "大邱FC",
+            "away": "始興市民",
+            "home_score": 0,
+            "away_score": 1
+          },
+          {
+            "result": "胜",
+            "league": "韓K2聯",
+            "date": "26-07-11",
+            "home": "大邱FC",
+            "away": "城南FC1",
+            "home_score": 3,
+            "away_score": 2
+          },
+          {
+            "result": "负",
+            "league": "韓K2聯",
+            "date": "26-07-04",
+            "home": "忠北清州",
+            "away": "大邱FC",
+            "home_score": 1,
+            "away_score": 5
+          },
+          {
+            "result": "胜",
+            "league": "韓K2聯",
+            "date": "26-06-05",
+            "home": "大邱FC",
+            "away": "坡州市民",
+            "home_score": 1,
+            "away_score": 0
+          },
+          {
+            "result": "平",
+            "league": "韓K2聯",
+            "date": "26-05-30",
+            "home": "龍仁FC",
+            "away": "大邱FC",
+            "home_score": 1,
+            "away_score": 1
+          },
+          {
+            "result": "胜",
+            "league": "韓K2聯",
+            "date": "26-05-24",
+            "home": "大邱FC",
+            "away": "安山小綠人",
+            "home_score": 3,
+            "away_score": 0
+          },
+          {
+            "result": "负",
+            "league": "韓K2聯",
+            "date": "26-05-17",
+            "home": "金海",
+            "away": "大邱FC",
+            "home_score": 1,
+            "away_score": 4
+          },
+          {
+            "result": "平",
+            "league": "韓K2聯",
+            "date": "26-05-09",
+            "home": "水原三星",
+            "away": "大邱FC",
+            "home_score": 0,
+            "away_score": 0
+          },
+          {
+            "result": "胜",
+            "league": "韓K2聯",
+            "date": "26-05-03",
+            "home": "大邱FC",
+            "away": "慶南FC",
+            "home_score": 2,
+            "away_score": 0
+          },
+          {
+            "result": "平",
+            "league": "韓K2聯",
+            "date": "26-04-11",
+            "home": "水原FC",
+            "away": "大邱FC",
+            "home_score": 2,
+            "away_score": 2
+          }
+        ],
+        "h2h": [
+          {
+            "result": "平",
+            "league": "韓K2聯",
+            "date": "26-04-05",
+            "home": "大邱FC",
+            "away": "金浦市民",
+            "home_score": 3,
+            "away_score": 3
+          }
+        ]
+      }
+    },
+    {
       "fid": "2925471",
       "date": "2026-07-18",
       "match_time": "2026-06-18 18:30",
@@ -22532,291 +22817,6 @@
             "date": "23-07-10",
             "home": "忠南牙山",
             "away": "全南天龍",
-            "home_score": 3,
-            "away_score": 3
-          }
-        ]
-      }
-    },
-    {
-      "fid": "2925470",
-      "date": "2026-07-18",
-      "match_time": "2026-06-18 18:30",
-      "event": "韩K2联",
-      "home_team": "金浦市民",
-      "away_team": "大邱FC",
-      "score": "",
-      "hit": "",
-      "source": "北单",
-      "odds_source": "pinnacle",
-      "odds_win": 2.99,
-      "odds_draw": 3.61,
-      "odds_loss": 2.29,
-      "margin": 0.0481,
-      "model_win": 0.3702,
-      "model_draw": 0.2653,
-      "model_loss": 0.3645,
-      "raw_model_win": 0.3192,
-      "raw_model_draw": 0.2941,
-      "raw_model_loss": 0.3867,
-      "open_win_pin": 2.82,
-      "open_draw_pin": 3.28,
-      "open_loss_pin": 2.42,
-      "lgbm_prediction": "away",
-      "lgbm_prediction_cn": "客胜",
-      "lgbm_prediction_prob": 0.435,
-      "prediction": "away",
-      "prediction_cn": "客胜",
-      "prediction_prob": 0.435,
-      "model_prediction": "away",
-      "model_prediction_cn": "客胜",
-      "model_prediction_prob": 0.3645,
-      "draw_boosted": false,
-      "draw_confidence": -10,
-      "draw_signal": "none",
-      "diff_lgb_poisson": 0.0087,
-      "lgbm_win": 0.2909,
-      "lgbm_draw": 0.274,
-      "lgbm_loss": 0.435,
-      "comparison": {
-        "open": [
-          2.82,
-          3.28,
-          2.42
-        ],
-        "current": [
-          2.99,
-          3.61,
-          2.29
-        ],
-        "div_pct": [
-          6.0,
-          10.1,
-          -5.7
-        ],
-        "source": "pinnacle"
-      },
-      "pin_comparison": {
-        "open": [
-          3.05,
-          3.1,
-          2.07
-        ],
-        "current": [
-          3.0,
-          3.2,
-          2.05
-        ],
-        "div_pct": [
-          -1.6,
-          3.2,
-          -1.0
-        ],
-        "source": "hkjc"
-      },
-      "league_baseline": [
-        0.2667,
-        0.4667,
-        0.2667
-      ],
-      "league": "",
-      "home_rank": 0,
-      "away_rank": 0,
-      "home_pts": 0,
-      "away_pts": 0,
-      "warning": "⚠️",
-      "stats": {
-        "home_recent": [
-          {
-            "result": "负",
-            "league": "韓國杯",
-            "date": "26-07-15",
-            "home": "南陽州市民",
-            "away": "金浦市民",
-            "home_score": 1,
-            "away_score": 2
-          },
-          {
-            "result": "胜",
-            "league": "韓K2聯",
-            "date": "26-07-12",
-            "home": "釜山偶像",
-            "away": "金浦市民",
-            "home_score": 2,
-            "away_score": 0
-          },
-          {
-            "result": "平",
-            "league": "韓K2聯",
-            "date": "26-06-07",
-            "home": "金浦市民",
-            "away": "全南天龍",
-            "home_score": 2,
-            "away_score": 2
-          },
-          {
-            "result": "负",
-            "league": "韓K2聯",
-            "date": "26-05-30",
-            "home": "金海",
-            "away": "金浦市民",
-            "home_score": 1,
-            "away_score": 2
-          },
-          {
-            "result": "负",
-            "league": "韓K2聯",
-            "date": "26-05-25",
-            "home": "坡州市民",
-            "away": "金浦市民",
-            "home_score": 0,
-            "away_score": 1
-          },
-          {
-            "result": "平",
-            "league": "韓K2聯",
-            "date": "26-05-09",
-            "home": "忠北清州",
-            "away": "金浦市民",
-            "home_score": 1,
-            "away_score": 1
-          },
-          {
-            "result": "平",
-            "league": "韓K2聯",
-            "date": "26-04-26",
-            "home": "水原FC",
-            "away": "金浦市民",
-            "home_score": 1,
-            "away_score": 1
-          },
-          {
-            "result": "平",
-            "league": "韓K2聯",
-            "date": "26-04-19",
-            "home": "華城FC",
-            "away": "金浦市民",
-            "home_score": 2,
-            "away_score": 2
-          },
-          {
-            "result": "负",
-            "league": "韓K2聯",
-            "date": "26-04-12",
-            "home": "水原三星",
-            "away": "金浦市民",
-            "home_score": 0,
-            "away_score": 1
-          },
-          {
-            "result": "平",
-            "league": "韓K2聯",
-            "date": "26-04-05",
-            "home": "大邱FC",
-            "away": "金浦市民",
-            "home_score": 3,
-            "away_score": 3
-          }
-        ],
-        "away_recent": [
-          {
-            "result": "负",
-            "league": "韓國杯",
-            "date": "26-07-15",
-            "home": "大邱FC",
-            "away": "始興市民",
-            "home_score": 0,
-            "away_score": 1
-          },
-          {
-            "result": "胜",
-            "league": "韓K2聯",
-            "date": "26-07-11",
-            "home": "大邱FC",
-            "away": "城南FC1",
-            "home_score": 3,
-            "away_score": 2
-          },
-          {
-            "result": "负",
-            "league": "韓K2聯",
-            "date": "26-07-04",
-            "home": "忠北清州",
-            "away": "大邱FC",
-            "home_score": 1,
-            "away_score": 5
-          },
-          {
-            "result": "胜",
-            "league": "韓K2聯",
-            "date": "26-06-05",
-            "home": "大邱FC",
-            "away": "坡州市民",
-            "home_score": 1,
-            "away_score": 0
-          },
-          {
-            "result": "平",
-            "league": "韓K2聯",
-            "date": "26-05-30",
-            "home": "龍仁FC",
-            "away": "大邱FC",
-            "home_score": 1,
-            "away_score": 1
-          },
-          {
-            "result": "胜",
-            "league": "韓K2聯",
-            "date": "26-05-24",
-            "home": "大邱FC",
-            "away": "安山小綠人",
-            "home_score": 3,
-            "away_score": 0
-          },
-          {
-            "result": "负",
-            "league": "韓K2聯",
-            "date": "26-05-17",
-            "home": "金海",
-            "away": "大邱FC",
-            "home_score": 1,
-            "away_score": 4
-          },
-          {
-            "result": "平",
-            "league": "韓K2聯",
-            "date": "26-05-09",
-            "home": "水原三星",
-            "away": "大邱FC",
-            "home_score": 0,
-            "away_score": 0
-          },
-          {
-            "result": "胜",
-            "league": "韓K2聯",
-            "date": "26-05-03",
-            "home": "大邱FC",
-            "away": "慶南FC",
-            "home_score": 2,
-            "away_score": 0
-          },
-          {
-            "result": "平",
-            "league": "韓K2聯",
-            "date": "26-04-11",
-            "home": "水原FC",
-            "away": "大邱FC",
-            "home_score": 2,
-            "away_score": 2
-          }
-        ],
-        "h2h": [
-          {
-            "result": "平",
-            "league": "韓K2聯",
-            "date": "26-04-05",
-            "home": "大邱FC",
-            "away": "金浦市民",
             "home_score": 3,
             "away_score": 3
           }
@@ -24648,15 +24648,15 @@
       "source": "北单+竞足",
       "odds_source": "pinnacle",
       "odds_win": 2.65,
-      "odds_draw": 3.56,
-      "odds_loss": 2.6,
-      "margin": 0.0429,
-      "model_win": 0.3258,
-      "model_draw": 0.3005,
-      "model_loss": 0.3738,
-      "raw_model_win": 0.334,
-      "raw_model_draw": 0.2773,
-      "raw_model_loss": 0.3887,
+      "odds_draw": 3.55,
+      "odds_loss": 2.61,
+      "margin": 0.0422,
+      "model_win": 0.3234,
+      "model_draw": 0.2989,
+      "model_loss": 0.3777,
+      "raw_model_win": 0.3342,
+      "raw_model_draw": 0.278,
+      "raw_model_loss": 0.3878,
       "open_win_pin": 2.48,
       "open_draw_pin": 3.49,
       "open_loss_pin": 2.66,
@@ -24668,11 +24668,11 @@
       "prediction_prob": 0.4514,
       "model_prediction": "home",
       "model_prediction_cn": "主胜",
-      "model_prediction_prob": 0.3258,
+      "model_prediction_prob": 0.3234,
       "draw_boosted": false,
       "draw_confidence": -5,
       "draw_signal": "none",
-      "diff_lgb_poisson": -0.0577,
+      "diff_lgb_poisson": -0.0561,
       "lgbm_win": 0.3058,
       "lgbm_draw": 0.2428,
       "lgbm_loss": 0.4514,
@@ -24684,13 +24684,13 @@
         ],
         "current": [
           2.65,
-          3.56,
-          2.6
+          3.55,
+          2.61
         ],
         "div_pct": [
           6.9,
-          2.0,
-          -2.3
+          1.7,
+          -1.9
         ],
         "source": "pinnacle"
       },
@@ -25712,15 +25712,15 @@
       "source": "北单+竞足",
       "odds_source": "pinnacle",
       "odds_win": 2.2,
-      "odds_draw": 3.68,
+      "odds_draw": 3.67,
       "odds_loss": 3.25,
-      "margin": 0.034,
+      "margin": 0.0347,
       "model_win": 0.4,
-      "model_draw": 0.2775,
-      "model_loss": 0.3225,
-      "raw_model_win": 0.4675,
-      "raw_model_draw": 0.2541,
-      "raw_model_loss": 0.2784,
+      "model_draw": 0.2779,
+      "model_loss": 0.3221,
+      "raw_model_win": 0.4673,
+      "raw_model_draw": 0.2545,
+      "raw_model_loss": 0.2782,
       "open_win_pin": 2.14,
       "open_draw_pin": 3.67,
       "open_loss_pin": 3.11,
@@ -25732,11 +25732,11 @@
       "prediction_prob": 0.5372,
       "model_prediction": "away",
       "model_prediction_cn": "客胜",
-      "model_prediction_prob": 0.3225,
+      "model_prediction_prob": 0.3221,
       "draw_boosted": true,
       "draw_confidence": -5,
       "draw_signal": "none",
-      "diff_lgb_poisson": -0.0391,
+      "diff_lgb_poisson": -0.0395,
       "lgbm_win": 0.5372,
       "lgbm_draw": 0.2384,
       "lgbm_loss": 0.2244,
@@ -25748,12 +25748,12 @@
         ],
         "current": [
           2.2,
-          3.68,
+          3.67,
           3.25
         ],
         "div_pct": [
           2.8,
-          0.3,
+          0.0,
           4.3
         ],
         "source": "pinnacle"
@@ -26062,372 +26062,6 @@
             "away": "奧盧",
             "home_score": 2,
             "away_score": 4
-          }
-        ]
-      }
-    },
-    {
-      "fid": "2913666",
-      "date": "2026-07-18",
-      "match_time": "2026-06-18 22:00",
-      "event": "芬超",
-      "home_team": "塞伊奈约基",
-      "away_team": "古比斯",
-      "score": "",
-      "hit": "",
-      "source": "北单+竞足",
-      "odds_source": "pinnacle",
-      "odds_win": 3.06,
-      "odds_draw": 3.94,
-      "odds_loss": 2.21,
-      "margin": 0.0331,
-      "model_win": 0.4,
-      "model_draw": 0.2759,
-      "model_loss": 0.3241,
-      "raw_model_win": 0.3691,
-      "raw_model_draw": 0.2403,
-      "raw_model_loss": 0.3905,
-      "open_win_pin": 3.48,
-      "open_draw_pin": 3.83,
-      "open_loss_pin": 1.94,
-      "lgbm_prediction": "away",
-      "lgbm_prediction_cn": "客胜",
-      "lgbm_prediction_prob": 0.3964,
-      "prediction": "away",
-      "prediction_cn": "客胜",
-      "prediction_prob": 0.3964,
-      "model_prediction": "away",
-      "model_prediction_cn": "客胜",
-      "model_prediction_prob": 0.3241,
-      "draw_boosted": true,
-      "draw_confidence": -5,
-      "draw_signal": "none",
-      "diff_lgb_poisson": -0.0323,
-      "lgbm_win": 0.36,
-      "lgbm_draw": 0.2436,
-      "lgbm_loss": 0.3964,
-      "comparison": {
-        "open": [
-          3.48,
-          3.83,
-          1.94
-        ],
-        "current": [
-          3.06,
-          3.94,
-          2.21
-        ],
-        "div_pct": [
-          -12.1,
-          2.9,
-          12.2
-        ],
-        "source": "pinnacle"
-      },
-      "pin_comparison": {
-        "open": [
-          2.57,
-          3.35,
-          2.25
-        ],
-        "current": [
-          2.74,
-          3.45,
-          2.09
-        ],
-        "div_pct": [
-          6.6,
-          3.0,
-          -7.7
-        ],
-        "source": "hkjc"
-      },
-      "league_baseline": [
-        0.6136,
-        0.2045,
-        0.1818
-      ],
-      "league": "",
-      "home_rank": 0,
-      "away_rank": 0,
-      "home_pts": 0,
-      "away_pts": 0,
-      "warning": "⚠️",
-      "stats": {
-        "home_recent": [
-          {
-            "result": "胜",
-            "league": "芬超",
-            "date": "26-07-11",
-            "home": "VPS華沙",
-            "away": "塞伊奈約基",
-            "home_score": 1,
-            "away_score": 0
-          },
-          {
-            "result": "胜",
-            "league": "芬超",
-            "date": "26-07-04",
-            "home": "塞伊奈約基",
-            "away": "TPS杜古",
-            "home_score": 3,
-            "away_score": 1
-          },
-          {
-            "result": "平",
-            "league": "芬超",
-            "date": "26-06-27",
-            "home": "伊爾韋斯",
-            "away": "塞伊奈約基",
-            "home_score": 2,
-            "away_score": 2
-          },
-          {
-            "result": "平",
-            "league": "芬超",
-            "date": "26-06-24",
-            "home": "英特杜古",
-            "away": "塞伊奈約基",
-            "home_score": 1,
-            "away_score": 1
-          },
-          {
-            "result": "负",
-            "league": "芬超",
-            "date": "26-06-18",
-            "home": "塞伊奈約基",
-            "away": "VPS華沙",
-            "home_score": 1,
-            "away_score": 2
-          },
-          {
-            "result": "负",
-            "league": "芬超",
-            "date": "26-06-14",
-            "home": "拉迪",
-            "away": "塞伊奈約基",
-            "home_score": 2,
-            "away_score": 3
-          },
-          {
-            "result": "负",
-            "league": "芬蘭盃",
-            "date": "26-06-10",
-            "home": "塞伊奈約基",
-            "away": "英特杜古",
-            "home_score": 1,
-            "away_score": 2
-          },
-          {
-            "result": "胜",
-            "league": "芬超",
-            "date": "26-05-30",
-            "home": "吉尼斯坦",
-            "away": "塞伊奈約基",
-            "home_score": 3,
-            "away_score": 2
-          },
-          {
-            "result": "负",
-            "league": "芬蘭盃",
-            "date": "26-05-26",
-            "home": "SJK學院",
-            "away": "塞伊奈約基",
-            "home_score": 0,
-            "away_score": 5
-          },
-          {
-            "result": "负",
-            "league": "芬超",
-            "date": "26-05-23",
-            "home": "塞伊奈約基",
-            "away": "奧盧",
-            "home_score": 0,
-            "away_score": 1
-          }
-        ],
-        "away_recent": [
-          {
-            "result": "负",
-            "league": "歐冠盃",
-            "date": "26-07-14",
-            "home": "古比斯",
-            "away": "華達",
-            "home_score": 0,
-            "away_score": 2
-          },
-          {
-            "result": "负",
-            "league": "歐冠盃",
-            "date": "26-07-08",
-            "home": "1華達",
-            "away": "古比斯",
-            "home_score": 0,
-            "away_score": 2
-          },
-          {
-            "result": "负",
-            "league": "芬超",
-            "date": "26-06-27",
-            "home": "1赫爾辛基",
-            "away": "古比斯",
-            "home_score": 0,
-            "away_score": 4
-          },
-          {
-            "result": "胜",
-            "league": "芬超",
-            "date": "26-06-23",
-            "home": "古比斯",
-            "away": "伊爾韋斯",
-            "home_score": 4,
-            "away_score": 3
-          },
-          {
-            "result": "负",
-            "league": "芬超",
-            "date": "26-06-17",
-            "home": "TPS杜古",
-            "away": "古比斯",
-            "home_score": 1,
-            "away_score": 2
-          },
-          {
-            "result": "平",
-            "league": "芬蘭盃",
-            "date": "26-06-10",
-            "home": "古比斯",
-            "away": "VPS華沙",
-            "home_score": 0,
-            "away_score": 0
-          },
-          {
-            "result": "平",
-            "league": "芬超",
-            "date": "26-05-30",
-            "home": "古比斯",
-            "away": "英特杜古",
-            "home_score": 1,
-            "away_score": 1
-          },
-          {
-            "result": "负",
-            "league": "芬蘭盃",
-            "date": "26-05-26",
-            "home": "查普斯",
-            "away": "古比斯",
-            "home_score": 0,
-            "away_score": 1
-          },
-          {
-            "result": "胜",
-            "league": "芬超",
-            "date": "26-05-23",
-            "home": "古比斯",
-            "away": "拉迪",
-            "home_score": 2,
-            "away_score": 1
-          },
-          {
-            "result": "胜",
-            "league": "芬超",
-            "date": "26-05-21",
-            "home": "古比斯",
-            "away": "查路",
-            "home_score": 3,
-            "away_score": 0
-          }
-        ],
-        "h2h": [
-          {
-            "result": "平",
-            "league": "芬超",
-            "date": "26-05-09",
-            "home": "古比斯",
-            "away": "塞伊奈約基1",
-            "home_score": 0,
-            "away_score": 0
-          },
-          {
-            "result": "平",
-            "league": "球會友誼",
-            "date": "26-03-27",
-            "home": "塞伊奈約基",
-            "away": "古比斯",
-            "home_score": 0,
-            "away_score": 0
-          },
-          {
-            "result": "胜",
-            "league": "芬聯盃",
-            "date": "26-02-07",
-            "home": "塞伊奈約基",
-            "away": "古比斯",
-            "home_score": 3,
-            "away_score": 0
-          },
-          {
-            "result": "负",
-            "league": "芬超",
-            "date": "25-10-28",
-            "home": "塞伊奈約基",
-            "away": "古比斯",
-            "home_score": 0,
-            "away_score": 1
-          },
-          {
-            "result": "胜",
-            "league": "芬超",
-            "date": "25-09-23",
-            "home": "古比斯",
-            "away": "塞伊奈約基",
-            "home_score": 3,
-            "away_score": 2
-          },
-          {
-            "result": "平",
-            "league": "芬超",
-            "date": "25-08-31",
-            "home": "塞伊奈約基",
-            "away": "古比斯",
-            "home_score": 1,
-            "away_score": 1
-          },
-          {
-            "result": "胜",
-            "league": "芬超",
-            "date": "25-05-03",
-            "home": "古比斯",
-            "away": "塞伊奈約基",
-            "home_score": 1,
-            "away_score": 0
-          },
-          {
-            "result": "负",
-            "league": "芬聯盃",
-            "date": "25-02-15",
-            "home": "塞伊奈約基",
-            "away": "古比斯",
-            "home_score": 1,
-            "away_score": 3
-          },
-          {
-            "result": "负",
-            "league": "芬超",
-            "date": "24-10-05",
-            "home": "塞伊奈約基",
-            "away": "古比斯1",
-            "home_score": 0,
-            "away_score": 1
-          },
-          {
-            "result": "平",
-            "league": "芬蘭盃",
-            "date": "24-08-23",
-            "home": "塞伊奈約基",
-            "away": "古比斯1",
-            "home_score": 2,
-            "away_score": 2
           }
         ]
       }
@@ -27875,6 +27509,372 @@
             "away": "PK35萬塔",
             "home_score": 2,
             "away_score": 1
+          }
+        ]
+      }
+    },
+    {
+      "fid": "2913666",
+      "date": "2026-07-18",
+      "match_time": "2026-06-18 22:00",
+      "event": "芬超",
+      "home_team": "塞伊奈约基",
+      "away_team": "古比斯",
+      "score": "",
+      "hit": "",
+      "source": "北单+竞足",
+      "odds_source": "pinnacle",
+      "odds_win": 3.06,
+      "odds_draw": 3.94,
+      "odds_loss": 2.21,
+      "margin": 0.0331,
+      "model_win": 0.4,
+      "model_draw": 0.2759,
+      "model_loss": 0.3241,
+      "raw_model_win": 0.3691,
+      "raw_model_draw": 0.2403,
+      "raw_model_loss": 0.3905,
+      "open_win_pin": 3.48,
+      "open_draw_pin": 3.83,
+      "open_loss_pin": 1.94,
+      "lgbm_prediction": "away",
+      "lgbm_prediction_cn": "客胜",
+      "lgbm_prediction_prob": 0.3964,
+      "prediction": "away",
+      "prediction_cn": "客胜",
+      "prediction_prob": 0.3964,
+      "model_prediction": "away",
+      "model_prediction_cn": "客胜",
+      "model_prediction_prob": 0.3241,
+      "draw_boosted": true,
+      "draw_confidence": -5,
+      "draw_signal": "none",
+      "diff_lgb_poisson": -0.0323,
+      "lgbm_win": 0.36,
+      "lgbm_draw": 0.2436,
+      "lgbm_loss": 0.3964,
+      "comparison": {
+        "open": [
+          3.48,
+          3.83,
+          1.94
+        ],
+        "current": [
+          3.06,
+          3.94,
+          2.21
+        ],
+        "div_pct": [
+          -12.1,
+          2.9,
+          12.2
+        ],
+        "source": "pinnacle"
+      },
+      "pin_comparison": {
+        "open": [
+          2.57,
+          3.35,
+          2.25
+        ],
+        "current": [
+          2.74,
+          3.45,
+          2.09
+        ],
+        "div_pct": [
+          6.6,
+          3.0,
+          -7.7
+        ],
+        "source": "hkjc"
+      },
+      "league_baseline": [
+        0.6136,
+        0.2045,
+        0.1818
+      ],
+      "league": "",
+      "home_rank": 0,
+      "away_rank": 0,
+      "home_pts": 0,
+      "away_pts": 0,
+      "warning": "⚠️",
+      "stats": {
+        "home_recent": [
+          {
+            "result": "胜",
+            "league": "芬超",
+            "date": "26-07-11",
+            "home": "VPS華沙",
+            "away": "塞伊奈約基",
+            "home_score": 1,
+            "away_score": 0
+          },
+          {
+            "result": "胜",
+            "league": "芬超",
+            "date": "26-07-04",
+            "home": "塞伊奈約基",
+            "away": "TPS杜古",
+            "home_score": 3,
+            "away_score": 1
+          },
+          {
+            "result": "平",
+            "league": "芬超",
+            "date": "26-06-27",
+            "home": "伊爾韋斯",
+            "away": "塞伊奈約基",
+            "home_score": 2,
+            "away_score": 2
+          },
+          {
+            "result": "平",
+            "league": "芬超",
+            "date": "26-06-24",
+            "home": "英特杜古",
+            "away": "塞伊奈約基",
+            "home_score": 1,
+            "away_score": 1
+          },
+          {
+            "result": "负",
+            "league": "芬超",
+            "date": "26-06-18",
+            "home": "塞伊奈約基",
+            "away": "VPS華沙",
+            "home_score": 1,
+            "away_score": 2
+          },
+          {
+            "result": "负",
+            "league": "芬超",
+            "date": "26-06-14",
+            "home": "拉迪",
+            "away": "塞伊奈約基",
+            "home_score": 2,
+            "away_score": 3
+          },
+          {
+            "result": "负",
+            "league": "芬蘭盃",
+            "date": "26-06-10",
+            "home": "塞伊奈約基",
+            "away": "英特杜古",
+            "home_score": 1,
+            "away_score": 2
+          },
+          {
+            "result": "胜",
+            "league": "芬超",
+            "date": "26-05-30",
+            "home": "吉尼斯坦",
+            "away": "塞伊奈約基",
+            "home_score": 3,
+            "away_score": 2
+          },
+          {
+            "result": "负",
+            "league": "芬蘭盃",
+            "date": "26-05-26",
+            "home": "SJK學院",
+            "away": "塞伊奈約基",
+            "home_score": 0,
+            "away_score": 5
+          },
+          {
+            "result": "负",
+            "league": "芬超",
+            "date": "26-05-23",
+            "home": "塞伊奈約基",
+            "away": "奧盧",
+            "home_score": 0,
+            "away_score": 1
+          }
+        ],
+        "away_recent": [
+          {
+            "result": "负",
+            "league": "歐冠盃",
+            "date": "26-07-14",
+            "home": "古比斯",
+            "away": "華達",
+            "home_score": 0,
+            "away_score": 2
+          },
+          {
+            "result": "负",
+            "league": "歐冠盃",
+            "date": "26-07-08",
+            "home": "1華達",
+            "away": "古比斯",
+            "home_score": 0,
+            "away_score": 2
+          },
+          {
+            "result": "负",
+            "league": "芬超",
+            "date": "26-06-27",
+            "home": "1赫爾辛基",
+            "away": "古比斯",
+            "home_score": 0,
+            "away_score": 4
+          },
+          {
+            "result": "胜",
+            "league": "芬超",
+            "date": "26-06-23",
+            "home": "古比斯",
+            "away": "伊爾韋斯",
+            "home_score": 4,
+            "away_score": 3
+          },
+          {
+            "result": "负",
+            "league": "芬超",
+            "date": "26-06-17",
+            "home": "TPS杜古",
+            "away": "古比斯",
+            "home_score": 1,
+            "away_score": 2
+          },
+          {
+            "result": "平",
+            "league": "芬蘭盃",
+            "date": "26-06-10",
+            "home": "古比斯",
+            "away": "VPS華沙",
+            "home_score": 0,
+            "away_score": 0
+          },
+          {
+            "result": "平",
+            "league": "芬超",
+            "date": "26-05-30",
+            "home": "古比斯",
+            "away": "英特杜古",
+            "home_score": 1,
+            "away_score": 1
+          },
+          {
+            "result": "负",
+            "league": "芬蘭盃",
+            "date": "26-05-26",
+            "home": "查普斯",
+            "away": "古比斯",
+            "home_score": 0,
+            "away_score": 1
+          },
+          {
+            "result": "胜",
+            "league": "芬超",
+            "date": "26-05-23",
+            "home": "古比斯",
+            "away": "拉迪",
+            "home_score": 2,
+            "away_score": 1
+          },
+          {
+            "result": "胜",
+            "league": "芬超",
+            "date": "26-05-21",
+            "home": "古比斯",
+            "away": "查路",
+            "home_score": 3,
+            "away_score": 0
+          }
+        ],
+        "h2h": [
+          {
+            "result": "平",
+            "league": "芬超",
+            "date": "26-05-09",
+            "home": "古比斯",
+            "away": "塞伊奈約基1",
+            "home_score": 0,
+            "away_score": 0
+          },
+          {
+            "result": "平",
+            "league": "球會友誼",
+            "date": "26-03-27",
+            "home": "塞伊奈約基",
+            "away": "古比斯",
+            "home_score": 0,
+            "away_score": 0
+          },
+          {
+            "result": "胜",
+            "league": "芬聯盃",
+            "date": "26-02-07",
+            "home": "塞伊奈約基",
+            "away": "古比斯",
+            "home_score": 3,
+            "away_score": 0
+          },
+          {
+            "result": "负",
+            "league": "芬超",
+            "date": "25-10-28",
+            "home": "塞伊奈約基",
+            "away": "古比斯",
+            "home_score": 0,
+            "away_score": 1
+          },
+          {
+            "result": "胜",
+            "league": "芬超",
+            "date": "25-09-23",
+            "home": "古比斯",
+            "away": "塞伊奈約基",
+            "home_score": 3,
+            "away_score": 2
+          },
+          {
+            "result": "平",
+            "league": "芬超",
+            "date": "25-08-31",
+            "home": "塞伊奈約基",
+            "away": "古比斯",
+            "home_score": 1,
+            "away_score": 1
+          },
+          {
+            "result": "胜",
+            "league": "芬超",
+            "date": "25-05-03",
+            "home": "古比斯",
+            "away": "塞伊奈約基",
+            "home_score": 1,
+            "away_score": 0
+          },
+          {
+            "result": "负",
+            "league": "芬聯盃",
+            "date": "25-02-15",
+            "home": "塞伊奈約基",
+            "away": "古比斯",
+            "home_score": 1,
+            "away_score": 3
+          },
+          {
+            "result": "负",
+            "league": "芬超",
+            "date": "24-10-05",
+            "home": "塞伊奈約基",
+            "away": "古比斯1",
+            "home_score": 0,
+            "away_score": 1
+          },
+          {
+            "result": "平",
+            "league": "芬蘭盃",
+            "date": "24-08-23",
+            "home": "塞伊奈約基",
+            "away": "古比斯1",
+            "home_score": 2,
+            "away_score": 2
           }
         ]
       }
@@ -31732,35 +31732,35 @@
       "hit": "",
       "source": "北单",
       "odds_source": "pinnacle",
-      "odds_win": 1.73,
-      "odds_draw": 3.39,
-      "odds_loss": 4.79,
-      "margin": 0.0818,
-      "model_win": 0.4,
-      "model_draw": 0.2562,
-      "model_loss": 0.3438,
-      "raw_model_win": 0.508,
-      "raw_model_draw": 0.2642,
-      "raw_model_loss": 0.2278,
+      "odds_win": 1.81,
+      "odds_draw": 3.29,
+      "odds_loss": 4.49,
+      "margin": 0.0792,
+      "model_win": 0.3898,
+      "model_draw": 0.3252,
+      "model_loss": 0.285,
+      "raw_model_win": 0.4919,
+      "raw_model_draw": 0.2708,
+      "raw_model_loss": 0.2373,
       "open_win_pin": 1.97,
       "open_draw_pin": 3.1,
       "open_loss_pin": 4.2,
       "lgbm_prediction": "home",
       "lgbm_prediction_cn": "主胜",
-      "lgbm_prediction_prob": 0.5625,
+      "lgbm_prediction_prob": 0.562,
       "prediction": "home",
       "prediction_cn": "主胜",
-      "prediction_prob": 0.5625,
-      "model_prediction": "away",
-      "model_prediction_cn": "客胜",
-      "model_prediction_prob": 0.3438,
-      "draw_boosted": true,
-      "draw_confidence": -10,
+      "prediction_prob": 0.562,
+      "model_prediction": "draw",
+      "model_prediction_cn": "平局",
+      "model_prediction_prob": 0.3252,
+      "draw_boosted": false,
+      "draw_confidence": -5,
       "draw_signal": "none",
-      "diff_lgb_poisson": -0.0272,
-      "lgbm_win": 0.5625,
-      "lgbm_draw": 0.2289,
-      "lgbm_loss": 0.2085,
+      "diff_lgb_poisson": -0.0983,
+      "lgbm_win": 0.562,
+      "lgbm_draw": 0.2269,
+      "lgbm_loss": 0.2111,
       "comparison": {
         "open": [
           1.97,
@@ -31768,14 +31768,14 @@
           4.2
         ],
         "current": [
-          1.73,
-          3.39,
-          4.79
+          1.81,
+          3.29,
+          4.49
         ],
         "div_pct": [
-          -12.2,
-          9.4,
-          12.3
+          -8.1,
+          6.1,
+          6.5
         ],
         "source": "pinnacle"
       },
@@ -31807,7 +31807,7 @@
       "away_rank": 0,
       "home_pts": 0,
       "away_pts": 0,
-      "warning": "🚩",
+      "warning": "",
       "stats": {
         "home_recent": [
           {
