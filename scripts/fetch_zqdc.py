@@ -347,7 +347,7 @@ def get_scores_from_over_page(date_str):
 
 
 def do_backfill(fpath, date_str):
-    """比分回填：titan007 Over页"""
+    """比分回填：titan007 Over页（今天+昨天）"""
     if not os.path.exists(fpath):
         print(f'[WARN] {fpath} 不存在，跳过回填')
         return
@@ -359,25 +359,41 @@ def do_backfill(fpath, date_str):
 
     unscored = [(fid, m) for fid, m in existing_matches.items()
                 if not m.get('score') and m.get('match_time')]
-    if unscored:
-        scores = get_scores_from_over_page(date_str)
+    if not unscored:
+        print(f'[BACKFILL] 全部已有比分，跳过')
+        return
+
+    # 回填：先查今天，再查昨天
+    today = date_str
+    yesterday_dt = datetime.strptime(date_str, '%Y-%m-%d') - timedelta(days=1)
+    yesterday = yesterday_dt.strftime('%Y-%m-%d')
+
+    all_scores = {}
+    for d in [today, yesterday]:
+        scores = get_scores_from_over_page(d)
         if scores:
-            over_ok = 0
-            for fid, m in unscored:
-                home = m.get('home_team', '').strip()
-                away = m.get('away_team', '').strip()
-                key = (home, away)
-                if key in scores:
-                    m['score'] = scores[key]
-                    over_ok += 1
-                    updated += 1
-                elif (away, home) in scores:
-                    m['score'] = scores[(away, home)]
-                    over_ok += 1
-                    updated += 1
-            print(f'[BACKFILL] titan007 Over页 → {over_ok}/{len(unscored)} 场')
+            print(f'[BACKFILL] Over页({d}) → {len(scores)} 场完场比分')
+            all_scores.update(scores)
         else:
-            print(f'[BACKFILL] titan007 Over页 → 页面无完场数据')
+            print(f'[BACKFILL] Over页({d}) → 无完场数据')
+
+    if all_scores:
+        over_ok = 0
+        for fid, m in unscored:
+            home = m.get('home_team', '').strip()
+            away = m.get('away_team', '').strip()
+            key = (home, away)
+            if key in all_scores:
+                m['score'] = all_scores[key]
+                over_ok += 1
+                updated += 1
+            elif (away, home) in all_scores:
+                m['score'] = all_scores[(away, home)]
+                over_ok += 1
+                updated += 1
+        print(f'[BACKFILL] titan007 Over页(今+昨) → {over_ok}/{len(unscored)} 场匹配')
+    else:
+        print(f'[BACKFILL] Over页(今+昨) → 均无完场数据')
 
     if updated:
         existing['matches'] = list(existing_matches.values())
@@ -398,30 +414,44 @@ def main():
     parser.add_argument('--delay', type=float, default=0.3)
     parser.add_argument('--parallel', type=int, default=3)
     parser.add_argument('--backfill', action='store_true', help='比分回填')
+    parser.add_argument('--refresh', action='store_true', help='强制刷新已有数据')
     parser.add_argument('--save', default='')
     args = parser.parse_args()
 
     date_str = args.date
-    basename = args.save or ('matches_' + date_str.replace('-', ''))
-    fpath = os.path.join(DATA_DIR, f'{basename}.json')
 
     if args.backfill:
+        basename = args.save or ('matches_' + date_str.replace('-', ''))
+        fpath = os.path.join(DATA_DIR, f'{basename}.json')
         do_backfill(fpath, date_str)
         return
 
-    # 1. 获取北单比赛列表
-    print(f'[INFO] 从bfdata_ut.js获取 {date_str} 北单比赛...')
-    all_matches = fetch_all_matches(date_str, args.max)
+    # 先抓当天比赛
+    _fetch_single_day(date_str, args.max, args.delay, args.parallel, args.save)
+
+    # 再抓明天
+    tomorrow_dt = datetime.strptime(date_str, '%Y-%m-%d') + timedelta(days=1)
+    tomorrow_str = tomorrow_dt.strftime('%Y-%m-%d')
+    tomorrow_file = os.path.join(DATA_DIR, f'matches_{tomorrow_str.replace("-", "")}.json')
+    if not os.path.exists(tomorrow_file) or args.refresh:
+        print(f'[INFO] 自动抓取明天({tomorrow_str})数据...')
+        _fetch_single_day(tomorrow_str, args.max, args.delay, args.parallel, '')
+
+
+def _fetch_single_day(date_str, max_matches, delay, parallel, save):
+    """抓取并保存单日比赛数据"""
+    print(f'[INFO] 从bfdata_ut.js获取 {date_str} 北单+竞足比赛...')
+    all_matches = fetch_all_matches(date_str, max_matches)
 
     if not all_matches:
-        print(f'[WARN] {date_str} 无北单比赛数据')
+        print(f'[WARN] {date_str} 无比赛数据')
         return
 
-    # 2. 获取赔率
-    print(f'[INFO] 获取 {len(all_matches)} 场北单赔率 (1x2d)...')
-    enriched = fetch_odds(all_matches, args.delay, args.parallel)
+    print(f'[INFO] 获取 {len(all_matches)} 场赔率 (1x2d)...')
+    enriched = fetch_odds(all_matches, delay, parallel)
 
-    # 3. 输出
+    basename = save or ('matches_' + date_str.replace('-', ''))
+    fpath = os.path.join(DATA_DIR, f'{basename}.json')
     out = {
         'date': date_str,
         'fetched_at': datetime.now().isoformat(),
@@ -429,7 +459,6 @@ def main():
         'source': 'titan007',
         'matches': enriched,
     }
-
     os.makedirs(DATA_DIR, exist_ok=True)
     with open(fpath, 'w', encoding='utf-8') as f:
         json.dump(out, f, ensure_ascii=False, indent=2)
