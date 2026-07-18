@@ -142,12 +142,15 @@ def filter_beidan(matches):
 
 
 def filter_jingzu(matches):
-    """从比赛列表中过滤出竞足(f[58]!="")"""
+    """从比赛列表中过滤出竞足(f[57]含"周"或"周五"等竞彩编号)"""
     result = []
     for m in matches:
         f = m['fields']
-        if len(f) > 58 and f[58].strip():
-            result.append(m)
+        if len(f) > 57 and f[57].strip():
+            # f[57] = "周六103" / "周五207" 等竞彩编号
+            jz_id = f[57].strip()
+            if any(kw in jz_id for kw in ('周', '五', '六', '日', '一', '二', '三', '四')):
+                result.append(m)
     return result
 
 
@@ -169,54 +172,59 @@ def parse_time(fields):
 # ─────── 主逻辑 ───────
 
 def fetch_all_matches(date_str, max_matches=0):
-    """从bfdata_ut.js获取北单比赛列表"""
+    """从bfdata_ut.js获取北单+竞足比赛列表，合并去重"""
     all_matches = fetch_bfdata()
     if not all_matches:
         print(f'[WARN] bfdata_ut.js 返回空列表')
         return []
 
-    # 过滤北单
-    beidan = filter_beidan(all_matches)
-    jingzu = filter_jingzu(all_matches)
+    # 分别过滤
+    beidan_set = {m['sid'] for m in filter_beidan(all_matches)}
+    jingzu_set = {m['sid'] for m in filter_jingzu(all_matches)}
+    both_set = beidan_set & jingzu_set
 
     print(f'[INFO] bfdata_ut.js → 总{len(all_matches)}场, '
-          f'北单{len(beidan)}场, 竞足{len(jingzu)}场')
+          f'北单{len(beidan_set)}场, 竞足{len(jingzu_set)}场, '
+          f'交集{len(both_set)}场')
 
-    # 过滤非当天比赛
+    # 合并：竞足优先包含所有，北单补充竞足没有的
+    combined = {}
+    for m in all_matches:
+        f = m['fields']
+        sid = m['sid']
+        in_bd = sid in beidan_set
+        in_jz = sid in jingzu_set
+        if in_bd or in_jz:
+            tags = []
+            if in_bd: tags.append('北单')
+            if in_jz: tags.append('竞足')
+            combined[sid] = {
+                'sid': sid,
+                'league': m['league'],
+                'home_team': m['hometeam'],
+                'away_team': m['awayteam'],
+                'display_time': m['display_time'],
+                'match_time': parse_time(f),
+                'date': date_str,
+                'source': '+'.join(tags),
+                'jingzu_id': f[57].strip() if len(f) > 57 and in_jz else '',
+                'beidan_id': f[59].strip() if len(f) > 59 and in_bd else '',
+            }
+
+    all_combined = list(combined.values())
+    all_combined.sort(key=lambda x: x['match_time'])
+
+    # 过滤非当天比赛（先试当天日期）
     date_compact = date_str.replace('-', '')
-    filtered = []
-    for m in beidan:
-        t = m.get('time', '')  # yyyy,mm,dd,hh,mm,ss
-        if t:
-            t_parts = t.split(',')
-            if len(t_parts) >= 3:
-                md = f'{t_parts[0]}{int(t_parts[1]):02d}{int(t_parts[2]):02d}'
-                if md == date_compact:
-                    filtered.append(m)
-
-    # 如果当天没有匹配的（7/19凌晨的比赛是7/18晚的），放宽到所有北单
-    if not filtered and beidan:
-        print(f'[INFO] 当天({date_compact})无匹配北单, 取全部{len(beidan)}场')
-        filtered = beidan
+    filtered = [m for m in all_combined if m['match_time'].startswith(date_compact[:4] + '-' + date_compact[4:6] + '-' + date_compact[6:8])]
+    if not filtered:
+        print(f'[INFO] 当天({date_compact})无匹配, 取全部{len(all_combined)}场')
+        filtered = all_combined
 
     if max_matches > 0:
         filtered = filtered[:max_matches]
 
-    # 转成标准格式
-    result = []
-    for m in filtered:
-        f = m['fields']
-        result.append({
-            'sid': m['sid'],
-            'league': m['league'],
-            'home_team': m['hometeam'],
-            'away_team': m['awayteam'],
-            'display_time': m['display_time'],
-            'match_time': parse_time(f),
-            'date': date_str,
-        })
-
-    return result
+    return filtered
 
 
 def fetch_odds(matches, delay=0.3, workers=3):
@@ -238,7 +246,9 @@ def fetch_odds(matches, delay=0.3, workers=3):
             'away_team': match.get('away_team', ''),
             'score': '',
             'status': '',
-            'source': 'beidan',
+            'source': match.get('source', 'beidan'),
+            'jingzu_id': match.get('jingzu_id', ''),
+            'beidan_id': match.get('beidan_id', ''),
             'home_rank': 0,
             'away_rank': 0,
         }
@@ -284,7 +294,8 @@ def fetch_odds(matches, delay=0.3, workers=3):
             hh = match_out.get('odds_hkjc_win', '-')
             hd = match_out.get('odds_hkjc_draw', '-')
             hl = match_out.get('odds_hkjc_loss', '-')
-            print(f'  [{done}/{total}] ✓ {match_out["event"]} {match_out["home_team"]} vs {match_out["away_team"]}  '
+            src = match_out.get('source', '')
+            print(f'  [{done}/{total}] [{src:4s}] ✓ {match_out["event"]} {match_out["home_team"]} vs {match_out["away_team"]}  '
                   f'Pinnacle: {ph}/{pd}/{pl}  HKJC: {hh}/{hd}/{hl}')
             if delay > 0:
                 time.sleep(delay / workers)
