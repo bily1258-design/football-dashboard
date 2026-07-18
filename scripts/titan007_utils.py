@@ -20,10 +20,10 @@ BF_BASE = 'https://bf.titan007.com'
 OP_BASE = 'https://op1.titan007.com'
 ANALYSIS_BASE = 'https://zq.titan007.com'
 
-# cid映射：titan007 公司ID vs 500.com 公司ID
-# 验证：432=平博(Pinnacle), 177=香港马会(HKJC)
-CID_PINNACLE = '432'
-CID_HKJC = '177'
+# cid映射：titan007 公司ID
+# 验证：432=香港马会(HKJC), 177=平博(Pinnacle)
+CID_PINNACLE = '177'  # 平博
+CID_HKJC = '432'      # 香港马会
 
 # 其他常用公司ID（来自OddsHistory页面验证）
 CID_WILLIAM_HILL = '18'

@@ -447,19 +447,19 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             logger.warning(f"排名预取失败: {e}，将使用默认值")
 
     for m in matches:
-        # 赔率源：优先平博，fallback到HKJC
-        ow = float(m.get('odds_pinnacle_win', 0) or 0)
-        od = float(m.get('odds_pinnacle_draw', 0) or 0)
-        ol = float(m.get('odds_pinnacle_loss', 0) or 0)
-        odds_source = 'pinnacle'
+        # 赔率源：优先HKJC（马会），fallback到平博
+        ow = float(m.get('odds_hkjc_win', 0) or 0)
+        od = float(m.get('odds_hkjc_draw', 0) or 0)
+        ol = float(m.get('odds_hkjc_loss', 0) or 0)
+        odds_source = 'hkjc'
 
         if not (ow > 1 and od > 1 and ol > 1):
-            # 尝试用HKJC赔率
-            ow = float(m.get('odds_hkjc_win', 0) or 0)
-            od = float(m.get('odds_hkjc_draw', 0) or 0)
-            ol = float(m.get('odds_hkjc_loss', 0) or 0)
+            # 尝试用平博赔率
+            ow = float(m.get('odds_pinnacle_win', 0) or 0)
+            od = float(m.get('odds_pinnacle_draw', 0) or 0)
+            ol = float(m.get('odds_pinnacle_loss', 0) or 0)
             if ow > 1 and od > 1 and ol > 1:
-                odds_source = 'hkjc'
+                odds_source = 'pinnacle'
             else:
                 skipped += 1
                 continue
@@ -750,12 +750,17 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
         elif actual == 'away': actual_cn = '负'
         hit = f'{hit_which}·{actual_cn}✓' if hit_which else ('✘' if actual else '')
 
-        # 8. 赔率对比数据（平博开盘 vs 平博即时）
+        # 8. 赔率对比数据（开盘 vs 即时）
         comparison = {}
         if ow > 1 and od > 1 and ol > 1:
-            op_w = float(m.get('odds_pinnacle_open_win', 0) or 0)
-            op_d = float(m.get('odds_pinnacle_open_draw', 0) or 0)
-            op_l = float(m.get('odds_pinnacle_open_loss', 0) or 0)
+            if odds_source == 'hkjc':
+                op_w = float(m.get('odds_hkjc_open_win', 0) or 0)
+                op_d = float(m.get('odds_hkjc_open_draw', 0) or 0)
+                op_l = float(m.get('odds_hkjc_open_loss', 0) or 0)
+            else:
+                op_w = float(m.get('odds_pinnacle_open_win', 0) or 0)
+                op_d = float(m.get('odds_pinnacle_open_draw', 0) or 0)
+                op_l = float(m.get('odds_pinnacle_open_loss', 0) or 0)
             if op_w > 1 and op_d > 1 and op_l > 1:
                 pct_w = (ow - op_w) / op_w * 100
                 pct_d = (od - op_d) / op_d * 100
@@ -766,20 +771,20 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
                     'div_pct': [round(pct_w,1), round(pct_d,1), round(pct_l,1)],
                 }
 
-        # 8b. 香港马会赔率对比
-        hkjc_comparison = {}
-        hw = float(m.get('odds_hkjc_win', 0) or 0)
-        hd = float(m.get('odds_hkjc_draw', 0) or 0)
-        hl = float(m.get('odds_hkjc_loss', 0) or 0)
+        # 8b. 平博赔率对比（备查，目前CID=177大部分空）
+        pin_comparison = {}
+        hw = float(m.get('odds_pinnacle_win', 0) or 0)
+        hd = float(m.get('odds_pinnacle_draw', 0) or 0)
+        hl = float(m.get('odds_pinnacle_loss', 0) or 0)
         if hw > 1 and hd > 1 and hl > 1:
-            hop_w = float(m.get('odds_hkjc_open_win', 0) or 0)
-            hop_d = float(m.get('odds_hkjc_open_draw', 0) or 0)
-            hop_l = float(m.get('odds_hkjc_open_loss', 0) or 0)
+            hop_w = float(m.get('odds_pinnacle_open_win', 0) or 0)
+            hop_d = float(m.get('odds_pinnacle_open_draw', 0) or 0)
+            hop_l = float(m.get('odds_pinnacle_open_loss', 0) or 0)
             if hop_w > 1 and hop_d > 1 and hop_l > 1:
                 pct_w = (hw - hop_w) / hop_w * 100
                 pct_d = (hd - hop_d) / hop_d * 100
-                pct_l = (hl - hop_l) / hop_l * 100
-                hkjc_comparison = {
+                pct_l = (hl - hop_l) / hl * 100
+                pin_comparison = {
                     'open': [round(hop_w,2), round(hop_d,2), round(hop_l,2)],
                     'current': [round(hw,2), round(hd,2), round(hl,2)],
                     'div_pct': [round(pct_w,1), round(pct_d,1), round(pct_l,1)],
@@ -862,7 +867,7 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             'lgbm_draw': round(lgbm_d, 4),
             'lgbm_loss': round(lgbm_l, 4),
             'comparison': comparison,
-            'hkjc_comparison': hkjc_comparison,
+            'pin_comparison': pin_comparison,
             'league_baseline': league_baseline,
             'league': m.get('league', ''),
             'home_rank': m.get('home_rank', 0),
@@ -1180,9 +1185,9 @@ function toggleWarnFilter(){
   document.getElementById('warnToggle').className = 'warn-filter-btn'+(showWarnedOnly?' active':'');
   applyFilters();
 }
-function renderOdds(c, h){
+function renderOdds(c, p){
   var html = '';
-  // 平博
+  // 主赔率：香港马会（HKJC，CID=432）
   if(c && c.current){
     var o=c.open, cur=c.current, d=c.div_pct;
     var divStr = '';
@@ -1190,26 +1195,27 @@ function renderOdds(c, h){
       var cls = d[i] < -0.3 ? 'oc-pct-down' : (d[i] > 0.3 ? 'oc-pct-up' : 'oc-pct-flat');
       divStr += '<span class="'+cls+'">'+fmtPctSign(d[i])+'</span>' + (i<2?'<span class="oc-sep">|</span>':'');
     }
-    html += '<div class="oc-source">平博</div>'+
+    html += '<div class="oc-source oc-source-hkjc">马会</div>'+
       '<div class="oc-line"><span class="oc-label">初</span><span class="oc-open">'+o[0].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-open">'+o[1].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-open">'+o[2].toFixed(2)+'</span></div>'+
       '<div class="oc-line"><span class="oc-label">即</span><span class="oc-cur">'+cur[0].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+cur[1].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+cur[2].toFixed(2)+'</span></div>'+
       '<div class="oc-line oc-div"><span class="oc-label">分</span>'+divStr+'</div>';
   } else {
     html += '<span class="odds-val odds-w">--</span>';
   }
-  // 香港马会
-  if(h && h.current){
-    var o=h.open, cur=h.current, d=h.div_pct;
+  // 平博（备查，CID=177大部分空）
+  if(p && p.current){
+    var o=p.open, cur=p.current, d=p.div_pct;
     var divStr = '';
     for(var i=0;i<3;i++){
       var cls = d[i] < -0.3 ? 'oc-pct-down' : (d[i] > 0.3 ? 'oc-pct-up' : 'oc-pct-flat');
       divStr += '<span class="'+cls+'">'+fmtPctSign(d[i])+'</span>' + (i<2?'<span class="oc-sep">|</span>':'');
     }
     html += '<div class="oc-sep-line"></div>'+
-      '<div class="oc-source oc-source-hkjc">马会</div>'+
+      '<div class="oc-source">平博</div>'+
       '<div class="oc-line"><span class="oc-label">初</span><span class="oc-open">'+o[0].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-open">'+o[1].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-open">'+o[2].toFixed(2)+'</span></div>'+
       '<div class="oc-line"><span class="oc-label">即</span><span class="oc-cur">'+cur[0].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+cur[1].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+cur[2].toFixed(2)+'</span></div>'+
       '<div class="oc-line oc-div"><span class="oc-label">分</span>'+divStr+'</div>';
+
   }
   return '<div class="odds-combined">'+html+'</div>';
 }
@@ -1244,7 +1250,7 @@ function renderTable(matches){
       '<td class="team-name">'+m.away_team+'</td>'+
       '<td><span class="'+dirClass(m.lgbm_prediction)+'">'+dirText(m.lgbm_prediction)+'</span> <span style="font-size:11px;color:#999">'+dirText(m.model_prediction)+'</span>'+renderWarning(m.warning)+'</td>'+
       '<td class="'+hc+'">'+(m.hit||'')+'</td>'+
-      '<td class="odds-cell">'+renderOdds(m.comparison, m.hkjc_comparison)+'</td>'+
+      '<td class="odds-cell">'+renderOdds(m.comparison, m.pin_comparison)+'</td>'+
       '<td class="odds-cell"><div>模型: <span class="odds-val odds-w">'+fmtPct(m.model_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.model_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.model_loss)+'</span></div><div style="margin-top:3px">LGBM: <span class="odds-val odds-w">'+fmtPct(m.lgbm_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.lgbm_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.lgbm_loss)+'</span><div style=\"margin-top:2px;font-size:11px\"><span class=\"oc-label\" style=\"margin-right:3px\">分</span><span class=\"'+((m.model_win-m.lgbm_win)<-0.003?'oc-pct-down':(m.model_win-m.lgbm_win)>0.003?'oc-pct-up':'oc-pct-flat')+'\">'+fmtPctSign((m.model_win-m.lgbm_win)*100)+'</span> <span class=\"'+((m.model_draw-m.lgbm_draw)<-0.003?'oc-pct-down':(m.model_draw-m.lgbm_draw)>0.003?'oc-pct-up':'oc-pct-flat')+'\">'+fmtPctSign((m.model_draw-m.lgbm_draw)*100)+'</span> <span class=\"'+((m.model_loss-m.lgbm_loss)<-0.003?'oc-pct-down':(m.model_loss-m.lgbm_loss)>0.003?'oc-pct-up':'oc-pct-flat')+'\">'+fmtPctSign((m.model_loss-m.lgbm_loss)*100)+'</span></div></div></td>';
     tbody.appendChild(tr);  });
   document.getElementById('matchCount').textContent = matches.length+' 场';

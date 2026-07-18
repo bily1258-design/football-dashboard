@@ -25,9 +25,9 @@ DOCS_DATA_DIR = os.path.join(os.path.dirname(SCRIPT_DIR), "docs", "data")
 sys.path.insert(0, SCRIPT_DIR)
 from titan007_utils import get_match_list, get_odds_history, fetch_url
 
-# titan007 cid映射: 432=平博, 177=HKJC
-CID_PINNACLE = 432
-CID_HKJC = 177
+# titan007 cid映射: 177=平博, 432=HKJC
+CID_PINNACLE = 177
+CID_HKJC = 432
 
 
 def fetch_hkjc_matches(date_str, max_matches=0, delay=0.3, workers=3):
