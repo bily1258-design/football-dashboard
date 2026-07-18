@@ -760,33 +760,25 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
                 }
 
         # ─── 风险标记 ──────────────────────────────────
-        # 🚩分歧陷阱: 热门降水+冷门大涨+LGBM推热门
+        # 🚩分歧陷阱: LGBM最大值≥53% 且 模型同方向≥40%
         # ⚠️模型犹豫: 模型top1-top2差距<10% 或 LGBM主推概率<45%
         warning = ''
         try:
-            # 开盘赔率（优先平博，fallback到当前赔率）
-            op_w = float(m.get('odds_pinnacle_open_win', 0) or 0) or ow
-            op_d = float(m.get('odds_pinnacle_open_draw', 0) or 0) or od
-            op_l = float(m.get('odds_pinnacle_open_loss', 0) or 0) or ol
-            if op_w > 1 and op_d > 1 and op_l > 1:
-                divs = [(ow - op_w) / op_w, (od - op_d) / op_d, (ol - op_l) / op_l]
-                odds = [ow, od, ol]
-                fav_idx = odds.index(min(odds))
-                third_idx = odds.index(max(odds))
-                lmax = max(lgbm_w, lgbm_d, lgbm_l)
-                ldir_idx = [lgbm_w, lgbm_d, lgbm_l].index(lmax)
-                raw_vals = sorted([lgbm_feat_w, lgbm_feat_d, lgbm_feat_l], reverse=True)
-                gap = raw_vals[0] - raw_vals[1]
+            lmax = max(lgbm_w, lgbm_d, lgbm_l)
+            ldir_idx = [lgbm_w, lgbm_d, lgbm_l].index(lmax)
+            raw_vals = sorted([lgbm_feat_w, lgbm_feat_d, lgbm_feat_l], reverse=True)
+            gap = raw_vals[0] - raw_vals[1]
 
-                # 🚩分歧陷阱
-                trap = (divs[fav_idx] < -0.05 and divs[third_idx] > 0.20 and ldir_idx == fav_idx)
-                # ⚠️模型犹豫
-                uncer = (gap < 0.10 or lmax < 0.45)
+            # 🚩分歧陷阱
+            model_val = [model_w, model_d, model_l][ldir_idx]
+            trap = (lmax >= 0.53 and model_val >= 0.40)
+            # ⚠️模型犹豫
+            uncer = (gap < 0.10 or lmax < 0.45)
 
-                parts = []
-                if trap: parts.append('🚩')
-                if uncer: parts.append('⚠️')
-                warning = ''.join(parts)
+            parts = []
+            if trap: parts.append('🚩')
+            if uncer: parts.append('⚠️')
+            warning = ''.join(parts)
         except Exception:
             pass
 
