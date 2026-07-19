@@ -166,6 +166,16 @@ def parse_time(fields):
     return ''
 
 
+def _fix_month(match_time, date_str):
+    """bfdata_ut.js的f[12]月份有时错位(6月但实际是7月), 纠正日期部分"""
+    if not match_time or not date_str or len(match_time) < 16:
+        return match_time
+    # 只替换日期部分(前10字符), 保留时间部分
+    if match_time[:10] != date_str:
+        return date_str + match_time[10:]
+    return match_time
+
+
 # ─────── 主逻辑 ───────
 
 def fetch_all_matches(date_str, max_matches=0):
@@ -223,7 +233,7 @@ def fetch_all_matches(date_str, max_matches=0):
             'home_team': m['hometeam'],
             'away_team': m['awayteam'],
             'display_time': m['display_time'],
-            'match_time': parse_time(f),
+            'match_time': _fix_month(parse_time(f), date_str),
             'date': date_str,
             'score': score,
         })
