@@ -23,11 +23,57 @@ DOCS_DATA_DIR = os.path.join(os.path.dirname(SCRIPT_DIR), "docs", "data")
 
 # 导入titan007工具
 sys.path.insert(0, SCRIPT_DIR)
-from titan007_utils import get_match_list, get_odds_history, fetch_url
+from titan007_utils import get_match_list, get_odds_history, fetch_url, translate_team_name
 
 # titan007 cid映射: 177=平博, 432=HKJC
 CID_PINNACLE = 177
 CID_HKJC = 432
+
+
+def fetch_bfdata_cn_map():
+    """从bfdata_ut.js获取SID → (中文主队, 中文客队)映射，复用fetch_zqdc的解析"""
+    try:
+        from fetch_zqdc import fetch_bfdata
+        bf_matches = fetch_bfdata()
+    except Exception as e:
+        print(f'[WARN] bfdata抓取失败: {e}')
+        return {}
+    result = {}
+    for m in bf_matches:
+        sid = m.get('sid', '')
+        h = m.get('hometeam', '')
+        a = m.get('awayteam', '')
+        if sid and h and a:
+            result[sid] = (h, a)
+    return result
+
+
+def _get_cn_from_1x2d(sid):
+    """从1x2d.js获取中文队名，作为bfdata兜底"""
+    url = f'https://1x2d.titan007.com/{sid}.js'
+    req = urllib.request.Request(url, headers={
+        'User-Agent': 'Mozilla/5.0', 'Referer': 'https://live.titan007.com/'
+    })
+    try:
+        resp = urllib.request.urlopen(req, timeout=8)
+        raw = resp.read()
+    except Exception:
+        return None
+    def decode(match):
+        if not match:
+            return None
+        try:
+            return match.group(1).decode('utf-8')
+        except UnicodeDecodeError:
+            try:
+                return match.group(1).decode('gbk')
+            except Exception:
+                return None
+    h_cn = decode(re.search(rb'var hometeam_cn="([^"]*)"', raw))
+    a_cn = decode(re.search(rb'var guestteam_cn="([^"]*)"', raw))
+    if h_cn and a_cn:
+        return (h_cn.strip(), a_cn.strip())
+    return None
 
 
 def fetch_hkjc_matches(date_str, max_matches=0, delay=0.3, workers=3):
@@ -50,11 +96,33 @@ def fetch_hkjc_matches(date_str, max_matches=0, delay=0.3, workers=3):
     # 2. 并行检查HKJC赔率
     from concurrent.futures import ThreadPoolExecutor, as_completed
     
+    # 预取bfdata中文队名映射
+    bfdata_cn_map = fetch_bfdata_cn_map()
+    if bfdata_cn_map:
+        print(f'[INFO] bfdata中文队名映射: {len(bfdata_cn_map)} 条')
+    
     def check_one(m):
         sid = m['sid']
         hkjc = get_odds_history(sid, CID_HKJC)
         if not hkjc:
             return None
+        
+        home_name = m.get('home_team', '')
+        away_name = m.get('away_team', '')
+        
+        # 用bfdata中文名覆盖英文名
+        if sid in bfdata_cn_map:
+            cn_h, cn_a = bfdata_cn_map[sid]
+            if cn_h and all(ord(c) < 128 for c in home_name):
+                home_name = cn_h
+            if cn_a and all(ord(c) < 128 for c in away_name):
+                away_name = cn_a
+        
+        # 兜底：从1x2d.js提取中文名
+        if all(ord(c) < 128 for c in home_name + away_name):
+            cn_pair = _get_cn_from_1x2d(sid)
+            if cn_pair:
+                home_name, away_name = cn_pair
         
         # 有HKJC赔率，构建比赛记录
         match = {
@@ -62,8 +130,8 @@ def fetch_hkjc_matches(date_str, max_matches=0, delay=0.3, workers=3):
             'date': date_str,
             'match_time': m.get('match_time', ''),
             'event': m.get('event', m.get('league', '')),
-            'home_team': m.get('home_team', ''),
-            'away_team': m.get('away_team', ''),
+            'home_team': home_name,
+            'away_team': away_name,
             'score': '',
             'status': '',
             'source': 'hkjc',
