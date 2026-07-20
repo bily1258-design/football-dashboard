@@ -149,19 +149,6 @@ def load_raw_matches() -> List[Dict]:
                 logger.debug(f"  {os.path.basename(fp)}: {len(ms)} 场")
         except Exception as e:
             logger.warning(f"读取 {fp} 失败: {e}")
-    # 过滤幽灵比赛（match_time无实际开赛时间）
-    filtered = []
-    ghost_count = 0
-    for m in all_ms:
-        mt = m.get('match_time', '')
-        if mt and mt.endswith(' 00:00'):
-            ghost_count += 1
-            logger.debug(f"  过滤幽灵: {m.get('home_team','')} vs {m.get('away_team','')} ({mt})")
-        else:
-            filtered.append(m)
-    if ghost_count:
-        logger.info(f"过滤 {ghost_count} 场无开赛时间的幽灵比赛")
-    all_ms = filtered
     # 去重 (按 fid 优先, 保留数据更全的)
     seen = {}
     deduped = []
@@ -189,27 +176,40 @@ def load_raw_matches() -> List[Dict]:
     logger.info(f"原始数据 {len(all_ms)} 场 → 去重后 {len(deduped)} 场")
 
     # 第二道去重: 按(主队,客队)去重 — 同一场比赛在不同日期文件里出现(不同fid)
-    # 只对尚未有比分的比赛做此去重(有比分的是已完场的, 可能真的是两场)
+    # 对所有比赛跟踪队名, 只要有比分记录的无分幽灵条目就跳过
     seen_pair = {}
     pair_deduped = []
     for m in deduped:
         home = m.get('home_team', '').strip()
         away = m.get('away_team', '').strip()
-        score = (m.get('score') or '').strip()
-        if not score:
-            key = f'{home}|{away}'
-            if key in seen_pair:
-                # 保留时间更合理的那条(非00:00优先)
-                idx = seen_pair[key]
-                existing = pair_deduped[idx]
-                old_mt = existing.get('match_time', '')
-                new_mt = m.get('match_time', '')
-                # 如果现有条目时间是00:00且新条目有合理时间, 替换
-                if ('00:00' in old_mt or not old_mt) and '00:00' not in new_mt and new_mt:
-                    pair_deduped[idx] = m
-                continue
+        if not home or not away:
+            pair_deduped.append(m)
+            continue
+        key = f'{home}|{away}'
+        if key not in seen_pair:
             seen_pair[key] = len(pair_deduped)
-        pair_deduped.append(m)
+            pair_deduped.append(m)
+        else:
+            # 同一队名组合再次出现
+            idx = seen_pair[key]
+            existing = pair_deduped[idx]
+            old_score = (existing.get('score') or '').strip()
+            old_mt = existing.get('match_time', '')
+            new_score = (m.get('score') or '').strip()
+            new_mt = m.get('match_time', '')
+            # 已有比分记录 → 新条目无分则为幽灵, 跳过
+            if old_score and not new_score:
+                continue
+            # 新条目有分现有无分 → 替换
+            if new_score and not old_score:
+                pair_deduped[idx] = m
+                continue
+            # 都无分: 优先保留有合理开赛时间的
+            old_is_ghost = bool(old_mt and ' 00:00' in old_mt)
+            new_is_ghost = bool(new_mt and ' 00:00' in new_mt)
+            if old_is_ghost and not new_is_ghost:
+                pair_deduped[idx] = m
+            # 都合理或都是幽灵, 保留已有
 
     if len(pair_deduped) < len(deduped):
         logger.info(f"交叉文件去重: {len(deduped)} → {len(pair_deduped)} 场")
