@@ -165,7 +165,11 @@ def load_raw_matches() -> List[Dict]:
             # 保留字段更多的那个
             existing = deduped[seen[key]]
             if len(m) > len(existing):
+                # 但保留已存在的source（北单+竞彩标记优先）
+                old_source = existing.get('source', '')
                 deduped[seen[key]] = m
+                if old_source and ('beidan' in old_source or 'jingcai' in old_source):
+                    m['source'] = old_source
     logger.info(f"原始数据 {len(all_ms)} 场 → 去重后 {len(deduped)} 场")
 
     # 第二道去重: 按(主队,客队)去重 — 同一场比赛在不同日期文件里出现(不同fid)
