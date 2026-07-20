@@ -31,7 +31,11 @@ CID_HKJC = '432'      # 香港马会(HKJC)
 
 
 def fetch_bfdata_cn_map():
-    """从bfdata_ut.js获取SID → (中文主队, 中文客队, 比分)映射"""
+    """从bfdata_ut.js获取SID → (中文主队, 中文客队, 比分, match_time)映射
+    
+    返回: {sid: (h_cn, a_cn, score, match_time)}
+    match_time格式: 'YYYY-MM-DD HH:MM'
+    """
     try:
         from fetch_zqdc import fetch_bfdata
         bf_matches = fetch_bfdata()
@@ -55,8 +59,19 @@ def fetch_bfdata_cn_map():
                     score = f"{hs}-{aas}"
             except (ValueError, IndexError):
                 pass
+        # bfdata中的比赛时间（月份可能错位，6月实际为7月）
+        bf_time = m.get('time', '')
+        match_time = ''
+        if bf_time:
+            parts = bf_time.split(',')
+            if len(parts) >= 5:
+                y, mo, d, hh, mi = parts[0], parts[1], parts[2], parts[3], parts[4]
+                raw_mt = f'{y}-{mo.zfill(2)}-{d.zfill(2)} {hh.zfill(2)}:{mi.zfill(2)}'
+                # 用_fix_month修复月份错位
+                from fetch_zqdc import _fix_month
+                match_time = _fix_month(raw_mt, date.today().isoformat())
         if sid and h and a:
-            result[sid] = (h, a, score)  # (主队, 客队, 比分)
+            result[sid] = (h, a, score, match_time)  # (主队, 客队, 比分, 比赛时间)
     return result
 
 
@@ -126,16 +141,21 @@ def fetch_hkjc_matches(date_str, max_matches=0, delay=0.3, workers=3):
         home_name = m.get('home_team', '')
         away_name = m.get('away_team', '')
         
-        # 用bfdata中文名覆盖英文名，并获取实时比分
+        # 用bfdata中文名覆盖英文名，并获取实时比分和比赛时间
         score_from_bfdata = ''
+        bf_match_date = ''  # bfdata中的实际比赛日期，用于去重
+        bf_mt = ''  # bfdata中的比赛时间
         if sid in bfdata_cn_map:
-            cn_h, cn_a, sc = bfdata_cn_map[sid]
+            cn_h, cn_a, sc, bf_mt_tmp = bfdata_cn_map[sid]
             if cn_h and all(ord(c) < 128 for c in home_name):
                 home_name = cn_h
             if cn_a and all(ord(c) < 128 for c in away_name):
                 away_name = cn_a
             if sc:
                 score_from_bfdata = sc
+            if bf_mt_tmp:
+                bf_match_date = bf_mt_tmp[:10]
+                bf_mt = bf_mt_tmp
         
         # 兜底：从1x2d.js提取中文名
         if all(ord(c) < 128 for c in home_name + away_name):
@@ -143,11 +163,16 @@ def fetch_hkjc_matches(date_str, max_matches=0, delay=0.3, workers=3):
             if cn_pair:
                 home_name, away_name = cn_pair
         
+        # 日期过滤：bfdata中的实际比赛日期与请求日期不符则跳过
+        # （CommonInterface返回同355场无视日期，需用bfdata时间校正）
+        if bf_match_date and bf_match_date != date_str:
+            return None
+        
         # 有HKJC赔率，构建比赛记录
         match = {
             'fid': sid,  # 用sid代替fid（保持下游兼容）
-            'date': date_str,
-            'match_time': m.get('match_time', ''),
+            'date': bf_match_date or date_str,  # 用bfdata实际日期
+            'match_time': bf_mt or m.get('match_time', ''),  # bfdata时间优先
             'event': m.get('event', m.get('league', '')),
             'home_team': home_name,
             'away_team': away_name,
