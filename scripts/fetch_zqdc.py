@@ -152,6 +152,9 @@ def fetch_all_matches(date_str, max_matches=0):
         print(f'[INFO] 当天({date_compact})无匹配北单, 取全部{len(beidan)}场')
         filtered = beidan
 
+    # 构建sid→是否为竞彩的映射
+    jingzu_sids = {m['sid'] for m in jingzu}
+
     if max_matches > 0:
         filtered = filtered[:max_matches]
 
@@ -170,6 +173,11 @@ def fetch_all_matches(date_str, max_matches=0):
                     score = f"{hs}-{aas}"
             except (ValueError, IndexError):
                 pass
+        # 标记来源: 同时是北单+竞彩
+        if m['sid'] in jingzu_sids:
+            src = 'beidan_jingcai'
+        else:
+            src = 'beidan'
         result.append({
             'sid': m['sid'],
             'league': m['league'],
@@ -179,7 +187,37 @@ def fetch_all_matches(date_str, max_matches=0):
             'match_time': _fix_month(parse_time(f), date_str),
             'date': date_str,
             'score': score,
+            'source': src,
         })
+
+    # 追加纯竞彩(不在北单中的)比赛
+    beidan_sids = {m['sid'] for m in filtered}
+    extra_jingzu = [m for m in jingzu if m['sid'] not in beidan_sids]
+    if extra_jingzu:
+        print(f'[INFO] 纯竞彩(非北单): {len(extra_jingzu)} 场')
+        for m in extra_jingzu:
+            f = m['fields']
+            score = ''
+            if len(f) > 15:
+                try:
+                    status = int(f[13])
+                    hs = int(f[14])
+                    aas = int(f[15])
+                    if status in (-1, 3):
+                        score = f"{hs}-{aas}"
+                except (ValueError, IndexError):
+                    pass
+            result.append({
+                'sid': m['sid'],
+                'league': m['league'],
+                'home_team': m['hometeam'],
+                'away_team': m['awayteam'],
+                'display_time': m['display_time'],
+                'match_time': _fix_month(parse_time(f), date_str),
+                'date': date_str,
+                'score': score,
+                'source': 'jingcai',
+            })
 
     return result
 
@@ -203,7 +241,7 @@ def fetch_odds(matches, delay=0.3, workers=3):
             'away_team': match.get('away_team', ''),
             'score': match.get('score', ''),
             'status': '',
-            'source': 'beidan',
+            'source': match.get('source', 'beidan'),
             'home_rank': 0,
             'away_rank': 0,
         }

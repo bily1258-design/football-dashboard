@@ -1054,6 +1054,7 @@ def generate_frontend(results: List[Dict]):
         <option value="all">全部来源</option>
 
         <option value="jingcai">竞彩</option>
+        <option value="beidan">北单</option>
       </select>
       <select id="sortBy" onchange="applyFilters()">
         <option value="time">按时间</option>
@@ -1132,6 +1133,7 @@ tr:hover{background:#f0f6ff}
 .tag{display:inline-block;padding:1px 6px;border-radius:3px;font-size:11px;background:#e8ecf0;color:#556677}
 .tag-beidan{background:#dbeafe;color:#2563eb}
 .tag-jingcai{background:#fef3c7;color:#d97706}
+.tag-beidan_jingcai{background:linear-gradient(135deg,#dbeafe 50%,#fef3c7 50%);color:#2563eb;border:1px solid #d97706}
 .hit-yes{color:#16a34a;font-weight:700;font-size:1.1em;text-align:center}
 .hit-no{color:#dc2626;font-weight:700;font-size:1.1em;text-align:center}
 .score-cell{text-align:center}
@@ -1245,7 +1247,7 @@ function applyFilters(){
   var sortVal = document.getElementById('sortBy').value;
   var filtered = allMatches.filter(function(m){
     if(dateVal!=='all' && m.date!==dateVal) return false;
-    if(srcVal!=='all' && m.source!==srcVal) return false;
+    if(srcVal!=='all' && m.source.indexOf(srcVal)===-1) return false;
     if(showWarnedOnly && !m.warning) return false;
     return true;
   });
