@@ -994,9 +994,12 @@ def generate_frontend(results: List[Dict]):
     os.makedirs(DOCS_DIR, exist_ok=True)
     os.makedirs(os.path.join(DOCS_DIR, 'data'), exist_ok=True)
 
-    # 按日期分组
+    # 按实际比赛日期分组（从match_time提取，而非文件日期）
     by_date = defaultdict(list)
     for r in results:
+        mt = r.get('match_time', '')
+        if mt and len(mt) >= 10:
+            r['date'] = mt[:10]  # 用实际开赛日期覆盖文件日期
         by_date[r['date']].append(r)
 
     dates = sorted(by_date.keys(), reverse=True)
