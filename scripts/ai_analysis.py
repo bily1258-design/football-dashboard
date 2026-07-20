@@ -162,11 +162,14 @@ def load_raw_matches() -> List[Dict]:
             seen[key] = len(deduped)
             deduped.append(m)
         else:
-            # 保留字段更多的那个
             existing = deduped[seen[key]]
-            if len(m) > len(existing):
-                # 但保留已存在的source（北单+竞彩标记优先）
-                old_source = existing.get('source', '')
+            new_source = m.get('source', '')
+            old_source = existing.get('source', '')
+            # 优先保留含jingcai/beidan标记的source
+            if ('jingcai' in new_source or 'beidan_jingcai' in new_source) and 'jingcai' not in old_source and 'beidan_jingcai' not in old_source:
+                deduped[seen[key]] = m
+            elif len(m) > len(existing):
+                # 保留字段更多的那个，同时保留beidan/jingcai source优先级
                 deduped[seen[key]] = m
                 if old_source and ('beidan' in old_source or 'jingcai' in old_source):
                     m['source'] = old_source
