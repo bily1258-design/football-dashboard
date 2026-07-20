@@ -28,6 +28,64 @@ CID_HKJC = '432'      # 香港马会
 # 其他常用公司ID（来自OddsHistory页面验证）
 CID_WILLIAM_HILL = '18'
 CID_BET365 = '3'
+
+def f_float(v):
+    """安全转float，空字符串返回None"""
+    if v and v.strip():
+        try:
+            return float(v.strip())
+        except ValueError:
+            return None
+    return None
+
+
+def fetch_1x2d_odds(sid):
+    """从1x2d.titan007.com/{sid}.js获取全公司赔率
+    
+    返回 {cid: {name, init_w/d/l, curr_w/d/l, init_rr, curr_rr}} 或 None
+    
+    CID验证: '432'=香港马会(HKJC), '177'=平博(Pinnacle)
+    """
+    ts = int(time.time() * 1000)
+    url = f'https://1x2d.titan007.com/{sid}.js?r=007{ts}'
+    req = urllib.request.Request(url, headers={
+        'User-Agent': 'Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.6099.230 Mobile Safari/537.36',
+        'Referer': f'https://1x2.titan007.com/oddslist/{sid}.htm',
+    })
+    try:
+        resp = urllib.request.urlopen(req, timeout=10)
+        text = resp.read().decode('utf-8-sig')
+    except Exception as e:
+        return None
+
+    game_match = re.search(r'var game=Array\(([\s\S]*?)\);', text)
+    if not game_match:
+        return None
+
+    raw = game_match.group(1)
+    companies = re.findall(r'"([^"]*)"', raw)
+
+    odds = {}
+    for entry in companies:
+        fields = entry.split('|')
+        if len(fields) < 17:
+            continue
+        cid = fields[0]
+        try:
+            odds[cid] = {
+                'name': fields[2],
+                'init_w': f_float(fields[3]),
+                'init_d': f_float(fields[4]),
+                'init_l': f_float(fields[5]),
+                'init_rr': f_float(fields[9]),
+                'curr_w': f_float(fields[10]),
+                'curr_d': f_float(fields[11]),
+                'curr_l': f_float(fields[12]),
+                'curr_rr': f_float(fields[16]),
+            }
+        except (ValueError, IndexError):
+            pass
+    return odds
 CID_INTERWETTEN = '1'
 
 ODDSID_OFFSET = 152595753  # sid + offset = oddsHistory ID

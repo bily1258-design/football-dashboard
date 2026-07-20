@@ -21,65 +21,8 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(os.path.dirname(SCRIPT_DIR), "data")
 sys.path.insert(0, SCRIPT_DIR)
 
-# ─────── 1x2d 赔率接口（新核心） ───────
-
-def fetch_1x2d_odds(sid):
-    """从1x2d.titan007.com/{sid}.js获取全公司赔率
-    
-    返回 {cid: {name, init_w/d/l, curr_w/d/l}} 或 None
-    """
-    ts = int(time.time() * 1000)
-    url = f'https://1x2d.titan007.com/{sid}.js?r=007{ts}'
-    req = urllib.request.Request(url, headers={
-        'User-Agent': 'Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.6099.230 Mobile Safari/537.36',
-        'Referer': f'https://1x2.titan007.com/oddslist/{sid}.htm',
-    })
-    try:
-        resp = urllib.request.urlopen(req, timeout=10)
-        text = resp.read().decode('utf-8-sig')
-    except Exception as e:
-        print(f'[WARN] 1x2d/{sid}.js 抓取失败: {e}')
-        return None
-
-    game_match = re.search(r'var game=Array\(([\s\S]*?)\);', text)
-    if not game_match:
-        print(f'[WARN] 1x2d/{sid}.js 无 game 数组')
-        return None
-
-    raw = game_match.group(1)
-    companies = re.findall(r'"([^"]*)"', raw)
-
-    odds = {}
-    for entry in companies:
-        fields = entry.split('|')
-        if len(fields) < 17:
-            continue
-        cid = fields[0]
-        try:
-            odds[cid] = {
-                'name': fields[2],
-                'init_w': f_float(fields[3]),
-                'init_d': f_float(fields[4]),
-                'init_l': f_float(fields[5]),
-                'init_rr': f_float(fields[9]),
-                'curr_w': f_float(fields[10]),
-                'curr_d': f_float(fields[11]),
-                'curr_l': f_float(fields[12]),
-                'curr_rr': f_float(fields[16]),
-            }
-        except (ValueError, IndexError):
-            pass
-    return odds
-
-
-def f_float(v):
-    """安全转float，空字符串返回None"""
-    if v and v.strip():
-        try:
-            return round(float(v), 2)
-        except ValueError:
-            return None
-    return None
+# ─────── 1x2d 赔率接口（从titan007_utils导入） ───────
+from titan007_utils import fetch_1x2d_odds, f_float
 
 
 # ─────── bfdata_ut.js ───────

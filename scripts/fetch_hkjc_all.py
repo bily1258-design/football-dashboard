@@ -5,8 +5,8 @@
 
 数据流:
 1. 从 titan007 CommonInterface type=2 获取当日所有比赛
-2. 逐个检查是否有HKJC赔率(cid=177)
-3. 有则获取平博赔率(cid=432)
+2. 逐个检查是否有HKJC赔率(cid=432)
+3. 有则获取平博赔率(cid=177)
 4. 输出到 data/matches_hkjc_{日期}.json
 
 用法:
@@ -23,11 +23,11 @@ DOCS_DATA_DIR = os.path.join(os.path.dirname(SCRIPT_DIR), "docs", "data")
 
 # 导入titan007工具
 sys.path.insert(0, SCRIPT_DIR)
-from titan007_utils import get_match_list, get_odds_history, fetch_url, translate_team_name
+from titan007_utils import get_match_list, get_odds_history, fetch_url, translate_team_name, fetch_1x2d_odds
 
 # titan007 cid映射: 177=平博, 432=HKJC
-CID_PINNACLE = 177
-CID_HKJC = 432
+CID_PINNACLE = '177'  # 平博(Pinnacle)
+CID_HKJC = '432'      # 香港马会(HKJC)
 
 
 def fetch_bfdata_cn_map():
@@ -103,7 +103,11 @@ def fetch_hkjc_matches(date_str, max_matches=0, delay=0.3, workers=3):
     
     def check_one(m):
         sid = m['sid']
-        hkjc = get_odds_history(sid, CID_HKJC)
+        # 用1x2d API替代OddsHistory API（后者限频严重且常返回开盘价）
+        odds = fetch_1x2d_odds(sid)
+        if not odds:
+            return None
+        hkjc = odds.get(CID_HKJC)
         if not hkjc:
             return None
         
@@ -137,35 +141,32 @@ def fetch_hkjc_matches(date_str, max_matches=0, delay=0.3, workers=3):
             'source': 'hkjc',
             'home_rank': 0,
             'away_rank': 0,
-            # HKJC赔率
-            'odds_hkjc_open_win': hkjc['open']['win'],
-            'odds_hkjc_open_draw': hkjc['open']['draw'],
-            'odds_hkjc_open_loss': hkjc['open']['loss'],
-            'odds_hkjc_win': hkjc['latest']['win'],
-            'odds_hkjc_draw': hkjc['latest']['draw'],
-            'odds_hkjc_loss': hkjc['latest']['loss'],
-            'odds_hkjc_changes': hkjc.get('changes', 1),
+            # HKJC赔率（来自1x2d API）
+            'odds_hkjc_open_win': hkjc['init_w'],
+            'odds_hkjc_open_draw': hkjc['init_d'],
+            'odds_hkjc_open_loss': hkjc['init_l'],
+            'odds_hkjc_win': hkjc['curr_w'],
+            'odds_hkjc_draw': hkjc['curr_d'],
+            'odds_hkjc_loss': hkjc['curr_l'],
+            'odds_hkjc_changes': 1,
+            'odds_hkjc_company': 'HKJC',
         }
         
-        # 提取比赛时间（从OddsHistory页面的时间戳）
+        # 提取比赛时间
+        # （不再依赖OddsHistory时间戳，用已有字段）
         if not match['match_time']:
-            # 取开盘时间的日=比赛日
-            open_data = hkjc.get('open', {})
             match['match_time'] = f'{date_str} 00:00'
         
-        # 赔率公司名
-        match['odds_hkjc_company'] = 'HKJC'
-        
-        # 3. 获取平博赔率
-        pinnacle = get_odds_history(sid, CID_PINNACLE)
+        # 3. 获取平博赔率（同一次1x2d API调用）
+        pinnacle = odds.get(CID_PINNACLE)
         if pinnacle:
-            match['odds_pinnacle_open_win'] = pinnacle['open']['win']
-            match['odds_pinnacle_open_draw'] = pinnacle['open']['draw']
-            match['odds_pinnacle_open_loss'] = pinnacle['open']['loss']
-            match['odds_pinnacle_win'] = pinnacle['latest']['win']
-            match['odds_pinnacle_draw'] = pinnacle['latest']['draw']
-            match['odds_pinnacle_loss'] = pinnacle['latest']['loss']
-            match['odds_pinnacle_changes'] = pinnacle.get('changes', 1)
+            match['odds_pinnacle_open_win'] = pinnacle['init_w']
+            match['odds_pinnacle_open_draw'] = pinnacle['init_d']
+            match['odds_pinnacle_open_loss'] = pinnacle['init_l']
+            match['odds_pinnacle_win'] = pinnacle['curr_w']
+            match['odds_pinnacle_draw'] = pinnacle['curr_d']
+            match['odds_pinnacle_loss'] = pinnacle['curr_l']
+            match['odds_pinnacle_changes'] = 1
             match['odds_pinnacle_company'] = 'Pinnacle'
         
         # 从分析页提取比赛时间（仅当strTime日期与比赛日期一致）
