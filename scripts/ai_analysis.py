@@ -149,6 +149,19 @@ def load_raw_matches() -> List[Dict]:
                 logger.debug(f"  {os.path.basename(fp)}: {len(ms)} 场")
         except Exception as e:
             logger.warning(f"读取 {fp} 失败: {e}")
+    # 过滤幽灵比赛（match_time无实际开赛时间）
+    filtered = []
+    ghost_count = 0
+    for m in all_ms:
+        mt = m.get('match_time', '')
+        if mt and mt.endswith(' 00:00'):
+            ghost_count += 1
+            logger.debug(f"  过滤幽灵: {m.get('home_team','')} vs {m.get('away_team','')} ({mt})")
+        else:
+            filtered.append(m)
+    if ghost_count:
+        logger.info(f"过滤 {ghost_count} 场无开赛时间的幽灵比赛")
+    all_ms = filtered
     # 去重 (按 fid 优先, 保留数据更全的)
     seen = {}
     deduped = []
