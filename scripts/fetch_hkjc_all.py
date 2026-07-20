@@ -31,7 +31,7 @@ CID_HKJC = '432'      # 香港马会(HKJC)
 
 
 def fetch_bfdata_cn_map():
-    """从bfdata_ut.js获取SID → (中文主队, 中文客队)映射，复用fetch_zqdc的解析"""
+    """从bfdata_ut.js获取SID → (中文主队, 中文客队, 比分)映射"""
     try:
         from fetch_zqdc import fetch_bfdata
         bf_matches = fetch_bfdata()
@@ -43,8 +43,20 @@ def fetch_bfdata_cn_map():
         sid = m.get('sid', '')
         h = m.get('hometeam', '')
         a = m.get('awayteam', '')
+        f = m.get('fields', [])
+        # 从fields提取比分：f[13]=状态(-1/3=完场), f[14]=主队进球, f[15]=客队进球
+        score = ''
+        if len(f) > 15:
+            try:
+                status = int(f[13])
+                hs = int(f[14])
+                aas = int(f[15])
+                if status in (-1, 3):
+                    score = f"{hs}-{aas}"
+            except (ValueError, IndexError):
+                pass
         if sid and h and a:
-            result[sid] = (h, a)
+            result[sid] = (h, a, score)  # (主队, 客队, 比分)
     return result
 
 
@@ -114,13 +126,16 @@ def fetch_hkjc_matches(date_str, max_matches=0, delay=0.3, workers=3):
         home_name = m.get('home_team', '')
         away_name = m.get('away_team', '')
         
-        # 用bfdata中文名覆盖英文名
+        # 用bfdata中文名覆盖英文名，并获取实时比分
+        score_from_bfdata = ''
         if sid in bfdata_cn_map:
-            cn_h, cn_a = bfdata_cn_map[sid]
+            cn_h, cn_a, sc = bfdata_cn_map[sid]
             if cn_h and all(ord(c) < 128 for c in home_name):
                 home_name = cn_h
             if cn_a and all(ord(c) < 128 for c in away_name):
                 away_name = cn_a
+            if sc:
+                score_from_bfdata = sc
         
         # 兜底：从1x2d.js提取中文名
         if all(ord(c) < 128 for c in home_name + away_name):
@@ -136,7 +151,7 @@ def fetch_hkjc_matches(date_str, max_matches=0, delay=0.3, workers=3):
             'event': m.get('event', m.get('league', '')),
             'home_team': home_name,
             'away_team': away_name,
-            'score': '',
+            'score': score_from_bfdata,
             'status': '',
             'source': 'hkjc',
             'home_rank': 0,
@@ -169,7 +184,16 @@ def fetch_hkjc_matches(date_str, max_matches=0, delay=0.3, workers=3):
             match['odds_pinnacle_changes'] = 1
             match['odds_pinnacle_company'] = 'Pinnacle'
         
-        # 从分析页提取比赛时间（仅当strTime日期与比赛日期一致）
+        # 4. 比分兜底：bfdata无分时查分析页 JavaScript 变量
+        if not match['score']:
+            try:
+                analysis_score = get_score_from_titan007(sid)
+                if analysis_score:
+                    match['score'] = analysis_score
+            except Exception:
+                pass
+        
+        # 提取比赛时间（仅当strTime日期与比赛日期一致）
         # 防止世界杯跨轮时引用上一轮时间
         try:
             from titan007_utils import get_analysis_data
