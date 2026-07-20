@@ -76,7 +76,7 @@ function applyFilters(){
   var sortVal = document.getElementById('sortBy').value;
   var filtered = allMatches.filter(function(m){
     if(dateVal!=='all' && m.date!==dateVal) return false;
-    if(srcVal!=='all' && m.source!==srcVal) return false;
+    if(srcVal!=='all' && m.source.indexOf(srcVal)===-1) return false;
     if(showWarnedOnly && !m.warning) return false;
     return true;
   });
