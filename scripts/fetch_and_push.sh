@@ -41,7 +41,7 @@ done
 
 # ========== 香港马会赔率全量抓取（今天） ==========
 echo "[$(date '+%H:%M:%S')] 抓取 $DATE 香港马会比赛..."
-python3 scripts/fetch_hkjc_all.py --date "$DATE"
+python3 scripts/fetch_hkjc_all.py --date "$DATE" --parallel 5 --delay 0.15
 
 echo "[$(date '+%H:%M:%S')] 分析 $DATE ..."
 python3 scripts/ai_analysis.py
