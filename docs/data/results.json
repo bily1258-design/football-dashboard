@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-21 21:04:08",
+  "generated_at": "2026-07-22 01:28:18",
   "total_matches": 230,
   "date_range": "2026-07-11 ~ 2026-07-22",
   "hit_count": 149,
@@ -8,11 +8,11 @@
   "daily_stats": [
     {
       "date": "2026-07-22",
-      "count": 29
+      "count": 39
     },
     {
       "date": "2026-07-21",
-      "count": 20
+      "count": 10
     },
     {
       "date": "2026-07-20",
@@ -126,6 +126,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4715,
+      "ts_draw": 0.2296,
+      "ts_loss": 0.2989,
+      "lgbm_entropy": 1.0434,
+      "lgbm_confidence": 0.0503,
+      "raw_entropy": 0.7702,
+      "raw_confidence": 0.2989,
+      "cal_win": 0.8616,
+      "cal_draw": 0.1115,
+      "cal_loss": 0.027,
       "stats": {
         "home_recent": [
           {
@@ -429,6 +439,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.5038,
+      "ts_draw": 0.2288,
+      "ts_loss": 0.2674,
+      "lgbm_entropy": 1.0462,
+      "lgbm_confidence": 0.0477,
+      "raw_entropy": 0.8456,
+      "raw_confidence": 0.2303,
+      "cal_win": 0.8677,
+      "cal_draw": 0.1004,
+      "cal_loss": 0.0319,
       "stats": {
         "home_recent": [],
         "away_recent": [],
@@ -568,6 +588,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4168,
+      "ts_draw": 0.2471,
+      "ts_loss": 0.3362,
+      "lgbm_entropy": 1.0257,
+      "lgbm_confidence": 0.0664,
+      "raw_entropy": 0.8515,
+      "raw_confidence": 0.2249,
+      "cal_win": 0.9313,
+      "cal_draw": 0.0438,
+      "cal_loss": 0.0249,
       "stats": {
         "home_recent": [
           {
@@ -871,6 +901,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.5413,
+      "ts_draw": 0.2319,
+      "ts_loss": 0.2268,
+      "lgbm_entropy": 1.0122,
+      "lgbm_confidence": 0.0786,
+      "raw_entropy": 0.9745,
+      "raw_confidence": 0.1129,
+      "cal_win": 0.9547,
+      "cal_draw": 0.0223,
+      "cal_loss": 0.023,
       "stats": {
         "home_recent": [
           {
@@ -1165,6 +1205,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.4913,
+      "ts_draw": 0.2384,
+      "ts_loss": 0.2702,
+      "lgbm_entropy": 0.9949,
+      "lgbm_confidence": 0.0944,
+      "raw_entropy": 1.0163,
+      "raw_confidence": 0.0749,
+      "cal_win": 0.9694,
+      "cal_draw": 0.0099,
+      "cal_loss": 0.0207,
       "stats": {
         "home_recent": [],
         "away_recent": [],
@@ -1269,6 +1319,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.5151,
+      "ts_draw": 0.236,
+      "ts_loss": 0.2489,
+      "lgbm_entropy": 1.0072,
+      "lgbm_confidence": 0.0832,
+      "raw_entropy": 1.0243,
+      "raw_confidence": 0.0676,
+      "cal_win": 0.959,
+      "cal_draw": 0.0202,
+      "cal_loss": 0.0207,
       "stats": {
         "home_recent": [],
         "away_recent": [],
@@ -1418,6 +1478,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4215,
+      "ts_draw": 0.2454,
+      "ts_loss": 0.3331,
+      "lgbm_entropy": 1.0162,
+      "lgbm_confidence": 0.075,
+      "raw_entropy": 1.0248,
+      "raw_confidence": 0.0672,
+      "cal_win": 0.9362,
+      "cal_draw": 0.046,
+      "cal_loss": 0.0179,
       "stats": {
         "home_recent": [],
         "away_recent": [],
@@ -1585,6 +1655,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.7086,
+      "ts_draw": 0.157,
+      "ts_loss": 0.1344,
+      "lgbm_entropy": 1.0739,
+      "lgbm_confidence": 0.0225,
+      "raw_entropy": 1.0768,
+      "raw_confidence": 0.0199,
+      "cal_win": 0.7173,
+      "cal_draw": 0.0205,
+      "cal_loss": 0.2622,
       "stats": {
         "home_recent": [],
         "away_recent": [],
@@ -1671,6 +1751,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3839,
+      "ts_draw": 0.2284,
+      "ts_loss": 0.3877,
+      "lgbm_entropy": 1.0334,
+      "lgbm_confidence": 0.0594,
+      "raw_entropy": 0.8774,
+      "raw_confidence": 0.2014,
+      "cal_win": 0.9069,
+      "cal_draw": 0.0677,
+      "cal_loss": 0.0254,
       "stats": {
         "home_recent": [
           {
@@ -1857,6 +1947,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.3144,
+      "ts_draw": 0.2517,
+      "ts_loss": 0.4339,
+      "lgbm_entropy": 1.0677,
+      "lgbm_confidence": 0.0282,
+      "raw_entropy": 1.0876,
+      "raw_confidence": 0.01,
+      "cal_win": 0.7764,
+      "cal_draw": 0.0171,
+      "cal_loss": 0.2065,
       "stats": {
         "home_recent": [
           {
@@ -2197,6 +2297,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.4024,
+      "ts_draw": 0.2433,
+      "ts_loss": 0.3543,
+      "lgbm_entropy": 0.988,
+      "lgbm_confidence": 0.1006,
+      "raw_entropy": 1.0414,
+      "raw_confidence": 0.052,
+      "cal_win": 0.9732,
+      "cal_draw": 0.0086,
+      "cal_loss": 0.0182,
       "stats": {
         "home_recent": [],
         "away_recent": [],
@@ -2283,6 +2393,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.3267,
+      "ts_draw": 0.2593,
+      "ts_loss": 0.414,
+      "lgbm_entropy": 1.0692,
+      "lgbm_confidence": 0.0268,
+      "raw_entropy": 1.0775,
+      "raw_confidence": 0.0192,
+      "cal_win": 0.7911,
+      "cal_draw": 0.0238,
+      "cal_loss": 0.1851,
       "stats": {
         "home_recent": [],
         "away_recent": [],
@@ -2386,6 +2506,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.409,
+      "ts_draw": 0.2546,
+      "ts_loss": 0.3364,
+      "lgbm_entropy": 1.0149,
+      "lgbm_confidence": 0.0762,
+      "raw_entropy": 0.991,
+      "raw_confidence": 0.0979,
+      "cal_win": 0.949,
+      "cal_draw": 0.0292,
+      "cal_loss": 0.0218,
       "stats": {
         "home_recent": [],
         "away_recent": [],
@@ -2472,6 +2602,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4091,
+      "ts_draw": 0.2343,
+      "ts_loss": 0.3566,
+      "lgbm_entropy": 1.0531,
+      "lgbm_confidence": 0.0415,
+      "raw_entropy": 1.0074,
+      "raw_confidence": 0.083,
+      "cal_win": 0.0815,
+      "cal_draw": 0.0444,
+      "cal_loss": 0.874,
       "stats": {
         "home_recent": [
           {
@@ -2838,6 +2978,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3785,
+      "ts_draw": 0.2743,
+      "ts_loss": 0.3471,
+      "lgbm_entropy": 1.0269,
+      "lgbm_confidence": 0.0653,
+      "raw_entropy": 1.0499,
+      "raw_confidence": 0.0444,
+      "cal_win": 0.9219,
+      "cal_draw": 0.0552,
+      "cal_loss": 0.0229,
       "stats": null
     },
     {
@@ -2927,6 +3077,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3751,
+      "ts_draw": 0.2399,
+      "ts_loss": 0.385,
+      "lgbm_entropy": 1.0474,
+      "lgbm_confidence": 0.0467,
+      "raw_entropy": 1.0656,
+      "raw_confidence": 0.03,
+      "cal_win": 0.8507,
+      "cal_draw": 0.1194,
+      "cal_loss": 0.0299,
       "stats": {
         "home_recent": [],
         "away_recent": [
@@ -3111,6 +3271,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.3924,
+      "ts_draw": 0.2318,
+      "ts_loss": 0.3759,
+      "lgbm_entropy": 1.0715,
+      "lgbm_confidence": 0.0247,
+      "raw_entropy": 1.0897,
+      "raw_confidence": 0.0081,
+      "cal_win": 0.2727,
+      "cal_draw": 0.018,
+      "cal_loss": 0.7093,
       "stats": {
         "home_recent": [
           {
@@ -3251,6 +3421,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.4042,
+      "ts_draw": 0.2424,
+      "ts_loss": 0.3534,
+      "lgbm_entropy": 1.0064,
+      "lgbm_confidence": 0.084,
+      "raw_entropy": 1.0569,
+      "raw_confidence": 0.038,
+      "cal_win": 0.9608,
+      "cal_draw": 0.0173,
+      "cal_loss": 0.0219,
       "stats": {
         "home_recent": [
           {
@@ -3364,6 +3544,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.2913,
+      "ts_draw": 0.2304,
+      "ts_loss": 0.4783,
+      "lgbm_entropy": 1.0518,
+      "lgbm_confidence": 0.0426,
+      "raw_entropy": 1.0385,
+      "raw_confidence": 0.0548,
+      "cal_win": 0.0891,
+      "cal_draw": 0.0338,
+      "cal_loss": 0.8771,
       "stats": {
         "home_recent": [],
         "away_recent": [],
@@ -3476,6 +3666,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3466,
+      "ts_draw": 0.239,
+      "ts_loss": 0.4145,
+      "lgbm_entropy": 1.0472,
+      "lgbm_confidence": 0.0468,
+      "raw_entropy": 0.9148,
+      "raw_confidence": 0.1673,
+      "cal_win": 0.0725,
+      "cal_draw": 0.0369,
+      "cal_loss": 0.8906,
       "stats": {
         "home_recent": [],
         "away_recent": [],
@@ -3579,6 +3779,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.6233,
+      "ts_draw": 0.1921,
+      "ts_loss": 0.1846,
+      "lgbm_entropy": 0.9908,
+      "lgbm_confidence": 0.0981,
+      "raw_entropy": 1.0347,
+      "raw_confidence": 0.0582,
+      "cal_win": 0.9709,
+      "cal_draw": 0.0132,
+      "cal_loss": 0.0159,
       "stats": {
         "home_recent": [],
         "away_recent": [],
@@ -3718,6 +3928,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.3881,
+      "ts_draw": 0.2441,
+      "ts_loss": 0.3678,
+      "lgbm_entropy": 0.9865,
+      "lgbm_confidence": 0.1021,
+      "raw_entropy": 1.0362,
+      "raw_confidence": 0.0568,
+      "cal_win": 0.9739,
+      "cal_draw": 0.0093,
+      "cal_loss": 0.0168,
       "stats": {
         "home_recent": [],
         "away_recent": [],
@@ -3857,6 +4077,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.4986,
+      "ts_draw": 0.2312,
+      "ts_loss": 0.2702,
+      "lgbm_entropy": 1.0723,
+      "lgbm_confidence": 0.0239,
+      "raw_entropy": 1.0904,
+      "raw_confidence": 0.0074,
+      "cal_win": 0.8112,
+      "cal_draw": 0.0633,
+      "cal_loss": 0.1255,
       "stats": {
         "home_recent": [
           {
@@ -4151,6 +4381,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.3651,
+      "ts_draw": 0.2392,
+      "ts_loss": 0.3957,
+      "lgbm_entropy": 1.0706,
+      "lgbm_confidence": 0.0255,
+      "raw_entropy": 1.0821,
+      "raw_confidence": 0.015,
+      "cal_win": 0.2074,
+      "cal_draw": 0.0281,
+      "cal_loss": 0.7645,
       "stats": {
         "home_recent": [
           {
@@ -4517,6 +4757,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.4742,
+      "ts_draw": 0.2422,
+      "ts_loss": 0.2836,
+      "lgbm_entropy": 1.0674,
+      "lgbm_confidence": 0.0284,
+      "raw_entropy": 1.0825,
+      "raw_confidence": 0.0146,
+      "cal_win": 0.6194,
+      "cal_draw": 0.0065,
+      "cal_loss": 0.374,
       "stats": {
         "home_recent": [
           {
@@ -4829,6 +5079,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.3763,
+      "ts_draw": 0.2304,
+      "ts_loss": 0.3933,
+      "lgbm_entropy": 1.0716,
+      "lgbm_confidence": 0.0246,
+      "raw_entropy": 1.0895,
+      "raw_confidence": 0.0083,
+      "cal_win": 0.2609,
+      "cal_draw": 0.0198,
+      "cal_loss": 0.7194,
       "stats": {
         "home_recent": [],
         "away_recent": [],
@@ -4915,6 +5175,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.5162,
+      "ts_draw": 0.2357,
+      "ts_loss": 0.248,
+      "lgbm_entropy": 1.0171,
+      "lgbm_confidence": 0.0742,
+      "raw_entropy": 0.9931,
+      "raw_confidence": 0.0961,
+      "cal_win": 0.9478,
+      "cal_draw": 0.0286,
+      "cal_loss": 0.0236,
       "stats": {
         "home_recent": [],
         "away_recent": [],
@@ -5010,6 +5280,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.3624,
+      "ts_draw": 0.2478,
+      "ts_loss": 0.3898,
+      "lgbm_entropy": 1.0669,
+      "lgbm_confidence": 0.0289,
+      "raw_entropy": 1.0851,
+      "raw_confidence": 0.0123,
+      "cal_win": 0.2336,
+      "cal_draw": 0.0157,
+      "cal_loss": 0.7507,
       "stats": null
     },
     {
@@ -5099,6 +5379,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4232,
+      "ts_draw": 0.2303,
+      "ts_loss": 0.3464,
+      "lgbm_entropy": 1.057,
+      "lgbm_confidence": 0.0379,
+      "raw_entropy": 1.0721,
+      "raw_confidence": 0.0241,
+      "cal_win": 0.1525,
+      "cal_draw": 0.0163,
+      "cal_loss": 0.8313,
       "stats": {
         "home_recent": [],
         "away_recent": [
@@ -5311,6 +5601,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.6426,
+      "ts_draw": 0.1868,
+      "ts_loss": 0.1705,
+      "lgbm_entropy": 1.0068,
+      "lgbm_confidence": 0.0836,
+      "raw_entropy": 0.8657,
+      "raw_confidence": 0.212,
+      "cal_win": 0.9609,
+      "cal_draw": 0.016,
+      "cal_loss": 0.0232,
       "stats": null
     },
     {
@@ -5400,6 +5700,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3909,
+      "ts_draw": 0.2631,
+      "ts_loss": 0.346,
+      "lgbm_entropy": 1.0569,
+      "lgbm_confidence": 0.0379,
+      "raw_entropy": 1.0786,
+      "raw_confidence": 0.0182,
+      "cal_win": 0.8778,
+      "cal_draw": 0.0337,
+      "cal_loss": 0.0885,
       "stats": {
         "home_recent": [],
         "away_recent": [
@@ -5594,6 +5904,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4692,
+      "ts_draw": 0.2136,
+      "ts_loss": 0.3171,
+      "lgbm_entropy": 1.0443,
+      "lgbm_confidence": 0.0495,
+      "raw_entropy": 0.9519,
+      "raw_confidence": 0.1335,
+      "cal_win": 0.0689,
+      "cal_draw": 0.0333,
+      "cal_loss": 0.8977,
       "stats": null
     },
     {
@@ -5683,6 +6003,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.4005,
+      "ts_draw": 0.2324,
+      "ts_loss": 0.3671,
+      "lgbm_entropy": 1.0066,
+      "lgbm_confidence": 0.0838,
+      "raw_entropy": 1.0071,
+      "raw_confidence": 0.0833,
+      "cal_win": 0.9591,
+      "cal_draw": 0.0209,
+      "cal_loss": 0.02,
       "stats": {
         "home_recent": [],
         "away_recent": [
@@ -5860,6 +6190,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.454,
+      "ts_draw": 0.2125,
+      "ts_loss": 0.3335,
+      "lgbm_entropy": 1.0089,
+      "lgbm_confidence": 0.0817,
+      "raw_entropy": 1.0495,
+      "raw_confidence": 0.0447,
+      "cal_win": 0.956,
+      "cal_draw": 0.0241,
+      "cal_loss": 0.02,
       "stats": {
         "home_recent": [
           {
@@ -6209,6 +6549,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4157,
+      "ts_draw": 0.2235,
+      "ts_loss": 0.3608,
+      "lgbm_entropy": 1.0502,
+      "lgbm_confidence": 0.0441,
+      "raw_entropy": 1.0279,
+      "raw_confidence": 0.0644,
+      "cal_win": 0.0776,
+      "cal_draw": 0.0398,
+      "cal_loss": 0.8826,
       "stats": {
         "home_recent": [],
         "away_recent": [
@@ -6321,6 +6671,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4315,
+      "ts_draw": 0.25,
+      "ts_loss": 0.3185,
+      "lgbm_entropy": 1.0402,
+      "lgbm_confidence": 0.0532,
+      "raw_entropy": 1.0609,
+      "raw_confidence": 0.0343,
+      "cal_win": 0.0631,
+      "cal_draw": 0.0302,
+      "cal_loss": 0.9067,
       "stats": {
         "home_recent": [
           {
@@ -6687,6 +7047,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4335,
+      "ts_draw": 0.2503,
+      "ts_loss": 0.3162,
+      "lgbm_entropy": 1.0295,
+      "lgbm_confidence": 0.0629,
+      "raw_entropy": 1.0067,
+      "raw_confidence": 0.0837,
+      "cal_win": 0.8673,
+      "cal_draw": 0.1165,
+      "cal_loss": 0.0161,
       "stats": {
         "home_recent": [],
         "away_recent": [
@@ -6790,6 +7160,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.4065,
+      "ts_draw": 0.2386,
+      "ts_loss": 0.3549,
+      "lgbm_entropy": 1.0805,
+      "lgbm_confidence": 0.0164,
+      "raw_entropy": 1.0851,
+      "raw_confidence": 0.0123,
+      "cal_win": 0.1577,
+      "cal_draw": 0.122,
+      "cal_loss": 0.7204,
       "stats": {
         "home_recent": [],
         "away_recent": [],
@@ -6902,6 +7282,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3828,
+      "ts_draw": 0.2434,
+      "ts_loss": 0.3737,
+      "lgbm_entropy": 1.0565,
+      "lgbm_confidence": 0.0384,
+      "raw_entropy": 1.0754,
+      "raw_confidence": 0.0211,
+      "cal_win": 0.7409,
+      "cal_draw": 0.2327,
+      "cal_loss": 0.0263,
       "stats": {
         "home_recent": [],
         "away_recent": [],
@@ -7032,6 +7422,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.3884,
+      "ts_draw": 0.2351,
+      "ts_loss": 0.3765,
+      "lgbm_entropy": 1.0744,
+      "lgbm_confidence": 0.0221,
+      "raw_entropy": 1.0854,
+      "raw_confidence": 0.012,
+      "cal_win": 0.7798,
+      "cal_draw": 0.1296,
+      "cal_loss": 0.0906,
       "stats": {
         "home_recent": [],
         "away_recent": [],
@@ -7207,6 +7607,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.4324,
+      "ts_draw": 0.2343,
+      "ts_loss": 0.3333,
+      "lgbm_entropy": 1.069,
+      "lgbm_confidence": 0.027,
+      "raw_entropy": 1.0835,
+      "raw_confidence": 0.0138,
+      "cal_win": 0.7108,
+      "cal_draw": 0.0116,
+      "cal_loss": 0.2775,
       "stats": {
         "home_recent": [],
         "away_recent": [
@@ -7473,6 +7883,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.4573,
+      "ts_draw": 0.2246,
+      "ts_loss": 0.3181,
+      "lgbm_entropy": 1.0674,
+      "lgbm_confidence": 0.0284,
+      "raw_entropy": 1.0885,
+      "raw_confidence": 0.0092,
+      "cal_win": 0.7466,
+      "cal_draw": 0.0127,
+      "cal_loss": 0.2406,
       "stats": {
         "home_recent": [],
         "away_recent": [],
@@ -7576,6 +7996,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3713,
+      "ts_draw": 0.2395,
+      "ts_loss": 0.3891,
+      "lgbm_entropy": 1.0228,
+      "lgbm_confidence": 0.0691,
+      "raw_entropy": 0.9898,
+      "raw_confidence": 0.0991,
+      "cal_win": 0.9371,
+      "cal_draw": 0.0388,
+      "cal_loss": 0.0241,
       "stats": {
         "home_recent": [],
         "away_recent": [],
@@ -7760,6 +8190,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.401,
+      "ts_draw": 0.2218,
+      "ts_loss": 0.3772,
+      "lgbm_entropy": 1.078,
+      "lgbm_confidence": 0.0187,
+      "raw_entropy": 1.0737,
+      "raw_confidence": 0.0226,
+      "cal_win": 0.5546,
+      "cal_draw": 0.0174,
+      "cal_loss": 0.428,
       "stats": {
         "home_recent": [],
         "away_recent": [],
@@ -7863,6 +8303,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.4635,
+      "ts_draw": 0.2378,
+      "ts_loss": 0.2987,
+      "lgbm_entropy": 1.0847,
+      "lgbm_confidence": 0.0127,
+      "raw_entropy": 1.0891,
+      "raw_confidence": 0.0087,
+      "cal_win": 0.706,
+      "cal_draw": 0.1267,
+      "cal_loss": 0.1673,
       "stats": {
         "home_recent": [],
         "away_recent": [],
@@ -8011,6 +8461,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.2092,
+      "ts_draw": 0.1896,
+      "ts_loss": 0.6012,
+      "lgbm_entropy": 1.0521,
+      "lgbm_confidence": 0.0423,
+      "raw_entropy": 1.0096,
+      "raw_confidence": 0.081,
+      "cal_win": 0.089,
+      "cal_draw": 0.0346,
+      "cal_loss": 0.8764,
       "stats": {
         "home_recent": [
           {
@@ -8241,6 +8701,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.4488,
+      "ts_draw": 0.2444,
+      "ts_loss": 0.3068,
+      "lgbm_entropy": 1.0979,
+      "lgbm_confidence": 0.0007,
+      "raw_entropy": 1.0946,
+      "raw_confidence": 0.0037,
+      "cal_win": 0.335,
+      "cal_draw": 0.3444,
+      "cal_loss": 0.3207,
       "stats": {
         "home_recent": [],
         "away_recent": [],
@@ -8380,6 +8850,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.4042,
+      "ts_draw": 0.2424,
+      "ts_loss": 0.3534,
+      "lgbm_entropy": 1.0164,
+      "lgbm_confidence": 0.0748,
+      "raw_entropy": 1.0569,
+      "raw_confidence": 0.0379,
+      "cal_win": 0.9522,
+      "cal_draw": 0.02,
+      "cal_loss": 0.0278,
       "stats": {
         "home_recent": [],
         "away_recent": [],
@@ -8564,6 +9044,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3463,
+      "ts_draw": 0.2155,
+      "ts_loss": 0.4382,
+      "lgbm_entropy": 1.046,
+      "lgbm_confidence": 0.0479,
+      "raw_entropy": 1.0122,
+      "raw_confidence": 0.0787,
+      "cal_win": 0.0721,
+      "cal_draw": 0.0342,
+      "cal_loss": 0.8937,
       "stats": {
         "home_recent": [
           {
@@ -8748,6 +9238,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4835,
+      "ts_draw": 0.2074,
+      "ts_loss": 0.3091,
+      "lgbm_entropy": 1.0583,
+      "lgbm_confidence": 0.0367,
+      "raw_entropy": 0.9234,
+      "raw_confidence": 0.1595,
+      "cal_win": 0.8387,
+      "cal_draw": 0.114,
+      "cal_loss": 0.0473,
       "stats": {
         "home_recent": [],
         "away_recent": [],
@@ -8932,6 +9432,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.332,
+      "ts_draw": 0.2313,
+      "ts_loss": 0.4368,
+      "lgbm_entropy": 1.0128,
+      "lgbm_confidence": 0.0781,
+      "raw_entropy": 0.978,
+      "raw_confidence": 0.1097,
+      "cal_win": 0.9527,
+      "cal_draw": 0.0253,
+      "cal_loss": 0.022,
       "stats": {
         "home_recent": [
           {
@@ -9298,6 +9808,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.3913,
+      "ts_draw": 0.2355,
+      "ts_loss": 0.3733,
+      "lgbm_entropy": 0.9944,
+      "lgbm_confidence": 0.0949,
+      "raw_entropy": 1.0465,
+      "raw_confidence": 0.0474,
+      "cal_win": 0.9696,
+      "cal_draw": 0.0117,
+      "cal_loss": 0.0187,
       "stats": {
         "home_recent": [],
         "away_recent": [],
@@ -9482,6 +10002,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3397,
+      "ts_draw": 0.2164,
+      "ts_loss": 0.444,
+      "lgbm_entropy": 1.0441,
+      "lgbm_confidence": 0.0496,
+      "raw_entropy": 1.0169,
+      "raw_confidence": 0.0743,
+      "cal_win": 0.0692,
+      "cal_draw": 0.0327,
+      "cal_loss": 0.8982,
       "stats": {
         "home_recent": [
           {
@@ -9768,6 +10298,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.4012,
+      "ts_draw": 0.2474,
+      "ts_loss": 0.3514,
+      "lgbm_entropy": 1.0065,
+      "lgbm_confidence": 0.0838,
+      "raw_entropy": 0.9752,
+      "raw_confidence": 0.1123,
+      "cal_win": 0.9605,
+      "cal_draw": 0.0178,
+      "cal_loss": 0.0217,
       "stats": {
         "home_recent": [],
         "away_recent": [
@@ -9963,6 +10503,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.4017,
+      "ts_draw": 0.2108,
+      "ts_loss": 0.3876,
+      "lgbm_entropy": 1.074,
+      "lgbm_confidence": 0.0224,
+      "raw_entropy": 1.0843,
+      "raw_confidence": 0.013,
+      "cal_win": 0.4958,
+      "cal_draw": 0.0108,
+      "cal_loss": 0.4934,
       "stats": {
         "home_recent": [
           {
@@ -10049,6 +10599,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.435,
+      "ts_draw": 0.2339,
+      "ts_loss": 0.331,
+      "lgbm_entropy": 1.0477,
+      "lgbm_confidence": 0.0463,
+      "raw_entropy": 0.8625,
+      "raw_confidence": 0.215,
+      "cal_win": 0.8606,
+      "cal_draw": 0.107,
+      "cal_loss": 0.0324,
       "stats": {
         "home_recent": [],
         "away_recent": [
@@ -10235,6 +10795,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3266,
+      "ts_draw": 0.2373,
+      "ts_loss": 0.4361,
+      "lgbm_entropy": 1.0362,
+      "lgbm_confidence": 0.0568,
+      "raw_entropy": 0.9917,
+      "raw_confidence": 0.0974,
+      "cal_win": 0.9167,
+      "cal_draw": 0.0504,
+      "cal_loss": 0.0329,
       "stats": {
         "home_recent": [],
         "away_recent": [],
@@ -10347,6 +10917,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.36,
+      "ts_draw": 0.2367,
+      "ts_loss": 0.4034,
+      "lgbm_entropy": 1.0679,
+      "lgbm_confidence": 0.0279,
+      "raw_entropy": 1.0867,
+      "raw_confidence": 0.0108,
+      "cal_win": 0.7494,
+      "cal_draw": 0.0138,
+      "cal_loss": 0.2368,
       "stats": {
         "home_recent": [],
         "away_recent": [
@@ -10541,6 +11121,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.4091,
+      "ts_draw": 0.2343,
+      "ts_loss": 0.3566,
+      "lgbm_entropy": 1.0882,
+      "lgbm_confidence": 0.0095,
+      "raw_entropy": 1.0945,
+      "raw_confidence": 0.0037,
+      "cal_win": 0.1838,
+      "cal_draw": 0.7311,
+      "cal_loss": 0.0851,
       "stats": {
         "home_recent": [
           {
@@ -10736,6 +11326,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.3886,
+      "ts_draw": 0.2388,
+      "ts_loss": 0.3726,
+      "lgbm_entropy": 1.0744,
+      "lgbm_confidence": 0.022,
+      "raw_entropy": 1.0767,
+      "raw_confidence": 0.02,
+      "cal_win": 0.4166,
+      "cal_draw": 0.0126,
+      "cal_loss": 0.5708,
       "stats": {
         "home_recent": [
           {
@@ -10930,6 +11530,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.4587,
+      "ts_draw": 0.2379,
+      "ts_loss": 0.3034,
+      "lgbm_entropy": 1.069,
+      "lgbm_confidence": 0.027,
+      "raw_entropy": 1.0861,
+      "raw_confidence": 0.0114,
+      "cal_win": 0.7483,
+      "cal_draw": 0.0152,
+      "cal_loss": 0.2365,
       "stats": null
     },
     {
@@ -11019,6 +11629,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.3415,
+      "ts_draw": 0.2446,
+      "ts_loss": 0.4139,
+      "lgbm_entropy": 0.9883,
+      "lgbm_confidence": 0.1004,
+      "raw_entropy": 1.0366,
+      "raw_confidence": 0.0564,
+      "cal_win": 0.973,
+      "cal_draw": 0.0081,
+      "cal_loss": 0.0189,
       "stats": {
         "home_recent": [],
         "away_recent": [
@@ -11240,6 +11860,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.418,
+      "ts_draw": 0.2198,
+      "ts_loss": 0.3622,
+      "lgbm_entropy": 1.0363,
+      "lgbm_confidence": 0.0567,
+      "raw_entropy": 0.9304,
+      "raw_confidence": 0.1531,
+      "cal_win": 0.9122,
+      "cal_draw": 0.0569,
+      "cal_loss": 0.0309,
       "stats": {
         "home_recent": [
           {
@@ -11407,6 +12037,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.5109,
+      "ts_draw": 0.2105,
+      "ts_loss": 0.2786,
+      "lgbm_entropy": 1.0375,
+      "lgbm_confidence": 0.0556,
+      "raw_entropy": 1.052,
+      "raw_confidence": 0.0424,
+      "cal_win": 0.9251,
+      "cal_draw": 0.0275,
+      "cal_loss": 0.0474,
       "stats": {
         "home_recent": [
           {
@@ -11610,6 +12250,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4175,
+      "ts_draw": 0.2423,
+      "ts_loss": 0.3402,
+      "lgbm_entropy": 1.0424,
+      "lgbm_confidence": 0.0511,
+      "raw_entropy": 1.0688,
+      "raw_confidence": 0.0271,
+      "cal_win": 0.9072,
+      "cal_draw": 0.0528,
+      "cal_loss": 0.04,
       "stats": {
         "home_recent": [],
         "away_recent": [],
@@ -11713,6 +12363,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3717,
+      "ts_draw": 0.2423,
+      "ts_loss": 0.386,
+      "lgbm_entropy": 1.0276,
+      "lgbm_confidence": 0.0646,
+      "raw_entropy": 1.0522,
+      "raw_confidence": 0.0422,
+      "cal_win": 0.8899,
+      "cal_draw": 0.0927,
+      "cal_loss": 0.0174,
       "stats": {
         "home_recent": [
           {
@@ -12025,6 +12685,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.3935,
+      "ts_draw": 0.2276,
+      "ts_loss": 0.3789,
+      "lgbm_entropy": 1.0091,
+      "lgbm_confidence": 0.0814,
+      "raw_entropy": 0.9707,
+      "raw_confidence": 0.1165,
+      "cal_win": 0.9591,
+      "cal_draw": 0.0162,
+      "cal_loss": 0.0247,
       "stats": {
         "home_recent": [
           {
@@ -12237,6 +12907,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.371,
+      "ts_draw": 0.2313,
+      "ts_loss": 0.3977,
+      "lgbm_entropy": 1.013,
+      "lgbm_confidence": 0.078,
+      "raw_entropy": 1.0032,
+      "raw_confidence": 0.0868,
+      "cal_win": 0.9561,
+      "cal_draw": 0.016,
+      "cal_loss": 0.0279,
       "stats": {
         "home_recent": [
           {
@@ -12413,6 +13093,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.4027,
+      "ts_draw": 0.2589,
+      "ts_loss": 0.3383,
+      "lgbm_entropy": 1.0828,
+      "lgbm_confidence": 0.0144,
+      "raw_entropy": 1.0913,
+      "raw_confidence": 0.0067,
+      "cal_win": 0.5745,
+      "cal_draw": 0.362,
+      "cal_loss": 0.0635,
       "stats": null
     },
     {
@@ -12485,6 +13175,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3241,
+      "ts_draw": 0.2415,
+      "ts_loss": 0.4344,
+      "lgbm_entropy": 1.0296,
+      "lgbm_confidence": 0.0629,
+      "raw_entropy": 0.9025,
+      "raw_confidence": 0.1785,
+      "cal_win": 0.9193,
+      "cal_draw": 0.0559,
+      "cal_loss": 0.0248,
       "stats": {
         "home_recent": [],
         "away_recent": [
@@ -12688,6 +13388,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.3708,
+      "ts_draw": 0.2261,
+      "ts_loss": 0.4031,
+      "lgbm_entropy": 1.0836,
+      "lgbm_confidence": 0.0137,
+      "raw_entropy": 1.0934,
+      "raw_confidence": 0.0048,
+      "cal_win": 0.2484,
+      "cal_draw": 0.0759,
+      "cal_loss": 0.6757,
       "stats": {
         "home_recent": [],
         "away_recent": [],
@@ -12855,6 +13565,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3933,
+      "ts_draw": 0.228,
+      "ts_loss": 0.3787,
+      "lgbm_entropy": 1.0292,
+      "lgbm_confidence": 0.0631,
+      "raw_entropy": 1.007,
+      "raw_confidence": 0.0834,
+      "cal_win": 0.938,
+      "cal_draw": 0.0213,
+      "cal_loss": 0.0408,
       "stats": {
         "home_recent": [],
         "away_recent": [
@@ -13039,6 +13759,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.3158,
+      "ts_draw": 0.2615,
+      "ts_loss": 0.4227,
+      "lgbm_entropy": 1.0679,
+      "lgbm_confidence": 0.0279,
+      "raw_entropy": 1.0946,
+      "raw_confidence": 0.0036,
+      "cal_win": 0.135,
+      "cal_draw": 0.8181,
+      "cal_loss": 0.0469,
       "stats": {
         "home_recent": [],
         "away_recent": [],
@@ -13160,6 +13890,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3514,
+      "ts_draw": 0.235,
+      "ts_loss": 0.4136,
+      "lgbm_entropy": 1.0441,
+      "lgbm_confidence": 0.0496,
+      "raw_entropy": 1.0472,
+      "raw_confidence": 0.0468,
+      "cal_win": 0.0661,
+      "cal_draw": 0.0359,
+      "cal_loss": 0.898,
       "stats": {
         "home_recent": [
           {
@@ -13435,6 +14175,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.4065,
+      "ts_draw": 0.2386,
+      "ts_loss": 0.3549,
+      "lgbm_entropy": 1.0025,
+      "lgbm_confidence": 0.0875,
+      "raw_entropy": 1.0193,
+      "raw_confidence": 0.0722,
+      "cal_win": 0.9634,
+      "cal_draw": 0.0169,
+      "cal_loss": 0.0197,
       "stats": {
         "home_recent": [
           {
@@ -13747,6 +14497,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.3136,
+      "ts_draw": 0.2365,
+      "ts_loss": 0.4499,
+      "lgbm_entropy": 1.071,
+      "lgbm_confidence": 0.0251,
+      "raw_entropy": 0.8413,
+      "raw_confidence": 0.2342,
+      "cal_win": 0.6365,
+      "cal_draw": 0.3267,
+      "cal_loss": 0.0368,
       "stats": {
         "home_recent": [
           {
@@ -14068,6 +14828,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3262,
+      "ts_draw": 0.2232,
+      "ts_loss": 0.4506,
+      "lgbm_entropy": 1.0547,
+      "lgbm_confidence": 0.04,
+      "raw_entropy": 0.9939,
+      "raw_confidence": 0.0953,
+      "cal_win": 0.0789,
+      "cal_draw": 0.0537,
+      "cal_loss": 0.8675,
       "stats": {
         "home_recent": [
           {
@@ -14316,6 +15086,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3068,
+      "ts_draw": 0.221,
+      "ts_loss": 0.4722,
+      "lgbm_entropy": 1.0493,
+      "lgbm_confidence": 0.0449,
+      "raw_entropy": 1.0611,
+      "raw_confidence": 0.0341,
+      "cal_win": 0.8256,
+      "cal_draw": 0.0055,
+      "cal_loss": 0.1689,
       "stats": {
         "home_recent": [
           {
@@ -14610,6 +15390,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3852,
+      "ts_draw": 0.2484,
+      "ts_loss": 0.3665,
+      "lgbm_entropy": 1.0184,
+      "lgbm_confidence": 0.073,
+      "raw_entropy": 1.0593,
+      "raw_confidence": 0.0358,
+      "cal_win": 0.9173,
+      "cal_draw": 0.067,
+      "cal_loss": 0.0156,
       "stats": {
         "home_recent": [],
         "away_recent": [
@@ -14885,6 +15675,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3481,
+      "ts_draw": 0.2346,
+      "ts_loss": 0.4172,
+      "lgbm_entropy": 1.0511,
+      "lgbm_confidence": 0.0432,
+      "raw_entropy": 0.8223,
+      "raw_confidence": 0.2515,
+      "cal_win": 0.78,
+      "cal_draw": 0.1955,
+      "cal_loss": 0.0245,
       "stats": {
         "home_recent": [
           {
@@ -15188,6 +15988,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4091,
+      "ts_draw": 0.2343,
+      "ts_loss": 0.3566,
+      "lgbm_entropy": 1.0553,
+      "lgbm_confidence": 0.0394,
+      "raw_entropy": 1.0761,
+      "raw_confidence": 0.0205,
+      "cal_win": 0.1069,
+      "cal_draw": 0.0301,
+      "cal_loss": 0.863,
       "stats": {
         "home_recent": [],
         "away_recent": [
@@ -15391,6 +16201,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.5254,
+      "ts_draw": 0.2133,
+      "ts_loss": 0.2613,
+      "lgbm_entropy": 0.9912,
+      "lgbm_confidence": 0.0977,
+      "raw_entropy": 1.0434,
+      "raw_confidence": 0.0502,
+      "cal_win": 0.9709,
+      "cal_draw": 0.0072,
+      "cal_loss": 0.0218,
       "stats": {
         "home_recent": [],
         "away_recent": [],
@@ -15548,6 +16368,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.4042,
+      "ts_draw": 0.2424,
+      "ts_loss": 0.3534,
+      "lgbm_entropy": 0.9922,
+      "lgbm_confidence": 0.0969,
+      "raw_entropy": 1.0319,
+      "raw_confidence": 0.0607,
+      "cal_win": 0.9707,
+      "cal_draw": 0.0081,
+      "cal_loss": 0.0212,
       "stats": {
         "home_recent": [
           {
@@ -15896,6 +16726,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4258,
+      "ts_draw": 0.2374,
+      "ts_loss": 0.3368,
+      "lgbm_entropy": 1.0522,
+      "lgbm_confidence": 0.0422,
+      "raw_entropy": 1.0616,
+      "raw_confidence": 0.0336,
+      "cal_win": 0.101,
+      "cal_draw": 0.0268,
+      "cal_loss": 0.8723,
       "stats": {
         "home_recent": [
           {
@@ -16235,6 +17075,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4091,
+      "ts_draw": 0.2343,
+      "ts_loss": 0.3566,
+      "lgbm_entropy": 1.0484,
+      "lgbm_confidence": 0.0457,
+      "raw_entropy": 1.0851,
+      "raw_confidence": 0.0123,
+      "cal_win": 0.9027,
+      "cal_draw": 0.038,
+      "cal_loss": 0.0593,
       "stats": {
         "home_recent": [],
         "away_recent": [],
@@ -16365,6 +17215,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.4091,
+      "ts_draw": 0.2343,
+      "ts_loss": 0.3566,
+      "lgbm_entropy": 1.0795,
+      "lgbm_confidence": 0.0174,
+      "raw_entropy": 1.079,
+      "raw_confidence": 0.0179,
+      "cal_win": 0.7171,
+      "cal_draw": 0.0415,
+      "cal_loss": 0.2414,
       "stats": {
         "home_recent": [
           {
@@ -16586,6 +17446,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.4091,
+      "ts_draw": 0.2343,
+      "ts_loss": 0.3566,
+      "lgbm_entropy": 1.0091,
+      "lgbm_confidence": 0.0815,
+      "raw_entropy": 0.9303,
+      "raw_confidence": 0.1532,
+      "cal_win": 0.9594,
+      "cal_draw": 0.0133,
+      "cal_loss": 0.0273,
       "stats": {
         "home_recent": [
           {
@@ -16798,6 +17668,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4091,
+      "ts_draw": 0.2343,
+      "ts_loss": 0.3566,
+      "lgbm_entropy": 1.0464,
+      "lgbm_confidence": 0.0475,
+      "raw_entropy": 1.0084,
+      "raw_confidence": 0.0821,
+      "cal_win": 0.0682,
+      "cal_draw": 0.0397,
+      "cal_loss": 0.8921,
       "stats": {
         "home_recent": [
           {
@@ -17001,6 +17881,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.4091,
+      "ts_draw": 0.2343,
+      "ts_loss": 0.3566,
+      "lgbm_entropy": 1.0102,
+      "lgbm_confidence": 0.0805,
+      "raw_entropy": 1.0498,
+      "raw_confidence": 0.0444,
+      "cal_win": 0.9586,
+      "cal_draw": 0.0138,
+      "cal_loss": 0.0276,
       "stats": {
         "home_recent": [
           {
@@ -17367,6 +18257,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4091,
+      "ts_draw": 0.2343,
+      "ts_loss": 0.3566,
+      "lgbm_entropy": 1.0186,
+      "lgbm_confidence": 0.0728,
+      "raw_entropy": 0.9449,
+      "raw_confidence": 0.1399,
+      "cal_win": 0.9503,
+      "cal_draw": 0.0143,
+      "cal_loss": 0.0354,
       "stats": {
         "home_recent": [],
         "away_recent": [],
@@ -17479,6 +18379,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4091,
+      "ts_draw": 0.2343,
+      "ts_loss": 0.3566,
+      "lgbm_entropy": 1.0577,
+      "lgbm_confidence": 0.0372,
+      "raw_entropy": 1.0797,
+      "raw_confidence": 0.0173,
+      "cal_win": 0.1604,
+      "cal_draw": 0.0155,
+      "cal_loss": 0.8241,
       "stats": {
         "home_recent": [
           {
@@ -17828,6 +18738,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.4502,
+      "ts_draw": 0.2255,
+      "ts_loss": 0.3243,
+      "lgbm_entropy": 1.0765,
+      "lgbm_confidence": 0.0202,
+      "raw_entropy": 1.0921,
+      "raw_confidence": 0.0059,
+      "cal_win": 0.7233,
+      "cal_draw": 0.2027,
+      "cal_loss": 0.074,
       "stats": {
         "home_recent": [],
         "away_recent": [
@@ -18012,6 +18932,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3966,
+      "ts_draw": 0.2422,
+      "ts_loss": 0.3612,
+      "lgbm_entropy": 1.0588,
+      "lgbm_confidence": 0.0362,
+      "raw_entropy": 1.0753,
+      "raw_confidence": 0.0212,
+      "cal_win": 0.812,
+      "cal_draw": 0.147,
+      "cal_loss": 0.041,
       "stats": {
         "home_recent": [
           {
@@ -18287,6 +19217,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.413,
+      "ts_draw": 0.2278,
+      "ts_loss": 0.3591,
+      "lgbm_entropy": 1.0827,
+      "lgbm_confidence": 0.0145,
+      "raw_entropy": 1.0926,
+      "raw_confidence": 0.0055,
+      "cal_win": 0.2329,
+      "cal_draw": 0.0771,
+      "cal_loss": 0.69,
       "stats": {
         "home_recent": [
           {
@@ -18599,6 +19539,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4091,
+      "ts_draw": 0.2343,
+      "ts_loss": 0.3566,
+      "lgbm_entropy": 1.0346,
+      "lgbm_confidence": 0.0582,
+      "raw_entropy": 0.9875,
+      "raw_confidence": 0.1011,
+      "cal_win": 0.9181,
+      "cal_draw": 0.0509,
+      "cal_loss": 0.031,
       "stats": {
         "home_recent": [
           {
@@ -18965,6 +19915,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.4091,
+      "ts_draw": 0.2343,
+      "ts_loss": 0.3566,
+      "lgbm_entropy": 1.0105,
+      "lgbm_confidence": 0.0802,
+      "raw_entropy": 0.9416,
+      "raw_confidence": 0.1429,
+      "cal_win": 0.9578,
+      "cal_draw": 0.0176,
+      "cal_loss": 0.0246,
       "stats": {
         "home_recent": [
           {
@@ -19331,6 +20291,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4091,
+      "ts_draw": 0.2343,
+      "ts_loss": 0.3566,
+      "lgbm_entropy": 1.0647,
+      "lgbm_confidence": 0.0309,
+      "raw_entropy": 1.0764,
+      "raw_confidence": 0.0202,
+      "cal_win": 0.8246,
+      "cal_draw": 0.0228,
+      "cal_loss": 0.1527,
       "stats": {
         "home_recent": [
           {
@@ -19697,6 +20667,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3822,
+      "ts_draw": 0.247,
+      "ts_loss": 0.3708,
+      "lgbm_entropy": 1.0414,
+      "lgbm_confidence": 0.0521,
+      "raw_entropy": 1.0359,
+      "raw_confidence": 0.0571,
+      "cal_win": 0.0652,
+      "cal_draw": 0.0305,
+      "cal_loss": 0.9042,
       "stats": {
         "home_recent": [
           {
@@ -20063,6 +21043,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.4088,
+      "ts_draw": 0.2347,
+      "ts_loss": 0.3565,
+      "lgbm_entropy": 1.0591,
+      "lgbm_confidence": 0.036,
+      "raw_entropy": 1.0854,
+      "raw_confidence": 0.012,
+      "cal_win": 0.1866,
+      "cal_draw": 0.0127,
+      "cal_loss": 0.8008,
       "stats": {
         "home_recent": [
           {
@@ -20429,6 +21419,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4091,
+      "ts_draw": 0.2343,
+      "ts_loss": 0.3566,
+      "lgbm_entropy": 1.0208,
+      "lgbm_confidence": 0.0708,
+      "raw_entropy": 1.0188,
+      "raw_confidence": 0.0726,
+      "cal_win": 0.9426,
+      "cal_draw": 0.0326,
+      "cal_loss": 0.0248,
       "stats": {
         "home_recent": [
           {
@@ -20795,6 +21795,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.4241,
+      "ts_draw": 0.2416,
+      "ts_loss": 0.3344,
+      "lgbm_entropy": 0.9974,
+      "lgbm_confidence": 0.0921,
+      "raw_entropy": 1.0055,
+      "raw_confidence": 0.0848,
+      "cal_win": 0.9671,
+      "cal_draw": 0.0147,
+      "cal_loss": 0.0183,
       "stats": {
         "home_recent": [
           {
@@ -21161,6 +22171,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.4113,
+      "ts_draw": 0.2307,
+      "ts_loss": 0.358,
+      "lgbm_entropy": 1.0705,
+      "lgbm_confidence": 0.0256,
+      "raw_entropy": 1.087,
+      "raw_confidence": 0.0106,
+      "cal_win": 0.7829,
+      "cal_draw": 0.0251,
+      "cal_loss": 0.1921,
       "stats": {
         "home_recent": [
           {
@@ -21527,6 +22547,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.3394,
+      "ts_draw": 0.2316,
+      "ts_loss": 0.429,
+      "lgbm_entropy": 1.0805,
+      "lgbm_confidence": 0.0165,
+      "raw_entropy": 1.0951,
+      "raw_confidence": 0.0032,
+      "cal_win": 0.2395,
+      "cal_draw": 0.0579,
+      "cal_loss": 0.7026,
       "stats": {
         "home_recent": [
           {
@@ -21893,6 +22923,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.4771,
+      "ts_draw": 0.223,
+      "ts_loss": 0.2999,
+      "lgbm_entropy": 1.0857,
+      "lgbm_confidence": 0.0118,
+      "raw_entropy": 1.0952,
+      "raw_confidence": 0.0031,
+      "cal_win": 0.1881,
+      "cal_draw": 0.1504,
+      "cal_loss": 0.6615,
       "stats": {
         "home_recent": [
           {
@@ -22259,6 +23299,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.4123,
+      "ts_draw": 0.229,
+      "ts_loss": 0.3587,
+      "lgbm_entropy": 1.0918,
+      "lgbm_confidence": 0.0062,
+      "raw_entropy": 1.0963,
+      "raw_confidence": 0.0021,
+      "cal_win": 0.2004,
+      "cal_draw": 0.2547,
+      "cal_loss": 0.5449,
       "stats": {
         "home_recent": [
           {
@@ -22625,6 +23675,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.3461,
+      "ts_draw": 0.2315,
+      "ts_loss": 0.4225,
+      "lgbm_entropy": 1.0821,
+      "lgbm_confidence": 0.015,
+      "raw_entropy": 1.0913,
+      "raw_confidence": 0.0066,
+      "cal_win": 0.1042,
+      "cal_draw": 0.2574,
+      "cal_loss": 0.6384,
       "stats": {
         "home_recent": [
           {
@@ -22991,6 +24051,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.4014,
+      "ts_draw": 0.2232,
+      "ts_loss": 0.3754,
+      "lgbm_entropy": 1.0724,
+      "lgbm_confidence": 0.0239,
+      "raw_entropy": 1.0947,
+      "raw_confidence": 0.0036,
+      "cal_win": 0.2008,
+      "cal_draw": 0.0355,
+      "cal_loss": 0.7637,
       "stats": {
         "home_recent": [
           {
@@ -23357,6 +24427,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3111,
+      "ts_draw": 0.2365,
+      "ts_loss": 0.4524,
+      "lgbm_entropy": 1.0509,
+      "lgbm_confidence": 0.0434,
+      "raw_entropy": 1.0802,
+      "raw_confidence": 0.0167,
+      "cal_win": 0.0557,
+      "cal_draw": 0.0807,
+      "cal_loss": 0.8636,
       "stats": {
         "home_recent": [
           {
@@ -23625,6 +24705,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.4944,
+      "ts_draw": 0.2341,
+      "ts_loss": 0.2715,
+      "lgbm_entropy": 1.0612,
+      "lgbm_confidence": 0.034,
+      "raw_entropy": 1.0842,
+      "raw_confidence": 0.0131,
+      "cal_win": 0.8573,
+      "cal_draw": 0.0302,
+      "cal_loss": 0.1125,
       "stats": {
         "home_recent": [
           {
@@ -23991,6 +25081,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3794,
+      "ts_draw": 0.2183,
+      "ts_loss": 0.4024,
+      "lgbm_entropy": 1.0262,
+      "lgbm_confidence": 0.0659,
+      "raw_entropy": 1.0567,
+      "raw_confidence": 0.0382,
+      "cal_win": 0.9416,
+      "cal_draw": 0.0167,
+      "cal_loss": 0.0418,
       "stats": {
         "home_recent": [
           {
@@ -24357,6 +25457,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.519,
+      "ts_draw": 0.2211,
+      "ts_loss": 0.2599,
+      "lgbm_entropy": 1.043,
+      "lgbm_confidence": 0.0506,
+      "raw_entropy": 1.0697,
+      "raw_confidence": 0.0263,
+      "cal_win": 0.0693,
+      "cal_draw": 0.0302,
+      "cal_loss": 0.9005,
       "stats": {
         "home_recent": [
           {
@@ -24723,6 +25833,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.3913,
+      "ts_draw": 0.2355,
+      "ts_loss": 0.3733,
+      "lgbm_entropy": 1.0618,
+      "lgbm_confidence": 0.0335,
+      "raw_entropy": 1.0869,
+      "raw_confidence": 0.0107,
+      "cal_win": 0.1991,
+      "cal_draw": 0.0139,
+      "cal_loss": 0.787,
       "stats": {
         "home_recent": [
           {
@@ -25072,6 +26192,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3266,
+      "ts_draw": 0.2373,
+      "ts_loss": 0.4361,
+      "lgbm_entropy": 1.0589,
+      "lgbm_confidence": 0.0362,
+      "raw_entropy": 1.0755,
+      "raw_confidence": 0.0211,
+      "cal_win": 0.8573,
+      "cal_draw": 0.0218,
+      "cal_loss": 0.1209,
       "stats": {
         "home_recent": [
           {
@@ -25421,6 +26551,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.449,
+      "ts_draw": 0.243,
+      "ts_loss": 0.308,
+      "lgbm_entropy": 1.0726,
+      "lgbm_confidence": 0.0236,
+      "raw_entropy": 1.0616,
+      "raw_confidence": 0.0337,
+      "cal_win": 0.6491,
+      "cal_draw": 0.0124,
+      "cal_loss": 0.3386,
       "stats": {
         "home_recent": [
           {
@@ -25787,6 +26927,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3584,
+      "ts_draw": 0.2319,
+      "ts_loss": 0.4097,
+      "lgbm_entropy": 1.0629,
+      "lgbm_confidence": 0.0325,
+      "raw_entropy": 1.0664,
+      "raw_confidence": 0.0293,
+      "cal_win": 0.8365,
+      "cal_draw": 0.0227,
+      "cal_loss": 0.1408,
       "stats": {
         "home_recent": [
           {
@@ -26153,6 +27303,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.3812,
+      "ts_draw": 0.2222,
+      "ts_loss": 0.3967,
+      "lgbm_entropy": 1.0668,
+      "lgbm_confidence": 0.029,
+      "raw_entropy": 1.0735,
+      "raw_confidence": 0.0229,
+      "cal_win": 0.8285,
+      "cal_draw": 0.0322,
+      "cal_loss": 0.1394,
       "stats": {
         "home_recent": [
           {
@@ -26519,6 +27679,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.357,
+      "ts_draw": 0.2353,
+      "ts_loss": 0.4077,
+      "lgbm_entropy": 1.0729,
+      "lgbm_confidence": 0.0234,
+      "raw_entropy": 1.0786,
+      "raw_confidence": 0.0182,
+      "cal_win": 0.2705,
+      "cal_draw": 0.0209,
+      "cal_loss": 0.7086,
       "stats": {
         "home_recent": [
           {
@@ -26885,6 +28055,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.4487,
+      "ts_draw": 0.2357,
+      "ts_loss": 0.3156,
+      "lgbm_entropy": 1.0042,
+      "lgbm_confidence": 0.086,
+      "raw_entropy": 0.9925,
+      "raw_confidence": 0.0966,
+      "cal_win": 0.9623,
+      "cal_draw": 0.0171,
+      "cal_loss": 0.0206,
       "stats": {
         "home_recent": [
           {
@@ -27251,6 +28431,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.3979,
+      "ts_draw": 0.2133,
+      "ts_loss": 0.3888,
+      "lgbm_entropy": 1.0791,
+      "lgbm_confidence": 0.0177,
+      "raw_entropy": 1.084,
+      "raw_confidence": 0.0133,
+      "cal_win": 0.3196,
+      "cal_draw": 0.0301,
+      "cal_loss": 0.6503,
       "stats": {
         "home_recent": [
           {
@@ -27600,6 +28790,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.4394,
+      "ts_draw": 0.2481,
+      "ts_loss": 0.3125,
+      "lgbm_entropy": 0.9869,
+      "lgbm_confidence": 0.1017,
+      "raw_entropy": 1.0342,
+      "raw_confidence": 0.0586,
+      "cal_win": 0.9737,
+      "cal_draw": 0.0094,
+      "cal_loss": 0.0169,
       "stats": {
         "home_recent": [
           {
@@ -27949,6 +29149,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.4407,
+      "ts_draw": 0.2382,
+      "ts_loss": 0.3211,
+      "lgbm_entropy": 1.0783,
+      "lgbm_confidence": 0.0185,
+      "raw_entropy": 1.0672,
+      "raw_confidence": 0.0286,
+      "cal_win": 0.4992,
+      "cal_draw": 0.0174,
+      "cal_loss": 0.4835,
       "stats": {
         "home_recent": [
           {
@@ -28298,6 +29508,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.4598,
+      "ts_draw": 0.2411,
+      "ts_loss": 0.2991,
+      "lgbm_entropy": 1.0818,
+      "lgbm_confidence": 0.0153,
+      "raw_entropy": 1.0937,
+      "raw_confidence": 0.0045,
+      "cal_win": 0.1489,
+      "cal_draw": 0.1509,
+      "cal_loss": 0.7002,
       "stats": {
         "home_recent": [
           {
@@ -28664,6 +29884,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4729,
+      "ts_draw": 0.2306,
+      "ts_loss": 0.2966,
+      "lgbm_entropy": 1.0543,
+      "lgbm_confidence": 0.0404,
+      "raw_entropy": 1.0574,
+      "raw_confidence": 0.0376,
+      "cal_win": 0.8489,
+      "cal_draw": 0.0115,
+      "cal_loss": 0.1396,
       "stats": {
         "home_recent": [
           {
@@ -29030,6 +30260,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.5025,
+      "ts_draw": 0.2098,
+      "ts_loss": 0.2877,
+      "lgbm_entropy": 1.0402,
+      "lgbm_confidence": 0.0532,
+      "raw_entropy": 0.8592,
+      "raw_confidence": 0.2179,
+      "cal_win": 0.8917,
+      "cal_draw": 0.0787,
+      "cal_loss": 0.0296,
       "stats": {
         "home_recent": [
           {
@@ -29396,6 +30636,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4109,
+      "ts_draw": 0.2353,
+      "ts_loss": 0.3539,
+      "lgbm_entropy": 1.0314,
+      "lgbm_confidence": 0.0612,
+      "raw_entropy": 0.9281,
+      "raw_confidence": 0.1552,
+      "cal_win": 0.9099,
+      "cal_draw": 0.0661,
+      "cal_loss": 0.024,
       "stats": {
         "home_recent": [
           {
@@ -29682,6 +30932,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.279,
+      "ts_draw": 0.2275,
+      "ts_loss": 0.4935,
+      "lgbm_entropy": 1.056,
+      "lgbm_confidence": 0.0388,
+      "raw_entropy": 0.8643,
+      "raw_confidence": 0.2133,
+      "cal_win": 0.0786,
+      "cal_draw": 0.0595,
+      "cal_loss": 0.8619,
       "stats": {
         "home_recent": [
           {
@@ -30031,6 +31291,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.3828,
+      "ts_draw": 0.2434,
+      "ts_loss": 0.3737,
+      "lgbm_entropy": 1.0082,
+      "lgbm_confidence": 0.0823,
+      "raw_entropy": 0.9505,
+      "raw_confidence": 0.1348,
+      "cal_win": 0.9599,
+      "cal_draw": 0.0159,
+      "cal_loss": 0.0242,
       "stats": {
         "home_recent": [
           {
@@ -30397,6 +31667,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3303,
+      "ts_draw": 0.2649,
+      "ts_loss": 0.4047,
+      "lgbm_entropy": 1.0204,
+      "lgbm_confidence": 0.0712,
+      "raw_entropy": 1.0201,
+      "raw_confidence": 0.0715,
+      "cal_win": 0.9328,
+      "cal_draw": 0.047,
+      "cal_loss": 0.0202,
       "stats": {
         "home_recent": [
           {
@@ -30763,6 +32043,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.2554,
+      "ts_draw": 0.2351,
+      "ts_loss": 0.5096,
+      "lgbm_entropy": 1.0478,
+      "lgbm_confidence": 0.0463,
+      "raw_entropy": 1.034,
+      "raw_confidence": 0.0588,
+      "cal_win": 0.0753,
+      "cal_draw": 0.0356,
+      "cal_loss": 0.8891,
       "stats": {
         "home_recent": [
           {
@@ -31129,6 +32419,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.3903,
+      "ts_draw": 0.2388,
+      "ts_loss": 0.3709,
+      "lgbm_entropy": 1.0151,
+      "lgbm_confidence": 0.076,
+      "raw_entropy": 1.0555,
+      "raw_confidence": 0.0392,
+      "cal_win": 0.951,
+      "cal_draw": 0.0256,
+      "cal_loss": 0.0234,
       "stats": {
         "home_recent": [
           {
@@ -31442,6 +32742,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4408,
+      "ts_draw": 0.2329,
+      "ts_loss": 0.3263,
+      "lgbm_entropy": 1.0417,
+      "lgbm_confidence": 0.0518,
+      "raw_entropy": 1.0491,
+      "raw_confidence": 0.0451,
+      "cal_win": 0.0611,
+      "cal_draw": 0.0357,
+      "cal_loss": 0.9032,
       "stats": {
         "home_recent": [
           {
@@ -31808,6 +33118,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.3614,
+      "ts_draw": 0.2571,
+      "ts_loss": 0.3815,
+      "lgbm_entropy": 1.0046,
+      "lgbm_confidence": 0.0855,
+      "raw_entropy": 1.0415,
+      "raw_confidence": 0.0519,
+      "cal_win": 0.9629,
+      "cal_draw": 0.0129,
+      "cal_loss": 0.0241,
       "stats": {
         "home_recent": [
           {
@@ -32147,6 +33467,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.455,
+      "ts_draw": 0.2602,
+      "ts_loss": 0.2847,
+      "lgbm_entropy": 1.0053,
+      "lgbm_confidence": 0.0849,
+      "raw_entropy": 1.0642,
+      "raw_confidence": 0.0313,
+      "cal_win": 0.9616,
+      "cal_draw": 0.017,
+      "cal_loss": 0.0214,
       "stats": {
         "home_recent": [
           {
@@ -32441,6 +33771,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.4012,
+      "ts_draw": 0.2474,
+      "ts_loss": 0.3514,
+      "lgbm_entropy": 1.0719,
+      "lgbm_confidence": 0.0243,
+      "raw_entropy": 1.084,
+      "raw_confidence": 0.0133,
+      "cal_win": 0.7932,
+      "cal_draw": 0.035,
+      "cal_loss": 0.1718,
       "stats": {
         "home_recent": [
           {
@@ -32807,6 +34147,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3884,
+      "ts_draw": 0.2351,
+      "ts_loss": 0.3765,
+      "lgbm_entropy": 1.062,
+      "lgbm_confidence": 0.0333,
+      "raw_entropy": 1.0758,
+      "raw_confidence": 0.0208,
+      "cal_win": 0.8492,
+      "cal_draw": 0.0268,
+      "cal_loss": 0.124,
       "stats": {
         "home_recent": [
           {
@@ -33173,6 +34523,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.4091,
+      "ts_draw": 0.2343,
+      "ts_loss": 0.3566,
+      "lgbm_entropy": 1.0152,
+      "lgbm_confidence": 0.076,
+      "raw_entropy": 0.9855,
+      "raw_confidence": 0.103,
+      "cal_win": 0.9483,
+      "cal_draw": 0.0301,
+      "cal_loss": 0.0216,
       "stats": {
         "home_recent": [
           {
@@ -33539,6 +34899,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.2177,
+      "ts_draw": 0.1945,
+      "ts_loss": 0.5878,
+      "lgbm_entropy": 1.0611,
+      "lgbm_confidence": 0.0341,
+      "raw_entropy": 1.0638,
+      "raw_confidence": 0.0316,
+      "cal_win": 0.1808,
+      "cal_draw": 0.016,
+      "cal_loss": 0.8031,
       "stats": {
         "home_recent": [
           {
@@ -33888,6 +35258,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.4091,
+      "ts_draw": 0.2343,
+      "ts_loss": 0.3566,
+      "lgbm_entropy": 1.0048,
+      "lgbm_confidence": 0.0854,
+      "raw_entropy": 0.988,
+      "raw_confidence": 0.1007,
+      "cal_win": 0.9621,
+      "cal_draw": 0.0163,
+      "cal_loss": 0.0216,
       "stats": {
         "home_recent": [
           {
@@ -34237,6 +35617,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3462,
+      "ts_draw": 0.2212,
+      "ts_loss": 0.4326,
+      "lgbm_entropy": 1.0547,
+      "lgbm_confidence": 0.04,
+      "raw_entropy": 1.0708,
+      "raw_confidence": 0.0253,
+      "cal_win": 0.0529,
+      "cal_draw": 0.1134,
+      "cal_loss": 0.8336,
       "stats": {
         "home_recent": [
           {
@@ -34603,6 +35993,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.2891,
+      "ts_draw": 0.2336,
+      "ts_loss": 0.4772,
+      "lgbm_entropy": 1.0522,
+      "lgbm_confidence": 0.0422,
+      "raw_entropy": 1.0713,
+      "raw_confidence": 0.0249,
+      "cal_win": 0.759,
+      "cal_draw": 0.2175,
+      "cal_loss": 0.0235,
       "stats": {
         "home_recent": [
           {
@@ -34924,6 +36324,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4091,
+      "ts_draw": 0.2343,
+      "ts_loss": 0.3566,
+      "lgbm_entropy": 1.0417,
+      "lgbm_confidence": 0.0518,
+      "raw_entropy": 1.056,
+      "raw_confidence": 0.0388,
+      "cal_win": 0.0615,
+      "cal_draw": 0.0353,
+      "cal_loss": 0.9032,
       "stats": {
         "home_recent": [
           {
@@ -35290,6 +36700,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4088,
+      "ts_draw": 0.2347,
+      "ts_loss": 0.3565,
+      "lgbm_entropy": 1.0432,
+      "lgbm_confidence": 0.0504,
+      "raw_entropy": 1.0234,
+      "raw_confidence": 0.0685,
+      "cal_win": 0.0668,
+      "cal_draw": 0.033,
+      "cal_loss": 0.9002,
       "stats": {
         "home_recent": [
           {
@@ -35584,6 +37004,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4085,
+      "ts_draw": 0.2316,
+      "ts_loss": 0.3598,
+      "lgbm_entropy": 1.0265,
+      "lgbm_confidence": 0.0656,
+      "raw_entropy": 1.0197,
+      "raw_confidence": 0.0719,
+      "cal_win": 0.8825,
+      "cal_draw": 0.1016,
+      "cal_loss": 0.0159,
       "stats": {
         "home_recent": [
           {
@@ -35950,6 +37380,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.462,
+      "ts_draw": 0.2312,
+      "ts_loss": 0.3067,
+      "lgbm_entropy": 1.0772,
+      "lgbm_confidence": 0.0195,
+      "raw_entropy": 1.0936,
+      "raw_confidence": 0.0045,
+      "cal_win": 0.7679,
+      "cal_draw": 0.124,
+      "cal_loss": 0.1081,
       "stats": {
         "home_recent": [
           {
@@ -36316,6 +37756,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.4509,
+      "ts_draw": 0.2488,
+      "ts_loss": 0.3003,
+      "lgbm_entropy": 1.0766,
+      "lgbm_confidence": 0.02,
+      "raw_entropy": 1.096,
+      "raw_confidence": 0.0024,
+      "cal_win": 0.0441,
+      "cal_draw": 0.7276,
+      "cal_loss": 0.2283,
       "stats": {
         "home_recent": [
           {
@@ -36601,6 +38051,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.4171,
+      "ts_draw": 0.2466,
+      "ts_loss": 0.3363,
+      "lgbm_entropy": 1.0068,
+      "lgbm_confidence": 0.0836,
+      "raw_entropy": 0.9324,
+      "raw_confidence": 0.1513,
+      "cal_win": 0.9609,
+      "cal_draw": 0.016,
+      "cal_loss": 0.0232,
       "stats": {
         "home_recent": [
           {
@@ -36886,6 +38346,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.5329,
+      "ts_draw": 0.2207,
+      "ts_loss": 0.2463,
+      "lgbm_entropy": 1.0088,
+      "lgbm_confidence": 0.0817,
+      "raw_entropy": 1.0135,
+      "raw_confidence": 0.0774,
+      "cal_win": 0.9581,
+      "cal_draw": 0.0198,
+      "cal_loss": 0.0221,
       "stats": {
         "home_recent": [
           {
@@ -37235,6 +38705,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.4729,
+      "ts_draw": 0.2433,
+      "ts_loss": 0.2838,
+      "lgbm_entropy": 1.0156,
+      "lgbm_confidence": 0.0756,
+      "raw_entropy": 0.9899,
+      "raw_confidence": 0.0989,
+      "cal_win": 0.952,
+      "cal_draw": 0.0226,
+      "cal_loss": 0.0254,
       "stats": {
         "home_recent": [
           {
@@ -37521,6 +39001,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3558,
+      "ts_draw": 0.2603,
+      "ts_loss": 0.3839,
+      "lgbm_entropy": 1.0618,
+      "lgbm_confidence": 0.0335,
+      "raw_entropy": 1.0749,
+      "raw_confidence": 0.0216,
+      "cal_win": 0.8269,
+      "cal_draw": 0.0173,
+      "cal_loss": 0.1558,
       "stats": {
         "home_recent": [
           {
@@ -37779,6 +39269,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3691,
+      "ts_draw": 0.2444,
+      "ts_loss": 0.3865,
+      "lgbm_entropy": 1.0635,
+      "lgbm_confidence": 0.032,
+      "raw_entropy": 1.0802,
+      "raw_confidence": 0.0168,
+      "cal_win": 0.8447,
+      "cal_draw": 0.0294,
+      "cal_loss": 0.1259,
       "stats": {
         "home_recent": [
           {
@@ -38128,6 +39628,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.4091,
+      "ts_draw": 0.2343,
+      "ts_loss": 0.3566,
+      "lgbm_entropy": 1.0695,
+      "lgbm_confidence": 0.0265,
+      "raw_entropy": 1.0669,
+      "raw_confidence": 0.0289,
+      "cal_win": 0.7232,
+      "cal_draw": 0.0133,
+      "cal_loss": 0.2634,
       "stats": {
         "home_recent": [
           {
@@ -38477,6 +39987,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.3804,
+      "ts_draw": 0.2524,
+      "ts_loss": 0.3672,
+      "lgbm_entropy": 1.0721,
+      "lgbm_confidence": 0.0242,
+      "raw_entropy": 1.0757,
+      "raw_confidence": 0.0209,
+      "cal_win": 0.7315,
+      "cal_draw": 0.2112,
+      "cal_loss": 0.0572,
       "stats": {
         "home_recent": [
           {
@@ -38843,6 +40363,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4692,
+      "ts_draw": 0.2136,
+      "ts_loss": 0.3171,
+      "lgbm_entropy": 1.0441,
+      "lgbm_confidence": 0.0496,
+      "raw_entropy": 0.9809,
+      "raw_confidence": 0.1071,
+      "cal_win": 0.0692,
+      "cal_draw": 0.0327,
+      "cal_loss": 0.8982,
       "stats": {
         "home_recent": [
           {
@@ -39209,6 +40739,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3847,
+      "ts_draw": 0.2515,
+      "ts_loss": 0.3638,
+      "lgbm_entropy": 1.0363,
+      "lgbm_confidence": 0.0567,
+      "raw_entropy": 0.9203,
+      "raw_confidence": 0.1623,
+      "cal_win": 0.9123,
+      "cal_draw": 0.0567,
+      "cal_loss": 0.031,
       "stats": {
         "home_recent": [
           {
@@ -39575,6 +41115,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3441,
+      "ts_draw": 0.2229,
+      "ts_loss": 0.433,
+      "lgbm_entropy": 1.0417,
+      "lgbm_confidence": 0.0518,
+      "raw_entropy": 1.062,
+      "raw_confidence": 0.0333,
+      "cal_win": 0.0598,
+      "cal_draw": 0.0375,
+      "cal_loss": 0.9027,
       "stats": {
         "home_recent": [
           {
@@ -39856,8 +41406,8 @@
     },
     {
       "fid": "2913668",
-      "date": "2026-07-21",
-      "match_time": "2026-07-21 00:04",
+      "date": "2026-07-22",
+      "match_time": "2026-07-22 00:04",
       "event": "芬超",
       "home_team": "TPS土尔库",
       "away_team": "埃尔维斯",
@@ -39941,6 +41491,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.44,
+      "ts_draw": 0.2223,
+      "ts_loss": 0.3377,
+      "lgbm_entropy": 1.0735,
+      "lgbm_confidence": 0.0229,
+      "raw_entropy": 1.0823,
+      "raw_confidence": 0.0149,
+      "cal_win": 0.4275,
+      "cal_draw": 0.0111,
+      "cal_loss": 0.5614,
       "stats": {
         "home_recent": [
           {
@@ -40222,8 +41782,8 @@
     },
     {
       "fid": "3010354",
-      "date": "2026-07-21",
-      "match_time": "2026-07-21 00:33",
+      "date": "2026-07-22",
+      "match_time": "2026-07-22 00:33",
       "event": "罗甲",
       "home_team": "胡内多阿拉",
       "away_team": "FK米耶尔库雷亚丘克",
@@ -40290,6 +41850,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4091,
+      "ts_draw": 0.2343,
+      "ts_loss": 0.3566,
+      "lgbm_entropy": 1.0332,
+      "lgbm_confidence": 0.0596,
+      "raw_entropy": 1.0553,
+      "raw_confidence": 0.0394,
+      "cal_win": 0.861,
+      "cal_draw": 0.1212,
+      "cal_loss": 0.0178,
       "stats": {
         "home_recent": [
           {
@@ -40526,8 +42096,8 @@
     },
     {
       "fid": "2913669",
-      "date": "2026-07-21",
-      "match_time": "2026-07-21 01:04",
+      "date": "2026-07-22",
+      "match_time": "2026-07-22 01:04",
       "event": "芬超",
       "home_team": "玛丽港",
       "away_team": "拉赫蒂",
@@ -40611,6 +42181,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.176,
+      "ts_draw": 0.2123,
+      "ts_loss": 0.6117,
+      "lgbm_entropy": 1.0531,
+      "lgbm_confidence": 0.0415,
+      "raw_entropy": 1.0186,
+      "raw_confidence": 0.0728,
+      "cal_win": 0.0815,
+      "cal_draw": 0.0444,
+      "cal_loss": 0.874,
       "stats": {
         "home_recent": [
           {
@@ -40892,8 +42472,8 @@
     },
     {
       "fid": "2912208",
-      "date": "2026-07-21",
-      "match_time": "2026-07-21 02:00",
+      "date": "2026-07-22",
+      "match_time": "2026-07-22 02:00",
       "event": "瑞典超",
       "home_team": "卡尔马",
       "away_team": "马尔默",
@@ -40977,6 +42557,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.412,
+      "ts_draw": 0.2295,
+      "ts_loss": 0.3585,
+      "lgbm_entropy": 1.0667,
+      "lgbm_confidence": 0.0291,
+      "raw_entropy": 1.0897,
+      "raw_confidence": 0.0081,
+      "cal_win": 0.2235,
+      "cal_draw": 0.0168,
+      "cal_loss": 0.7596,
       "stats": {
         "home_recent": [
           {
@@ -41258,8 +42848,8 @@
     },
     {
       "fid": "2914625",
-      "date": "2026-07-21",
-      "match_time": "2026-07-21 02:02",
+      "date": "2026-07-22",
+      "match_time": "2026-07-22 02:02",
       "event": "瑞典甲",
       "home_team": "诺尔比",
       "away_team": "松兹瓦尔",
@@ -41326,6 +42916,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.4893,
+      "ts_draw": 0.2361,
+      "ts_loss": 0.2746,
+      "lgbm_entropy": 1.0123,
+      "lgbm_confidence": 0.0786,
+      "raw_entropy": 1.0634,
+      "raw_confidence": 0.032,
+      "cal_win": 0.9565,
+      "cal_draw": 0.0126,
+      "cal_loss": 0.031,
       "stats": {
         "home_recent": [
           {
@@ -41571,8 +43171,8 @@
     },
     {
       "fid": "2912210",
-      "date": "2026-07-21",
-      "match_time": "2026-07-21 02:04",
+      "date": "2026-07-22",
+      "match_time": "2026-07-22 02:04",
       "event": "瑞典超",
       "home_team": "奥尔格里特",
       "away_team": "尤尔加登",
@@ -41656,6 +43256,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4374,
+      "ts_draw": 0.2192,
+      "ts_loss": 0.3434,
+      "lgbm_entropy": 1.0493,
+      "lgbm_confidence": 0.0449,
+      "raw_entropy": 0.9256,
+      "raw_confidence": 0.1575,
+      "cal_win": 0.0752,
+      "cal_draw": 0.0398,
+      "cal_loss": 0.885,
       "stats": {
         "home_recent": [
           {
@@ -41928,8 +43538,8 @@
     },
     {
       "fid": "3010355",
-      "date": "2026-07-21",
-      "match_time": "2026-07-21 03:39",
+      "date": "2026-07-22",
+      "match_time": "2026-07-22 03:39",
       "event": "罗甲",
       "home_team": "布加勒斯特快速",
       "away_team": "圣格奥尔基塞普西",
@@ -41996,6 +43606,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.3884,
+      "ts_draw": 0.2351,
+      "ts_loss": 0.3765,
+      "lgbm_entropy": 1.0037,
+      "lgbm_confidence": 0.0864,
+      "raw_entropy": 1.0125,
+      "raw_confidence": 0.0784,
+      "cal_win": 0.9607,
+      "cal_draw": 0.0209,
+      "cal_loss": 0.0184,
       "stats": {
         "home_recent": [
           {
@@ -42277,8 +43897,8 @@
     },
     {
       "fid": "2924601",
-      "date": "2026-07-21",
-      "match_time": "2026-07-21 04:15",
+      "date": "2026-07-22",
+      "match_time": "2026-07-22 04:15",
       "event": "冰岛超",
       "home_team": "凯夫拉维克",
       "away_team": "IA阿克拉内斯",
@@ -42345,6 +43965,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.4759,
+      "ts_draw": 0.2248,
+      "ts_loss": 0.2993,
+      "lgbm_entropy": 1.0721,
+      "lgbm_confidence": 0.0241,
+      "raw_entropy": 1.0754,
+      "raw_confidence": 0.0211,
+      "cal_win": 0.8067,
+      "cal_draw": 0.048,
+      "cal_loss": 0.1453,
       "stats": {
         "home_recent": [
           {
@@ -42626,8 +44256,8 @@
     },
     {
       "fid": "2924604",
-      "date": "2026-07-21",
-      "match_time": "2026-07-21 04:15",
+      "date": "2026-07-22",
+      "match_time": "2026-07-22 04:15",
       "event": "冰岛超",
       "home_team": "哈夫纳夫约杜尔",
       "away_team": "贝雷达比历克",
@@ -42694,6 +44324,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.3458,
+      "ts_draw": 0.2256,
+      "ts_loss": 0.4286,
+      "lgbm_entropy": 1.0706,
+      "lgbm_confidence": 0.0255,
+      "raw_entropy": 1.0779,
+      "raw_confidence": 0.0189,
+      "cal_win": 0.3179,
+      "cal_draw": 0.0125,
+      "cal_loss": 0.6696,
       "stats": {
         "home_recent": [
           {
@@ -43060,6 +44700,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3318,
+      "ts_draw": 0.2299,
+      "ts_loss": 0.4383,
+      "lgbm_entropy": 1.064,
+      "lgbm_confidence": 0.0315,
+      "raw_entropy": 1.0835,
+      "raw_confidence": 0.0138,
+      "cal_win": 0.8371,
+      "cal_draw": 0.0264,
+      "cal_loss": 0.1365,
       "stats": {
         "home_recent": [
           {
@@ -43426,6 +45076,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3862,
+      "ts_draw": 0.2394,
+      "ts_loss": 0.3744,
+      "lgbm_entropy": 1.0593,
+      "lgbm_confidence": 0.0358,
+      "raw_entropy": 1.0729,
+      "raw_confidence": 0.0234,
+      "cal_win": 0.0677,
+      "cal_draw": 0.1004,
+      "cal_loss": 0.8319,
       "stats": {
         "home_recent": [
           {
@@ -43792,6 +45452,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4322,
+      "ts_draw": 0.2267,
+      "ts_loss": 0.3412,
+      "lgbm_entropy": 1.0182,
+      "lgbm_confidence": 0.0732,
+      "raw_entropy": 1.0645,
+      "raw_confidence": 0.0311,
+      "cal_win": 0.9509,
+      "cal_draw": 0.0189,
+      "cal_loss": 0.0302,
       "stats": {
         "home_recent": [
           {
@@ -44141,6 +45811,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.4683,
+      "ts_draw": 0.2271,
+      "ts_loss": 0.3046,
+      "lgbm_entropy": 1.0693,
+      "lgbm_confidence": 0.0267,
+      "raw_entropy": 1.0822,
+      "raw_confidence": 0.0149,
+      "cal_win": 0.6397,
+      "cal_draw": 0.0084,
+      "cal_loss": 0.3518,
       "stats": {
         "home_recent": [
           {
@@ -44507,6 +46187,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3971,
+      "ts_draw": 0.2301,
+      "ts_loss": 0.3728,
+      "lgbm_entropy": 1.0432,
+      "lgbm_confidence": 0.0505,
+      "raw_entropy": 0.8012,
+      "raw_confidence": 0.2707,
+      "cal_win": 0.872,
+      "cal_draw": 0.0993,
+      "cal_loss": 0.0287,
       "stats": {
         "home_recent": [
           {
@@ -44782,6 +46472,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.423,
+      "ts_draw": 0.2255,
+      "ts_loss": 0.3516,
+      "lgbm_entropy": 0.9987,
+      "lgbm_confidence": 0.091,
+      "raw_entropy": 1.005,
+      "raw_confidence": 0.0852,
+      "cal_win": 0.9662,
+      "cal_draw": 0.0152,
+      "cal_loss": 0.0186,
       "stats": {
         "home_recent": [
           {
@@ -45057,6 +46757,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4091,
+      "ts_draw": 0.2343,
+      "ts_loss": 0.3566,
+      "lgbm_entropy": 1.0486,
+      "lgbm_confidence": 0.0455,
+      "raw_entropy": 1.0721,
+      "raw_confidence": 0.0241,
+      "cal_win": 0.8987,
+      "cal_draw": 0.0494,
+      "cal_loss": 0.052,
       "stats": {
         "home_recent": [
           {
@@ -45315,6 +47025,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.4373,
+      "ts_draw": 0.218,
+      "ts_loss": 0.3447,
+      "lgbm_entropy": 1.0034,
+      "lgbm_confidence": 0.0866,
+      "raw_entropy": 1.062,
+      "raw_confidence": 0.0333,
+      "cal_win": 0.9637,
+      "cal_draw": 0.011,
+      "cal_loss": 0.0252,
       "stats": {
         "home_recent": [
           {
@@ -45681,6 +47401,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3262,
+      "ts_draw": 0.2232,
+      "ts_loss": 0.4506,
+      "lgbm_entropy": 1.0367,
+      "lgbm_confidence": 0.0563,
+      "raw_entropy": 0.8542,
+      "raw_confidence": 0.2225,
+      "cal_win": 0.902,
+      "cal_draw": 0.07,
+      "cal_loss": 0.028,
       "stats": {
         "home_recent": [
           {
@@ -45956,6 +47686,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.5111,
+      "ts_draw": 0.2211,
+      "ts_loss": 0.2678,
+      "lgbm_entropy": 1.0124,
+      "lgbm_confidence": 0.0785,
+      "raw_entropy": 1.0291,
+      "raw_confidence": 0.0633,
+      "cal_win": 0.9528,
+      "cal_draw": 0.0255,
+      "cal_loss": 0.0216,
       "stats": {
         "home_recent": [
           {
@@ -46231,6 +47971,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.5058,
+      "ts_draw": 0.2312,
+      "ts_loss": 0.263,
+      "lgbm_entropy": 1.0325,
+      "lgbm_confidence": 0.0601,
+      "raw_entropy": 0.905,
+      "raw_confidence": 0.1763,
+      "cal_win": 0.9122,
+      "cal_draw": 0.0619,
+      "cal_loss": 0.0259,
       "stats": {
         "home_recent": [
           {
@@ -46579,6 +48329,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3746,
+      "ts_draw": 0.2282,
+      "ts_loss": 0.3972,
+      "lgbm_entropy": 1.0558,
+      "lgbm_confidence": 0.039,
+      "raw_entropy": 1.0702,
+      "raw_confidence": 0.0259,
+      "cal_win": 0.1263,
+      "cal_draw": 0.022,
+      "cal_loss": 0.8516,
       "stats": {
         "home_recent": [
           {
@@ -46945,6 +48705,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4091,
+      "ts_draw": 0.2343,
+      "ts_loss": 0.3566,
+      "lgbm_entropy": 1.049,
+      "lgbm_confidence": 0.0452,
+      "raw_entropy": 0.8824,
+      "raw_confidence": 0.1968,
+      "cal_win": 0.0724,
+      "cal_draw": 0.0421,
+      "cal_loss": 0.8855,
       "stats": {
         "home_recent": [
           {
@@ -47220,6 +48990,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.4091,
+      "ts_draw": 0.2343,
+      "ts_loss": 0.3566,
+      "lgbm_entropy": 1.0647,
+      "lgbm_confidence": 0.0309,
+      "raw_entropy": 1.0822,
+      "raw_confidence": 0.015,
+      "cal_win": 0.3537,
+      "cal_draw": 0.6325,
+      "cal_loss": 0.0138,
       "stats": {
         "home_recent": [
           {
@@ -47495,6 +49275,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.4065,
+      "ts_draw": 0.2386,
+      "ts_loss": 0.3549,
+      "lgbm_entropy": 0.9919,
+      "lgbm_confidence": 0.0972,
+      "raw_entropy": 1.0533,
+      "raw_confidence": 0.0412,
+      "cal_win": 0.971,
+      "cal_draw": 0.0112,
+      "cal_loss": 0.0178,
       "stats": {
         "home_recent": [
           {
@@ -47861,6 +49651,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.284,
+      "ts_draw": 0.2405,
+      "ts_loss": 0.4755,
+      "lgbm_entropy": 1.04,
+      "lgbm_confidence": 0.0534,
+      "raw_entropy": 1.0757,
+      "raw_confidence": 0.0208,
+      "cal_win": 0.9196,
+      "cal_draw": 0.0347,
+      "cal_loss": 0.0458,
       "stats": {
         "home_recent": [
           {
@@ -48227,6 +50027,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4159,
+      "ts_draw": 0.2523,
+      "ts_loss": 0.3319,
+      "lgbm_entropy": 1.0593,
+      "lgbm_confidence": 0.0358,
+      "raw_entropy": 1.0811,
+      "raw_confidence": 0.016,
+      "cal_win": 0.8656,
+      "cal_draw": 0.0674,
+      "cal_loss": 0.067,
       "stats": {
         "home_recent": [
           {
@@ -48575,6 +50385,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.4334,
+      "ts_draw": 0.2236,
+      "ts_loss": 0.343,
+      "lgbm_entropy": 1.0682,
+      "lgbm_confidence": 0.0276,
+      "raw_entropy": 1.0766,
+      "raw_confidence": 0.02,
+      "cal_win": 0.06,
+      "cal_draw": 0.217,
+      "cal_loss": 0.723,
       "stats": {
         "home_recent": [
           {
@@ -48850,6 +50670,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.4524,
+      "ts_draw": 0.2489,
+      "ts_loss": 0.2987,
+      "lgbm_entropy": 1.0753,
+      "lgbm_confidence": 0.0212,
+      "raw_entropy": 1.0928,
+      "raw_confidence": 0.0053,
+      "cal_win": 0.7804,
+      "cal_draw": 0.119,
+      "cal_loss": 0.1007,
       "stats": {
         "home_recent": [
           {
@@ -49198,6 +51028,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4215,
+      "ts_draw": 0.2454,
+      "ts_loss": 0.3331,
+      "lgbm_entropy": 1.0587,
+      "lgbm_confidence": 0.0364,
+      "raw_entropy": 0.9131,
+      "raw_confidence": 0.1688,
+      "cal_win": 0.8389,
+      "cal_draw": 0.1129,
+      "cal_loss": 0.0483,
       "stats": {
         "home_recent": [
           {
@@ -49547,6 +51387,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4091,
+      "ts_draw": 0.2343,
+      "ts_loss": 0.3566,
+      "lgbm_entropy": 1.0295,
+      "lgbm_confidence": 0.0629,
+      "raw_entropy": 0.9824,
+      "raw_confidence": 0.1058,
+      "cal_win": 0.927,
+      "cal_draw": 0.0452,
+      "cal_loss": 0.0277,
       "stats": {
         "home_recent": [
           {
@@ -49913,6 +51763,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3828,
+      "ts_draw": 0.2434,
+      "ts_loss": 0.3737,
+      "lgbm_entropy": 1.0503,
+      "lgbm_confidence": 0.044,
+      "raw_entropy": 0.9634,
+      "raw_confidence": 0.123,
+      "cal_win": 0.0738,
+      "cal_draw": 0.0444,
+      "cal_loss": 0.8818,
       "stats": null
     },
     {
@@ -49998,6 +51858,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.315,
+      "ts_draw": 0.2208,
+      "ts_loss": 0.4642,
+      "lgbm_entropy": 1.0423,
+      "lgbm_confidence": 0.0512,
+      "raw_entropy": 1.0722,
+      "raw_confidence": 0.024,
+      "cal_win": 0.0746,
+      "cal_draw": 0.0246,
+      "cal_loss": 0.9007,
       "stats": {
         "home_recent": [
           {
@@ -50360,6 +52230,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3797,
+      "ts_draw": 0.2378,
+      "ts_loss": 0.3825,
+      "lgbm_entropy": 1.0464,
+      "lgbm_confidence": 0.0475,
+      "raw_entropy": 0.8124,
+      "raw_confidence": 0.2606,
+      "cal_win": 0.8533,
+      "cal_draw": 0.1176,
+      "cal_loss": 0.0291,
       "stats": {
         "home_recent": [],
         "away_recent": [
@@ -50572,6 +52452,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3197,
+      "ts_draw": 0.2139,
+      "ts_loss": 0.4664,
+      "lgbm_entropy": 1.0561,
+      "lgbm_confidence": 0.0387,
+      "raw_entropy": 0.8761,
+      "raw_confidence": 0.2026,
+      "cal_win": 0.0784,
+      "cal_draw": 0.0603,
+      "cal_loss": 0.8613,
       "stats": {
         "home_recent": [
           {
@@ -50789,6 +52679,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.2715,
+      "ts_draw": 0.2381,
+      "ts_loss": 0.4904,
+      "lgbm_entropy": 1.0541,
+      "lgbm_confidence": 0.0405,
+      "raw_entropy": 0.855,
+      "raw_confidence": 0.2217,
+      "cal_win": 0.0819,
+      "cal_draw": 0.0476,
+      "cal_loss": 0.8706,
       "stats": {
         "home_recent": [],
         "away_recent": [
@@ -50969,6 +52869,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.4221,
+      "ts_draw": 0.2462,
+      "ts_loss": 0.3316,
+      "lgbm_entropy": 1.0701,
+      "lgbm_confidence": 0.026,
+      "raw_entropy": 1.0868,
+      "raw_confidence": 0.0108,
+      "cal_win": 0.3485,
+      "cal_draw": 0.0102,
+      "cal_loss": 0.6413,
       "stats": {
         "home_recent": [
           {
@@ -51290,6 +53200,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3651,
+      "ts_draw": 0.2392,
+      "ts_loss": 0.3957,
+      "lgbm_entropy": 1.0459,
+      "lgbm_confidence": 0.048,
+      "raw_entropy": 1.0222,
+      "raw_confidence": 0.0695,
+      "cal_win": 0.067,
+      "cal_draw": 0.0396,
+      "cal_loss": 0.8934,
       "stats": {
         "home_recent": [],
         "away_recent": [
@@ -51474,6 +53394,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.2947,
+      "ts_draw": 0.2306,
+      "ts_loss": 0.4747,
+      "lgbm_entropy": 1.005,
+      "lgbm_confidence": 0.0852,
+      "raw_entropy": 1.0125,
+      "raw_confidence": 0.0784,
+      "cal_win": 0.9598,
+      "cal_draw": 0.0213,
+      "cal_loss": 0.0189,
       "stats": {
         "home_recent": [
           {
@@ -51773,6 +53703,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.4297,
+      "ts_draw": 0.2334,
+      "ts_loss": 0.3369,
+      "lgbm_entropy": 1.0033,
+      "lgbm_confidence": 0.0868,
+      "raw_entropy": 1.0059,
+      "raw_confidence": 0.0844,
+      "cal_win": 0.9628,
+      "cal_draw": 0.0171,
+      "cal_loss": 0.0201,
       "stats": {
         "home_recent": [
           {
@@ -51953,6 +53893,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4523,
+      "ts_draw": 0.228,
+      "ts_loss": 0.3197,
+      "lgbm_entropy": 1.0491,
+      "lgbm_confidence": 0.0451,
+      "raw_entropy": 1.0487,
+      "raw_confidence": 0.0454,
+      "cal_win": 0.1379,
+      "cal_draw": 0.011,
+      "cal_loss": 0.8512,
       "stats": {
         "home_recent": [],
         "away_recent": [
@@ -52137,6 +54087,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.35,
+      "ts_draw": 0.2387,
+      "ts_loss": 0.4113,
+      "lgbm_entropy": 1.0284,
+      "lgbm_confidence": 0.0639,
+      "raw_entropy": 1.0393,
+      "raw_confidence": 0.054,
+      "cal_win": 0.9301,
+      "cal_draw": 0.0421,
+      "cal_loss": 0.0278,
       "stats": {
         "home_recent": [
           {
@@ -52314,6 +54274,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.5038,
+      "ts_draw": 0.2288,
+      "ts_loss": 0.2674,
+      "lgbm_entropy": 1.0812,
+      "lgbm_confidence": 0.0158,
+      "raw_entropy": 1.0757,
+      "raw_confidence": 0.0209,
+      "cal_win": 0.6382,
+      "cal_draw": 0.032,
+      "cal_loss": 0.3297,
       "stats": {
         "home_recent": [],
         "away_recent": [],
@@ -52498,6 +54468,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.4091,
+      "ts_draw": 0.2343,
+      "ts_loss": 0.3566,
+      "lgbm_entropy": 1.0682,
+      "lgbm_confidence": 0.0277,
+      "raw_entropy": 1.089,
+      "raw_confidence": 0.0088,
+      "cal_win": 0.2648,
+      "cal_draw": 0.0139,
+      "cal_loss": 0.7213,
       "stats": {
         "home_recent": [
           {
@@ -52819,6 +54799,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4091,
+      "ts_draw": 0.2343,
+      "ts_loss": 0.3566,
+      "lgbm_entropy": 1.0473,
+      "lgbm_confidence": 0.0468,
+      "raw_entropy": 1.0615,
+      "raw_confidence": 0.0338,
+      "cal_win": 0.0793,
+      "cal_draw": 0.0308,
+      "cal_loss": 0.8899,
       "stats": null
     },
     {
@@ -52908,6 +54898,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4091,
+      "ts_draw": 0.2343,
+      "ts_loss": 0.3566,
+      "lgbm_entropy": 1.0256,
+      "lgbm_confidence": 0.0665,
+      "raw_entropy": 1.0077,
+      "raw_confidence": 0.0827,
+      "cal_win": 0.933,
+      "cal_draw": 0.0415,
+      "cal_loss": 0.0255,
       "stats": {
         "home_recent": [],
         "away_recent": [],
@@ -53092,6 +55092,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.406,
+      "ts_draw": 0.2355,
+      "ts_loss": 0.3586,
+      "lgbm_entropy": 1.0553,
+      "lgbm_confidence": 0.0394,
+      "raw_entropy": 1.0837,
+      "raw_confidence": 0.0136,
+      "cal_win": 0.295,
+      "cal_draw": 0.6938,
+      "cal_loss": 0.0112,
       "stats": {
         "home_recent": [
           {
@@ -53458,6 +55468,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.4091,
+      "ts_draw": 0.2343,
+      "ts_loss": 0.3566,
+      "lgbm_entropy": 0.9975,
+      "lgbm_confidence": 0.092,
+      "raw_entropy": 1.0213,
+      "raw_confidence": 0.0704,
+      "cal_win": 0.9677,
+      "cal_draw": 0.0123,
+      "cal_loss": 0.02,
       "stats": {
         "home_recent": [
           {
@@ -53779,6 +55799,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.4091,
+      "ts_draw": 0.2343,
+      "ts_loss": 0.3566,
+      "lgbm_entropy": 1.0709,
+      "lgbm_confidence": 0.0252,
+      "raw_entropy": 1.0824,
+      "raw_confidence": 0.0147,
+      "cal_win": 0.7641,
+      "cal_draw": 0.0215,
+      "cal_loss": 0.2144,
       "stats": {
         "home_recent": [
           {
@@ -53982,6 +56012,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3161,
+      "ts_draw": 0.2249,
+      "ts_loss": 0.459,
+      "lgbm_entropy": 1.0275,
+      "lgbm_confidence": 0.0647,
+      "raw_entropy": 1.0199,
+      "raw_confidence": 0.0716,
+      "cal_win": 0.9317,
+      "cal_draw": 0.0409,
+      "cal_loss": 0.0274,
       "stats": null
     },
     {
@@ -54071,6 +56111,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.5961,
+      "ts_draw": 0.2022,
+      "ts_loss": 0.2017,
+      "lgbm_entropy": 1.0149,
+      "lgbm_confidence": 0.0762,
+      "raw_entropy": 1.0133,
+      "raw_confidence": 0.0777,
+      "cal_win": 0.9485,
+      "cal_draw": 0.03,
+      "cal_loss": 0.0215,
       "stats": {
         "home_recent": [],
         "away_recent": [
@@ -54274,6 +56324,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3563,
+      "ts_draw": 0.2356,
+      "ts_loss": 0.4081,
+      "lgbm_entropy": 1.0274,
+      "lgbm_confidence": 0.0648,
+      "raw_entropy": 0.9081,
+      "raw_confidence": 0.1734,
+      "cal_win": 0.931,
+      "cal_draw": 0.0421,
+      "cal_loss": 0.0269,
       "stats": {
         "home_recent": [],
         "away_recent": [
@@ -54486,6 +56546,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3805,
+      "ts_draw": 0.248,
+      "ts_loss": 0.3716,
+      "lgbm_entropy": 1.0446,
+      "lgbm_confidence": 0.0492,
+      "raw_entropy": 1.0673,
+      "raw_confidence": 0.0285,
+      "cal_win": 0.9115,
+      "cal_draw": 0.0332,
+      "cal_loss": 0.0553,
       "stats": {
         "home_recent": [
           {
@@ -54698,6 +56768,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4361,
+      "ts_draw": 0.2314,
+      "ts_loss": 0.3325,
+      "lgbm_entropy": 1.05,
+      "lgbm_confidence": 0.0443,
+      "raw_entropy": 1.055,
+      "raw_confidence": 0.0397,
+      "cal_win": 0.0802,
+      "cal_draw": 0.0367,
+      "cal_loss": 0.8831,
       "stats": {
         "home_recent": [],
         "away_recent": [
@@ -54973,6 +57053,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4297,
+      "ts_draw": 0.2302,
+      "ts_loss": 0.3401,
+      "lgbm_entropy": 1.0328,
+      "lgbm_confidence": 0.0599,
+      "raw_entropy": 1.0624,
+      "raw_confidence": 0.0329,
+      "cal_win": 0.9166,
+      "cal_draw": 0.0557,
+      "cal_loss": 0.0278,
       "stats": {
         "home_recent": [
           {
@@ -55221,6 +57311,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4781,
+      "ts_draw": 0.2135,
+      "ts_loss": 0.3083,
+      "lgbm_entropy": 1.0296,
+      "lgbm_confidence": 0.0628,
+      "raw_entropy": 0.9896,
+      "raw_confidence": 0.0992,
+      "cal_win": 0.927,
+      "cal_draw": 0.0451,
+      "cal_loss": 0.0279,
       "stats": {
         "home_recent": [
           {
@@ -55524,6 +57624,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.4091,
+      "ts_draw": 0.2343,
+      "ts_loss": 0.3566,
+      "lgbm_entropy": 1.092,
+      "lgbm_confidence": 0.006,
+      "raw_entropy": 1.094,
+      "raw_confidence": 0.0042,
+      "cal_win": 0.499,
+      "cal_draw": 0.1132,
+      "cal_loss": 0.3878,
       "stats": {
         "home_recent": [
           {
@@ -55890,6 +58000,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.4487,
+      "ts_draw": 0.2357,
+      "ts_loss": 0.3156,
+      "lgbm_entropy": 0.9968,
+      "lgbm_confidence": 0.0927,
+      "raw_entropy": 1.0309,
+      "raw_confidence": 0.0617,
+      "cal_win": 0.968,
+      "cal_draw": 0.013,
+      "cal_loss": 0.019,
       "stats": {
         "home_recent": [
           {
@@ -56239,6 +58359,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.4091,
+      "ts_draw": 0.2343,
+      "ts_loss": 0.3566,
+      "lgbm_entropy": 1.0759,
+      "lgbm_confidence": 0.0207,
+      "raw_entropy": 1.0856,
+      "raw_confidence": 0.0118,
+      "cal_win": 0.2518,
+      "cal_draw": 0.0324,
+      "cal_loss": 0.7158,
       "stats": {
         "home_recent": [
           {
@@ -56605,6 +58735,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4297,
+      "ts_draw": 0.2334,
+      "ts_loss": 0.3369,
+      "lgbm_entropy": 1.0204,
+      "lgbm_confidence": 0.0712,
+      "raw_entropy": 1.0071,
+      "raw_confidence": 0.0833,
+      "cal_win": 0.9432,
+      "cal_draw": 0.0322,
+      "cal_loss": 0.0247,
       "stats": {
         "home_recent": [
           {
@@ -56971,6 +59111,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.433,
+      "ts_draw": 0.2421,
+      "ts_loss": 0.3249,
+      "lgbm_entropy": 1.0388,
+      "lgbm_confidence": 0.0544,
+      "raw_entropy": 0.8425,
+      "raw_confidence": 0.2331,
+      "cal_win": 0.8961,
+      "cal_draw": 0.075,
+      "cal_loss": 0.029,
       "stats": {
         "home_recent": [
           {
@@ -57265,6 +59415,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.4419,
+      "ts_draw": 0.216,
+      "ts_loss": 0.3421,
+      "lgbm_entropy": 1.0595,
+      "lgbm_confidence": 0.0356,
+      "raw_entropy": 1.0798,
+      "raw_confidence": 0.0171,
+      "cal_win": 0.1506,
+      "cal_draw": 0.0206,
+      "cal_loss": 0.8288,
       "stats": {
         "home_recent": [
           {
@@ -57631,6 +59791,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4091,
+      "ts_draw": 0.2343,
+      "ts_loss": 0.3566,
+      "lgbm_entropy": 1.0481,
+      "lgbm_confidence": 0.046,
+      "raw_entropy": 0.9034,
+      "raw_confidence": 0.1776,
+      "cal_win": 0.0713,
+      "cal_draw": 0.0408,
+      "cal_loss": 0.8879,
       "stats": {
         "home_recent": [
           {
@@ -57997,6 +60167,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4091,
+      "ts_draw": 0.2343,
+      "ts_loss": 0.3566,
+      "lgbm_entropy": 1.0325,
+      "lgbm_confidence": 0.0601,
+      "raw_entropy": 0.9093,
+      "raw_confidence": 0.1723,
+      "cal_win": 0.9122,
+      "cal_draw": 0.0619,
+      "cal_loss": 0.0259,
       "stats": {
         "home_recent": [
           {
@@ -58363,6 +60543,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4678,
+      "ts_draw": 0.234,
+      "ts_loss": 0.2982,
+      "lgbm_entropy": 1.06,
+      "lgbm_confidence": 0.0351,
+      "raw_entropy": 0.8994,
+      "raw_confidence": 0.1813,
+      "cal_win": 0.7931,
+      "cal_draw": 0.1676,
+      "cal_loss": 0.0393,
       "stats": {
         "home_recent": [
           {
@@ -58644,8 +60834,8 @@
     },
     {
       "fid": "2997349",
-      "date": "2026-07-21",
-      "match_time": "2026-07-21 00:00",
+      "date": "2026-07-22",
+      "match_time": "2026-07-22 00:00",
       "event": "MEX D1",
       "home_team": "托卢卡",
       "away_team": "美洲狮",
@@ -58729,6 +60919,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.4012,
+      "ts_draw": 0.2474,
+      "ts_loss": 0.3514,
+      "lgbm_entropy": 1.0157,
+      "lgbm_confidence": 0.0755,
+      "raw_entropy": 1.0034,
+      "raw_confidence": 0.0866,
+      "cal_win": 0.9496,
+      "cal_draw": 0.0273,
+      "cal_loss": 0.0231,
       "stats": {
         "home_recent": [
           {
@@ -59095,6 +61295,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3875,
+      "ts_draw": 0.239,
+      "ts_loss": 0.3735,
+      "lgbm_entropy": 1.0494,
+      "lgbm_confidence": 0.0448,
+      "raw_entropy": 1.067,
+      "raw_confidence": 0.0288,
+      "cal_win": 0.0964,
+      "cal_draw": 0.0239,
+      "cal_loss": 0.8796,
       "stats": {
         "home_recent": [
           {
@@ -59370,6 +61580,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4091,
+      "ts_draw": 0.2343,
+      "ts_loss": 0.3566,
+      "lgbm_entropy": 1.0498,
+      "lgbm_confidence": 0.0444,
+      "raw_entropy": 0.8466,
+      "raw_confidence": 0.2293,
+      "cal_win": 0.073,
+      "cal_draw": 0.0438,
+      "cal_loss": 0.8831,
       "stats": {
         "home_recent": [
           {
@@ -59645,6 +61865,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.4091,
+      "ts_draw": 0.2343,
+      "ts_loss": 0.3566,
+      "lgbm_entropy": 1.068,
+      "lgbm_confidence": 0.0278,
+      "raw_entropy": 1.0777,
+      "raw_confidence": 0.019,
+      "cal_win": 0.2685,
+      "cal_draw": 0.0133,
+      "cal_loss": 0.7182,
       "stats": {
         "home_recent": [
           {
@@ -59920,6 +62150,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.4091,
+      "ts_draw": 0.2343,
+      "ts_loss": 0.3566,
+      "lgbm_entropy": 1.0625,
+      "lgbm_confidence": 0.0329,
+      "raw_entropy": 1.0689,
+      "raw_confidence": 0.027,
+      "cal_win": 0.2313,
+      "cal_draw": 0.0108,
+      "cal_loss": 0.7579,
       "stats": {
         "home_recent": [
           {
@@ -60205,6 +62445,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4091,
+      "ts_draw": 0.2343,
+      "ts_loss": 0.3566,
+      "lgbm_entropy": 1.0576,
+      "lgbm_confidence": 0.0373,
+      "raw_entropy": 0.9456,
+      "raw_confidence": 0.1393,
+      "cal_win": 0.0862,
+      "cal_draw": 0.0558,
+      "cal_loss": 0.858,
       "stats": {
         "home_recent": [
           {
@@ -60463,6 +62713,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.4091,
+      "ts_draw": 0.2343,
+      "ts_loss": 0.3566,
+      "lgbm_entropy": 1.0759,
+      "lgbm_confidence": 0.0207,
+      "raw_entropy": 1.084,
+      "raw_confidence": 0.0133,
+      "cal_win": 0.2518,
+      "cal_draw": 0.0324,
+      "cal_loss": 0.7158,
       "stats": {
         "home_recent": [
           {
@@ -60766,6 +63026,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "⚠️",
+      "ts_win": 0.5153,
+      "ts_draw": 0.2168,
+      "ts_loss": 0.2678,
+      "lgbm_entropy": 1.0774,
+      "lgbm_confidence": 0.0193,
+      "raw_entropy": 1.0867,
+      "raw_confidence": 0.0109,
+      "cal_win": 0.6741,
+      "cal_draw": 0.0237,
+      "cal_loss": 0.3022,
       "stats": {
         "home_recent": [
           {
@@ -61041,6 +63311,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.4091,
+      "ts_draw": 0.2343,
+      "ts_loss": 0.3566,
+      "lgbm_entropy": 1.0422,
+      "lgbm_confidence": 0.0513,
+      "raw_entropy": 1.0712,
+      "raw_confidence": 0.025,
+      "cal_win": 0.913,
+      "cal_draw": 0.0424,
+      "cal_loss": 0.0445,
       "stats": {
         "home_recent": [
           {
@@ -61316,6 +63596,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "",
+      "ts_win": 0.3481,
+      "ts_draw": 0.2346,
+      "ts_loss": 0.4172,
+      "lgbm_entropy": 1.0488,
+      "lgbm_confidence": 0.0453,
+      "raw_entropy": 1.0758,
+      "raw_confidence": 0.0208,
+      "cal_win": 0.9013,
+      "cal_draw": 0.04,
+      "cal_loss": 0.0587,
       "stats": {
         "home_recent": [
           {
@@ -61591,6 +63881,16 @@
       "home_pts": 0,
       "away_pts": 0,
       "warning": "🚩",
+      "ts_win": 0.3161,
+      "ts_draw": 0.2249,
+      "ts_loss": 0.459,
+      "lgbm_entropy": 1.0161,
+      "lgbm_confidence": 0.0751,
+      "raw_entropy": 0.9667,
+      "raw_confidence": 0.1201,
+      "cal_win": 0.951,
+      "cal_draw": 0.024,
+      "cal_loss": 0.025,
       "stats": {
         "home_recent": [
           {

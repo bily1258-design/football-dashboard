@@ -18,6 +18,9 @@ import numpy as np
 from datetime import datetime, date, timezone, timedelta
 from collections import defaultdict
 from typing import Dict, List, Any, Tuple, Optional
+from scipy.optimize import minimize
+from scipy.stats import poisson
+from math import log as mlog
 
 # ─── 路径 ──────────────────────────────────────────
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -461,6 +464,218 @@ def fetch_live_rankings(matches: List[Dict]) -> None:
         logger.info(f"排名: {from_data}/{len(matches)} 场已有排名（来自历史数据）")
 
 
+# ======================================================
+# 模块A：不确定性量化
+# ======================================================
+
+def prediction_entropy(probs: list, normalize: bool = True) -> Tuple[float, float]:
+    """计算预测熵和置信度"""
+    p = np.clip(probs, 1e-15, 1.0)
+    ent = -float(np.sum(p * np.log(p)))
+    if normalize:
+        max_ent = np.log(len(probs))
+        conf = 1.0 - ent / max_ent if max_ent > 0 else 0.0
+    else:
+        conf = 0.0
+    return round(ent, 4), round(conf, 4)
+
+
+# ======================================================
+# 模块B：概率校准器（Platt缩放，纯scipy实现）
+# ======================================================
+
+def _platt_nll(params: list, logits: np.ndarray, actual: np.ndarray) -> float:
+    """Platt缩放负对数似然"""
+    a, b = params
+    cal = 1.0 / (1.0 + np.exp(-np.clip(a * logits + b, -50, 50)))
+    eps = 1e-15
+    return -np.sum(actual * np.log(np.clip(cal, eps, 1)) +
+                   (1 - actual) * np.log(np.clip(1 - cal, eps, 1)))
+
+
+def _fit_platt(predicted: np.ndarray, actual: np.ndarray) -> Tuple[float, float]:
+    """拟合一维Platt缩放"""
+    logits = np.log(np.clip(predicted / (1 - predicted), 1e-15, 1e15))
+    result = minimize(_platt_nll, [1.0, 0.0], args=(logits, actual.astype(float)),
+                      method='L-BFGS-B', options={'maxiter': 200})
+    return tuple(result.x) if result.success else (1.0, 0.0)
+
+
+def fit_calibrator(db_path: str = DB_PATH) -> Optional[Dict]:
+    """从DB历史数据拟合Per-outcome Platt校准器"""
+    if not os.path.exists(db_path):
+        return None
+    try:
+        conn = sqlite3.connect(db_path)
+        rows = conn.execute("""
+            SELECT lgb_win, lgb_draw, lgb_loss, reference_score
+            FROM poisson_predictions
+            WHERE reference_score IS NOT NULL AND reference_score != ''
+              AND lgb_win > 0.01 AND lgb_loss > 0.01
+        """).fetchall()
+        conn.close()
+        if len(rows) < 100:
+            logger.info(f"校准器: DB仅{len(rows)}场，跳过")
+            return None
+
+        probs = np.array([(r[0], r[1], r[2]) for r in rows])
+        actuals = []
+        for r in rows:
+            parts = r[3].split('-')
+            if len(parts) == 2:
+                try:
+                    h, a_ = int(parts[0]), int(parts[1])
+                    actuals.append(0 if h > a_ else 1 if h == a_ else 2)
+                except ValueError:
+                    continue
+        if len(actuals) < 50:
+            return None
+        actuals = np.array(actuals)
+
+        calibrator = {}
+        for idx, name in [(0, 'win'), (1, 'draw'), (2, 'loss')]:
+            binary = (actuals == idx).astype(float)
+            a, b = _fit_platt(probs[:, idx], binary)
+            calibrator[name] = (round(a, 4), round(b, 4))
+
+        logger.info(f"校准器: DB{len(rows)}场 → win({calibrator['win'][0]:.2f},{calibrator['win'][1]:.2f}) "
+                    f"draw({calibrator['draw'][0]:.2f},{calibrator['draw'][1]:.2f}) "
+                    f"loss({calibrator['loss'][0]:.2f},{calibrator['loss'][1]:.2f})")
+        return calibrator
+    except Exception as e:
+        logger.warning(f"校准器加载失败: {e}")
+        return None
+
+
+def calibrate_probs(probs: list, calibrator: Optional[Dict]) -> Optional[list]:
+    """应用Platt校准，重归一化"""
+    if calibrator is None:
+        return None
+    cal = []
+    for idx, name in [(0, 'win'), (1, 'draw'), (2, 'loss')]:
+        a, b = calibrator[name]
+        p = np.clip(probs[idx], 1e-15, 1 - 1e-15)
+        logit = np.log(p / (1 - p))
+        c = float(1.0 / (1.0 + np.exp(-(a * logit + b))))
+        cal.append(c)
+    total = sum(cal)
+    return [round(c / total, 4) for c in cal] if total > 0 else None
+
+
+# ======================================================
+# 模块C：球队攻防实力模型（经验贝叶斯 Poisson）
+# ======================================================
+
+def _poisson_1x2(lambda_h: float, lambda_a: float, max_g: int = 10) -> list:
+    """Poisson进球分布 → [主胜, 平, 客胜] 概率"""
+    if lambda_h <= 0 or lambda_a <= 0:
+        return None
+    w = d = l_ = 0.0
+    for hg in range(max_g + 1):
+        ph = poisson.pmf(hg, lambda_h)
+        for ag in range(max_g + 1):
+            pa = poisson.pmf(ag, lambda_a)
+            prob = ph * pa
+            if hg > ag:
+                w += prob
+            elif hg == ag:
+                d += prob
+            else:
+                l_ += prob
+    total = w + d + l_
+    return [round(w / total, 4), round(d / total, 4), round(l_ / total, 4)]
+
+
+def build_team_strength_model(db_path: str = DB_PATH) -> Optional[Dict]:
+    """从DB已完赛场次计算每队攻防实力（经验贝叶斯 + James-Stein收缩）"""
+    if not os.path.exists(db_path):
+        return None
+    try:
+        conn = sqlite3.connect(db_path)
+        rows = conn.execute("""
+            SELECT home_team, away_team, reference_score
+            FROM poisson_predictions
+            WHERE reference_score IS NOT NULL AND reference_score != ''
+        """).fetchall()
+        conn.close()
+        if len(rows) < 30:
+            return None
+
+        home_goals, away_goals = [], []
+        team_scored: Dict[str, list] = {}
+        team_conceded: Dict[str, list] = {}
+
+        for r in rows:
+            parts = r[2].split('-')
+            if len(parts) != 2:
+                continue
+            try:
+                hg, ag = int(parts[0]), int(parts[1])
+            except ValueError:
+                continue
+            home, away = r[0], r[1]
+            home_goals.append(hg)
+            away_goals.append(ag)
+            team_scored.setdefault(home, []).append(hg)
+            team_conceded.setdefault(home, []).append(ag)
+            team_scored.setdefault(away, []).append(ag)
+            team_conceded.setdefault(away, []).append(hg)
+
+        if not team_scored:
+            return None
+
+        league_avg_h = float(np.mean(home_goals))
+        league_avg_a = float(np.mean(away_goals))
+        league_avg = (league_avg_h + league_avg_a) / 2.0
+
+        strengths = {}
+        for team in team_scored:
+            n_s = len(team_scored[team])
+            n_c = len(team_conceded[team])
+            avg_s = float(np.mean(team_scored[team]))
+            avg_c = float(np.mean(team_conceded[team]))
+            # James-Stein收缩: 少赛球队向联赛均值收缩
+            lam_s = min(n_s / (n_s + 10), 0.9)
+            lam_c = min(n_c / (n_c + 10), 0.9)
+            attack = 1.0 + lam_s * (avg_s - league_avg) / max(league_avg, 0.1)
+            defense = 1.0 + lam_c * (avg_c - league_avg) / max(league_avg, 0.1)
+            strengths[team] = {
+                'attack': max(round(attack, 4), 0.2),
+                'defense': max(round(defense, 4), 0.2),
+                'n': n_s,
+                'avg_scored': round(avg_s, 3),
+                'avg_conceded': round(avg_c, 3),
+            }
+
+        logger.info(f"球队实力: {len(strengths)}队 (联赛场均{league_avg:.2f}球)")
+        return {'strengths': strengths, 'league_avg': round(league_avg, 4)}
+    except Exception as e:
+        logger.warning(f"球队实力模型失败: {e}")
+        return None
+
+
+def team_strength_prediction(model: Optional[Dict], home_team: str, away_team: str,
+                             home_adv: float = 1.08) -> Optional[list]:
+    """用攻防实力模型预测单场比赛 1X2"""
+    if not model or not model.get('strengths'):
+        return None
+    s = model['strengths']
+    league_avg = model.get('league_avg', 1.5)
+    ha = s.get(home_team, {'attack': 1.0, 'defense': 1.0})
+    aa = s.get(away_team, {'attack': 1.0, 'defense': 1.0})
+
+    exp_h = ha['attack'] * aa['defense'] * league_avg * home_adv
+    exp_a = aa['attack'] * ha['defense'] * league_avg
+    return _poisson_1x2(exp_h, exp_a)
+
+
+def init_bayesian_modules(db_path: str = DB_PATH) -> Tuple[Optional[Dict], Optional[Dict]]:
+    """初始化球队实力模型和概率校准器"""
+    team_model = build_team_strength_model(db_path)
+    calibrator = fit_calibrator(db_path)
+    return team_model, calibrator
+
+
 # ─── 分析引擎 ──────────────────────────────────────
 
 def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, float, float]] = None) -> List[Dict]:
@@ -481,6 +696,9 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             logger.debug(f"排名预取完成 ({len(matches)}场)")
         except Exception as e:
             logger.warning(f"排名预取失败: {e}，将使用默认值")
+
+    # 新增：初始化贝叶斯模块（球队攻防实力模型 + 概率校准器）
+    team_model, calibrator = init_bayesian_modules(DB_PATH)
 
     for m in matches:
         # 赔率源：优先平博，fallback到马会
@@ -556,6 +774,14 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             proba = predict_lgbm(lgbm_model, feat)
             if proba:
                     lgbm_w, lgbm_d, lgbm_l = proba
+
+        # 新增：球队攻防实力Poisson预测
+        ts_probs = team_strength_prediction(team_model, m.get('home_team',''), m.get('away_team',''))
+        # 新增：不确定性量化
+        lgbm_entropy, lgbm_confidence = prediction_entropy([lgbm_w, lgbm_d, lgbm_l])
+        r_entropy, r_confidence = prediction_entropy([lgbm_feat_w, lgbm_feat_d, lgbm_feat_l])
+        # 新增：LGBM概率校准
+        cal_probs = calibrate_probs([lgbm_w, lgbm_d, lgbm_l], calibrator)
 
         # LGBM主推方向（分歧信号用）
         lgbm_final = [lgbm_w, lgbm_d, lgbm_l]
@@ -927,6 +1153,16 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             'home_pts': m.get('home_pts', 0),
             'away_pts': m.get('away_pts', 0),
             'warning': warning,
+            'ts_win': ts_probs[0] if ts_probs else None,
+            'ts_draw': ts_probs[1] if ts_probs else None,
+            'ts_loss': ts_probs[2] if ts_probs else None,
+            'lgbm_entropy': lgbm_entropy,
+            'lgbm_confidence': lgbm_confidence,
+            'raw_entropy': r_entropy,
+            'raw_confidence': r_confidence,
+            'cal_win': cal_probs[0] if cal_probs else None,
+            'cal_draw': cal_probs[1] if cal_probs else None,
+            'cal_loss': cal_probs[2] if cal_probs else None,
             # 近期战绩
             'stats': None,
         })
