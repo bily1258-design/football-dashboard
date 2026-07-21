@@ -166,13 +166,28 @@ def load_raw_matches() -> List[Dict]:
             new_source = m.get('source', '')
             old_source = existing.get('source', '')
             # 优先保留含jingcai/beidan标记的source
-            if ('jingcai' in new_source or 'beidan_jingcai' in new_source) and 'jingcai' not in old_source and 'beidan_jingcai' not in old_source:
+            new_has_jingcai = 'jingcai' in new_source or 'beidan_jingcai' in new_source
+            old_has_jingcai = 'jingcai' in old_source or 'beidan_jingcai' in old_source
+            if new_has_jingcai and not old_has_jingcai:
                 deduped[seen[key]] = m
             elif len(m) > len(existing):
-                # 保留字段更多的那个，同时保留beidan/jingcai source优先级
+                # 保留字段更多的那个
+                # 并保留原match_time（原赛事有合理时间且新时间已跨日时）
+                keep_mt = (existing.get('match_time','') or '')
+                if keep_mt and ' 00:00' not in keep_mt:
+                    orig_mt = m.get('match_time','')
+                    if orig_mt and keep_mt[:10] != orig_mt[:10]:
+                        m['match_time'] = keep_mt
                 deduped[seen[key]] = m
-                if old_source and ('beidan' in old_source or 'jingcai' in old_source):
+                if old_source and not new_has_jingcai and ('beidan' in old_source or 'jingcai' in old_source):
                     m['source'] = old_source
+            elif len(m) == len(existing):
+                # 相同字段数：合并比分（新有条旧无时补上），保留原时间
+                new_score = (m.get('score') or '').strip()
+                old_score = (existing.get('score') or '').strip()
+                if new_score and not old_score:
+                    existing['score'] = new_score
+                    logger.debug(f"  合并比分 fid={key}: {old_score} → {new_score}")
     logger.info(f"原始数据 {len(all_ms)} 场 → 去重后 {len(deduped)} 场")
 
     # 第二道去重: 按(主队,客队)去重 — 同一场比赛在不同日期文件里出现(不同fid)
