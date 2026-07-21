@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-07-22 01:28:18",
+  "generated_at": "2026-07-22 01:39:34",
   "total_matches": 230,
   "date_range": "2026-07-11 ~ 2026-07-22",
-  "hit_count": 149,
-  "total_scored": 195,
-  "hit_rate": 0.764,
+  "hit_count": 153,
+  "total_scored": 199,
+  "hit_rate": 0.769,
   "daily_stats": [
     {
       "date": "2026-07-22",
@@ -45748,8 +45748,8 @@
       "event": "芬甲",
       "home_team": "卡亚尼卡帕",
       "away_team": "克鲁比04",
-      "score": "",
-      "hit": "",
+      "score": "0-2",
+      "hit": "M·负✓",
       "source": "beidan",
       "odds_source": "pinnacle",
       "odds_win": 2.39,
@@ -46107,8 +46107,8 @@
       "event": "欧冠杯",
       "home_team": "米亚尔比",
       "away_team": "林肯红魔",
-      "score": "",
-      "hit": "",
+      "score": "3-0",
+      "hit": "L·胜✓",
       "source": "beidan",
       "odds_source": "pinnacle",
       "odds_win": 1.09,
@@ -46392,8 +46392,8 @@
       "event": "欧冠杯",
       "home_team": "萨巴赫",
       "away_team": "古比斯",
-      "score": "",
-      "hit": "",
+      "score": "1-0",
+      "hit": "L·胜✓",
       "source": "jingcai",
       "odds_source": "pinnacle",
       "odds_win": 1.6,
@@ -51313,365 +51313,6 @@
             "away": "藍十字1",
             "home_score": 1,
             "away_score": 1
-          }
-        ]
-      }
-    },
-    {
-      "fid": "2903524",
-      "date": "2026-07-18",
-      "match_time": "2026-07-18 14:30",
-      "event": "澳昆超",
-      "home_team": "Moreton City Excelsior FC",
-      "away_team": "Peninsula Power",
-      "score": "",
-      "hit": "",
-      "source": "beidan",
-      "odds_source": "hkjc",
-      "odds_win": 1.5,
-      "odds_draw": 4.55,
-      "odds_loss": 5.1,
-      "margin": 0.0825,
-      "model_win": 0.4,
-      "model_draw": 0.2795,
-      "model_loss": 0.3205,
-      "raw_model_win": 0.5689,
-      "raw_model_draw": 0.2185,
-      "raw_model_loss": 0.2126,
-      "open_win_pin": 1.38,
-      "open_draw_pin": 4.5,
-      "open_loss_pin": 5.8,
-      "lgbm_prediction": "home",
-      "lgbm_prediction_cn": "主胜",
-      "lgbm_prediction_prob": 0.5125,
-      "prediction": "home",
-      "prediction_cn": "主胜",
-      "prediction_prob": 0.5125,
-      "model_prediction": "away",
-      "model_prediction_cn": "客胜",
-      "model_prediction_prob": 0.3205,
-      "draw_boosted": true,
-      "draw_confidence": -5,
-      "draw_signal": "none",
-      "diff_lgb_poisson": -0.0186,
-      "lgbm_win": 0.5125,
-      "lgbm_draw": 0.2609,
-      "lgbm_loss": 0.2266,
-      "comparison": {
-        "open": [
-          1.38,
-          4.5,
-          5.8
-        ],
-        "current": [
-          1.5,
-          4.55,
-          5.1
-        ],
-        "div_pct": [
-          8.7,
-          1.1,
-          -13.7
-        ],
-        "source": "hkjc"
-      },
-      "pin_comparison": {},
-      "league_baseline": [
-        0.45,
-        0.24,
-        0.31
-      ],
-      "league": "",
-      "home_rank": 0,
-      "away_rank": 0,
-      "home_pts": 0,
-      "away_pts": 0,
-      "warning": "",
-      "ts_win": 0.4091,
-      "ts_draw": 0.2343,
-      "ts_loss": 0.3566,
-      "lgbm_entropy": 1.0295,
-      "lgbm_confidence": 0.0629,
-      "raw_entropy": 0.9824,
-      "raw_confidence": 0.1058,
-      "cal_win": 0.927,
-      "cal_draw": 0.0452,
-      "cal_loss": 0.0277,
-      "stats": {
-        "home_recent": [
-          {
-            "result": "胜",
-            "league": "澳昆超",
-            "date": "26-07-11",
-            "home": "摩頓城精英",
-            "away": "魔法聯合TFA",
-            "home_score": 4,
-            "away_score": 3
-          },
-          {
-            "result": "胜",
-            "league": "澳昆超",
-            "date": "26-07-04",
-            "home": "黃金海岸騎士",
-            "away": "摩頓城精英",
-            "home_score": 2,
-            "away_score": 1
-          },
-          {
-            "result": "负",
-            "league": "澳昆超",
-            "date": "26-06-28",
-            "home": "黃金海岸聯",
-            "away": "摩頓城精英",
-            "home_score": 0,
-            "away_score": 1
-          },
-          {
-            "result": "平",
-            "league": "澳昆超",
-            "date": "26-06-20",
-            "home": "摩頓城精英",
-            "away": "溫納姆狼隊",
-            "home_score": 2,
-            "away_score": 2
-          },
-          {
-            "result": "负",
-            "league": "澳昆超",
-            "date": "26-06-16",
-            "home": "羅切達爾流浪",
-            "away": "摩頓城精英",
-            "home_score": 2,
-            "away_score": 5
-          },
-          {
-            "result": "平",
-            "league": "澳昆超",
-            "date": "26-06-05",
-            "home": "伊斯頓沙伯",
-            "away": "摩頓城精英",
-            "home_score": 0,
-            "away_score": 0
-          },
-          {
-            "result": "负",
-            "league": "澳昆超",
-            "date": "26-05-22",
-            "home": "摩頓城精英",
-            "away": "布里斯班",
-            "home_score": 2,
-            "away_score": 5
-          },
-          {
-            "result": "胜",
-            "league": "澳昆超",
-            "date": "26-05-16",
-            "home": "摩頓城精英",
-            "away": "布里斯班奧林匹克",
-            "home_score": 4,
-            "away_score": 3
-          },
-          {
-            "result": "胜",
-            "league": "澳昆超",
-            "date": "26-05-09",
-            "home": "昆士蘭獅隊",
-            "away": "摩頓城精英",
-            "home_score": 2,
-            "away_score": 0
-          },
-          {
-            "result": "胜",
-            "league": "澳昆超",
-            "date": "26-04-25",
-            "home": "摩頓城精英",
-            "away": "布里斯本獅吼青年隊",
-            "home_score": 6,
-            "away_score": 0
-          }
-        ],
-        "away_recent": [
-          {
-            "result": "胜",
-            "league": "澳足總",
-            "date": "26-07-14",
-            "home": "萊卡特老虎",
-            "away": "半島電力",
-            "home_score": 2,
-            "away_score": 1
-          },
-          {
-            "result": "平",
-            "league": "澳昆超",
-            "date": "26-07-10",
-            "home": "半島電力",
-            "away": "溫納姆狼隊",
-            "home_score": 0,
-            "away_score": 0
-          },
-          {
-            "result": "负",
-            "league": "澳昆超",
-            "date": "26-07-04",
-            "home": "伊斯頓沙伯",
-            "away": "半島電力",
-            "home_score": 1,
-            "away_score": 3
-          },
-          {
-            "result": "胜",
-            "league": "澳昆超",
-            "date": "26-06-27",
-            "home": "半島電力",
-            "away": "布里斯本獅吼青年隊",
-            "home_score": 3,
-            "away_score": 1
-          },
-          {
-            "result": "负",
-            "league": "澳昆超",
-            "date": "26-06-21",
-            "home": "布里斯班奧林匹克",
-            "away": "半島電力",
-            "home_score": 1,
-            "away_score": 3
-          },
-          {
-            "result": "负",
-            "league": "澳足總",
-            "date": "26-06-12",
-            "home": "1北極星",
-            "away": "半島電力",
-            "home_score": 3,
-            "away_score": 7
-          },
-          {
-            "result": "负",
-            "league": "澳昆超",
-            "date": "26-06-06",
-            "home": "羅切達爾流浪",
-            "away": "半島電力",
-            "home_score": 0,
-            "away_score": 2
-          },
-          {
-            "result": "负",
-            "league": "澳昆超",
-            "date": "26-05-30",
-            "home": "1黃金海岸聯",
-            "away": "半島電力",
-            "home_score": 0,
-            "away_score": 4
-          },
-          {
-            "result": "胜",
-            "league": "澳昆超",
-            "date": "26-05-23",
-            "home": "半島電力",
-            "away": "魔法聯合TFA",
-            "home_score": 3,
-            "away_score": 2
-          },
-          {
-            "result": "胜",
-            "league": "澳足總",
-            "date": "26-05-20",
-            "home": "半島電力",
-            "away": "莫格基爾",
-            "home_score": 4,
-            "away_score": 1
-          }
-        ],
-        "h2h": [
-          {
-            "result": "负",
-            "league": "澳昆超",
-            "date": "26-04-18",
-            "home": "半島電力",
-            "away": "摩頓城精英",
-            "home_score": 1,
-            "away_score": 4
-          },
-          {
-            "result": "负",
-            "league": "澳昆超",
-            "date": "25-06-17",
-            "home": "半島電力",
-            "away": "摩頓城精英",
-            "home_score": 0,
-            "away_score": 2
-          },
-          {
-            "result": "平",
-            "league": "澳昆超",
-            "date": "25-05-10",
-            "home": "摩頓城精英",
-            "away": "半島電力",
-            "home_score": 3,
-            "away_score": 3
-          },
-          {
-            "result": "负",
-            "league": "球會友誼",
-            "date": "25-01-15",
-            "home": "摩頓城精英",
-            "away": "半島電力",
-            "home_score": 1,
-            "away_score": 3
-          },
-          {
-            "result": "平",
-            "league": "澳昆超",
-            "date": "24-09-01",
-            "home": "摩頓城精英",
-            "away": "半島電力1",
-            "home_score": 2,
-            "away_score": 2
-          },
-          {
-            "result": "负",
-            "league": "澳昆超",
-            "date": "24-08-10",
-            "home": "摩頓城精英",
-            "away": "半島電力",
-            "home_score": 1,
-            "away_score": 3
-          },
-          {
-            "result": "平",
-            "league": "澳昆超",
-            "date": "24-05-11",
-            "home": "半島電力",
-            "away": "摩頓城精英",
-            "home_score": 0,
-            "away_score": 0
-          },
-          {
-            "result": "负",
-            "league": "澳昆超",
-            "date": "23-08-20",
-            "home": "摩頓城精英",
-            "away": "半島電力",
-            "home_score": 0,
-            "away_score": 1
-          },
-          {
-            "result": "胜",
-            "league": "澳昆超",
-            "date": "23-05-13",
-            "home": "半島電力",
-            "away": "摩頓城精英",
-            "home_score": 2,
-            "away_score": 1
-          },
-          {
-            "result": "负",
-            "league": "澳昆專聯",
-            "date": "23-03-31",
-            "home": "半島電力",
-            "away": "摩頓城精英",
-            "home_score": 1,
-            "away_score": 2
           }
         ]
       }
@@ -57538,6 +57179,365 @@
       }
     },
     {
+      "fid": "2903524",
+      "date": "2026-07-18",
+      "match_time": "2026-07-18 14:30",
+      "event": "澳昆超",
+      "home_team": "Moreton City Excelsior FC",
+      "away_team": "Peninsula Power",
+      "score": "",
+      "hit": "",
+      "source": "hkjc",
+      "odds_source": "hkjc",
+      "odds_win": 1.5,
+      "odds_draw": 4.55,
+      "odds_loss": 5.1,
+      "margin": 0.0825,
+      "model_win": 0.4,
+      "model_draw": 0.2795,
+      "model_loss": 0.3205,
+      "raw_model_win": 0.5689,
+      "raw_model_draw": 0.2185,
+      "raw_model_loss": 0.2126,
+      "open_win_pin": 1.38,
+      "open_draw_pin": 4.5,
+      "open_loss_pin": 5.8,
+      "lgbm_prediction": "home",
+      "lgbm_prediction_cn": "主胜",
+      "lgbm_prediction_prob": 0.5125,
+      "prediction": "home",
+      "prediction_cn": "主胜",
+      "prediction_prob": 0.5125,
+      "model_prediction": "away",
+      "model_prediction_cn": "客胜",
+      "model_prediction_prob": 0.3205,
+      "draw_boosted": true,
+      "draw_confidence": -5,
+      "draw_signal": "none",
+      "diff_lgb_poisson": -0.0186,
+      "lgbm_win": 0.5125,
+      "lgbm_draw": 0.2609,
+      "lgbm_loss": 0.2266,
+      "comparison": {
+        "open": [
+          1.38,
+          4.5,
+          5.8
+        ],
+        "current": [
+          1.5,
+          4.55,
+          5.1
+        ],
+        "div_pct": [
+          8.7,
+          1.1,
+          -13.7
+        ],
+        "source": "hkjc"
+      },
+      "pin_comparison": {},
+      "league_baseline": [
+        0.45,
+        0.24,
+        0.31
+      ],
+      "league": "",
+      "home_rank": 0,
+      "away_rank": 0,
+      "home_pts": 0,
+      "away_pts": 0,
+      "warning": "",
+      "ts_win": 0.4091,
+      "ts_draw": 0.2343,
+      "ts_loss": 0.3566,
+      "lgbm_entropy": 1.0295,
+      "lgbm_confidence": 0.0629,
+      "raw_entropy": 0.9824,
+      "raw_confidence": 0.1058,
+      "cal_win": 0.927,
+      "cal_draw": 0.0452,
+      "cal_loss": 0.0277,
+      "stats": {
+        "home_recent": [
+          {
+            "result": "胜",
+            "league": "澳昆超",
+            "date": "26-07-11",
+            "home": "摩頓城精英",
+            "away": "魔法聯合TFA",
+            "home_score": 4,
+            "away_score": 3
+          },
+          {
+            "result": "胜",
+            "league": "澳昆超",
+            "date": "26-07-04",
+            "home": "黃金海岸騎士",
+            "away": "摩頓城精英",
+            "home_score": 2,
+            "away_score": 1
+          },
+          {
+            "result": "负",
+            "league": "澳昆超",
+            "date": "26-06-28",
+            "home": "黃金海岸聯",
+            "away": "摩頓城精英",
+            "home_score": 0,
+            "away_score": 1
+          },
+          {
+            "result": "平",
+            "league": "澳昆超",
+            "date": "26-06-20",
+            "home": "摩頓城精英",
+            "away": "溫納姆狼隊",
+            "home_score": 2,
+            "away_score": 2
+          },
+          {
+            "result": "负",
+            "league": "澳昆超",
+            "date": "26-06-16",
+            "home": "羅切達爾流浪",
+            "away": "摩頓城精英",
+            "home_score": 2,
+            "away_score": 5
+          },
+          {
+            "result": "平",
+            "league": "澳昆超",
+            "date": "26-06-05",
+            "home": "伊斯頓沙伯",
+            "away": "摩頓城精英",
+            "home_score": 0,
+            "away_score": 0
+          },
+          {
+            "result": "负",
+            "league": "澳昆超",
+            "date": "26-05-22",
+            "home": "摩頓城精英",
+            "away": "布里斯班",
+            "home_score": 2,
+            "away_score": 5
+          },
+          {
+            "result": "胜",
+            "league": "澳昆超",
+            "date": "26-05-16",
+            "home": "摩頓城精英",
+            "away": "布里斯班奧林匹克",
+            "home_score": 4,
+            "away_score": 3
+          },
+          {
+            "result": "胜",
+            "league": "澳昆超",
+            "date": "26-05-09",
+            "home": "昆士蘭獅隊",
+            "away": "摩頓城精英",
+            "home_score": 2,
+            "away_score": 0
+          },
+          {
+            "result": "胜",
+            "league": "澳昆超",
+            "date": "26-04-25",
+            "home": "摩頓城精英",
+            "away": "布里斯本獅吼青年隊",
+            "home_score": 6,
+            "away_score": 0
+          }
+        ],
+        "away_recent": [
+          {
+            "result": "胜",
+            "league": "澳足總",
+            "date": "26-07-14",
+            "home": "萊卡特老虎",
+            "away": "半島電力",
+            "home_score": 2,
+            "away_score": 1
+          },
+          {
+            "result": "平",
+            "league": "澳昆超",
+            "date": "26-07-10",
+            "home": "半島電力",
+            "away": "溫納姆狼隊",
+            "home_score": 0,
+            "away_score": 0
+          },
+          {
+            "result": "负",
+            "league": "澳昆超",
+            "date": "26-07-04",
+            "home": "伊斯頓沙伯",
+            "away": "半島電力",
+            "home_score": 1,
+            "away_score": 3
+          },
+          {
+            "result": "胜",
+            "league": "澳昆超",
+            "date": "26-06-27",
+            "home": "半島電力",
+            "away": "布里斯本獅吼青年隊",
+            "home_score": 3,
+            "away_score": 1
+          },
+          {
+            "result": "负",
+            "league": "澳昆超",
+            "date": "26-06-21",
+            "home": "布里斯班奧林匹克",
+            "away": "半島電力",
+            "home_score": 1,
+            "away_score": 3
+          },
+          {
+            "result": "负",
+            "league": "澳足總",
+            "date": "26-06-12",
+            "home": "1北極星",
+            "away": "半島電力",
+            "home_score": 3,
+            "away_score": 7
+          },
+          {
+            "result": "负",
+            "league": "澳昆超",
+            "date": "26-06-06",
+            "home": "羅切達爾流浪",
+            "away": "半島電力",
+            "home_score": 0,
+            "away_score": 2
+          },
+          {
+            "result": "负",
+            "league": "澳昆超",
+            "date": "26-05-30",
+            "home": "1黃金海岸聯",
+            "away": "半島電力",
+            "home_score": 0,
+            "away_score": 4
+          },
+          {
+            "result": "胜",
+            "league": "澳昆超",
+            "date": "26-05-23",
+            "home": "半島電力",
+            "away": "魔法聯合TFA",
+            "home_score": 3,
+            "away_score": 2
+          },
+          {
+            "result": "胜",
+            "league": "澳足總",
+            "date": "26-05-20",
+            "home": "半島電力",
+            "away": "莫格基爾",
+            "home_score": 4,
+            "away_score": 1
+          }
+        ],
+        "h2h": [
+          {
+            "result": "负",
+            "league": "澳昆超",
+            "date": "26-04-18",
+            "home": "半島電力",
+            "away": "摩頓城精英",
+            "home_score": 1,
+            "away_score": 4
+          },
+          {
+            "result": "负",
+            "league": "澳昆超",
+            "date": "25-06-17",
+            "home": "半島電力",
+            "away": "摩頓城精英",
+            "home_score": 0,
+            "away_score": 2
+          },
+          {
+            "result": "平",
+            "league": "澳昆超",
+            "date": "25-05-10",
+            "home": "摩頓城精英",
+            "away": "半島電力",
+            "home_score": 3,
+            "away_score": 3
+          },
+          {
+            "result": "负",
+            "league": "球會友誼",
+            "date": "25-01-15",
+            "home": "摩頓城精英",
+            "away": "半島電力",
+            "home_score": 1,
+            "away_score": 3
+          },
+          {
+            "result": "平",
+            "league": "澳昆超",
+            "date": "24-09-01",
+            "home": "摩頓城精英",
+            "away": "半島電力1",
+            "home_score": 2,
+            "away_score": 2
+          },
+          {
+            "result": "负",
+            "league": "澳昆超",
+            "date": "24-08-10",
+            "home": "摩頓城精英",
+            "away": "半島電力",
+            "home_score": 1,
+            "away_score": 3
+          },
+          {
+            "result": "平",
+            "league": "澳昆超",
+            "date": "24-05-11",
+            "home": "半島電力",
+            "away": "摩頓城精英",
+            "home_score": 0,
+            "away_score": 0
+          },
+          {
+            "result": "负",
+            "league": "澳昆超",
+            "date": "23-08-20",
+            "home": "摩頓城精英",
+            "away": "半島電力",
+            "home_score": 0,
+            "away_score": 1
+          },
+          {
+            "result": "胜",
+            "league": "澳昆超",
+            "date": "23-05-13",
+            "home": "半島電力",
+            "away": "摩頓城精英",
+            "home_score": 2,
+            "away_score": 1
+          },
+          {
+            "result": "负",
+            "league": "澳昆專聯",
+            "date": "23-03-31",
+            "home": "半島電力",
+            "away": "摩頓城精英",
+            "home_score": 1,
+            "away_score": 2
+          }
+        ]
+      }
+    },
+    {
       "fid": "3025298",
       "date": "2026-07-21",
       "match_time": "2026-07-21 07:00",
@@ -62653,37 +62653,55 @@
       "score": "",
       "hit": "",
       "source": "hkjc",
-      "odds_source": "hkjc",
-      "odds_win": 3.15,
-      "odds_draw": 3.15,
-      "odds_loss": 2.01,
-      "margin": 0.1324,
-      "model_win": 0.3264,
-      "model_draw": 0.2736,
-      "model_loss": 0.4,
-      "raw_model_win": 0.3159,
-      "raw_model_draw": 0.2734,
-      "raw_model_loss": 0.4108,
-      "open_win_pin": 3.15,
-      "open_draw_pin": 3.15,
-      "open_loss_pin": 2.01,
+      "odds_source": "pinnacle",
+      "odds_win": 3.22,
+      "odds_draw": 3.03,
+      "odds_loss": 2.12,
+      "margin": 0.1123,
+      "model_win": 0.3247,
+      "model_draw": 0.3418,
+      "model_loss": 0.3335,
+      "raw_model_win": 0.3147,
+      "raw_model_draw": 0.2863,
+      "raw_model_loss": 0.399,
+      "open_win_pin": 3.31,
+      "open_draw_pin": 3.38,
+      "open_loss_pin": 1.89,
       "lgbm_prediction": "away",
       "lgbm_prediction_cn": "客胜",
-      "lgbm_prediction_prob": 0.4266,
+      "lgbm_prediction_prob": 0.4183,
       "prediction": "away",
       "prediction_cn": "客胜",
-      "prediction_prob": 0.4266,
-      "model_prediction": "home",
-      "model_prediction_cn": "主胜",
-      "model_prediction_prob": 0.3264,
-      "draw_boosted": true,
-      "draw_confidence": -5,
+      "prediction_prob": 0.4183,
+      "model_prediction": "away",
+      "model_prediction_cn": "客胜",
+      "model_prediction_prob": 0.3335,
+      "draw_boosted": false,
+      "draw_confidence": 5,
       "draw_signal": "none",
-      "diff_lgb_poisson": -0.0202,
-      "lgbm_win": 0.32,
-      "lgbm_draw": 0.2533,
-      "lgbm_loss": 0.4266,
+      "diff_lgb_poisson": -0.0753,
+      "lgbm_win": 0.3152,
+      "lgbm_draw": 0.2665,
+      "lgbm_loss": 0.4183,
       "comparison": {
+        "open": [
+          3.31,
+          3.38,
+          1.89
+        ],
+        "current": [
+          3.22,
+          3.03,
+          2.12
+        ],
+        "div_pct": [
+          -2.7,
+          -10.4,
+          10.8
+        ],
+        "source": "pinnacle"
+      },
+      "pin_comparison": {
         "open": [
           3.15,
           3.15,
@@ -62701,7 +62719,6 @@
         ],
         "source": "hkjc"
       },
-      "pin_comparison": {},
       "league_baseline": [
         0.45,
         0.24,
@@ -62716,13 +62733,13 @@
       "ts_win": 0.4091,
       "ts_draw": 0.2343,
       "ts_loss": 0.3566,
-      "lgbm_entropy": 1.0759,
-      "lgbm_confidence": 0.0207,
-      "raw_entropy": 1.084,
-      "raw_confidence": 0.0133,
-      "cal_win": 0.2518,
-      "cal_draw": 0.0324,
-      "cal_loss": 0.7158,
+      "lgbm_entropy": 1.0809,
+      "lgbm_confidence": 0.0161,
+      "raw_entropy": 1.0885,
+      "raw_confidence": 0.0092,
+      "cal_win": 0.2398,
+      "cal_draw": 0.0601,
+      "cal_loss": 0.7002,
       "stats": {
         "home_recent": [
           {
@@ -63231,8 +63248,8 @@
       "event": "UEFA CL",
       "home_team": "阿拉特亚美尼亚(中)",
       "away_team": "沙姆洛克流浪",
-      "score": "",
-      "hit": "",
+      "score": "2-0",
+      "hit": "L·胜✓",
       "source": "hkjc",
       "odds_source": "pinnacle",
       "odds_win": 2.09,
