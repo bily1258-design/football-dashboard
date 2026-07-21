@@ -178,6 +178,7 @@ def load_raw_matches() -> List[Dict]:
                     orig_mt = m.get('match_time','')
                     if orig_mt and keep_mt[:10] != orig_mt[:10]:
                         m['match_time'] = keep_mt
+                        m['date'] = keep_mt[:10]
                 deduped[seen[key]] = m
                 if old_source and not new_has_jingcai and ('beidan' in old_source or 'jingcai' in old_source):
                     m['source'] = old_source
@@ -1026,8 +1027,21 @@ def generate_frontend(results: List[Dict]):
     by_date = defaultdict(list)
     for r in results:
         mt = r.get('match_time', '')
+        # 保存原始抓取日期（用于判断是否源站把凌晨归到了当天）
+        orig_date = r.get('date', '')
         if mt and len(mt) >= 10:
-            r['date'] = mt[:10]
+            base_date = mt[:10]
+            # 凌晨比赛(00:00-07:00): 仅当match_time日期==原始抓取日期时才推下一天
+            # (即源站将21日凌晨归到20号，匹配到20号抓取日期才推)
+            if len(mt) >= 16 and base_date and base_date == orig_date:
+                try:
+                    h = int(mt[11:13])
+                    if h < 12:
+                        from datetime import datetime, timedelta
+                        base_date = (datetime.strptime(base_date, '%Y-%m-%d') + timedelta(days=1)).strftime('%Y-%m-%d')
+                except:
+                    pass
+            r['date'] = base_date
         by_date[r['date']].append(r)
 
     dates = sorted(by_date.keys(), reverse=True)
