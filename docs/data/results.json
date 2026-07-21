@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-21 10:33:29",
+  "generated_at": "2026-07-21 16:11:55",
   "total_matches": 230,
   "date_range": "2026-07-11 ~ 2026-07-22",
   "hit_count": 146,
@@ -42974,372 +42974,6 @@
       }
     },
     {
-      "fid": "2929665",
-      "date": "2026-07-21",
-      "match_time": "2026-07-21 18:30",
-      "event": "韩K联",
-      "home_team": "蔚山HD",
-      "away_team": "仁川联队",
-      "score": "",
-      "hit": "",
-      "source": "beidan",
-      "odds_source": "pinnacle",
-      "odds_win": 2.24,
-      "odds_draw": 3.36,
-      "odds_loss": 3.46,
-      "margin": 0.0331,
-      "model_win": 0.385,
-      "model_draw": 0.3515,
-      "model_loss": 0.2636,
-      "raw_model_win": 0.4373,
-      "raw_model_draw": 0.2795,
-      "raw_model_loss": 0.2833,
-      "open_win_pin": 2.06,
-      "open_draw_pin": 3.3,
-      "open_loss_pin": 3.65,
-      "lgbm_prediction": "home",
-      "lgbm_prediction_cn": "主胜",
-      "lgbm_prediction_prob": 0.4788,
-      "prediction": "home",
-      "prediction_cn": "主胜",
-      "prediction_prob": 0.4788,
-      "model_prediction": "draw",
-      "model_prediction_cn": "平局",
-      "model_prediction_prob": 0.3515,
-      "draw_boosted": false,
-      "draw_confidence": -5,
-      "draw_signal": "none",
-      "diff_lgb_poisson": -0.0963,
-      "lgbm_win": 0.4788,
-      "lgbm_draw": 0.2552,
-      "lgbm_loss": 0.266,
-      "comparison": {
-        "open": [
-          2.06,
-          3.3,
-          3.65
-        ],
-        "current": [
-          2.24,
-          3.36,
-          3.46
-        ],
-        "div_pct": [
-          8.7,
-          1.8,
-          -5.5
-        ],
-        "source": "pinnacle"
-      },
-      "pin_comparison": {
-        "open": [
-          1.95,
-          3.1,
-          3.35
-        ],
-        "current": [
-          1.97,
-          3.1,
-          3.3
-        ],
-        "div_pct": [
-          1.0,
-          0.0,
-          -1.5
-        ],
-        "source": "hkjc"
-      },
-      "league_baseline": [
-        0.45,
-        0.24,
-        0.31
-      ],
-      "league": "",
-      "home_rank": 0,
-      "away_rank": 0,
-      "home_pts": 0,
-      "away_pts": 0,
-      "warning": "",
-      "stats": {
-        "home_recent": [
-          {
-            "result": "平",
-            "league": "韓K聯",
-            "date": "26-07-18",
-            "home": "大田市民",
-            "away": "蔚山HD",
-            "home_score": 2,
-            "away_score": 2
-          },
-          {
-            "result": "负",
-            "league": "韓K聯",
-            "date": "26-07-11",
-            "home": "蔚山HD",
-            "away": "全北汽車",
-            "home_score": 1,
-            "away_score": 3
-          },
-          {
-            "result": "平",
-            "league": "韓K聯",
-            "date": "26-07-05",
-            "home": "FC光州",
-            "away": "蔚山HD",
-            "home_score": 1,
-            "away_score": 1
-          },
-          {
-            "result": "胜",
-            "league": "韓K聯",
-            "date": "26-05-13",
-            "home": "蔚山HD",
-            "away": "濟州SK",
-            "home_score": 2,
-            "away_score": 1
-          },
-          {
-            "result": "胜",
-            "league": "韓K聯",
-            "date": "26-05-10",
-            "home": "蔚山HD",
-            "away": "富川FC",
-            "home_score": 1,
-            "away_score": 0
-          },
-          {
-            "result": "负",
-            "league": "韓K聯",
-            "date": "26-05-05",
-            "home": "金泉尚武",
-            "away": "蔚山HD",
-            "home_score": 1,
-            "away_score": 2
-          },
-          {
-            "result": "负",
-            "league": "韓K聯",
-            "date": "26-05-02",
-            "home": "蔚山HD",
-            "away": "浦項制鐵",
-            "home_score": 0,
-            "away_score": 1
-          },
-          {
-            "result": "负",
-            "league": "韓K聯",
-            "date": "26-04-26",
-            "home": "蔚山HD",
-            "away": "大田市民",
-            "home_score": 1,
-            "away_score": 4
-          },
-          {
-            "result": "平",
-            "league": "韓K聯",
-            "date": "26-04-22",
-            "home": "FC安養",
-            "away": "蔚山HD",
-            "home_score": 1,
-            "away_score": 1
-          },
-          {
-            "result": "胜",
-            "league": "韓K聯",
-            "date": "26-04-19",
-            "home": "蔚山HD",
-            "away": "FC光州",
-            "home_score": 5,
-            "away_score": 1
-          }
-        ],
-        "away_recent": [
-          {
-            "result": "胜",
-            "league": "韓K聯",
-            "date": "26-07-18",
-            "home": "仁川聯",
-            "away": "全北汽車",
-            "home_score": 1,
-            "away_score": 0
-          },
-          {
-            "result": "负",
-            "league": "韓K聯",
-            "date": "26-07-12",
-            "home": "仁川聯",
-            "away": "FC安養",
-            "home_score": 0,
-            "away_score": 1
-          },
-          {
-            "result": "胜",
-            "league": "韓K聯",
-            "date": "26-07-05",
-            "home": "FC首爾",
-            "away": "仁川聯",
-            "home_score": 1,
-            "away_score": 0
-          },
-          {
-            "result": "胜",
-            "league": "韓K聯",
-            "date": "26-05-16",
-            "home": "仁川聯",
-            "away": "FC光州",
-            "home_score": 4,
-            "away_score": 0
-          },
-          {
-            "result": "负",
-            "league": "韓K聯",
-            "date": "26-05-12",
-            "home": "仁川聯",
-            "away": "浦項制鐵",
-            "home_score": 0,
-            "away_score": 1
-          },
-          {
-            "result": "平",
-            "league": "韓K聯",
-            "date": "26-05-05",
-            "home": "大田市民",
-            "away": "仁川聯",
-            "home_score": 0,
-            "away_score": 0
-          },
-          {
-            "result": "负",
-            "league": "韓K聯",
-            "date": "26-05-02",
-            "home": "仁川聯",
-            "away": "FC江原",
-            "home_score": 0,
-            "away_score": 1
-          },
-          {
-            "result": "胜",
-            "league": "韓K聯",
-            "date": "26-04-25",
-            "home": "仁川聯",
-            "away": "濟州SK",
-            "home_score": 1,
-            "away_score": 0
-          },
-          {
-            "result": "负",
-            "league": "韓K聯",
-            "date": "26-04-21",
-            "home": "全北汽車",
-            "away": "仁川聯",
-            "home_score": 1,
-            "away_score": 2
-          },
-          {
-            "result": "平",
-            "league": "韓K聯",
-            "date": "26-04-18",
-            "home": "富川FC",
-            "away": "仁川聯",
-            "home_score": 2,
-            "away_score": 2
-          }
-        ],
-        "h2h": [
-          {
-            "result": "负",
-            "league": "韓K聯",
-            "date": "26-04-11",
-            "home": "仁川聯",
-            "away": "蔚山HD",
-            "home_score": 1,
-            "away_score": 2
-          },
-          {
-            "result": "胜",
-            "league": "韓國杯",
-            "date": "25-05-14",
-            "home": "蔚山HD",
-            "away": "仁川聯",
-            "home_score": 3,
-            "away_score": 0
-          },
-          {
-            "result": "平",
-            "league": "韓K聯",
-            "date": "24-09-22",
-            "home": "仁川聯",
-            "away": "蔚山HD",
-            "home_score": 0,
-            "away_score": 0
-          },
-          {
-            "result": "胜",
-            "league": "韓國杯",
-            "date": "24-07-17",
-            "home": "蔚山HD",
-            "away": "仁川聯",
-            "home_score": 1,
-            "away_score": 0
-          },
-          {
-            "result": "平",
-            "league": "韓K聯",
-            "date": "24-05-29",
-            "home": "仁川聯",
-            "away": "蔚山HD",
-            "home_score": 1,
-            "away_score": 1
-          },
-          {
-            "result": "平",
-            "league": "韓K聯",
-            "date": "24-03-17",
-            "home": "蔚山HD",
-            "away": "仁川聯",
-            "home_score": 3,
-            "away_score": 3
-          },
-          {
-            "result": "胜",
-            "league": "韓K聯",
-            "date": "23-11-24",
-            "home": "仁川聯",
-            "away": "蔚山HD",
-            "home_score": 3,
-            "away_score": 1
-          },
-          {
-            "result": "平",
-            "league": "韓K聯",
-            "date": "23-10-08",
-            "home": "蔚山HD",
-            "away": "仁川聯",
-            "home_score": 0,
-            "away_score": 0
-          },
-          {
-            "result": "负",
-            "league": "韓K聯",
-            "date": "23-07-12",
-            "home": "蔚山HD",
-            "away": "仁川聯",
-            "home_score": 1,
-            "away_score": 2
-          },
-          {
-            "result": "负",
-            "league": "韓K聯",
-            "date": "23-04-25",
-            "home": "仁川聯",
-            "away": "蔚山HD",
-            "home_score": 0,
-            "away_score": 1
-          }
-        ]
-      }
-    },
-    {
       "fid": "2929663",
       "date": "2026-07-21",
       "match_time": "2026-07-21 18:30",
@@ -43350,35 +42984,35 @@
       "hit": "",
       "source": "beidan",
       "odds_source": "pinnacle",
-      "odds_win": 3.73,
-      "odds_draw": 3.3,
-      "odds_loss": 2.16,
+      "odds_win": 4.12,
+      "odds_draw": 3.32,
+      "odds_loss": 2.04,
       "margin": 0.0341,
-      "model_win": 0.3041,
-      "model_draw": 0.2959,
+      "model_win": 0.3263,
+      "model_draw": 0.2737,
       "model_loss": 0.4,
-      "raw_model_win": 0.2992,
-      "raw_model_draw": 0.2836,
-      "raw_model_loss": 0.4172,
+      "raw_model_win": 0.2805,
+      "raw_model_draw": 0.2825,
+      "raw_model_loss": 0.437,
       "open_win_pin": 3.9,
       "open_draw_pin": 3.15,
       "open_loss_pin": 2.05,
       "lgbm_prediction": "away",
       "lgbm_prediction_cn": "客胜",
-      "lgbm_prediction_prob": 0.4585,
+      "lgbm_prediction_prob": 0.4795,
       "prediction": "away",
       "prediction_cn": "客胜",
-      "prediction_prob": 0.4585,
+      "prediction_prob": 0.4795,
       "model_prediction": "home",
       "model_prediction_cn": "主胜",
-      "model_prediction_prob": 0.3041,
+      "model_prediction_prob": 0.3263,
       "draw_boosted": true,
       "draw_confidence": -5,
       "draw_signal": "none",
-      "diff_lgb_poisson": -0.0353,
-      "lgbm_win": 0.2809,
-      "lgbm_draw": 0.2606,
-      "lgbm_loss": 0.4585,
+      "diff_lgb_poisson": -0.0083,
+      "lgbm_win": 0.2551,
+      "lgbm_draw": 0.2654,
+      "lgbm_loss": 0.4795,
       "comparison": {
         "open": [
           3.9,
@@ -43386,14 +43020,14 @@
           2.05
         ],
         "current": [
-          3.73,
-          3.3,
-          2.16
+          4.12,
+          3.32,
+          2.04
         ],
         "div_pct": [
-          -4.4,
-          4.8,
-          5.1
+          5.6,
+          5.4,
+          -0.5
         ],
         "source": "pinnacle"
       },
@@ -43404,14 +43038,14 @@
           1.91
         ],
         "current": [
-          3.65,
-          2.98,
-          1.91
+          3.75,
+          3.0,
+          1.87
         ],
         "div_pct": [
-          0.0,
-          0.0,
-          0.0
+          2.7,
+          0.7,
+          -2.1
         ],
         "source": "hkjc"
       },
@@ -43706,6 +43340,372 @@
       }
     },
     {
+      "fid": "2929665",
+      "date": "2026-07-21",
+      "match_time": "2026-07-21 18:30",
+      "event": "韩K联",
+      "home_team": "蔚山HD",
+      "away_team": "仁川联队",
+      "score": "",
+      "hit": "",
+      "source": "beidan",
+      "odds_source": "pinnacle",
+      "odds_win": 2.27,
+      "odds_draw": 3.29,
+      "odds_loss": 3.45,
+      "margin": 0.0343,
+      "model_win": 0.384,
+      "model_draw": 0.3548,
+      "model_loss": 0.2612,
+      "raw_model_win": 0.4324,
+      "raw_model_draw": 0.284,
+      "raw_model_loss": 0.2836,
+      "open_win_pin": 2.06,
+      "open_draw_pin": 3.3,
+      "open_loss_pin": 3.65,
+      "lgbm_prediction": "home",
+      "lgbm_prediction_cn": "主胜",
+      "lgbm_prediction_prob": 0.4787,
+      "prediction": "home",
+      "prediction_cn": "主胜",
+      "prediction_prob": 0.4787,
+      "model_prediction": "draw",
+      "model_prediction_cn": "平局",
+      "model_prediction_prob": 0.3548,
+      "draw_boosted": false,
+      "draw_confidence": 5,
+      "draw_signal": "none",
+      "diff_lgb_poisson": -0.0996,
+      "lgbm_win": 0.4787,
+      "lgbm_draw": 0.2553,
+      "lgbm_loss": 0.266,
+      "comparison": {
+        "open": [
+          2.06,
+          3.3,
+          3.65
+        ],
+        "current": [
+          2.27,
+          3.29,
+          3.45
+        ],
+        "div_pct": [
+          10.2,
+          -0.3,
+          -5.8
+        ],
+        "source": "pinnacle"
+      },
+      "pin_comparison": {
+        "open": [
+          1.95,
+          3.1,
+          3.35
+        ],
+        "current": [
+          2.0,
+          3.05,
+          3.25
+        ],
+        "div_pct": [
+          2.6,
+          -1.6,
+          -3.1
+        ],
+        "source": "hkjc"
+      },
+      "league_baseline": [
+        0.45,
+        0.24,
+        0.31
+      ],
+      "league": "",
+      "home_rank": 0,
+      "away_rank": 0,
+      "home_pts": 0,
+      "away_pts": 0,
+      "warning": "",
+      "stats": {
+        "home_recent": [
+          {
+            "result": "平",
+            "league": "韓K聯",
+            "date": "26-07-18",
+            "home": "大田市民",
+            "away": "蔚山HD",
+            "home_score": 2,
+            "away_score": 2
+          },
+          {
+            "result": "负",
+            "league": "韓K聯",
+            "date": "26-07-11",
+            "home": "蔚山HD",
+            "away": "全北汽車",
+            "home_score": 1,
+            "away_score": 3
+          },
+          {
+            "result": "平",
+            "league": "韓K聯",
+            "date": "26-07-05",
+            "home": "FC光州",
+            "away": "蔚山HD",
+            "home_score": 1,
+            "away_score": 1
+          },
+          {
+            "result": "胜",
+            "league": "韓K聯",
+            "date": "26-05-13",
+            "home": "蔚山HD",
+            "away": "濟州SK",
+            "home_score": 2,
+            "away_score": 1
+          },
+          {
+            "result": "胜",
+            "league": "韓K聯",
+            "date": "26-05-10",
+            "home": "蔚山HD",
+            "away": "富川FC",
+            "home_score": 1,
+            "away_score": 0
+          },
+          {
+            "result": "负",
+            "league": "韓K聯",
+            "date": "26-05-05",
+            "home": "金泉尚武",
+            "away": "蔚山HD",
+            "home_score": 1,
+            "away_score": 2
+          },
+          {
+            "result": "负",
+            "league": "韓K聯",
+            "date": "26-05-02",
+            "home": "蔚山HD",
+            "away": "浦項制鐵",
+            "home_score": 0,
+            "away_score": 1
+          },
+          {
+            "result": "负",
+            "league": "韓K聯",
+            "date": "26-04-26",
+            "home": "蔚山HD",
+            "away": "大田市民",
+            "home_score": 1,
+            "away_score": 4
+          },
+          {
+            "result": "平",
+            "league": "韓K聯",
+            "date": "26-04-22",
+            "home": "FC安養",
+            "away": "蔚山HD",
+            "home_score": 1,
+            "away_score": 1
+          },
+          {
+            "result": "胜",
+            "league": "韓K聯",
+            "date": "26-04-19",
+            "home": "蔚山HD",
+            "away": "FC光州",
+            "home_score": 5,
+            "away_score": 1
+          }
+        ],
+        "away_recent": [
+          {
+            "result": "胜",
+            "league": "韓K聯",
+            "date": "26-07-18",
+            "home": "仁川聯",
+            "away": "全北汽車",
+            "home_score": 1,
+            "away_score": 0
+          },
+          {
+            "result": "负",
+            "league": "韓K聯",
+            "date": "26-07-12",
+            "home": "仁川聯",
+            "away": "FC安養",
+            "home_score": 0,
+            "away_score": 1
+          },
+          {
+            "result": "胜",
+            "league": "韓K聯",
+            "date": "26-07-05",
+            "home": "FC首爾",
+            "away": "仁川聯",
+            "home_score": 1,
+            "away_score": 0
+          },
+          {
+            "result": "胜",
+            "league": "韓K聯",
+            "date": "26-05-16",
+            "home": "仁川聯",
+            "away": "FC光州",
+            "home_score": 4,
+            "away_score": 0
+          },
+          {
+            "result": "负",
+            "league": "韓K聯",
+            "date": "26-05-12",
+            "home": "仁川聯",
+            "away": "浦項制鐵",
+            "home_score": 0,
+            "away_score": 1
+          },
+          {
+            "result": "平",
+            "league": "韓K聯",
+            "date": "26-05-05",
+            "home": "大田市民",
+            "away": "仁川聯",
+            "home_score": 0,
+            "away_score": 0
+          },
+          {
+            "result": "负",
+            "league": "韓K聯",
+            "date": "26-05-02",
+            "home": "仁川聯",
+            "away": "FC江原",
+            "home_score": 0,
+            "away_score": 1
+          },
+          {
+            "result": "胜",
+            "league": "韓K聯",
+            "date": "26-04-25",
+            "home": "仁川聯",
+            "away": "濟州SK",
+            "home_score": 1,
+            "away_score": 0
+          },
+          {
+            "result": "负",
+            "league": "韓K聯",
+            "date": "26-04-21",
+            "home": "全北汽車",
+            "away": "仁川聯",
+            "home_score": 1,
+            "away_score": 2
+          },
+          {
+            "result": "平",
+            "league": "韓K聯",
+            "date": "26-04-18",
+            "home": "富川FC",
+            "away": "仁川聯",
+            "home_score": 2,
+            "away_score": 2
+          }
+        ],
+        "h2h": [
+          {
+            "result": "负",
+            "league": "韓K聯",
+            "date": "26-04-11",
+            "home": "仁川聯",
+            "away": "蔚山HD",
+            "home_score": 1,
+            "away_score": 2
+          },
+          {
+            "result": "胜",
+            "league": "韓國杯",
+            "date": "25-05-14",
+            "home": "蔚山HD",
+            "away": "仁川聯",
+            "home_score": 3,
+            "away_score": 0
+          },
+          {
+            "result": "平",
+            "league": "韓K聯",
+            "date": "24-09-22",
+            "home": "仁川聯",
+            "away": "蔚山HD",
+            "home_score": 0,
+            "away_score": 0
+          },
+          {
+            "result": "胜",
+            "league": "韓國杯",
+            "date": "24-07-17",
+            "home": "蔚山HD",
+            "away": "仁川聯",
+            "home_score": 1,
+            "away_score": 0
+          },
+          {
+            "result": "平",
+            "league": "韓K聯",
+            "date": "24-05-29",
+            "home": "仁川聯",
+            "away": "蔚山HD",
+            "home_score": 1,
+            "away_score": 1
+          },
+          {
+            "result": "平",
+            "league": "韓K聯",
+            "date": "24-03-17",
+            "home": "蔚山HD",
+            "away": "仁川聯",
+            "home_score": 3,
+            "away_score": 3
+          },
+          {
+            "result": "胜",
+            "league": "韓K聯",
+            "date": "23-11-24",
+            "home": "仁川聯",
+            "away": "蔚山HD",
+            "home_score": 3,
+            "away_score": 1
+          },
+          {
+            "result": "平",
+            "league": "韓K聯",
+            "date": "23-10-08",
+            "home": "蔚山HD",
+            "away": "仁川聯",
+            "home_score": 0,
+            "away_score": 0
+          },
+          {
+            "result": "负",
+            "league": "韓K聯",
+            "date": "23-07-12",
+            "home": "蔚山HD",
+            "away": "仁川聯",
+            "home_score": 1,
+            "away_score": 2
+          },
+          {
+            "result": "负",
+            "league": "韓K聯",
+            "date": "23-04-25",
+            "home": "仁川聯",
+            "away": "蔚山HD",
+            "home_score": 0,
+            "away_score": 1
+          }
+        ]
+      }
+    },
+    {
       "fid": "2929664",
       "date": "2026-07-21",
       "match_time": "2026-07-21 18:30",
@@ -43716,35 +43716,35 @@
       "hit": "",
       "source": "beidan",
       "odds_source": "pinnacle",
-      "odds_win": 2.03,
-      "odds_draw": 3.6,
-      "odds_loss": 3.78,
+      "odds_win": 1.95,
+      "odds_draw": 3.65,
+      "odds_loss": 4.03,
       "margin": 0.0349,
       "model_win": 0.4,
-      "model_draw": 0.3238,
-      "model_loss": 0.2762,
-      "raw_model_win": 0.4705,
-      "raw_model_draw": 0.2645,
-      "raw_model_loss": 0.265,
+      "model_draw": 0.357,
+      "model_loss": 0.243,
+      "raw_model_win": 0.4849,
+      "raw_model_draw": 0.262,
+      "raw_model_loss": 0.253,
       "open_win_pin": 2.16,
       "open_draw_pin": 3.35,
       "open_loss_pin": 3.35,
       "lgbm_prediction": "home",
       "lgbm_prediction_cn": "主胜",
-      "lgbm_prediction_prob": 0.5499,
+      "lgbm_prediction_prob": 0.5626,
       "prediction": "home",
       "prediction_cn": "主胜",
-      "prediction_prob": 0.5499,
+      "prediction_prob": 0.5626,
       "model_prediction": "draw",
       "model_prediction_cn": "平局",
-      "model_prediction_prob": 0.3238,
+      "model_prediction_prob": 0.357,
       "draw_boosted": true,
-      "draw_confidence": -5,
+      "draw_confidence": -10,
       "draw_signal": "none",
-      "diff_lgb_poisson": -0.0899,
-      "lgbm_win": 0.5499,
-      "lgbm_draw": 0.2339,
-      "lgbm_loss": 0.2161,
+      "diff_lgb_poisson": -0.1297,
+      "lgbm_win": 0.5626,
+      "lgbm_draw": 0.2273,
+      "lgbm_loss": 0.2101,
       "comparison": {
         "open": [
           2.16,
@@ -43752,14 +43752,14 @@
           3.35
         ],
         "current": [
-          2.03,
-          3.6,
-          3.78
+          1.95,
+          3.65,
+          4.03
         ],
         "div_pct": [
-          -6.0,
-          7.5,
-          11.4
+          -9.7,
+          9.0,
+          16.9
         ],
         "source": "pinnacle"
       },
@@ -43770,13 +43770,13 @@
           3.65
         ],
         "current": [
-          1.77,
-          3.2,
+          1.73,
+          3.35,
           3.9
         ],
         "div_pct": [
-          -3.8,
-          1.6,
+          -6.0,
+          6.3,
           6.4
         ],
         "source": "hkjc"
@@ -44072,6 +44072,281 @@
       }
     },
     {
+      "fid": "3033090",
+      "date": "2026-07-22",
+      "match_time": "2026-07-22 00:00",
+      "event": "欧冠杯",
+      "home_team": "米亚尔比",
+      "away_team": "林肯红魔",
+      "score": "",
+      "hit": "",
+      "source": "beidan",
+      "odds_source": "pinnacle",
+      "odds_win": 1.1,
+      "odds_draw": 9.41,
+      "odds_loss": 19.52,
+      "margin": 0.0666,
+      "model_win": 0.4,
+      "model_draw": 0.21,
+      "model_loss": 0.39,
+      "raw_model_win": 0.709,
+      "raw_model_draw": 0.1577,
+      "raw_model_loss": 0.1333,
+      "open_win_pin": 1.16,
+      "open_draw_pin": 6.76,
+      "open_loss_pin": 11.3,
+      "lgbm_prediction": "home",
+      "lgbm_prediction_cn": "主胜",
+      "lgbm_prediction_prob": 0.4911,
+      "prediction": "home",
+      "prediction_cn": "主胜",
+      "prediction_prob": 0.4911,
+      "model_prediction": "away",
+      "model_prediction_cn": "客胜",
+      "model_prediction_prob": 0.39,
+      "draw_boosted": true,
+      "draw_confidence": 2,
+      "draw_signal": "none",
+      "diff_lgb_poisson": 0.07,
+      "lgbm_win": 0.4911,
+      "lgbm_draw": 0.28,
+      "lgbm_loss": 0.2289,
+      "comparison": {
+        "open": [
+          1.16,
+          6.76,
+          11.3
+        ],
+        "current": [
+          1.1,
+          9.41,
+          19.52
+        ],
+        "div_pct": [
+          -5.2,
+          39.2,
+          42.1
+        ],
+        "source": "pinnacle"
+      },
+      "pin_comparison": {
+        "open": [
+          1.12,
+          6.2,
+          13.0
+        ],
+        "current": [
+          1.08,
+          7.0,
+          17.0
+        ],
+        "div_pct": [
+          -3.6,
+          12.9,
+          23.5
+        ],
+        "source": "hkjc"
+      },
+      "league_baseline": [
+        0.45,
+        0.24,
+        0.31
+      ],
+      "league": "",
+      "home_rank": 0,
+      "away_rank": 0,
+      "home_pts": 0,
+      "away_pts": 0,
+      "warning": "",
+      "stats": {
+        "home_recent": [
+          {
+            "result": "平",
+            "league": "瑞典超",
+            "date": "26-07-18",
+            "home": "米贊比",
+            "away": "韋斯特羅斯",
+            "home_score": 0,
+            "away_score": 0
+          },
+          {
+            "result": "负",
+            "league": "瑞典超",
+            "date": "26-07-11",
+            "home": "米贊比",
+            "away": "AIK蘇納",
+            "home_score": 1,
+            "away_score": 2
+          },
+          {
+            "result": "平",
+            "league": "瑞典超",
+            "date": "26-07-04",
+            "home": "天狼星",
+            "away": "米贊比",
+            "home_score": 4,
+            "away_score": 4
+          },
+          {
+            "result": "胜",
+            "league": "球會友誼",
+            "date": "26-06-27",
+            "home": "哥本哈根(中)",
+            "away": "米贊比",
+            "home_score": 5,
+            "away_score": 3
+          },
+          {
+            "result": "平",
+            "league": "瑞典超",
+            "date": "26-05-26",
+            "home": "哥登堡",
+            "away": "米贊比",
+            "home_score": 1,
+            "away_score": 1
+          },
+          {
+            "result": "平",
+            "league": "瑞典超",
+            "date": "26-05-22",
+            "home": "艾夫斯堡",
+            "away": "米贊比",
+            "home_score": 1,
+            "away_score": 1
+          },
+          {
+            "result": "负",
+            "league": "瑞典超",
+            "date": "26-05-09",
+            "home": "迪加科斯",
+            "away": "米贊比",
+            "home_score": 1,
+            "away_score": 4
+          },
+          {
+            "result": "负",
+            "league": "瑞典超",
+            "date": "26-05-03",
+            "home": "馬模",
+            "away": "米贊比",
+            "home_score": 2,
+            "away_score": 3
+          },
+          {
+            "result": "胜",
+            "league": "瑞典超",
+            "date": "26-04-28",
+            "home": "米贊比",
+            "away": "咸史泰斯",
+            "home_score": 2,
+            "away_score": 0
+          },
+          {
+            "result": "平",
+            "league": "瑞典超",
+            "date": "26-04-24",
+            "home": "加爾斯",
+            "away": "米贊比",
+            "home_score": 0,
+            "away_score": 0
+          }
+        ],
+        "away_recent": [
+          {
+            "result": "平",
+            "league": "歐冠盃",
+            "date": "26-07-15",
+            "home": "艾斯卡迪斯國際",
+            "away": "FC林肯",
+            "home_score": 1,
+            "away_score": 1
+          },
+          {
+            "result": "胜",
+            "league": "直布聯",
+            "date": "26-04-26",
+            "home": "FC林肯",
+            "away": "里尼斯FC1",
+            "home_score": 4,
+            "away_score": 1
+          },
+          {
+            "result": "胜",
+            "league": "直布聯",
+            "date": "26-04-18",
+            "home": "FC林肯",
+            "away": "歐洲足球俱樂部",
+            "home_score": 2,
+            "away_score": 0
+          },
+          {
+            "result": "平",
+            "league": "直布聯",
+            "date": "26-04-12",
+            "home": "直布羅陀獅子",
+            "away": "FC林肯",
+            "home_score": 1,
+            "away_score": 1
+          },
+          {
+            "result": "胜",
+            "league": "直布聯",
+            "date": "26-04-05",
+            "home": "FC林肯",
+            "away": "蒙斯卡爾佩FC",
+            "home_score": 2,
+            "away_score": 1
+          },
+          {
+            "result": "胜",
+            "league": "直布聯",
+            "date": "26-03-22",
+            "home": "FC林肯",
+            "away": "聖若瑟FC",
+            "home_score": 1,
+            "away_score": 0
+          },
+          {
+            "result": "负",
+            "league": "球會友誼",
+            "date": "26-03-15",
+            "home": "蒙斯卡爾佩FC",
+            "away": "FC林肯",
+            "home_score": 0,
+            "away_score": 5
+          },
+          {
+            "result": "负",
+            "league": "直布聯",
+            "date": "26-03-06",
+            "home": "布魯諾斯喜鵲",
+            "away": "FC林肯",
+            "home_score": 1,
+            "away_score": 2
+          },
+          {
+            "result": "胜",
+            "league": "球會友誼",
+            "date": "26-03-02",
+            "home": "FC林肯",
+            "away": "直布羅陀獅子",
+            "home_score": 2,
+            "away_score": 1
+          },
+          {
+            "result": "负",
+            "league": "直布聯",
+            "date": "26-02-27",
+            "home": "獵犬隊",
+            "away": "FC林肯",
+            "home_score": 0,
+            "away_score": 3
+          }
+        ],
+        "h2h": []
+      }
+    },
+    {
       "fid": "2921886",
       "date": "2026-07-22",
       "match_time": "2026-07-22 00:00",
@@ -44082,35 +44357,35 @@
       "hit": "",
       "source": "beidan",
       "odds_source": "pinnacle",
-      "odds_win": 2.26,
-      "odds_draw": 3.6,
+      "odds_win": 2.27,
+      "odds_draw": 3.64,
       "odds_loss": 2.99,
-      "margin": 0.0547,
-      "model_win": 0.3792,
-      "model_draw": 0.2328,
-      "model_loss": 0.388,
-      "raw_model_win": 0.4122,
-      "raw_model_draw": 0.256,
-      "raw_model_loss": 0.3318,
+      "margin": 0.0497,
+      "model_win": 0.3861,
+      "model_draw": 0.229,
+      "model_loss": 0.385,
+      "raw_model_win": 0.4123,
+      "raw_model_draw": 0.2547,
+      "raw_model_loss": 0.333,
       "open_win_pin": 2.4,
       "open_draw_pin": 3.3,
       "open_loss_pin": 2.8,
       "lgbm_prediction": "home",
       "lgbm_prediction_cn": "主胜",
-      "lgbm_prediction_prob": 0.4147,
+      "lgbm_prediction_prob": 0.4145,
       "prediction": "home",
       "prediction_cn": "主胜",
-      "prediction_prob": 0.4147,
-      "model_prediction": "home",
-      "model_prediction_cn": "主胜",
-      "model_prediction_prob": 0.3792,
+      "prediction_prob": 0.4145,
+      "model_prediction": "away",
+      "model_prediction_cn": "客胜",
+      "model_prediction_prob": 0.385,
       "draw_boosted": false,
       "draw_confidence": -10,
       "draw_signal": "none",
-      "diff_lgb_poisson": -0.0061,
-      "lgbm_win": 0.4147,
+      "diff_lgb_poisson": -0.0022,
+      "lgbm_win": 0.4145,
       "lgbm_draw": 0.2267,
-      "lgbm_loss": 0.3586,
+      "lgbm_loss": 0.3588,
       "comparison": {
         "open": [
           2.4,
@@ -44118,13 +44393,13 @@
           2.8
         ],
         "current": [
-          2.26,
-          3.6,
+          2.27,
+          3.64,
           2.99
         ],
         "div_pct": [
-          -5.8,
-          9.1,
+          -5.4,
+          10.3,
           6.4
         ],
         "source": "pinnacle"
@@ -44421,281 +44696,6 @@
       }
     },
     {
-      "fid": "3033090",
-      "date": "2026-07-22",
-      "match_time": "2026-07-22 00:00",
-      "event": "欧冠杯",
-      "home_team": "米亚尔比",
-      "away_team": "林肯红魔",
-      "score": "",
-      "hit": "",
-      "source": "beidan",
-      "odds_source": "pinnacle",
-      "odds_win": 1.11,
-      "odds_draw": 8.64,
-      "odds_loss": 18.43,
-      "margin": 0.0709,
-      "model_win": 0.4,
-      "model_draw": 0.21,
-      "model_loss": 0.39,
-      "raw_model_win": 0.7031,
-      "raw_model_draw": 0.1627,
-      "raw_model_loss": 0.1342,
-      "open_win_pin": 1.16,
-      "open_draw_pin": 6.76,
-      "open_loss_pin": 11.3,
-      "lgbm_prediction": "home",
-      "lgbm_prediction_cn": "主胜",
-      "lgbm_prediction_prob": 0.4918,
-      "prediction": "home",
-      "prediction_cn": "主胜",
-      "prediction_prob": 0.4918,
-      "model_prediction": "away",
-      "model_prediction_cn": "客胜",
-      "model_prediction_prob": 0.39,
-      "draw_boosted": true,
-      "draw_confidence": 7,
-      "draw_signal": "none",
-      "diff_lgb_poisson": 0.0704,
-      "lgbm_win": 0.4918,
-      "lgbm_draw": 0.2804,
-      "lgbm_loss": 0.2278,
-      "comparison": {
-        "open": [
-          1.16,
-          6.76,
-          11.3
-        ],
-        "current": [
-          1.11,
-          8.64,
-          18.43
-        ],
-        "div_pct": [
-          -4.3,
-          27.8,
-          38.7
-        ],
-        "source": "pinnacle"
-      },
-      "pin_comparison": {
-        "open": [
-          1.12,
-          6.2,
-          13.0
-        ],
-        "current": [
-          1.09,
-          6.7,
-          17.0
-        ],
-        "div_pct": [
-          -2.7,
-          8.1,
-          23.5
-        ],
-        "source": "hkjc"
-      },
-      "league_baseline": [
-        0.45,
-        0.24,
-        0.31
-      ],
-      "league": "",
-      "home_rank": 0,
-      "away_rank": 0,
-      "home_pts": 0,
-      "away_pts": 0,
-      "warning": "",
-      "stats": {
-        "home_recent": [
-          {
-            "result": "平",
-            "league": "瑞典超",
-            "date": "26-07-18",
-            "home": "米贊比",
-            "away": "韋斯特羅斯",
-            "home_score": 0,
-            "away_score": 0
-          },
-          {
-            "result": "负",
-            "league": "瑞典超",
-            "date": "26-07-11",
-            "home": "米贊比",
-            "away": "AIK蘇納",
-            "home_score": 1,
-            "away_score": 2
-          },
-          {
-            "result": "平",
-            "league": "瑞典超",
-            "date": "26-07-04",
-            "home": "天狼星",
-            "away": "米贊比",
-            "home_score": 4,
-            "away_score": 4
-          },
-          {
-            "result": "胜",
-            "league": "球會友誼",
-            "date": "26-06-27",
-            "home": "哥本哈根(中)",
-            "away": "米贊比",
-            "home_score": 5,
-            "away_score": 3
-          },
-          {
-            "result": "平",
-            "league": "瑞典超",
-            "date": "26-05-26",
-            "home": "哥登堡",
-            "away": "米贊比",
-            "home_score": 1,
-            "away_score": 1
-          },
-          {
-            "result": "平",
-            "league": "瑞典超",
-            "date": "26-05-22",
-            "home": "艾夫斯堡",
-            "away": "米贊比",
-            "home_score": 1,
-            "away_score": 1
-          },
-          {
-            "result": "负",
-            "league": "瑞典超",
-            "date": "26-05-09",
-            "home": "迪加科斯",
-            "away": "米贊比",
-            "home_score": 1,
-            "away_score": 4
-          },
-          {
-            "result": "负",
-            "league": "瑞典超",
-            "date": "26-05-03",
-            "home": "馬模",
-            "away": "米贊比",
-            "home_score": 2,
-            "away_score": 3
-          },
-          {
-            "result": "胜",
-            "league": "瑞典超",
-            "date": "26-04-28",
-            "home": "米贊比",
-            "away": "咸史泰斯",
-            "home_score": 2,
-            "away_score": 0
-          },
-          {
-            "result": "平",
-            "league": "瑞典超",
-            "date": "26-04-24",
-            "home": "加爾斯",
-            "away": "米贊比",
-            "home_score": 0,
-            "away_score": 0
-          }
-        ],
-        "away_recent": [
-          {
-            "result": "平",
-            "league": "歐冠盃",
-            "date": "26-07-15",
-            "home": "艾斯卡迪斯國際",
-            "away": "FC林肯",
-            "home_score": 1,
-            "away_score": 1
-          },
-          {
-            "result": "胜",
-            "league": "直布聯",
-            "date": "26-04-26",
-            "home": "FC林肯",
-            "away": "里尼斯FC1",
-            "home_score": 4,
-            "away_score": 1
-          },
-          {
-            "result": "胜",
-            "league": "直布聯",
-            "date": "26-04-18",
-            "home": "FC林肯",
-            "away": "歐洲足球俱樂部",
-            "home_score": 2,
-            "away_score": 0
-          },
-          {
-            "result": "平",
-            "league": "直布聯",
-            "date": "26-04-12",
-            "home": "直布羅陀獅子",
-            "away": "FC林肯",
-            "home_score": 1,
-            "away_score": 1
-          },
-          {
-            "result": "胜",
-            "league": "直布聯",
-            "date": "26-04-05",
-            "home": "FC林肯",
-            "away": "蒙斯卡爾佩FC",
-            "home_score": 2,
-            "away_score": 1
-          },
-          {
-            "result": "胜",
-            "league": "直布聯",
-            "date": "26-03-22",
-            "home": "FC林肯",
-            "away": "聖若瑟FC",
-            "home_score": 1,
-            "away_score": 0
-          },
-          {
-            "result": "负",
-            "league": "球會友誼",
-            "date": "26-03-15",
-            "home": "蒙斯卡爾佩FC",
-            "away": "FC林肯",
-            "home_score": 0,
-            "away_score": 5
-          },
-          {
-            "result": "负",
-            "league": "直布聯",
-            "date": "26-03-06",
-            "home": "布魯諾斯喜鵲",
-            "away": "FC林肯",
-            "home_score": 1,
-            "away_score": 2
-          },
-          {
-            "result": "胜",
-            "league": "球會友誼",
-            "date": "26-03-02",
-            "home": "FC林肯",
-            "away": "直布羅陀獅子",
-            "home_score": 2,
-            "away_score": 1
-          },
-          {
-            "result": "负",
-            "league": "直布聯",
-            "date": "26-02-27",
-            "home": "獵犬隊",
-            "away": "FC林肯",
-            "home_score": 0,
-            "away_score": 3
-          }
-        ],
-        "h2h": []
-      }
-    },
-    {
       "fid": "3033092",
       "date": "2026-07-22",
       "match_time": "2026-07-22 00:00",
@@ -44706,35 +44706,35 @@
       "hit": "",
       "source": "jingcai",
       "odds_source": "pinnacle",
-      "odds_win": 1.64,
-      "odds_draw": 4.22,
-      "odds_loss": 4.22,
-      "margin": 0.0837,
+      "odds_win": 1.63,
+      "odds_draw": 4.36,
+      "odds_loss": 4.29,
+      "margin": 0.076,
       "model_win": 0.4,
       "model_draw": 0.21,
       "model_loss": 0.39,
-      "raw_model_win": 0.5329,
-      "raw_model_draw": 0.2283,
-      "raw_model_loss": 0.2388,
+      "raw_model_win": 0.5381,
+      "raw_model_draw": 0.2244,
+      "raw_model_loss": 0.2375,
       "open_win_pin": 1.99,
       "open_draw_pin": 3.31,
       "open_loss_pin": 3.4,
       "lgbm_prediction": "home",
       "lgbm_prediction_cn": "主胜",
-      "lgbm_prediction_prob": 0.5495,
+      "lgbm_prediction_prob": 0.5501,
       "prediction": "home",
       "prediction_cn": "主胜",
-      "prediction_prob": 0.5495,
+      "prediction_prob": 0.5501,
       "model_prediction": "away",
       "model_prediction_cn": "客胜",
       "model_prediction_prob": 0.39,
       "draw_boosted": true,
       "draw_confidence": -7,
       "draw_signal": "none",
-      "diff_lgb_poisson": 0.0269,
-      "lgbm_win": 0.5495,
-      "lgbm_draw": 0.2369,
-      "lgbm_loss": 0.2136,
+      "diff_lgb_poisson": 0.0272,
+      "lgbm_win": 0.5501,
+      "lgbm_draw": 0.2372,
+      "lgbm_loss": 0.2127,
       "comparison": {
         "open": [
           1.99,
@@ -44742,14 +44742,14 @@
           3.4
         ],
         "current": [
-          1.64,
-          4.22,
-          4.22
+          1.63,
+          4.36,
+          4.29
         ],
         "div_pct": [
-          -17.6,
-          27.5,
-          19.4
+          -18.1,
+          31.7,
+          20.7
         ],
         "source": "pinnacle"
       },
@@ -44975,41 +44975,41 @@
       "date": "2026-07-22",
       "match_time": "2026-07-22 01:00",
       "event": "欧冠杯",
-      "home_team": "奥胡斯",
+      "home_team": "奥胡斯(中)",
       "away_team": "波兹南莱赫",
       "score": "",
       "hit": "",
       "source": "beidan_jingcai",
       "odds_source": "pinnacle",
-      "odds_win": 2.19,
-      "odds_draw": 3.08,
-      "odds_loss": 3.47,
-      "margin": 0.0695,
+      "odds_win": 2.16,
+      "odds_draw": 3.22,
+      "odds_loss": 3.43,
+      "margin": 0.0651,
       "model_win": 0.4,
-      "model_draw": 0.3203,
-      "model_loss": 0.2797,
-      "raw_model_win": 0.4333,
-      "raw_model_draw": 0.2918,
-      "raw_model_loss": 0.2749,
+      "model_draw": 0.3285,
+      "model_loss": 0.2715,
+      "raw_model_win": 0.4392,
+      "raw_model_draw": 0.2823,
+      "raw_model_loss": 0.2785,
       "open_win_pin": 2.18,
       "open_draw_pin": 3.12,
       "open_loss_pin": 3.14,
       "lgbm_prediction": "home",
       "lgbm_prediction_cn": "主胜",
-      "lgbm_prediction_prob": 0.4759,
+      "lgbm_prediction_prob": 0.488,
       "prediction": "home",
       "prediction_cn": "主胜",
-      "prediction_prob": 0.4759,
+      "prediction_prob": 0.488,
       "model_prediction": "draw",
       "model_prediction_cn": "平局",
-      "model_prediction_prob": 0.3203,
+      "model_prediction_prob": 0.3285,
       "draw_boosted": true,
-      "draw_confidence": 10,
+      "draw_confidence": -5,
       "draw_signal": "none",
-      "diff_lgb_poisson": -0.0377,
-      "lgbm_win": 0.4759,
-      "lgbm_draw": 0.2825,
-      "lgbm_loss": 0.2416,
+      "diff_lgb_poisson": -0.0712,
+      "lgbm_win": 0.488,
+      "lgbm_draw": 0.2573,
+      "lgbm_loss": 0.2547,
       "comparison": {
         "open": [
           2.18,
@@ -45017,14 +45017,14 @@
           3.14
         ],
         "current": [
-          2.19,
-          3.08,
-          3.47
+          2.16,
+          3.22,
+          3.43
         ],
         "div_pct": [
-          0.5,
-          -1.3,
-          9.5
+          -0.9,
+          3.2,
+          8.5
         ],
         "source": "pinnacle"
       },
@@ -45035,14 +45035,14 @@
           3.65
         ],
         "current": [
-          1.86,
+          1.89,
           3.15,
-          3.65
+          3.55
         ],
         "div_pct": [
+          1.6,
           0.0,
-          0.0,
-          0.0
+          -2.8
         ],
         "source": "hkjc"
       },
@@ -45256,35 +45256,35 @@
       "hit": "",
       "source": "beidan",
       "odds_source": "pinnacle",
-      "odds_win": 2.07,
-      "odds_draw": 3.34,
-      "odds_loss": 3.67,
-      "margin": 0.055,
+      "odds_win": 2.06,
+      "odds_draw": 3.43,
+      "odds_loss": 3.69,
+      "margin": 0.048,
       "model_win": 0.4,
-      "model_draw": 0.3494,
-      "model_loss": 0.2506,
-      "raw_model_win": 0.4569,
-      "raw_model_draw": 0.2764,
-      "raw_model_loss": 0.2667,
+      "model_draw": 0.3227,
+      "model_loss": 0.2773,
+      "raw_model_win": 0.4609,
+      "raw_model_draw": 0.272,
+      "raw_model_loss": 0.267,
       "open_win_pin": 1.93,
       "open_draw_pin": 3.24,
       "open_loss_pin": 4.03,
       "lgbm_prediction": "home",
       "lgbm_prediction_cn": "主胜",
-      "lgbm_prediction_prob": 0.4989,
+      "lgbm_prediction_prob": 0.5487,
       "prediction": "home",
       "prediction_cn": "主胜",
-      "prediction_prob": 0.4989,
+      "prediction_prob": 0.5487,
       "model_prediction": "draw",
       "model_prediction_cn": "平局",
-      "model_prediction_prob": 0.3494,
+      "model_prediction_prob": 0.3227,
       "draw_boosted": true,
       "draw_confidence": -5,
       "draw_signal": "none",
-      "diff_lgb_poisson": -0.094,
-      "lgbm_win": 0.4989,
-      "lgbm_draw": 0.2554,
-      "lgbm_loss": 0.2457,
+      "diff_lgb_poisson": -0.0926,
+      "lgbm_win": 0.5487,
+      "lgbm_draw": 0.2301,
+      "lgbm_loss": 0.2211,
       "comparison": {
         "open": [
           1.93,
@@ -45292,14 +45292,14 @@
           4.03
         ],
         "current": [
-          2.07,
-          3.34,
-          3.67
+          2.06,
+          3.43,
+          3.69
         ],
         "div_pct": [
-          7.3,
-          3.1,
-          -9.8
+          6.7,
+          5.9,
+          -9.2
         ],
         "source": "pinnacle"
       },
@@ -45314,7 +45314,7 @@
       "away_rank": 0,
       "home_pts": 0,
       "away_pts": 0,
-      "warning": "",
+      "warning": "🚩",
       "stats": {
         "home_recent": [
           {
@@ -45606,15 +45606,15 @@
       "source": "beidan",
       "odds_source": "pinnacle",
       "odds_win": 1.18,
-      "odds_draw": 6.95,
-      "odds_loss": 12.57,
-      "margin": 0.0709,
+      "odds_draw": 7.25,
+      "odds_loss": 12.88,
+      "margin": 0.063,
       "model_win": 0.4,
       "model_draw": 0.21,
       "model_loss": 0.39,
-      "raw_model_win": 0.676,
-      "raw_model_draw": 0.1776,
-      "raw_model_loss": 0.1464,
+      "raw_model_win": 0.6793,
+      "raw_model_draw": 0.1747,
+      "raw_model_loss": 0.146,
       "open_win_pin": 1.23,
       "open_draw_pin": 5.52,
       "open_loss_pin": 9.28,
@@ -45642,13 +45642,13 @@
         ],
         "current": [
           1.18,
-          6.95,
-          12.57
+          7.25,
+          12.88
         ],
         "div_pct": [
           -4.1,
-          25.9,
-          26.2
+          31.3,
+          28.0
         ],
         "source": "pinnacle"
       },
@@ -45659,14 +45659,14 @@
           10.5
         ],
         "current": [
-          1.12,
-          6.2,
-          12.5
+          1.1,
+          6.7,
+          14.0
         ],
         "div_pct": [
-          -3.4,
-          8.8,
-          16.0
+          -5.2,
+          17.5,
+          25.0
         ],
         "source": "hkjc"
       },
@@ -45881,15 +45881,15 @@
       "source": "beidan_jingcai",
       "odds_source": "pinnacle",
       "odds_win": 1.76,
-      "odds_draw": 3.79,
-      "odds_loss": 4.17,
-      "margin": 0.0718,
+      "odds_draw": 3.84,
+      "odds_loss": 4.22,
+      "margin": 0.0656,
       "model_win": 0.4,
-      "model_draw": 0.3064,
-      "model_loss": 0.2936,
-      "raw_model_win": 0.51,
-      "raw_model_draw": 0.2484,
-      "raw_model_loss": 0.2416,
+      "model_draw": 0.2877,
+      "model_loss": 0.3123,
+      "raw_model_win": 0.5122,
+      "raw_model_draw": 0.2471,
+      "raw_model_loss": 0.2407,
       "open_win_pin": 1.79,
       "open_draw_pin": 3.68,
       "open_loss_pin": 3.71,
@@ -45899,13 +45899,13 @@
       "prediction": "home",
       "prediction_cn": "主胜",
       "prediction_prob": 0.5372,
-      "model_prediction": "draw",
-      "model_prediction_cn": "平局",
-      "model_prediction_prob": 0.3064,
+      "model_prediction": "away",
+      "model_prediction_cn": "客胜",
+      "model_prediction_prob": 0.3123,
       "draw_boosted": true,
       "draw_confidence": -5,
       "draw_signal": "none",
-      "diff_lgb_poisson": -0.0619,
+      "diff_lgb_poisson": -0.0432,
       "lgbm_win": 0.5372,
       "lgbm_draw": 0.2445,
       "lgbm_loss": 0.2183,
@@ -45917,13 +45917,13 @@
         ],
         "current": [
           1.76,
-          3.79,
-          4.17
+          3.84,
+          4.22
         ],
         "div_pct": [
           -1.7,
-          3.0,
-          11.0
+          4.3,
+          12.1
         ],
         "source": "pinnacle"
       },
@@ -45934,14 +45934,14 @@
           3.2
         ],
         "current": [
-          1.7,
+          1.69,
           3.5,
-          3.9
+          4.0
         ],
         "div_pct": [
-          -12.8,
+          -13.3,
           6.1,
-          17.9
+          20.0
         ],
         "source": "hkjc"
       },
@@ -46156,15 +46156,15 @@
       "source": "beidan",
       "odds_source": "pinnacle",
       "odds_win": 1.26,
-      "odds_draw": 5.4,
-      "odds_loss": 8.25,
-      "margin": 0.1,
+      "odds_draw": 5.48,
+      "odds_loss": 8.38,
+      "margin": 0.0955,
       "model_win": 0.4,
-      "model_draw": 0.2997,
-      "model_loss": 0.3003,
-      "raw_model_win": 0.6356,
-      "raw_model_draw": 0.1978,
-      "raw_model_loss": 0.1667,
+      "model_draw": 0.2649,
+      "model_loss": 0.3351,
+      "raw_model_win": 0.6374,
+      "raw_model_draw": 0.1966,
+      "raw_model_loss": 0.166,
       "open_win_pin": 1.29,
       "open_draw_pin": 5.06,
       "open_loss_pin": 7.16,
@@ -46176,11 +46176,11 @@
       "prediction_prob": 0.5074,
       "model_prediction": "away",
       "model_prediction_cn": "客胜",
-      "model_prediction_prob": 0.3003,
+      "model_prediction_prob": 0.3351,
       "draw_boosted": true,
-      "draw_confidence": -5,
+      "draw_confidence": -10,
       "draw_signal": "none",
-      "diff_lgb_poisson": -0.0314,
+      "diff_lgb_poisson": 0.0034,
       "lgbm_win": 0.5074,
       "lgbm_draw": 0.2682,
       "lgbm_loss": 0.2244,
@@ -46192,13 +46192,13 @@
         ],
         "current": [
           1.26,
-          5.4,
-          8.25
+          5.48,
+          8.38
         ],
         "div_pct": [
           -2.3,
-          6.7,
-          13.2
+          8.3,
+          14.6
         ],
         "source": "pinnacle"
       },
@@ -46503,35 +46503,35 @@
       "hit": "",
       "source": "beidan",
       "odds_source": "pinnacle",
-      "odds_win": 3.54,
-      "odds_draw": 3.46,
-      "odds_loss": 1.83,
-      "margin": 0.118,
+      "odds_win": 3.39,
+      "odds_draw": 3.52,
+      "odds_loss": 1.85,
+      "margin": 0.1196,
       "model_win": 0.4,
-      "model_draw": 0.2727,
-      "model_loss": 0.3273,
-      "raw_model_win": 0.295,
-      "raw_model_draw": 0.257,
-      "raw_model_loss": 0.448,
+      "model_draw": 0.2891,
+      "model_loss": 0.3109,
+      "raw_model_win": 0.3033,
+      "raw_model_draw": 0.2532,
+      "raw_model_loss": 0.4435,
       "open_win_pin": 5.06,
       "open_draw_pin": 3.72,
       "open_loss_pin": 1.55,
       "lgbm_prediction": "away",
       "lgbm_prediction_cn": "客胜",
-      "lgbm_prediction_prob": 0.4745,
+      "lgbm_prediction_prob": 0.4729,
       "prediction": "away",
       "prediction_cn": "客胜",
-      "prediction_prob": 0.4745,
+      "prediction_prob": 0.4729,
       "model_prediction": "away",
       "model_prediction_cn": "客胜",
-      "model_prediction_prob": 0.3273,
+      "model_prediction_prob": 0.3109,
       "draw_boosted": true,
       "draw_confidence": 5,
       "draw_signal": "none",
-      "diff_lgb_poisson": -0.0265,
-      "lgbm_win": 0.2793,
-      "lgbm_draw": 0.2462,
-      "lgbm_loss": 0.4745,
+      "diff_lgb_poisson": -0.0437,
+      "lgbm_win": 0.2817,
+      "lgbm_draw": 0.2454,
+      "lgbm_loss": 0.4729,
       "comparison": {
         "open": [
           5.06,
@@ -46539,14 +46539,14 @@
           1.55
         ],
         "current": [
-          3.54,
-          3.46,
-          1.83
+          3.39,
+          3.52,
+          1.85
         ],
         "div_pct": [
-          -30.0,
-          -7.0,
-          15.3
+          -33.0,
+          -5.4,
+          16.2
         ],
         "source": "pinnacle"
       },
@@ -46869,16 +46869,16 @@
       "hit": "",
       "source": "beidan",
       "odds_source": "pinnacle",
-      "odds_win": 13.97,
-      "odds_draw": 7.06,
-      "odds_loss": 1.13,
-      "margin": 0.0982,
+      "odds_win": 14.0,
+      "odds_draw": 7.5,
+      "odds_loss": 1.12,
+      "margin": 0.0976,
       "model_win": 0.39,
       "model_draw": 0.21,
       "model_loss": 0.4,
-      "raw_model_win": 0.1732,
-      "raw_model_draw": 0.1747,
-      "raw_model_loss": 0.652,
+      "raw_model_win": 0.1738,
+      "raw_model_draw": 0.17,
+      "raw_model_loss": 0.6562,
       "open_win_pin": 6.08,
       "open_draw_pin": 4.39,
       "open_loss_pin": 1.41,
@@ -46905,14 +46905,14 @@
           1.41
         ],
         "current": [
-          13.97,
-          7.06,
-          1.13
+          14.0,
+          7.5,
+          1.12
         ],
         "div_pct": [
-          129.8,
-          60.8,
-          -24.8
+          130.3,
+          70.8,
+          -25.9
         ],
         "source": "pinnacle"
       },
@@ -46923,13 +46923,13 @@
           1.09
         ],
         "current": [
-          16.0,
-          6.8,
+          15.0,
+          7.0,
           1.09
         ],
         "div_pct": [
-          0.0,
-          0.0,
+          -6.2,
+          2.9,
           0.0
         ],
         "source": "hkjc"
@@ -47144,35 +47144,35 @@
       "hit": "",
       "source": "beidan",
       "odds_source": "pinnacle",
-      "odds_win": 2.32,
-      "odds_draw": 3.13,
-      "odds_loss": 3.28,
+      "odds_win": 2.35,
+      "odds_draw": 2.92,
+      "odds_loss": 3.48,
       "margin": 0.0554,
-      "model_win": 0.2859,
-      "model_draw": 0.3141,
-      "model_loss": 0.4,
-      "raw_model_win": 0.4075,
-      "raw_model_draw": 0.3206,
-      "raw_model_loss": 0.2719,
+      "model_win": 0.2717,
+      "model_draw": 0.4077,
+      "model_loss": 0.3206,
+      "raw_model_win": 0.4035,
+      "raw_model_draw": 0.3381,
+      "raw_model_loss": 0.2584,
       "open_win_pin": 1.93,
       "open_draw_pin": 3.43,
       "open_loss_pin": 3.7,
-      "lgbm_prediction": "home",
-      "lgbm_prediction_cn": "主胜",
-      "lgbm_prediction_prob": 0.4467,
-      "prediction": "home",
-      "prediction_cn": "主胜",
-      "prediction_prob": 0.4467,
-      "model_prediction": "draw",
-      "model_prediction_cn": "平局",
-      "model_prediction_prob": 0.3141,
+      "lgbm_prediction": "draw",
+      "lgbm_prediction_cn": "平局",
+      "lgbm_prediction_prob": 0.3951,
+      "prediction": "draw",
+      "prediction_cn": "平局",
+      "prediction_prob": 0.3951,
+      "model_prediction": "away",
+      "model_prediction_cn": "客胜",
+      "model_prediction_prob": 0.3206,
       "draw_boosted": true,
-      "draw_confidence": 20,
-      "draw_signal": "none",
-      "diff_lgb_poisson": -0.0021,
-      "lgbm_win": 0.4467,
-      "lgbm_draw": 0.312,
-      "lgbm_loss": 0.2413,
+      "draw_confidence": 40,
+      "draw_signal": "moderate",
+      "diff_lgb_poisson": -0.0049,
+      "lgbm_win": 0.3866,
+      "lgbm_draw": 0.3951,
+      "lgbm_loss": 0.2183,
       "comparison": {
         "open": [
           1.93,
@@ -47180,14 +47180,14 @@
           3.7
         ],
         "current": [
-          2.32,
-          3.13,
-          3.28
+          2.35,
+          2.92,
+          3.48
         ],
         "div_pct": [
-          20.2,
-          -8.7,
-          -12.8
+          21.8,
+          -14.9,
+          -6.3
         ],
         "source": "pinnacle"
       },
@@ -47419,35 +47419,35 @@
       "hit": "",
       "source": "beidan_jingcai",
       "odds_source": "pinnacle",
-      "odds_win": 2.15,
-      "odds_draw": 3.37,
-      "odds_loss": 3.61,
-      "margin": 0.0389,
+      "odds_win": 2.09,
+      "odds_draw": 3.44,
+      "odds_loss": 3.7,
+      "margin": 0.0394,
       "model_win": 0.4,
-      "model_draw": 0.2681,
-      "model_loss": 0.3319,
-      "raw_model_win": 0.4754,
-      "raw_model_draw": 0.2605,
-      "raw_model_loss": 0.2641,
+      "model_draw": 0.2823,
+      "model_loss": 0.3177,
+      "raw_model_win": 0.485,
+      "raw_model_draw": 0.2559,
+      "raw_model_loss": 0.2591,
       "open_win_pin": 2.07,
       "open_draw_pin": 3.4,
       "open_loss_pin": 3.53,
       "lgbm_prediction": "home",
       "lgbm_prediction_cn": "主胜",
-      "lgbm_prediction_prob": 0.5536,
+      "lgbm_prediction_prob": 0.5641,
       "prediction": "home",
       "prediction_cn": "主胜",
-      "prediction_prob": 0.5536,
+      "prediction_prob": 0.5641,
       "model_prediction": "away",
       "model_prediction_cn": "客胜",
-      "model_prediction_prob": 0.3319,
+      "model_prediction_prob": 0.3177,
       "draw_boosted": true,
-      "draw_confidence": 5,
+      "draw_confidence": -5,
       "draw_signal": "none",
-      "diff_lgb_poisson": -0.0337,
-      "lgbm_win": 0.5536,
-      "lgbm_draw": 0.2344,
-      "lgbm_loss": 0.212,
+      "diff_lgb_poisson": -0.0525,
+      "lgbm_win": 0.5641,
+      "lgbm_draw": 0.2298,
+      "lgbm_loss": 0.2061,
       "comparison": {
         "open": [
           2.07,
@@ -47455,14 +47455,14 @@
           3.53
         ],
         "current": [
-          2.15,
-          3.37,
-          3.61
+          2.09,
+          3.44,
+          3.7
         ],
         "div_pct": [
-          3.9,
-          -0.9,
-          2.2
+          1.0,
+          1.2,
+          4.6
         ],
         "source": "pinnacle"
       },
@@ -47785,35 +47785,35 @@
       "hit": "",
       "source": "beidan",
       "odds_source": "pinnacle",
-      "odds_win": 2.17,
-      "odds_draw": 3.22,
-      "odds_loss": 3.66,
-      "margin": 0.0446,
+      "odds_win": 2.19,
+      "odds_draw": 3.19,
+      "odds_loss": 3.63,
+      "margin": 0.0456,
       "model_win": 0.4,
-      "model_draw": 0.3378,
-      "model_loss": 0.2622,
-      "raw_model_win": 0.4392,
-      "raw_model_draw": 0.2822,
-      "raw_model_loss": 0.2787,
+      "model_draw": 0.3096,
+      "model_loss": 0.2904,
+      "raw_model_win": 0.4358,
+      "raw_model_draw": 0.2841,
+      "raw_model_loss": 0.2801,
       "open_win_pin": 2.23,
       "open_draw_pin": 3.12,
       "open_loss_pin": 3.37,
       "lgbm_prediction": "home",
       "lgbm_prediction_cn": "主胜",
-      "lgbm_prediction_prob": 0.4919,
+      "lgbm_prediction_prob": 0.4995,
       "prediction": "home",
       "prediction_cn": "主胜",
-      "prediction_prob": 0.4919,
+      "prediction_prob": 0.4995,
       "model_prediction": "draw",
       "model_prediction_cn": "平局",
-      "model_prediction_prob": 0.3378,
+      "model_prediction_prob": 0.3096,
       "draw_boosted": true,
       "draw_confidence": -5,
       "draw_signal": "none",
-      "diff_lgb_poisson": -0.0818,
-      "lgbm_win": 0.4919,
-      "lgbm_draw": 0.256,
-      "lgbm_loss": 0.2522,
+      "diff_lgb_poisson": -0.0549,
+      "lgbm_win": 0.4995,
+      "lgbm_draw": 0.2547,
+      "lgbm_loss": 0.2457,
       "comparison": {
         "open": [
           2.23,
@@ -47821,14 +47821,14 @@
           3.37
         ],
         "current": [
-          2.17,
-          3.22,
-          3.66
+          2.19,
+          3.19,
+          3.63
         ],
         "div_pct": [
-          -2.7,
-          3.2,
-          7.9
+          -1.8,
+          2.2,
+          7.2
         ],
         "source": "pinnacle"
       },
@@ -48151,35 +48151,35 @@
       "hit": "",
       "source": "beidan",
       "odds_source": "pinnacle",
-      "odds_win": 2.27,
-      "odds_draw": 3.08,
-      "odds_loss": 3.58,
-      "margin": 0.0445,
+      "odds_win": 2.28,
+      "odds_draw": 3.05,
+      "odds_loss": 3.59,
+      "margin": 0.045,
       "model_win": 0.4,
-      "model_draw": 0.2871,
-      "model_loss": 0.3129,
-      "raw_model_win": 0.4242,
-      "raw_model_draw": 0.2928,
-      "raw_model_loss": 0.283,
+      "model_draw": 0.2793,
+      "model_loss": 0.3207,
+      "raw_model_win": 0.4226,
+      "raw_model_draw": 0.2952,
+      "raw_model_loss": 0.2822,
       "open_win_pin": 2.15,
       "open_draw_pin": 3.14,
       "open_loss_pin": 3.53,
       "lgbm_prediction": "home",
       "lgbm_prediction_cn": "主胜",
-      "lgbm_prediction_prob": 0.4657,
+      "lgbm_prediction_prob": 0.4689,
       "prediction": "home",
       "prediction_cn": "主胜",
-      "prediction_prob": 0.4657,
+      "prediction_prob": 0.4689,
       "model_prediction": "away",
       "model_prediction_cn": "客胜",
-      "model_prediction_prob": 0.3129,
+      "model_prediction_prob": 0.3207,
       "draw_boosted": true,
       "draw_confidence": 5,
       "draw_signal": "none",
-      "diff_lgb_poisson": -0.0125,
-      "lgbm_win": 0.4657,
-      "lgbm_draw": 0.2745,
-      "lgbm_loss": 0.2598,
+      "diff_lgb_poisson": -0.0097,
+      "lgbm_win": 0.4689,
+      "lgbm_draw": 0.2696,
+      "lgbm_loss": 0.2615,
       "comparison": {
         "open": [
           2.15,
@@ -48187,14 +48187,14 @@
           3.53
         ],
         "current": [
-          2.27,
-          3.08,
-          3.58
+          2.28,
+          3.05,
+          3.59
         ],
         "div_pct": [
-          5.6,
-          -1.9,
-          1.4
+          6.0,
+          -2.9,
+          1.7
         ],
         "source": "pinnacle"
       },
@@ -48774,35 +48774,35 @@
       "hit": "",
       "source": "beidan",
       "odds_source": "pinnacle",
-      "odds_win": 2.46,
-      "odds_draw": 3.05,
-      "odds_loss": 3.22,
-      "margin": 0.0449,
+      "odds_win": 2.54,
+      "odds_draw": 2.9,
+      "odds_loss": 3.27,
+      "margin": 0.0443,
       "model_win": 0.4,
-      "model_draw": 0.3065,
-      "model_loss": 0.2935,
-      "raw_model_win": 0.3985,
-      "raw_model_draw": 0.295,
-      "raw_model_loss": 0.3065,
+      "model_draw": 0.2738,
+      "model_loss": 0.3262,
+      "raw_model_win": 0.3888,
+      "raw_model_draw": 0.3083,
+      "raw_model_loss": 0.3028,
       "open_win_pin": 2.43,
       "open_draw_pin": 3.05,
       "open_loss_pin": 3.07,
       "lgbm_prediction": "home",
       "lgbm_prediction_cn": "主胜",
-      "lgbm_prediction_prob": 0.458,
+      "lgbm_prediction_prob": 0.442,
       "prediction": "home",
       "prediction_cn": "主胜",
-      "prediction_prob": 0.458,
-      "model_prediction": "draw",
-      "model_prediction_cn": "平局",
-      "model_prediction_prob": 0.3065,
+      "prediction_prob": 0.442,
+      "model_prediction": "away",
+      "model_prediction_cn": "客胜",
+      "model_prediction_prob": 0.3262,
       "draw_boosted": true,
-      "draw_confidence": -5,
+      "draw_confidence": 10,
       "draw_signal": "none",
-      "diff_lgb_poisson": -0.044,
-      "lgbm_win": 0.458,
-      "lgbm_draw": 0.2626,
-      "lgbm_loss": 0.2794,
+      "diff_lgb_poisson": 0.0094,
+      "lgbm_win": 0.442,
+      "lgbm_draw": 0.2832,
+      "lgbm_loss": 0.2749,
       "comparison": {
         "open": [
           2.43,
@@ -48810,14 +48810,14 @@
           3.07
         ],
         "current": [
-          2.46,
-          3.05,
-          3.22
+          2.54,
+          2.9,
+          3.27
         ],
         "div_pct": [
-          1.2,
-          0.0,
-          4.7
+          4.5,
+          -4.9,
+          6.1
         ],
         "source": "pinnacle"
       },
@@ -49122,35 +49122,35 @@
       "hit": "",
       "source": "beidan",
       "odds_source": "pinnacle",
-      "odds_win": 1.32,
-      "odds_draw": 5.78,
-      "odds_loss": 8.67,
-      "margin": 0.0459,
+      "odds_win": 1.34,
+      "odds_draw": 5.64,
+      "odds_loss": 8.1,
+      "margin": 0.047,
       "model_win": 0.4,
-      "model_draw": 0.3109,
-      "model_loss": 0.2891,
-      "raw_model_win": 0.6373,
-      "raw_model_draw": 0.1958,
-      "raw_model_loss": 0.1669,
+      "model_draw": 0.2975,
+      "model_loss": 0.3025,
+      "raw_model_win": 0.6303,
+      "raw_model_draw": 0.198,
+      "raw_model_loss": 0.1717,
       "open_win_pin": 1.26,
       "open_draw_pin": 5.76,
       "open_loss_pin": 9.47,
       "lgbm_prediction": "home",
       "lgbm_prediction_cn": "主胜",
-      "lgbm_prediction_prob": 0.4687,
+      "lgbm_prediction_prob": 0.4682,
       "prediction": "home",
       "prediction_cn": "主胜",
-      "prediction_prob": 0.4687,
-      "model_prediction": "draw",
-      "model_prediction_cn": "平局",
-      "model_prediction_prob": 0.3109,
+      "prediction_prob": 0.4682,
+      "model_prediction": "away",
+      "model_prediction_cn": "客胜",
+      "model_prediction_prob": 0.3025,
       "draw_boosted": true,
-      "draw_confidence": 0,
+      "draw_confidence": 10,
       "draw_signal": "none",
-      "diff_lgb_poisson": -0.0277,
-      "lgbm_win": 0.4687,
-      "lgbm_draw": 0.2832,
-      "lgbm_loss": 0.2481,
+      "diff_lgb_poisson": -0.0146,
+      "lgbm_win": 0.4682,
+      "lgbm_draw": 0.2829,
+      "lgbm_loss": 0.2489,
       "comparison": {
         "open": [
           1.26,
@@ -49158,14 +49158,14 @@
           9.47
         ],
         "current": [
-          1.32,
-          5.78,
-          8.67
+          1.34,
+          5.64,
+          8.1
         ],
         "div_pct": [
-          4.8,
-          0.3,
-          -9.2
+          6.3,
+          -2.1,
+          -16.9
         ],
         "source": "pinnacle"
       },
@@ -56529,35 +56529,35 @@
       "hit": "",
       "source": "hkjc",
       "odds_source": "pinnacle",
-      "odds_win": 1.58,
-      "odds_draw": 4.41,
-      "odds_loss": 4.29,
-      "margin": 0.0928,
+      "odds_win": 1.59,
+      "odds_draw": 4.32,
+      "odds_loss": 4.31,
+      "margin": 0.0924,
       "model_win": 0.4,
       "model_draw": 0.21,
       "model_loss": 0.39,
-      "raw_model_win": 0.5442,
-      "raw_model_draw": 0.2204,
-      "raw_model_loss": 0.2353,
+      "raw_model_win": 0.5419,
+      "raw_model_draw": 0.2236,
+      "raw_model_loss": 0.2345,
       "open_win_pin": 1.55,
       "open_draw_pin": 3.81,
       "open_loss_pin": 4.9,
       "lgbm_prediction": "home",
       "lgbm_prediction_cn": "主胜",
-      "lgbm_prediction_prob": 0.5253,
+      "lgbm_prediction_prob": 0.5246,
       "prediction": "home",
       "prediction_cn": "主胜",
-      "prediction_prob": 0.5253,
+      "prediction_prob": 0.5246,
       "model_prediction": "away",
       "model_prediction_cn": "客胜",
       "model_prediction_prob": 0.39,
       "draw_boosted": true,
       "draw_confidence": -2,
       "draw_signal": "none",
-      "diff_lgb_poisson": 0.0423,
-      "lgbm_win": 0.5253,
-      "lgbm_draw": 0.2523,
-      "lgbm_loss": 0.2224,
+      "diff_lgb_poisson": 0.0433,
+      "lgbm_win": 0.5246,
+      "lgbm_draw": 0.2533,
+      "lgbm_loss": 0.2221,
       "comparison": {
         "open": [
           1.55,
@@ -56565,14 +56565,14 @@
           4.9
         ],
         "current": [
-          1.58,
-          4.41,
-          4.29
+          1.59,
+          4.32,
+          4.31
         ],
         "div_pct": [
-          1.9,
-          15.7,
-          -14.2
+          2.6,
+          13.4,
+          -13.7
         ],
         "source": "pinnacle"
       },
@@ -57243,14 +57243,14 @@
           2.11
         ],
         "current": [
-          2.65,
-          3.55,
-          2.11
+          2.66,
+          3.5,
+          2.12
         ],
         "div_pct": [
-          0.0,
-          0.0,
-          0.0
+          0.4,
+          -1.4,
+          0.5
         ],
         "source": "hkjc"
       },
@@ -57555,16 +57555,16 @@
       "hit": "",
       "source": "hkjc",
       "odds_source": "pinnacle",
-      "odds_win": 9.78,
-      "odds_draw": 5.66,
+      "odds_win": 9.82,
+      "odds_draw": 5.69,
       "odds_loss": 1.22,
-      "margin": 0.0986,
-      "model_win": 0.3727,
-      "model_draw": 0.2273,
+      "margin": 0.0973,
+      "model_win": 0.3731,
+      "model_draw": 0.2269,
       "model_loss": 0.4,
-      "raw_model_win": 0.1882,
-      "raw_model_draw": 0.1936,
-      "raw_model_loss": 0.6181,
+      "raw_model_win": 0.1881,
+      "raw_model_draw": 0.1932,
+      "raw_model_loss": 0.6187,
       "open_win_pin": 7.55,
       "open_draw_pin": 4.95,
       "open_loss_pin": 1.29,
@@ -57576,11 +57576,11 @@
       "prediction_prob": 0.4874,
       "model_prediction": "home",
       "model_prediction_cn": "主胜",
-      "model_prediction_prob": 0.3727,
+      "model_prediction_prob": 0.3731,
       "draw_boosted": true,
       "draw_confidence": -7,
       "draw_signal": "none",
-      "diff_lgb_poisson": 0.0312,
+      "diff_lgb_poisson": 0.0317,
       "lgbm_win": 0.254,
       "lgbm_draw": 0.2586,
       "lgbm_loss": 0.4874,
@@ -57591,13 +57591,13 @@
           1.29
         ],
         "current": [
-          9.78,
-          5.66,
+          9.82,
+          5.69,
           1.22
         ],
         "div_pct": [
-          29.5,
-          14.3,
+          30.1,
+          14.9,
           -5.7
         ],
         "source": "pinnacle"
@@ -57915,41 +57915,41 @@
       "date": "2026-07-22",
       "match_time": "2026-07-22 02:45",
       "event": "SCO LC",
-      "home_team": "基马诺克",
+      "home_team": "基马诺克(中)",
       "away_team": "哈密尔顿",
       "score": "",
       "hit": "",
       "source": "hkjc",
       "odds_source": "pinnacle",
-      "odds_win": 1.26,
-      "odds_draw": 5.55,
-      "odds_loss": 7.97,
-      "margin": 0.0993,
+      "odds_win": 1.27,
+      "odds_draw": 5.52,
+      "odds_loss": 7.93,
+      "margin": 0.0947,
       "model_win": 0.4,
-      "model_draw": 0.2814,
-      "model_loss": 0.3186,
-      "raw_model_win": 0.6359,
-      "raw_model_draw": 0.1946,
-      "raw_model_loss": 0.1695,
+      "model_draw": 0.297,
+      "model_loss": 0.303,
+      "raw_model_win": 0.6343,
+      "raw_model_draw": 0.1956,
+      "raw_model_loss": 0.1701,
       "open_win_pin": 1.25,
       "open_draw_pin": 5.33,
       "open_loss_pin": 7.53,
       "lgbm_prediction": "home",
       "lgbm_prediction_cn": "主胜",
-      "lgbm_prediction_prob": 0.5061,
+      "lgbm_prediction_prob": 0.5074,
       "prediction": "home",
       "prediction_cn": "主胜",
-      "prediction_prob": 0.5061,
+      "prediction_prob": 0.5074,
       "model_prediction": "away",
       "model_prediction_cn": "客胜",
-      "model_prediction_prob": 0.3186,
+      "model_prediction_prob": 0.303,
       "draw_boosted": true,
       "draw_confidence": -5,
       "draw_signal": "none",
-      "diff_lgb_poisson": -0.0113,
-      "lgbm_win": 0.5061,
-      "lgbm_draw": 0.2701,
-      "lgbm_loss": 0.2238,
+      "diff_lgb_poisson": -0.0288,
+      "lgbm_win": 0.5074,
+      "lgbm_draw": 0.2682,
+      "lgbm_loss": 0.2244,
       "comparison": {
         "open": [
           1.25,
@@ -57957,14 +57957,14 @@
           7.53
         ],
         "current": [
-          1.26,
-          5.55,
-          7.97
+          1.27,
+          5.52,
+          7.93
         ],
         "div_pct": [
-          0.8,
-          4.1,
-          5.5
+          1.6,
+          3.6,
+          5.0
         ],
         "source": "pinnacle"
       },
@@ -57975,14 +57975,14 @@
           10.0
         ],
         "current": [
-          1.16,
-          5.8,
-          10.0
+          1.18,
+          5.5,
+          9.25
         ],
         "div_pct": [
-          0.0,
-          0.0,
-          0.0
+          1.7,
+          -5.2,
+          -8.1
         ],
         "source": "hkjc"
       },
@@ -58288,15 +58288,15 @@
       "source": "hkjc",
       "odds_source": "pinnacle",
       "odds_win": 1.25,
-      "odds_draw": 5.47,
-      "odds_loss": 8.94,
-      "margin": 0.0947,
+      "odds_draw": 5.48,
+      "odds_loss": 8.96,
+      "margin": 0.0941,
       "model_win": 0.4,
-      "model_draw": 0.296,
-      "model_loss": 0.304,
-      "raw_model_win": 0.6411,
-      "raw_model_draw": 0.1973,
-      "raw_model_loss": 0.1616,
+      "model_draw": 0.2972,
+      "model_loss": 0.3028,
+      "raw_model_win": 0.6414,
+      "raw_model_draw": 0.1971,
+      "raw_model_loss": 0.1615,
       "open_win_pin": 1.21,
       "open_draw_pin": 5.48,
       "open_loss_pin": 9.27,
@@ -58308,11 +58308,11 @@
       "prediction_prob": 0.4632,
       "model_prediction": "away",
       "model_prediction_cn": "客胜",
-      "model_prediction_prob": 0.304,
+      "model_prediction_prob": 0.3028,
       "draw_boosted": true,
-      "draw_confidence": 10,
+      "draw_confidence": 0,
       "draw_signal": "none",
-      "diff_lgb_poisson": -0.0015,
+      "diff_lgb_poisson": -0.0027,
       "lgbm_win": 0.4632,
       "lgbm_draw": 0.2945,
       "lgbm_loss": 0.2423,
@@ -58324,13 +58324,13 @@
         ],
         "current": [
           1.25,
-          5.47,
-          8.94
+          5.48,
+          8.96
         ],
         "div_pct": [
           3.3,
-          -0.2,
-          -3.7
+          0.0,
+          -3.5
         ],
         "source": "pinnacle"
       },
@@ -58653,35 +58653,35 @@
       "hit": "",
       "source": "hkjc",
       "odds_source": "pinnacle",
-      "odds_win": 1.6,
-      "odds_draw": 4.24,
-      "odds_loss": 5.17,
-      "margin": 0.0543,
+      "odds_win": 1.65,
+      "odds_draw": 4.22,
+      "odds_loss": 5.02,
+      "margin": 0.0422,
       "model_win": 0.4,
-      "model_draw": 0.3038,
-      "model_loss": 0.2962,
-      "raw_model_win": 0.5535,
-      "raw_model_draw": 0.2331,
-      "raw_model_loss": 0.2133,
+      "model_draw": 0.2889,
+      "model_loss": 0.3111,
+      "raw_model_win": 0.5458,
+      "raw_model_draw": 0.2355,
+      "raw_model_loss": 0.2186,
       "open_win_pin": 1.65,
       "open_draw_pin": 4.13,
       "open_loss_pin": 4.55,
       "lgbm_prediction": "home",
       "lgbm_prediction_cn": "主胜",
-      "lgbm_prediction_prob": 0.5359,
+      "lgbm_prediction_prob": 0.5306,
       "prediction": "home",
       "prediction_cn": "主胜",
-      "prediction_prob": 0.5359,
-      "model_prediction": "draw",
-      "model_prediction_cn": "平局",
-      "model_prediction_prob": 0.3038,
+      "prediction_prob": 0.5306,
+      "model_prediction": "away",
+      "model_prediction_cn": "客胜",
+      "model_prediction_prob": 0.3111,
       "draw_boosted": true,
       "draw_confidence": -5,
       "draw_signal": "none",
-      "diff_lgb_poisson": -0.0565,
-      "lgbm_win": 0.5359,
-      "lgbm_draw": 0.2473,
-      "lgbm_loss": 0.2168,
+      "diff_lgb_poisson": -0.0392,
+      "lgbm_win": 0.5306,
+      "lgbm_draw": 0.2497,
+      "lgbm_loss": 0.2197,
       "comparison": {
         "open": [
           1.65,
@@ -58689,14 +58689,14 @@
           4.55
         ],
         "current": [
-          1.6,
-          4.24,
-          5.17
+          1.65,
+          4.22,
+          5.02
         ],
         "div_pct": [
-          -3.0,
-          2.7,
-          12.0
+          0.0,
+          2.2,
+          9.4
         ],
         "source": "pinnacle"
       },
@@ -59019,35 +59019,35 @@
       "hit": "",
       "source": "hkjc",
       "odds_source": "pinnacle",
-      "odds_win": 3.45,
-      "odds_draw": 3.68,
-      "odds_loss": 1.96,
-      "margin": 0.0718,
-      "model_win": 0.3582,
-      "model_draw": 0.2418,
+      "odds_win": 3.52,
+      "odds_draw": 3.76,
+      "odds_loss": 1.94,
+      "margin": 0.0655,
+      "model_win": 0.3289,
+      "model_draw": 0.2711,
       "model_loss": 0.4,
-      "raw_model_win": 0.3086,
-      "raw_model_draw": 0.2528,
-      "raw_model_loss": 0.4385,
+      "raw_model_win": 0.3058,
+      "raw_model_draw": 0.2499,
+      "raw_model_loss": 0.4443,
       "open_win_pin": 2.99,
       "open_draw_pin": 3.92,
       "open_loss_pin": 1.96,
       "lgbm_prediction": "away",
       "lgbm_prediction_cn": "客胜",
-      "lgbm_prediction_prob": 0.4773,
+      "lgbm_prediction_prob": 0.4799,
       "prediction": "away",
       "prediction_cn": "客胜",
-      "prediction_prob": 0.4773,
+      "prediction_prob": 0.4799,
       "model_prediction": "home",
       "model_prediction_cn": "主胜",
-      "model_prediction_prob": 0.3582,
+      "model_prediction_prob": 0.3289,
       "draw_boosted": true,
       "draw_confidence": 5,
       "draw_signal": "none",
-      "diff_lgb_poisson": 0.0024,
-      "lgbm_win": 0.2785,
-      "lgbm_draw": 0.2442,
-      "lgbm_loss": 0.4773,
+      "diff_lgb_poisson": -0.0265,
+      "lgbm_win": 0.2755,
+      "lgbm_draw": 0.2446,
+      "lgbm_loss": 0.4799,
       "comparison": {
         "open": [
           2.99,
@@ -59055,14 +59055,14 @@
           1.96
         ],
         "current": [
-          3.45,
-          3.68,
-          1.96
+          3.52,
+          3.76,
+          1.94
         ],
         "div_pct": [
-          15.4,
-          -6.1,
-          0.0
+          17.7,
+          -4.1,
+          -1.0
         ],
         "source": "pinnacle"
       },
@@ -59294,35 +59294,35 @@
       "hit": "",
       "source": "hkjc",
       "odds_source": "pinnacle",
-      "odds_win": 3.65,
-      "odds_draw": 4.25,
+      "odds_win": 3.77,
+      "odds_draw": 4.41,
       "odds_loss": 1.7,
-      "margin": 0.0975,
+      "margin": 0.0802,
       "model_win": 0.39,
       "model_draw": 0.21,
       "model_loss": 0.4,
-      "raw_model_win": 0.2938,
-      "raw_model_draw": 0.2241,
-      "raw_model_loss": 0.4821,
+      "raw_model_win": 0.2908,
+      "raw_model_draw": 0.221,
+      "raw_model_loss": 0.4882,
       "open_win_pin": 4.17,
       "open_draw_pin": 3.87,
       "open_loss_pin": 1.68,
       "lgbm_prediction": "away",
       "lgbm_prediction_cn": "客胜",
-      "lgbm_prediction_prob": 0.4779,
+      "lgbm_prediction_prob": 0.482,
       "prediction": "away",
       "prediction_cn": "客胜",
-      "prediction_prob": 0.4779,
+      "prediction_prob": 0.482,
       "model_prediction": "home",
       "model_prediction_cn": "主胜",
       "model_prediction_prob": 0.39,
       "draw_boosted": true,
-      "draw_confidence": -7,
+      "draw_confidence": -2,
       "draw_signal": "none",
-      "diff_lgb_poisson": 0.0378,
-      "lgbm_win": 0.2744,
-      "lgbm_draw": 0.2478,
-      "lgbm_loss": 0.4779,
+      "diff_lgb_poisson": 0.0525,
+      "lgbm_win": 0.2555,
+      "lgbm_draw": 0.2625,
+      "lgbm_loss": 0.482,
       "comparison": {
         "open": [
           4.17,
@@ -59330,13 +59330,13 @@
           1.68
         ],
         "current": [
-          3.65,
-          4.25,
+          3.77,
+          4.41,
           1.7
         ],
         "div_pct": [
-          -12.5,
-          9.8,
+          -9.6,
+          14.0,
           1.2
         ],
         "source": "pinnacle"
@@ -59348,14 +59348,14 @@
           1.46
         ],
         "current": [
-          4.4,
-          4.1,
-          1.51
+          4.25,
+          4.05,
+          1.53
         ],
         "div_pct": [
-          -6.4,
-          -2.4,
-          3.3
+          -9.6,
+          -3.6,
+          4.6
         ],
         "source": "hkjc"
       },
@@ -59569,16 +59569,16 @@
       "hit": "",
       "source": "hkjc",
       "odds_source": "pinnacle",
-      "odds_win": 8.62,
-      "odds_draw": 6.61,
-      "odds_loss": 1.2,
-      "margin": 0.1006,
-      "model_win": 0.3624,
-      "model_draw": 0.2376,
+      "odds_win": 9.01,
+      "odds_draw": 6.71,
+      "odds_loss": 1.22,
+      "margin": 0.0797,
+      "model_win": 0.3183,
+      "model_draw": 0.2817,
       "model_loss": 0.4,
-      "raw_model_win": 0.1977,
-      "raw_model_draw": 0.1777,
-      "raw_model_loss": 0.6246,
+      "raw_model_win": 0.196,
+      "raw_model_draw": 0.1783,
+      "raw_model_loss": 0.6257,
       "open_win_pin": 13.37,
       "open_draw_pin": 8.36,
       "open_loss_pin": 1.12,
@@ -59590,11 +59590,11 @@
       "prediction_prob": 0.4765,
       "model_prediction": "home",
       "model_prediction_cn": "主胜",
-      "model_prediction_prob": 0.3624,
+      "model_prediction_prob": 0.3183,
       "draw_boosted": true,
-      "draw_confidence": 8,
+      "draw_confidence": 5,
       "draw_signal": "none",
-      "diff_lgb_poisson": 0.0208,
+      "diff_lgb_poisson": -0.0233,
       "lgbm_win": 0.2651,
       "lgbm_draw": 0.2584,
       "lgbm_loss": 0.4765,
@@ -59605,14 +59605,14 @@
           1.12
         ],
         "current": [
-          8.62,
-          6.61,
-          1.2
+          9.01,
+          6.71,
+          1.22
         ],
         "div_pct": [
-          -35.5,
-          -20.9,
-          6.7
+          -32.6,
+          -19.7,
+          8.2
         ],
         "source": "pinnacle"
       },
@@ -59623,14 +59623,14 @@
           1.05
         ],
         "current": [
-          14.5,
-          7.5,
-          1.08
+          12.0,
+          7.25,
+          1.1
         ],
         "div_pct": [
-          -34.1,
-          -13.8,
-          2.8
+          -45.5,
+          -16.7,
+          4.5
         ],
         "source": "hkjc"
       },
@@ -59844,35 +59844,35 @@
       "hit": "",
       "source": "hkjc",
       "odds_source": "pinnacle",
-      "odds_win": 2.71,
-      "odds_draw": 4.1,
-      "odds_loss": 1.79,
-      "margin": 0.1716,
+      "odds_win": 2.85,
+      "odds_draw": 4.16,
+      "odds_loss": 1.78,
+      "margin": 0.1531,
       "model_win": 0.4,
-      "model_draw": 0.2654,
-      "model_loss": 0.3346,
-      "raw_model_win": 0.3437,
-      "raw_model_draw": 0.2172,
-      "raw_model_loss": 0.4391,
+      "model_draw": 0.2804,
+      "model_loss": 0.3196,
+      "raw_model_win": 0.3354,
+      "raw_model_draw": 0.2178,
+      "raw_model_loss": 0.4468,
       "open_win_pin": 5.02,
       "open_draw_pin": 4.29,
       "open_loss_pin": 1.52,
       "lgbm_prediction": "away",
       "lgbm_prediction_cn": "客胜",
-      "lgbm_prediction_prob": 0.4593,
+      "lgbm_prediction_prob": 0.4609,
       "prediction": "away",
       "prediction_cn": "客胜",
-      "prediction_prob": 0.4593,
+      "prediction_prob": 0.4609,
       "model_prediction": "away",
       "model_prediction_cn": "客胜",
-      "model_prediction_prob": 0.3346,
+      "model_prediction_prob": 0.3196,
       "draw_boosted": true,
       "draw_confidence": 5,
       "draw_signal": "none",
-      "diff_lgb_poisson": -0.0316,
-      "lgbm_win": 0.3068,
-      "lgbm_draw": 0.2339,
-      "lgbm_loss": 0.4593,
+      "diff_lgb_poisson": -0.0545,
+      "lgbm_win": 0.3132,
+      "lgbm_draw": 0.2259,
+      "lgbm_loss": 0.4609,
       "comparison": {
         "open": [
           5.02,
@@ -59880,14 +59880,14 @@
           1.52
         ],
         "current": [
-          2.71,
-          4.1,
-          1.79
+          2.85,
+          4.16,
+          1.78
         ],
         "div_pct": [
-          -46.0,
-          -4.4,
-          15.1
+          -43.2,
+          -3.0,
+          14.6
         ],
         "source": "pinnacle"
       },
@@ -59919,7 +59919,7 @@
       "away_rank": 0,
       "home_pts": 0,
       "away_pts": 0,
-      "warning": "⚠️",
+      "warning": "",
       "stats": {
         "home_recent": [
           {
@@ -60129,35 +60129,35 @@
       "hit": "",
       "source": "hkjc",
       "odds_source": "pinnacle",
-      "odds_win": 9.24,
-      "odds_draw": 6.96,
-      "odds_loss": 1.19,
-      "margin": 0.0922,
-      "model_win": 0.3674,
-      "model_draw": 0.2326,
+      "odds_win": 10.02,
+      "odds_draw": 7.35,
+      "odds_loss": 1.17,
+      "margin": 0.0906,
+      "model_win": 0.39,
+      "model_draw": 0.21,
       "model_loss": 0.4,
-      "raw_model_win": 0.1941,
-      "raw_model_draw": 0.1743,
-      "raw_model_loss": 0.6316,
+      "raw_model_win": 0.1898,
+      "raw_model_draw": 0.1704,
+      "raw_model_loss": 0.6397,
       "open_win_pin": 12.18,
       "open_draw_pin": 8.13,
       "open_loss_pin": 1.13,
       "lgbm_prediction": "away",
       "lgbm_prediction_cn": "客胜",
-      "lgbm_prediction_prob": 0.4754,
+      "lgbm_prediction_prob": 0.4753,
       "prediction": "away",
       "prediction_cn": "客胜",
-      "prediction_prob": 0.4754,
+      "prediction_prob": 0.4753,
       "model_prediction": "home",
       "model_prediction_cn": "主胜",
-      "model_prediction_prob": 0.3674,
+      "model_prediction_prob": 0.39,
       "draw_boosted": true,
-      "draw_confidence": 8,
+      "draw_confidence": 13,
       "draw_signal": "none",
-      "diff_lgb_poisson": 0.031,
-      "lgbm_win": 0.2611,
-      "lgbm_draw": 0.2636,
-      "lgbm_loss": 0.4754,
+      "diff_lgb_poisson": 0.0559,
+      "lgbm_win": 0.2588,
+      "lgbm_draw": 0.2659,
+      "lgbm_loss": 0.4753,
       "comparison": {
         "open": [
           12.18,
@@ -60165,14 +60165,14 @@
           1.13
         ],
         "current": [
-          9.24,
-          6.96,
-          1.19
+          10.02,
+          7.35,
+          1.17
         ],
         "div_pct": [
-          -24.1,
-          -14.4,
-          5.0
+          -17.7,
+          -9.6,
+          3.4
         ],
         "source": "pinnacle"
       },
@@ -60183,12 +60183,12 @@
           1.09
         ],
         "current": [
-          13.5,
+          13.0,
           7.0,
           1.09
         ],
         "div_pct": [
-          0.0,
+          -3.7,
           0.0,
           0.0
         ],
@@ -60691,34 +60691,34 @@
       "source": "hkjc",
       "odds_source": "pinnacle",
       "odds_win": 2.51,
-      "odds_draw": 3.42,
-      "odds_loss": 2.58,
-      "margin": 0.0784,
-      "model_win": 0.277,
-      "model_draw": 0.323,
+      "odds_draw": 3.46,
+      "odds_loss": 2.57,
+      "margin": 0.0765,
+      "model_win": 0.2796,
+      "model_draw": 0.3204,
       "model_loss": 0.4,
-      "raw_model_win": 0.3877,
-      "raw_model_draw": 0.2647,
-      "raw_model_loss": 0.3475,
+      "raw_model_win": 0.3883,
+      "raw_model_draw": 0.2626,
+      "raw_model_loss": 0.3492,
       "open_win_pin": 2.1,
       "open_draw_pin": 3.27,
       "open_loss_pin": 3.15,
       "lgbm_prediction": "home",
       "lgbm_prediction_cn": "主胜",
-      "lgbm_prediction_prob": 0.4261,
+      "lgbm_prediction_prob": 0.4219,
       "prediction": "home",
       "prediction_cn": "主胜",
-      "prediction_prob": 0.4261,
+      "prediction_prob": 0.4219,
       "model_prediction": "draw",
       "model_prediction_cn": "平局",
-      "model_prediction_prob": 0.323,
+      "model_prediction_prob": 0.3204,
       "draw_boosted": true,
       "draw_confidence": -5,
       "draw_signal": "none",
       "diff_lgb_poisson": -0.0681,
-      "lgbm_win": 0.4261,
-      "lgbm_draw": 0.2549,
-      "lgbm_loss": 0.319,
+      "lgbm_win": 0.4219,
+      "lgbm_draw": 0.2523,
+      "lgbm_loss": 0.3258,
       "comparison": {
         "open": [
           2.1,
@@ -60727,13 +60727,13 @@
         ],
         "current": [
           2.51,
-          3.42,
-          2.58
+          3.46,
+          2.57
         ],
         "div_pct": [
           19.5,
-          4.6,
-          -22.1
+          5.8,
+          -22.6
         ],
         "source": "pinnacle"
       },
@@ -60744,14 +60744,14 @@
           2.54
         ],
         "current": [
-          2.37,
-          3.2,
-          2.54
+          2.35,
+          3.25,
+          2.53
         ],
         "div_pct": [
-          0.0,
-          0.0,
-          0.0
+          -0.8,
+          1.6,
+          -0.4
         ],
         "source": "hkjc"
       },
@@ -60959,41 +60959,41 @@
       "date": "2026-07-22",
       "match_time": "2026-07-22 00:00",
       "event": "UEFA CL",
-      "home_team": "阿拉特亚美尼亚",
+      "home_team": "阿拉特亚美尼亚(中)",
       "away_team": "沙姆洛克流浪",
       "score": "",
       "hit": "",
       "source": "hkjc",
       "odds_source": "pinnacle",
-      "odds_win": 2.15,
-      "odds_draw": 3.39,
-      "odds_loss": 3.15,
-      "margin": 0.0776,
-      "model_win": 0.39,
-      "model_draw": 0.4,
-      "model_loss": 0.21,
-      "raw_model_win": 0.4369,
-      "raw_model_draw": 0.268,
-      "raw_model_loss": 0.2952,
+      "odds_win": 2.22,
+      "odds_draw": 3.37,
+      "odds_loss": 3.02,
+      "margin": 0.0783,
+      "model_win": 0.3831,
+      "model_draw": 0.3277,
+      "model_loss": 0.2892,
+      "raw_model_win": 0.4261,
+      "raw_model_draw": 0.2689,
+      "raw_model_loss": 0.305,
       "open_win_pin": 2.38,
       "open_draw_pin": 3.21,
       "open_loss_pin": 2.72,
       "lgbm_prediction": "home",
       "lgbm_prediction_cn": "主胜",
-      "lgbm_prediction_prob": 0.4629,
+      "lgbm_prediction_prob": 0.4521,
       "prediction": "home",
       "prediction_cn": "主胜",
-      "prediction_prob": 0.4629,
-      "model_prediction": "home",
-      "model_prediction_cn": "主胜",
-      "model_prediction_prob": 0.39,
-      "draw_boosted": true,
+      "prediction_prob": 0.4521,
+      "model_prediction": "draw",
+      "model_prediction_cn": "平局",
+      "model_prediction_prob": 0.3277,
+      "draw_boosted": false,
       "draw_confidence": -5,
       "draw_signal": "none",
-      "diff_lgb_poisson": -0.1506,
-      "lgbm_win": 0.4629,
-      "lgbm_draw": 0.2494,
-      "lgbm_loss": 0.2877,
+      "diff_lgb_poisson": -0.0762,
+      "lgbm_win": 0.4521,
+      "lgbm_draw": 0.2515,
+      "lgbm_loss": 0.2963,
       "comparison": {
         "open": [
           2.38,
@@ -61001,14 +61001,14 @@
           2.72
         ],
         "current": [
-          2.15,
-          3.39,
-          3.15
+          2.22,
+          3.37,
+          3.02
         ],
         "div_pct": [
-          -9.7,
-          5.6,
-          13.7
+          -6.7,
+          5.0,
+          9.9
         ],
         "source": "pinnacle"
       },
@@ -61019,14 +61019,14 @@
           3.25
         ],
         "current": [
-          1.99,
+          2.01,
           3.15,
-          3.25
+          3.2
         ],
         "div_pct": [
+          1.0,
           0.0,
-          0.0,
-          0.0
+          -1.6
         ],
         "source": "hkjc"
       },
@@ -61240,35 +61240,35 @@
       "hit": "",
       "source": "hkjc",
       "odds_source": "pinnacle",
-      "odds_win": 2.2,
-      "odds_draw": 3.09,
-      "odds_loss": 3.06,
-      "margin": 0.105,
+      "odds_win": 2.05,
+      "odds_draw": 3.18,
+      "odds_loss": 3.31,
+      "margin": 0.1044,
       "model_win": 0.4,
-      "model_draw": 0.3219,
-      "model_loss": 0.2781,
-      "raw_model_win": 0.4211,
-      "raw_model_draw": 0.283,
-      "raw_model_loss": 0.2959,
+      "model_draw": 0.3444,
+      "model_loss": 0.2556,
+      "raw_model_win": 0.4446,
+      "raw_model_draw": 0.2769,
+      "raw_model_loss": 0.2785,
       "open_win_pin": 2.76,
       "open_draw_pin": 3.23,
       "open_loss_pin": 2.35,
       "lgbm_prediction": "home",
       "lgbm_prediction_cn": "主胜",
-      "lgbm_prediction_prob": 0.4666,
+      "lgbm_prediction_prob": 0.4912,
       "prediction": "home",
       "prediction_cn": "主胜",
-      "prediction_prob": 0.4666,
+      "prediction_prob": 0.4912,
       "model_prediction": "draw",
       "model_prediction_cn": "平局",
-      "model_prediction_prob": 0.3219,
+      "model_prediction_prob": 0.3444,
       "draw_boosted": true,
       "draw_confidence": 5,
       "draw_signal": "none",
-      "diff_lgb_poisson": -0.0748,
-      "lgbm_win": 0.4666,
-      "lgbm_draw": 0.2471,
-      "lgbm_loss": 0.2863,
+      "diff_lgb_poisson": -0.0828,
+      "lgbm_win": 0.4912,
+      "lgbm_draw": 0.2616,
+      "lgbm_loss": 0.2472,
       "comparison": {
         "open": [
           2.76,
@@ -61276,14 +61276,14 @@
           2.35
         ],
         "current": [
-          2.2,
-          3.09,
-          3.06
+          2.05,
+          3.18,
+          3.31
         ],
         "div_pct": [
-          -20.3,
-          -4.3,
-          23.2
+          -25.7,
+          -1.5,
+          29.0
         ],
         "source": "pinnacle"
       },
@@ -61515,35 +61515,35 @@
       "hit": "",
       "source": "hkjc",
       "odds_source": "pinnacle",
-      "odds_win": 1.38,
-      "odds_draw": 5.01,
-      "odds_loss": 5.48,
-      "margin": 0.1067,
+      "odds_win": 1.39,
+      "odds_draw": 4.88,
+      "odds_loss": 5.52,
+      "margin": 0.1055,
       "model_win": 0.4,
       "model_draw": 0.21,
       "model_loss": 0.39,
-      "raw_model_win": 0.5942,
-      "raw_model_draw": 0.2033,
-      "raw_model_loss": 0.2025,
+      "raw_model_win": 0.5917,
+      "raw_model_draw": 0.2068,
+      "raw_model_loss": 0.2015,
       "open_win_pin": 1.44,
       "open_draw_pin": 3.97,
       "open_loss_pin": 5.47,
       "lgbm_prediction": "home",
       "lgbm_prediction_cn": "主胜",
-      "lgbm_prediction_prob": 0.5303,
+      "lgbm_prediction_prob": 0.5295,
       "prediction": "home",
       "prediction_cn": "主胜",
-      "prediction_prob": 0.5303,
+      "prediction_prob": 0.5295,
       "model_prediction": "away",
       "model_prediction_cn": "客胜",
       "model_prediction_prob": 0.39,
       "draw_boosted": true,
-      "draw_confidence": -7,
+      "draw_confidence": -2,
       "draw_signal": "none",
-      "diff_lgb_poisson": 0.04,
-      "lgbm_win": 0.5303,
-      "lgbm_draw": 0.25,
-      "lgbm_loss": 0.2198,
+      "diff_lgb_poisson": 0.041,
+      "lgbm_win": 0.5295,
+      "lgbm_draw": 0.251,
+      "lgbm_loss": 0.2195,
       "comparison": {
         "open": [
           1.44,
@@ -61551,14 +61551,14 @@
           5.47
         ],
         "current": [
-          1.38,
-          5.01,
-          5.48
+          1.39,
+          4.88,
+          5.52
         ],
         "div_pct": [
-          -4.2,
-          26.2,
-          0.2
+          -3.5,
+          22.9,
+          0.9
         ],
         "source": "pinnacle"
       },
@@ -61590,7 +61590,7 @@
       "away_rank": 0,
       "home_pts": 0,
       "away_pts": 0,
-      "warning": "🚩",
+      "warning": "",
       "stats": {
         "home_recent": [
           {
