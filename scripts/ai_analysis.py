@@ -1027,7 +1027,14 @@ def generate_frontend(results: List[Dict]):
     for r in results:
         mt = r.get('match_time', '')
         if mt and len(mt) >= 10:
-            r['date'] = mt[:10]  # 用实际开赛日期覆盖文件日期
+            base_date = mt[:10]
+            # 凌晨比赛(00:00-07:00)实际是下一天的，调日期
+            if len(mt) >= 16:
+                hour = mt[11:13]
+                if '00' <= hour <= '07':
+                    dt = datetime.strptime(base_date, '%Y-%m-%d') + timedelta(days=1)
+                    base_date = dt.strftime('%Y-%m-%d')
+            r['date'] = base_date
         by_date[r['date']].append(r)
 
     dates = sorted(by_date.keys(), reverse=True)
