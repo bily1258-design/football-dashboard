@@ -1025,20 +1025,22 @@ def generate_frontend(results: List[Dict]):
 
     # 按实际比赛日期分组（从match_time提取，而非文件日期）
     by_date = defaultdict(list)
+    today_str = datetime.now().strftime('%Y-%m-%d')
     for r in results:
         mt = r.get('match_time', '')
-        # 保存原始抓取日期（用于判断是否源站把凌晨归到了当天）
-        orig_date = r.get('date', '')
         if mt and len(mt) >= 10:
             base_date = mt[:10]
-            # 凌晨比赛(00:00-07:00): 仅当match_time日期==原始抓取日期时才推下一天
-            # (即源站将21日凌晨归到20号，匹配到20号抓取日期才推)
-            if len(mt) >= 16 and base_date and base_date == orig_date:
+            # 凌晨比赛(00:00-12:00): 仅当match_time日期<今天时才推下一天
+            # 即源站将21日凌晨归到20号页面(20<21)才推，已正确标注21号的不动
+            if len(mt) >= 16 and base_date < today_str:
                 try:
                     h = int(mt[11:13])
                     if h < 12:
-                        from datetime import datetime, timedelta
-                        base_date = (datetime.strptime(base_date, '%Y-%m-%d') + timedelta(days=1)).strftime('%Y-%m-%d')
+                        from datetime import timedelta
+                        new_date = (datetime.strptime(base_date, '%Y-%m-%d') + timedelta(days=1)).strftime('%Y-%m-%d')
+                        # 同步更新match_time日期字段，让前端时间显示与分组一致
+                        r['match_time'] = mt.replace(base_date, new_date, 1)
+                        base_date = new_date
                 except:
                     pass
             r['date'] = base_date
