@@ -67,7 +67,7 @@ def fetch_bfdata_cn_map():
             if len(parts) >= 5:
                 y, mo, d, hh, mi = parts[0], parts[1], parts[2], parts[3], parts[4]
                 raw_mt = f'{y}-{mo.zfill(2)}-{d.zfill(2)} {hh.zfill(2)}:{mi.zfill(2)}'
-                # 用_fix_month修复月份错位
+                # 用修正后的_fix_month修复月份错位（只修月份，保留日和时间）
                 from fetch_zqdc import _fix_month
                 match_time = _fix_month(raw_mt, date.today().isoformat())
         if sid and h and a:
@@ -163,10 +163,16 @@ def fetch_hkjc_matches(date_str, max_matches=0, delay=0.3, workers=3):
             if cn_pair:
                 home_name, away_name = cn_pair
         
-        # 日期过滤：bfdata中的实际比赛日期与请求日期不符则跳过
-        # （CommonInterface返回同355场无视日期，需用bfdata时间校正）
+        # 日期过滤：允许同一天或±1天（凌晨比赛跨日）
         if bf_match_date and bf_match_date != date_str:
-            return None
+            try:
+                bf_dt = datetime.strptime(bf_match_date, '%Y-%m-%d')
+                ref_dt = datetime.strptime(date_str, '%Y-%m-%d')
+                days_diff = abs((bf_dt - ref_dt).days)
+                if days_diff > 1:
+                    return None  # 超过1天，废弃（可能月份错位）
+            except ValueError:
+                return None
         
         # 有HKJC赔率，构建比赛记录
         match = {

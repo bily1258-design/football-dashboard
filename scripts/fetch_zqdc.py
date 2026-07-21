@@ -110,13 +110,22 @@ def parse_time(fields):
 
 
 def _fix_month(match_time, date_str):
-    """bfdata_ut.js的f[12]月份有时错位(6月但实际是7月), 纠正日期部分"""
+    """bfdata_ut.js的f[12]月份有时错位(6月但实际是7月), 只修月份, 保留日和时间"""
     if not match_time or not date_str or len(match_time) < 16:
         return match_time
-    # 只替换日期部分(前10字符), 保留时间部分
-    if match_time[:10] != date_str:
-        return date_str + match_time[10:]
-    return match_time
+    try:
+        src = datetime.strptime(match_time[:10], '%Y-%m-%d')
+        ref = datetime.strptime(date_str, '%Y-%m-%d')
+        # 源数据月份明显偏后(超过20天), 加1个月修正
+        if (ref - src).days > 20:
+            if src.month == 12:
+                fixed = src.replace(year=src.year+1, month=1)
+            else:
+                fixed = src.replace(month=src.month+1)
+            return fixed.strftime('%Y-%m-%d') + match_time[10:]
+        return match_time
+    except ValueError:
+        return match_time
 
 
 # ─────── 主逻辑 ───────
