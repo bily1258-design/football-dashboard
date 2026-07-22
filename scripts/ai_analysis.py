@@ -481,6 +481,75 @@ def prediction_entropy(probs: list, normalize: bool = True) -> Tuple[float, floa
 
 
 # ======================================================
+# 模块A2：价值投注检测器
+# ======================================================
+
+def _compute_value_bets(probs: list, comparison: dict = None, pin_comparison: dict = None) -> list:
+    """计算三向价值投注（EV + Kelly）
+
+    Args:
+        probs: [主胜, 平局, 客胜] 概率
+        comparison: 主赔率源字典 {source, current: [h,d,a]}
+        pin_comparison: 备查赔率源字典
+
+    Returns: [{outcome, odds, prob, ev, kelly, source}]
+    """
+    LABELS = ['home', 'draw', 'away']
+    results = []
+
+    # 收集所有可用赔率源
+    sources = []
+    if comparison and comparison.get('current'):
+        sources.append((comparison.get('source', 'pinnacle'), comparison['current']))
+    if pin_comparison and pin_comparison.get('current'):
+        sources.append((pin_comparison.get('source', 'hkjc'), pin_comparison['current']))
+
+    for src_name, odds_arr in sources:
+        if not odds_arr or len(odds_arr) < 3:
+            continue
+        for i, label in enumerate(LABELS):
+            odds = odds_arr[i]
+            prob = probs[i]
+            if odds <= 1 or prob <= 0:
+                continue
+            ev = round(prob * odds - 1, 4)
+            kelly_raw = ev / (odds - 1) if ev > 0 else 0.0
+            # Kelly上限25%（全Kelly太激进，用1/4 Kelly安全线）
+            kelly = round(min(kelly_raw, 0.25), 4)
+            results.append({
+                'outcome': label,
+                'odds': round(odds, 2),
+                'prob': round(prob, 4),
+                'ev': ev,
+                'kelly': kelly,
+                'source': src_name,
+            })
+
+    # 按EV降序
+    results.sort(key=lambda x: x['ev'], reverse=True)
+    return results
+
+
+def _get_best_value(probs: list, comparison: dict = None, pin_comparison: dict = None) -> dict:
+    """返回最佳价值投注摘要（供前端展示）
+
+    Returns: {outcome, ev, kelly, odds, prob, source} or None
+    """
+    vbs = _compute_value_bets(probs, comparison, pin_comparison)
+    for vb in vbs:
+        if vb['ev'] > 0.05:  # EV>5%才算有价值
+            return {
+                'outcome': vb['outcome'],
+                'ev': vb['ev'],
+                'kelly': vb['kelly'],
+                'odds': vb['odds'],
+                'prob': vb['prob'],
+                'source': vb['source'],
+            }
+    return None
+
+
+# ======================================================
 # 模块B：概率校准器（Platt缩放，纯scipy实现）
 # ======================================================
 
@@ -1163,6 +1232,9 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             'cal_win': cal_probs[0] if cal_probs else None,
             'cal_draw': cal_probs[1] if cal_probs else None,
             'cal_loss': cal_probs[2] if cal_probs else None,
+            # 价值投注检测
+            'value_bets': _compute_value_bets(cal_probs if cal_probs else [lgbm_w, lgbm_d, lgbm_l], comparison, pin_comparison),
+            'best_value': _get_best_value(cal_probs if cal_probs else [lgbm_w, lgbm_d, lgbm_l], comparison, pin_comparison),
             # 近期战绩
             'stats': None,
         })
