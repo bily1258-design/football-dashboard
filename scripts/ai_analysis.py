@@ -899,9 +899,11 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
 
         # 新增：球队攻防实力Poisson预测
         ts_probs = team_strength_prediction(team_model, m.get('home_team',''), m.get('away_team',''))
-        # 新增：不确定性量化
-        lgbm_entropy, lgbm_confidence = prediction_entropy([lgbm_w, lgbm_d, lgbm_l])
+        # 新增：不确定性量化 — 改用最大概率做置信度（熵公式对3分类过于严格）
+        lgbm_confidence = max(lgbm_w, lgbm_d, lgbm_l)
         r_entropy, r_confidence = prediction_entropy([lgbm_feat_w, lgbm_feat_d, lgbm_feat_l])
+        # lgbm_entropy 保留供分歧检测使用
+        lgbm_entropy, _ = prediction_entropy([lgbm_w, lgbm_d, lgbm_l])
         # 新增：LGBM概率校准
         cal_probs = calibrate_probs([lgbm_w, lgbm_d, lgbm_l], calibrator)
 
