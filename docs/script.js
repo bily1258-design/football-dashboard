@@ -5,12 +5,6 @@ var allMatches = [];
 function fmtOdds(v){return v>0?v.toFixed(2):'-'}
 function fmtPct(v){return (v*100).toFixed(1)+'%'}
 function fmtPctSign(v){return v===0?'0%':(v>0?'+':'')+v.toFixed(1)+'%'}
-function confDot(c){
-  if(c==null)return'';
-  var color=c>=0.6?'#4caf50':c>=0.35?'#ffc107':'#f44336';
-  var label=c>=0.6?'高':c>=0.35?'中':'低';
-  return'<span class="conf-dot" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+color+';margin-right:4px" title="置信度'+fmtPct(c)+'"></span>';
-}
 function dirClass(d){return d==='home'?'dir-home':d==='draw'?'dir-draw':d==='away'?'dir-away':'dir-wait'}
 function dirText(d){return d==='home'?'主胜':d==='draw'?'平局':d==='away'?'客胜':'观望'}
 function renderWarning(w){
@@ -97,14 +91,6 @@ function renderTable(matches){
   matches.forEach(function(m){
     var tr = document.createElement('tr');
     var hc=m.hit&&m.hit.indexOf('✓')>-1?'hit-yes':m.hit==='✘'?'hit-no':'';
-    var tsRow = '';
-    if(m.ts_win != null){
-      tsRow = '<div style="margin-top:3px;border-top:1px dashed #888;padding-top:2px;font-size:12px">'+
-        '<span style="color:#999">TS: </span>'+
-        '<span class="odds-val odds-w">'+fmtPct(m.ts_win)+'</span> '+
-        '<span class="odds-val odds-d">'+fmtPct(m.ts_draw)+'</span> '+
-        '<span class="odds-val odds-l">'+fmtPct(m.ts_loss)+'</span></div>';
-    }
     tr.innerHTML =
       '<td>'+fmtTime(m.match_time)+'</td>'+
       '<td><span class="tag tag-'+m.source+'">'+(m.event||m.source)+'</span></td>'+
@@ -114,15 +100,7 @@ function renderTable(matches){
       '<td><span class="'+dirClass(m.lgbm_prediction)+'">'+dirText(m.lgbm_prediction)+'</span> <span style="font-size:11px;color:#999">'+dirText(m.model_prediction)+'</span>'+renderWarning(m.warning)+'</td>'+
       '<td class="'+hc+'">'+(m.hit||'')+'</td>'+
       '<td class="odds-cell">'+renderOdds(m.comparison, m.pin_comparison)+'</td>'+
-      '<td class="odds-cell"><div>模型: <span class="odds-val odds-w">'+fmtPct(m.model_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.model_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.model_loss)+'</span></div>'+
-        '<div style="margin-top:3px">'+confDot(m.lgbm_confidence)+'LGBM: <span class="odds-val odds-w">'+fmtPct(m.lgbm_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.lgbm_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.lgbm_loss)+'</span>'+
-          '<div style="margin-top:2px;font-size:11px"><span class="oc-label" style="margin-right:3px">分</span>'+
-            '<span class="'+((m.model_win-m.lgbm_win)<-0.003?'oc-pct-down':(m.model_win-m.lgbm_win)>0.003?'oc-pct-up':'oc-pct-flat')+'">'+fmtPctSign((m.model_win-m.lgbm_win)*100)+'</span> '+
-            '<span class="'+((m.model_draw-m.lgbm_draw)<-0.003?'oc-pct-down':(m.model_draw-m.lgbm_draw)>0.003?'oc-pct-up':'oc-pct-flat')+'">'+fmtPctSign((m.model_draw-m.lgbm_draw)*100)+'</span> '+
-            '<span class="'+((m.model_loss-m.lgbm_loss)<-0.003?'oc-pct-down':(m.model_loss-m.lgbm_loss)>0.003?'oc-pct-up':'oc-pct-flat')+'">'+fmtPctSign((m.model_loss-m.lgbm_loss)*100)+'</span>'+
-          '</div>'+
-        tsRow+
-        '</div></td>';
+      '<td class="odds-cell"><div>模型: <span class="odds-val odds-w">'+fmtPct(m.model_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.model_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.model_loss)+'</span></div><div style="margin-top:3px">LGBM: <span class="odds-val odds-w">'+fmtPct(m.lgbm_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.lgbm_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.lgbm_loss)+'</span><div style="margin-top:2px;font-size:11px"><span class="oc-label" style="margin-right:3px">分</span><span class="'+((m.model_win-m.lgbm_win)<-0.003?'oc-pct-down':(m.model_win-m.lgbm_win)>0.003?'oc-pct-up':'oc-pct-flat')+'">'+fmtPctSign((m.model_win-m.lgbm_win)*100)+'</span> <span class="'+((m.model_draw-m.lgbm_draw)<-0.003?'oc-pct-down':(m.model_draw-m.lgbm_draw)>0.003?'oc-pct-up':'oc-pct-flat')+'">'+fmtPctSign((m.model_draw-m.lgbm_draw)*100)+'</span> <span class="'+((m.model_loss-m.lgbm_loss)<-0.003?'oc-pct-down':(m.model_loss-m.lgbm_loss)>0.003?'oc-pct-up':'oc-pct-flat')+'">'+fmtPctSign((m.model_loss-m.lgbm_loss)*100)+'</span></div></div></td>';
     tbody.appendChild(tr);  });
   document.getElementById('matchCount').textContent = matches.length+' 场';
 }
