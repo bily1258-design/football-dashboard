@@ -46,8 +46,8 @@ function renderSimilarMatches(m){
 }
 function confDot(c){
   if(c==null)return'';
-  var color=c>=0.47?'#4caf50':c>=0.40?'#ffc107':'#f44336';
-  var label=c>=0.47?'高':c>=0.40?'中':'低';
+  var color=c>0.47?'#4caf50':c>=0.40?'#ffc107':'#f44336';
+  var label=c>0.47?'高':c>=0.40?'中':'低';
   return'<span class="conf-dot" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+color+';margin-right:4px" title="置信度'+fmtPct(c)+'"></span>';
 }
 
