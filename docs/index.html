@@ -7,58 +7,8 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>足彩价值投注看板</title>
-<link rel="stylesheet" href="style.css?v=20260722v1">
-<script src="script.js?v=20260722v1"></script>
-<style>
-/* 价值投注标签 */
-.vb-badge{cursor:pointer;display:inline-block;padding:1px 6px;border-radius:8px;font-size:11px;font-weight:700;margin-top:2px}
-.vb-hot{background:#4caf50;color:#fff}
-.vb-warm{background:#ff9800;color:#fff}
-.vb-cool{background:#2196f3;color:#fff}
-.vb-none{display:inline-block;padding:1px 6px;font-size:11px;color:#666}
-.vb-detail{font-size:11px;line-height:1.6}
-.vb-item{display:flex;gap:4px;padding:1px 0}
-.vb-pos{color:#4caf50}
-.vb-neg{color:#888}
-.vb-src{width:36px;color:#999;font-size:10px}
-.vb-outcome{width:14px;font-weight:700}
-.vb-odds{width:38px;text-align:right}
-.vb-ev{width:46px;text-align:right;font-weight:700}
-.vb-kelly{width:42px;text-align:right;color:#999}
-/* 投注追踪器 */
-.bet-tracker{margin-top:20px;padding:12px;background:#2a3a4a;border-radius:8px}
-.bet-tracker h3{margin:0 0 8px;font-size:14px;color:#e0e4e8}
-.bs-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:12px}
-.bs-row{text-align:center}
-.bs-label{display:block;font-size:10px;color:#999}
-.bs-val{display:block;font-size:16px;font-weight:700;color:#e0e4e8}
-.bs-profit{color:#4caf50!important}
-.bs-loss{color:#f44336!important}
-.bs-empty{text-align:center;padding:12px;color:#666;font-size:13px}
-#betTable{width:100%;font-size:11px}
-#betTable th{background:#364a5c;padding:4px;font-size:10px;color:#999;text-align:left}
-#betTable td{padding:3px 4px}
-.bt-pending{color:#ff9800}
-.bt-win{color:#4caf50;font-weight:700}
-.bt-loss{color:#f44336;font-weight:700}
-.bt-del{cursor:pointer;background:0;border:0;color:#f44336;font-size:14px}
-.bt-del:hover{color:#ff6b6b}
-/* 弹窗 */
-.modal{display:none;position:fixed;z-index:100;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,.6)}
-.modal-content{background:#2a3a4a;margin:120px auto;padding:16px;border-radius:8px;max-width:320px}
-.modal-content h3{margin:0 0 12px;font-size:14px;color:#e0e4e8}
-.bm-row{margin:4px 0;font-size:12px;color:#ccc}
-.bm-row .bm-label{display:inline-block;width:50px;color:#999}
-#bmStake{width:80px;background:#1a2a3a;border:1px solid #455a70;color:#e0e4e8;border-radius:4px;padding:4px 8px;font-size:13px;text-align:right}
-.bm-btns{margin-top:12px;display:flex;gap:8px;justify-content:flex-end}
-.bm-btns button{padding:6px 16px;border-radius:4px;border:0;cursor:pointer;font-size:13px}
-.btn-confirm{background:#4caf50;color:#fff}
-.btn-cancel{background:#555;color:#ccc}
-.btn-confirm:hover{background:#66bb6a}
-.btn-cancel:hover{background:#777}
-/* 价值过滤按钮 */
-#valueStats{color:#ff9800;font-size:12px;margin-left:8px}
-</style>
+<link rel="stylesheet" href="style.css?v=20260722vb1">
+<script src="script.js?v=20260722vb1"></script>
 </head>
 <body>
 <div class="container">
@@ -75,6 +25,7 @@
       </select>
       <select id="sourceFilter" onchange="applyFilters()">
         <option value="all">全部来源</option>
+
         <option value="jingcai">竞彩</option>
         <option value="beidan">北单</option>
       </select>
@@ -100,7 +51,7 @@
           <th>主队</th>
           <th>比分</th>
           <th>客队</th>
-          <th>方向/价值</th>
+          <th>方向</th>
           <th>命中</th>
           <th>赔率(初/即/分歧)</th>
           <th>模型/LGBM</th>
@@ -110,30 +61,29 @@
     </table>
   </div>
   <!-- 投注追踪器 -->
-  <div class="bet-tracker" style="display:none" id="betTracker">
-    <h3>📊 投注追踪器</h3>
+  <div id="betTracker" style="display:none">
+    <h3>📋 投注记录</h3>
     <div id="betSummary"></div>
-    <div style="overflow-x:auto">
-      <table id="betTable">
-        <thead><tr><th>时间</th><th>比赛</th><th>方向</th><th>赔率</th><th>注额</th><th>结果</th><th>盈亏</th><th></th></tr></thead>
-        <tbody id="betTableBody"></tbody>
-      </table>
-    </div>
+    <table id="betTable">
+      <thead><tr><th>时间</th><th>比赛</th><th>方向</th><th>赔率</th><th>注额</th><th>结果</th><th>盈亏</th><th></th></tr></thead>
+      <tbody id="betTableBody"></tbody>
+    </table>
   </div>
-</div>
 
-<!-- 下注弹窗 -->
-<div id="betModal" class="modal">
-  <div class="modal-content">
-    <h3>💰 添加投注</h3>
-    <div class="bm-row"><span class="bm-label">比赛</span><span id="bmMatch"></span></div>
-    <div class="bm-row"><span class="bm-label">方向</span><span id="bmOutcome"></span></div>
-    <div class="bm-row"><span class="bm-label">赔率</span><span id="bmOdds"></span></div>
-    <div class="bm-row"><span class="bm-label">Kelly</span><span id="bmKelly"></span></div>
-    <div class="bm-row"><span class="bm-label">注额</span><input type="number" id="bmStake" min="0.1" step="0.1"> <span style="color:#999;font-size:11px">(建议按Kelly%投入)</span></div>
-    <div class="bm-btns">
-      <button class="btn-cancel" onclick="closeBetModal()">取消</button>
-      <button class="btn-confirm" onclick="confirmBet()">确认下注</button>
+  <!-- 投注弹窗 -->
+  <div id="betModal">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closeBetModal()">&times;</span>
+      <h3>💰 确认投注</h3>
+      <p><label>比赛:</label> <span id="bmMatch"></span></p>
+      <p><label>方向:</label> <span id="bmOutcome"></span></p>
+      <p><label>赔率:</label> <span id="bmOdds"></span></p>
+      <p><label>Kelly建议:</label> <span id="bmKelly" style="color:#2563eb;font-weight:600"></span></p>
+      <p><label>注额:</label> <input type="number" id="bmStake" step="0.1" min="0" style="width:80px;padding:4px 8px;border:1px solid #ccc;border-radius:4px"></p>
+      <div class="modal-actions">
+        <button onclick="confirmBet()" style="background:#2563eb;color:#fff;border:none;padding:8px 20px;border-radius:6px;cursor:pointer;font-weight:600">确认投注</button>
+        <button onclick="closeBetModal()" style="background:#e5e7eb;color:#333;border:none;padding:8px 20px;border-radius:6px;cursor:pointer;margin-left:8px">取消</button>
+      </div>
     </div>
   </div>
 </div>
