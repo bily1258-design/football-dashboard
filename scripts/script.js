@@ -27,6 +27,23 @@ function renderForm(s){
   }
   return '<div class="form-icons"><span class="fi-label">主</span>'+icons(hf)+'</div><div class="form-icons"><span class="fi-label">客</span>'+icons(af)+'</div>';
 }
+function renderSimilarMatches(m){
+  if(!m.similar_matches || m.similar_matches.length===0) return '-';
+  var items = [];
+  var count = Math.min(m.similar_matches.length, 3);
+  for(var i=0;i<count;i++){
+    var s = m.similar_matches[i];
+    var scoreStr = s.score ? ' '+s.score : '';
+    items.push(
+      '<div class="sim-item">'+
+        '<span class="sim-teams">'+s.home_team+' vs '+s.away_team+'</span>'+
+        '<span class="sim-score">'+scoreStr+'</span>'+
+        '<span class="sim-pct">'+(s.similarity*100).toFixed(0)+'%</span>'+
+      '</div>'
+    );
+  }
+  return '<div class="sim-list">'+items.join('')+'</div>';
+}
 function confDot(c){
   if(c==null)return'';
   var color=c>=0.6?'#4caf50':c>=0.35?'#ffc107':'#f44336';
@@ -217,7 +234,8 @@ function renderTable(matches){
             '<span class="'+((m.model_loss-m.lgbm_loss)<-0.003?'oc-pct-down':(m.model_loss-m.lgbm_loss)>0.003?'oc-pct-up':'oc-pct-flat')+'">'+fmtPctSign((m.model_loss-m.lgbm_loss)*100)+'</span>'+
           '</div>'+
         tsRow+
-        '</div></td>';
+        '</div></td>'+
+      '<td class="sim-cell">'+renderSimilarMatches(m)+'</td>';
     // 绑定点击事件 - 价值标签
     var vbb = tr.querySelector('.vb-badge');
     if(vbb){

@@ -1386,6 +1386,13 @@ def generate_frontend(results: List[Dict]):
         json.dump(output, f, ensure_ascii=False, indent=2)
     logger.info(f"结果 → {rp} ({all_counts} 场)")
 
+    # 4. 球队相似度匹配 (Week 2)
+    try:
+        import team_similarity
+        team_similarity.run()
+    except Exception as e:
+        logger.warning("球队相似度匹配失败: %s", e)
+
     # ─── index.html ──────────────────────────
     html = '''<!DOCTYPE html>
 <html lang="zh-CN">
@@ -1444,6 +1451,7 @@ def generate_frontend(results: List[Dict]):
           <th>命中</th>
           <th>赔率(初/即/分歧)</th>
           <th>模型/LGBM</th>
+          <th>相似历史</th>
         </tr>
       </thead>
       <tbody id="matchBody"></tbody>
@@ -1587,7 +1595,13 @@ tr:hover{background:#f0f6ff}
 .bt-win{color:#16a34a;font-weight:600}
 .bt-loss{color:#dc2626;font-weight:600}
 .bt-del{cursor:pointer;background:none;border:none;color:#dc2626;font-size:14px;padding:2px 6px}
-.bt-del:hover{background:#fee2e2;border-radius:4px}'''
+.bt-del:hover{background:#fee2e2;border-radius:4px}
+.sim-cell{font-size:11px;max-width:280px;min-width:160px}
+.sim-list{display:flex;flex-direction:column;gap:2px}
+.sim-item{display:flex;gap:2px;align-items:center;white-space:nowrap}
+.sim-teams{color:#3a4a5c;overflow:hidden;text-overflow:ellipsis;max-width:130px}
+.sim-score{color:#667788;font-size:10px}
+.sim-pct{color:#2563eb;font-weight:600;font-size:10px;margin-left:auto}'''
     with open(os.path.join(DOCS_DIR, 'style.css'), 'w', encoding='utf-8') as f:
         f.write(css)
 
