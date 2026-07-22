@@ -5,6 +5,7 @@ var allMatches = [];
 function fmtOdds(v){return v>0?v.toFixed(2):'-'}
 function fmtPct(v){return (v*100).toFixed(1)+'%'}
 function fmtPctSign(v){return v===0?'0%':(v>0?'+':'')+v.toFixed(1)+'%'}
+function fmtTime(t){if(!t)return'';var m=t.match(/^(?:\d{4}-)?(\d{2})-(\d{2})\s+(\S+)$/);return m?m[1]+'/'+m[2]+' '+m[3]:t;}
 function dirClass(d){return d==='home'?'dir-home':d==='draw'?'dir-draw':d==='away'?'dir-away':'dir-wait'}
 function dirText(d){return d==='home'?'主胜':d==='draw'?'平局':d==='away'?'客胜':'观望'}
 function dirZh(d){return d==='home'?'主':d==='draw'?'平':d==='away'?'客':'?'}
