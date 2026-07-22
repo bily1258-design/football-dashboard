@@ -282,3 +282,40 @@ fetch('data/results.json?v='+Date.now())
   .catch(function(err){
     document.getElementById('loading').innerHTML = '❌ 数据加载失败，请刷新重试<br><small>'+err.message+'</small>';
   });
+
+function renderOdds(c, p){
+  var html = '';
+  // 主赔率（动态标源）
+  if(c && c.current){
+    var o=c.open, cur=c.current, d=c.div_pct;
+    var srcLabel = c.source === 'pinnacle' ? '平博' : '马会';
+    var divStr = '';
+    for(var i=0;i<3;i++){
+      var cls = d[i] < -0.3 ? 'oc-pct-down' : (d[i] > 0.3 ? 'oc-pct-up' : 'oc-pct-flat');
+      divStr += '<span class="'+cls+'">'+fmtPctSign(d[i])+'</span>' + (i<2?'<span class="oc-sep">|</span>':'');
+    }
+    html += '<div class="oc-source oc-source-hkjc">'+srcLabel+'</div>'+
+      '<div class="oc-line"><span class="oc-label">初</span><span class="oc-open">'+o[0].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-open">'+o[1].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-open">'+o[2].toFixed(2)+'</span></div>'+
+      '<div class="oc-line"><span class="oc-label">即</span><span class="oc-cur">'+cur[0].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+cur[1].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+cur[2].toFixed(2)+'</span></div>'+
+      '<div class="oc-line oc-div"><span class="oc-label">分</span>'+divStr+'</div>';
+  } else {
+    html += '<span class="odds-val odds-w">--</span>';
+  }
+  // 备查列（另一家公司）
+  if(p && p.current){
+    var o=p.open, cur=p.current, d=p.div_pct;
+    var srcLabel = p.source === 'pinnacle' ? '平博' : '马会';
+    var divStr = '';
+    for(var i=0;i<3;i++){
+      var cls = d[i] < -0.3 ? 'oc-pct-down' : (d[i] > 0.3 ? 'oc-pct-up' : 'oc-pct-flat');
+      divStr += '<span class="'+cls+'">'+fmtPctSign(d[i])+'</span>' + (i<2?'<span class="oc-sep">|</span>':'');
+    }
+    html += '<div class="oc-sep-line"></div>'+
+      '<div class="oc-source">'+srcLabel+'</div>'+
+      '<div class="oc-line"><span class="oc-label">初</span><span class="oc-open">'+o[0].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-open">'+o[1].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-open">'+o[2].toFixed(2)+'</span></div>'+
+      '<div class="oc-line"><span class="oc-label">即</span><span class="oc-cur">'+cur[0].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+cur[1].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+cur[2].toFixed(2)+'</span></div>'+
+      '<div class="oc-line oc-div"><span class="oc-label">分</span>'+divStr+'</div>';
+
+  }
+  return '<div class="odds-combined">'+html+'</div>';
+}
