@@ -168,6 +168,7 @@ function renderBetTable(){
 // ─── 过滤器 ───────────────────────────────
 var showWarnedOnly = false;
 var showValueOnly = false;
+var showImportantOnly = false;
 function toggleWarnFilter(){
   showWarnedOnly = !showWarnedOnly;
   document.getElementById('warnToggle').textContent = showWarnedOnly?'⚠️ 仅标记':'⚠️ 全部';
@@ -180,6 +181,12 @@ function toggleValueFilter(){
   document.getElementById('valueToggle').className = 'warn-filter-btn'+(showValueOnly?' active':'');
   applyFilters();
 }
+function toggleImportantFilter(){
+  showImportantOnly = !showImportantOnly;
+  document.getElementById('impToggle').textContent = showImportantOnly?'⚡ 仅重要':'⚡ 全部';
+  document.getElementById('impToggle').className = 'warn-filter-btn'+(showImportantOnly?' active':'');
+  applyFilters();
+}
 
 function applyFilters(){
   var dateVal = document.getElementById('dateFilter').value;
@@ -190,6 +197,7 @@ function applyFilters(){
     if(srcVal!=='all' && m.source.indexOf(srcVal)===-1) return false;
     if(showWarnedOnly && !m.warning) return false;
     if(showValueOnly && (!m.best_value||m.best_value.ev<=0.05)) return false;
+    if(showImportantOnly && m.low_priority) return false;
     return true;
   });
   if(sortVal==='time') filtered.sort(function(a,b){return a.match_time.localeCompare(b.match_time)});
@@ -202,6 +210,7 @@ function renderTable(matches){
   tbody.innerHTML = '';
   matches.forEach(function(m){
     var tr = document.createElement('tr');
+    if(m.low_priority) tr.className = 'lp-row';
     var hc=m.hit&&m.hit.indexOf('✓')>-1?'hit-yes':m.hit==='✘'?'hit-no':'';
     var tsRow = '';
     if(m.ts_win != null){
@@ -223,7 +232,7 @@ function renderTable(matches){
       '<td class="team-name">'+m.home_team+'</td>'+
       '<td class="score-cell"><span>'+(m.score||'-')+'</span></td>'+
       '<td class="team-name">'+m.away_team+'</td>'+
-      '<td><span class="'+dirClass(m.lgbm_prediction)+'">'+dirText(m.lgbm_prediction)+'</span> <span style="font-size:11px;color:#999">'+dirText(m.model_prediction)+'</span>'+renderWarning(m.warning)+'<br>'+vbHtml+'</td>'+
+      '<td><span class="'+dirClass(m.lgbm_prediction)+'">'+dirText(m.lgbm_prediction)+'</span> <span style="font-size:11px;color:#999">'+dirText(m.model_prediction)+'</span><span class="weight-badge" title="权重 '+m.importance_weight.toFixed(2)+'">⚡'+m.importance_weight.toFixed(2)+'</span>'+renderWarning(m.warning)+'<br>'+vbHtml+'</td>'+
       '<td class="'+hc+'">'+(m.hit||'')+'</td>'+
       '<td class="odds-cell">'+renderOdds(m.comparison, m.pin_comparison)+'</td>'+
       '<td class="odds-cell"><div>模型: <span class="odds-val odds-w">'+fmtPct(m.model_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.model_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.model_loss)+'</span></div>'+

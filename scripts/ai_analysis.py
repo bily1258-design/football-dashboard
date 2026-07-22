@@ -94,6 +94,59 @@ LEAGUE_PRIOR_LAMBDA = 0.15    # 联赛基准率混合权重（0=不使用，0.15
 LEAGUE_PRIOR_MIN_MATCHES = 10  # 联赛基准最小样本量
 MOVEMENT_STRENGTH = 0.5       # 初盘→即时变化调整强度：分歧10% → 概率加权±5%
 
+# ─── 联赛等级映射 (Week 3 权重) ────────────
+DEFAULT_TIER = 3.0
+LEAGUE_TIER: dict = {
+    # Tier 1: 顶级联赛
+    '英超': 1.0, '英冠': 2.0, '英甲': 3.0, '英乙': 4.0,
+    '西甲': 1.0, '西乙': 2.0,
+    '意甲': 1.0, '意乙': 2.0,
+    '德甲': 1.0, '德乙': 2.0, '德丙': 3.0,
+    '法甲': 1.0, '法乙': 2.0,
+    '葡超': 1.5, '葡甲': 3.0,
+    '荷甲': 1.5, '荷乙': 2.5,
+    '比甲': 2.0, '苏超': 2.0, '土超': 2.0, '俄超': 2.0,
+    '奥甲': 2.0, '瑞士超': 2.0, '丹超': 2.5, '瑞典超': 2.5, '挪超': 2.5,
+    '希腊超': 2.5, '捷甲': 2.5, '克甲': 3.0, '塞甲': 3.0, '罗甲': 3.0,
+    '乌超': 3.0, '保超': 3.5, '匈甲': 3.5, '斯伐超': 3.5,
+    '以超': 3.5, '波甲': 3.5,
+    'K联赛': 2.5, 'J联赛': 2.5, 'J2联赛': 3.0, '中超': 2.5,
+    '澳超': 3.0, '墨超': 2.5, '阿甲': 2.5, '巴甲': 2.0, '智利甲': 3.0,
+    '埃及超': 4.0, '摩洛超': 4.0, '南非超': 4.0, '沙特联': 3.0,
+    '卡塔尔联': 3.5, '阿联酋超': 3.5,
+    '欧冠': 1.0, '欧冠杯': 1.0, '欧冠资格': 1.5, '欧冠联赛': 1.0,
+    '欧联': 1.5, '欧罗巴': 2.0, '欧罗巴资格': 2.5,
+    '欧协': 2.0, '欧协联': 2.0, '欧协资格': 2.5,
+    '世俱杯': 1.5, '解放者': 2.0, '南美杯': 2.5,
+    '亚洲杯': 2.5, '亚冠': 2.5, '非冠': 4.0,
+    '世界杯': 1.0, '欧洲杯': 1.0, '美洲杯': 1.5,
+    '非洲杯': 3.0, '亚洲杯赛': 3.0,
+    '世预赛': 1.5, '欧预赛': 1.5, '亚预赛': 3.0, '非预赛': 3.5,
+    '南美预': 1.5, '世南美预': 1.5,
+    '国际友谊': 4.0, '国际友谊赛': 4.0, '球会友谊': 4.0,
+    '韩K联': 2.5, '韩K2联': 3.0, '韩国杯': 3.0, '韩足总杯': 3.0,
+    'K联赛': 2.5, 'J联赛': 2.5, 'J2联赛': 3.0,
+    '芬超': 3.0, '芬甲': 4.0, '冰岛超': 3.5,
+    '墨超': 2.5, '墨西联秋': 2.5,
+    '巴西甲': 2.0, '巴西乙': 3.0,
+    '美职联': 2.5, '美职业': 2.5, '美职': 2.5, '美冠': 2.5, '美女职': 2.5,
+    '苏联杯': 3.0, '苏联赛杯': 3.0,
+    '爱超': 3.0, '爱甲': 4.0, '瑞典甲': 3.5,
+    '阿根廷杯': 3.0, '澳昆超': 3.5, '澳足杯': 3.5,
+    'AUS CUP': 3.5, 'SCO LC': 3.5, 'UEFA CL': 1.0, 'UEFA ECL': 2.0,
+    'URU D1': 3.5, 'USL CH': 4.0, 'BRA WCUP': 3.5, 'ARGW D1': 4.0,
+}
+def _get_tier(league: str) -> float:
+    if not league:
+        return DEFAULT_TIER
+    t = LEAGUE_TIER.get(league)
+    if t is not None:
+        return t
+    for key, val in LEAGUE_TIER.items():
+        if key in league:
+            return val
+    return DEFAULT_TIER
+
 
 # ─── 日志 ──────────────────────────────────────────
 logger = logging.getLogger("ai_analysis")
@@ -1393,6 +1446,64 @@ def generate_frontend(results: List[Dict]):
     except Exception as e:
         logger.warning("球队相似度匹配失败: %s", e)
 
+    # 5. 比赛重要性权重 (Week 3)
+    now = datetime.now()
+    for match in results:
+        weight = 1.0
+
+        # 5a. 联赛等级系数
+        league = match.get('event', '') or match.get('league', '')
+        tier = _get_tier(league)
+        if tier >= 4.5:
+            tier_coef = 0.80
+        elif tier >= 4.0:
+            tier_coef = 0.85
+        elif tier >= 3.0:
+            tier_coef = 0.90
+        elif tier >= 2.0:
+            tier_coef = 0.95
+        else:
+            tier_coef = 1.00
+        weight *= tier_coef
+
+        # 5b. 赛程紧迫系数
+        mt = match.get('match_time', '')
+        days_until = 999
+        try:
+            mt_dt = datetime.strptime(mt[:10], '%Y-%m-%d')
+            days_until = (mt_dt - now.replace(hour=0, minute=0, second=0, microsecond=0)).days
+        except (ValueError, IndexError):
+            pass
+        if days_until >= 999:  # 无法解析 → 低频
+            urg_coef = 0.90
+        elif days_until < 0:  # 已完结 → 低频（不上紧迫加成）
+            urg_coef = 0.90
+        elif days_until <= 1:  # 今天/明天
+            urg_coef = 1.20
+        elif days_until <= 3:
+            urg_coef = 1.15
+        elif days_until <= 7:
+            urg_coef = 1.00
+        elif days_until <= 14:
+            urg_coef = 0.95
+        else:  # >14天
+            urg_coef = 0.90
+        weight *= urg_coef
+
+        # 取整到 .00
+        weight = round(weight, 2)
+        match['importance_weight'] = weight
+        match['low_priority'] = weight < 0.80
+
+        # 应用到Kelly
+        bv = match.get('best_value')
+        if bv and bv.get('kelly'):
+            bv['kelly_weighted'] = round(bv['kelly'] * weight, 4)
+
+    # 回写 results.json（权重字段）
+    with open(os.path.join(DOCS_DIR, 'data', 'results.json'), 'w', encoding='utf-8') as f:
+        json.dump(output, f, ensure_ascii=False, indent=2)
+
     # ─── index.html ──────────────────────────
     html = '''<!DOCTYPE html>
 <html lang="zh-CN">
@@ -1432,6 +1543,7 @@ def generate_frontend(results: List[Dict]):
       <button id="refreshBtn" onclick="location.reload()">🔄 刷新</button>
       <span id="warnToggle" class="warn-filter-btn" onclick="toggleWarnFilter()" title="仅显示有风险标记的比赛">⚠️ 全部</span>
       <span id="valueToggle" class="warn-filter-btn" onclick="toggleValueFilter()" title="仅显示有价值投注的比赛">💰 全部</span>
+      <span id="impToggle" class="warn-filter-btn" onclick="toggleImportantFilter()" title="仅显示高重要性比赛">⚡ 全部</span>
       <span id="hitRate" class="meta-hit"></span>
       <span id="valueStats"></span>
     </div>
@@ -1601,7 +1713,10 @@ tr:hover{background:#f0f6ff}
 .sim-item{display:flex;gap:2px;align-items:center;white-space:nowrap}
 .sim-teams{color:#3a4a5c;overflow:hidden;text-overflow:ellipsis;max-width:130px}
 .sim-score{color:#667788;font-size:10px}
-.sim-pct{color:#2563eb;font-weight:600;font-size:10px;margin-left:auto}'''
+.sim-pct{color:#2563eb;font-weight:600;font-size:10px;margin-left:auto}
+.weight-badge{display:inline-block;font-size:10px;color:#888;margin-left:3px;cursor:help;vertical-align:middle}
+.lp-row{opacity:0.55}
+.lp-row:hover{opacity:0.85}'''
     with open(os.path.join(DOCS_DIR, 'style.css'), 'w', encoding='utf-8') as f:
         f.write(css)
 
