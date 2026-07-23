@@ -14,21 +14,8 @@ function ahDir(m){
   var d=m.ah_home_covers_prob>m.ah_away_covers_prob
     ?(m.ah_home_covers_prob>m.ah_push_prob?'上':'走')
     :(m.ah_away_covers_prob>m.ah_push_prob?'下':'走');
-  var h=ahHitCalc(m);
-  return d+(h||'');
-}
-function ahHitCalc(m){
-  if(!m.score||m.ah_handicap==null)return'';
-  var parts=m.score.replace(/\s/g,'').split('-');
-  if(parts.length!==2)return'';
-  var hg=parseInt(parts[0]),ag=parseInt(parts[1]);
-  if(isNaN(hg)||isNaN(ag))return'';
-  var diff=hg-ag;
-  var hcapAbs=Math.abs(m.ah_handicap);
-  var predHome=m.ah_home_covers_prob>m.ah_away_covers_prob;
-  var homeCovers=diff>hcapAbs;
-  if(diff===hcapAbs)return'⦻';
-  return(predHome===homeCovers)?'✔':'✘';
+  var h=m.hit&&m.hit.indexOf('✓')>-1?'✔':(m.hit==='✘'?'✘':'');
+  return d+(m.ah_home_covers_prob!=null?h:'');
 }
 function renderWarning(w){
   if(!w)return'';
