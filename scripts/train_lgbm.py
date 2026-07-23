@@ -9,8 +9,11 @@ import json
 import sqlite3
 import numpy as np
 from collections import defaultdict
+from datetime import datetime
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+
+FORM_WINDOW = 5  # 近几场算近期战绩
 
 DB_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'football.db')
 CACHE_DIR = os.path.join(os.path.dirname(__file__), '..', 'data', 'cache')
@@ -198,9 +201,10 @@ FEATURE_NAMES = [
     'poisson_market_margin','poisson_market_draw_diff',
     'odds_level','draw_premium',
     'home_rank','away_rank','home_pts','away_pts',
+    'home_form_pts','away_form_pts','home_form_gd','away_form_gd',
 ]
 
-def extract_features(row, stats=None):
+def extract_features(row, stats=None, form_data=None):
     pw = _safe_float(row.get('poisson_win'))
     pd_ = _safe_float(row.get('poisson_draw'))
     pl = _safe_float(row.get('poisson_loss'))
@@ -253,6 +257,17 @@ def extract_features(row, stats=None):
     hp = _safe_float(row.get('home_points'))
     ap = _safe_float(row.get('away_points'))
     
+    # 近期战绩特征
+    if form_data:
+        ft_home = form_data.get(row.get('home_team', ''), {})
+        ft_away = form_data.get(row.get('away_team', ''), {})
+        hfp = _safe_float(ft_home.get('form_pts'))
+        afp = _safe_float(ft_away.get('form_pts'))
+        hfg = _safe_float(ft_home.get('form_gd'))
+        afg = _safe_float(ft_away.get('form_gd'))
+    else:
+        hfp = afp = hfg = afg = 0.0
+    
     return [
         pw, pd_, pl,
         fw, fd_, fl,
@@ -264,6 +279,7 @@ def extract_features(row, stats=None):
         poisson_market_margin, poisson_market_draw_diff,
         odds_level, draw_premium,
         hr, ar, hp, ap,
+        hfp, afp, hfg, afg,
     ]
 
 
@@ -281,6 +297,52 @@ def get_result_label(reference_score):
     return 2
 
 
+def build_team_form_map(rows):
+    """从DB记录构建各队近期战绩时间线
+    返回: {team: [(date, gf, ga, is_home), ...]} 按日期排序
+    """
+    timeline = defaultdict(list)
+    for row in rows:
+        r = dict(row)
+        score = r.get('reference_score', '')
+        if '-' not in score:
+            continue
+        parts = score.split('-')
+        try:
+            gh, ga = int(parts[0]), int(parts[1])
+        except:
+            continue
+        date = r.get('date', '')
+        ht = r.get('home_team', '')
+        at = r.get('away_team', '')
+        timeline[ht].append((date, gh, ga, True))
+        timeline[at].append((date, ga, gh, False))
+    for team in timeline:
+        timeline[team].sort(key=lambda x: x[0])
+    return timeline
+
+
+def get_team_form(timeline, team, date, window=FORM_WINDOW):
+    """查某个队在某日期前的近期战绩"""
+    matches = timeline.get(team, [])
+    recent = [m for m in matches if m[0] < date][-window:]
+    if not recent:
+        return {'form_pts': 0.0, 'form_gd': 0.0}
+    pts = 0
+    gd = 0
+    for m in recent:
+        gf, ga = m[1], m[2]
+        gd += gf - ga
+        if gf > ga:
+            pts += 3
+        elif gf == ga:
+            pts += 1
+    return {
+        'form_pts': round(pts / len(recent), 2),
+        'form_gd': round(gd / len(recent), 2),
+    }
+
+
 # ─── 主流程 ──────────────────────────────────────
 
 def main():
@@ -295,7 +357,20 @@ def main():
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     
-    # 加载数据
+    # 加载数据（全部带比分，用于构建近期战绩时间线）
+    cur = conn.execute("""
+        SELECT * FROM poisson_predictions
+        WHERE reference_score IS NOT NULL AND reference_score != ''
+        ORDER BY date
+    """)
+    all_scored_rows = cur.fetchall()
+    
+    # 构建各队近期战绩时间线
+    print(f"构建近期战绩时间线 ({len(all_scored_rows)} 场有比分)...")
+    form_timeline = build_team_form_map(all_scored_rows)
+    print(f"  覆盖 {len(form_timeline)} 支队伍")
+    
+    # 加载训练数据（有赔率的）
     cur = conn.execute("""
         SELECT * FROM poisson_predictions
         WHERE pinnacle_close_w > 1.01 
@@ -318,7 +393,15 @@ def main():
         if label is None:
             skip_reasons['无有效比分'] += 1
             continue
-        feats = extract_features(r)
+        # 计算该场赛事的近期战绩（仅使用该赛事之前的比赛）
+        date = r.get('date', '')
+        home_team = r.get('home_team', '')
+        away_team = r.get('away_team', '')
+        form_data = {
+            home_team: get_team_form(form_timeline, home_team, date),
+            away_team: get_team_form(form_timeline, away_team, date),
+        }
+        feats = extract_features(r, form_data=form_data)
         X_list.append(feats)
         y_list.append(label)
     
@@ -390,8 +473,8 @@ def main():
     os.makedirs(CACHE_DIR, exist_ok=True)
     model_dict = model.to_dict()
     model_dict['feature_names'] = FEATURE_NAMES
-    model_dict['version'] = 6
-    model_dict['train_date'] = '2026-07-17'
+    model_dict['version'] = 7
+    model_dict['train_date'] = '2026-07-23'
     model_dict['train_samples'] = len(X_train)
     model_dict['test_accuracy'] = round(test_acc, 4)
     model_dict['baseline_accuracy'] = round(baseline_acc, 4)

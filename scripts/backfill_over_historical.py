@@ -74,7 +74,17 @@ def fetch_over_page(date_str):
         score_raw = re.sub(r'<[^>]+>', '', tds[4]).strip()
         away = re.sub(r'<[^>]+>', '', tds[5]).strip()
         
-        # 清理排名后缀 [N]
+        # 提取排名数据 [联赛名排名] 或 [排名] 格式
+        home_ranking = None
+        away_ranking = None
+        h_rank_m = re.search(r'\[[^\]]*?(\d+)\]', home)
+        a_rank_m = re.search(r'\[[^\]]*?(\d+)\]', away)
+        if h_rank_m:
+            home_ranking = int(h_rank_m.group(1))
+        if a_rank_m:
+            away_ranking = int(a_rank_m.group(1))
+        
+        # 清理排名标记、中立场地标记
         home_clean = re.sub(r'\s*\[[^\]]*\]', '', home).strip()
         away_clean = re.sub(r'\s*\[[^\]]*\]', '', away).strip()
         home_clean = re.sub(r'\([^)]*\)', '', home_clean).strip()
@@ -109,6 +119,8 @@ def fetch_over_page(date_str):
             'score': score,
             'kickoff_time': kickoff,
             'date': date_str,
+            'home_ranking': home_ranking,
+            'away_ranking': away_ranking,
         })
     
     return matches
@@ -264,7 +276,8 @@ def insert_match(conn, match, odds_info, skip_odds=False):
         bet365_close_w, bet365_close_d, bet365_close_l,
         william_close_w, william_close_d, william_close_l,
         ms_close_w, ms_close_d, ms_close_l,
-        liji_close_w, liji_close_d, liji_close_l
+        liji_close_w, liji_close_d, liji_close_l,
+        home_ranking, away_ranking
     ) VALUES (?, ?, ?, ?, ?, ?, 'over_backfill', ?, ?, 
         ?, ?, ?,
         ?, ?, ?,
@@ -272,7 +285,8 @@ def insert_match(conn, match, odds_info, skip_odds=False):
         ?, ?, ?,
         ?, ?, ?,
         ?, ?, ?,
-        ?, ?, ?)"""
+        ?, ?, ?,
+        ?, ?)"""
     
     conn.execute(sql, (
         match['sid'], match['date'], match['league'],
@@ -285,6 +299,7 @@ def insert_match(conn, match, odds_info, skip_odds=False):
         wil_w, wil_d, wil_l,
         ms_w, ms_d, ms_l,
         lj_w, lj_d, lj_l,
+        match.get('home_ranking'), match.get('away_ranking'),
     ))
     return conn.total_changes > 0
 

@@ -29,6 +29,114 @@ DATA_DIR = os.path.join(REPO_DIR, "data")
 DOCS_DIR = os.path.join(REPO_DIR, "docs")
 DB_PATH = os.path.join(DATA_DIR, "football.db")
 
+FORM_WINDOW = 5  # 近期战绩窗口
+
+
+def enrich_rankings_and_form_from_db(matches: List[Dict]) -> None:
+    """从DB补填排名和近期战绩
+    matches 中 home_rank/away_rank 为0的从DB提取最近排名
+    同时计算两队近5场平均积分和净胜球，写入 match['home_form_pts'] 等
+    """
+    if not matches:
+        return
+    if not os.path.exists(DB_PATH):
+        return
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        conn.row_factory = sqlite3.Row
+        
+        # 获取所有队伍的最新排名
+        cur = conn.execute("""
+            WITH ranked AS (
+                SELECT home_team, home_ranking AS ranking, date,
+                       ROW_NUMBER() OVER (PARTITION BY home_team ORDER BY date DESC) AS rn
+                FROM poisson_predictions
+                WHERE home_ranking IS NOT NULL
+            )
+            SELECT home_team AS team, ranking FROM ranked WHERE rn=1
+        """)
+        team_rank = {r['team']: r['ranking'] for r in cur.fetchall()}
+        
+        cur = conn.execute("""
+            WITH ranked AS (
+                SELECT away_team, away_ranking AS ranking, date,
+                       ROW_NUMBER() OVER (PARTITION BY away_team ORDER BY date DESC) AS rn
+                FROM poisson_predictions
+                WHERE away_ranking IS NOT NULL
+            )
+            SELECT away_team AS team, ranking FROM ranked WHERE rn=1
+        """)
+        for r in cur.fetchall():
+            if r['team'] not in team_rank:
+                team_rank[r['team']] = r['ranking']
+        
+        # 构建近期战绩时间线（所有有比分的场次）
+        cur = conn.execute("""
+            SELECT date, home_team, away_team, reference_score
+            FROM poisson_predictions
+            WHERE reference_score IS NOT NULL AND reference_score != ''
+            ORDER BY date
+        """)
+        from collections import defaultdict
+        form_timeline = defaultdict(list)
+        for r in cur.fetchall():
+            score = r['reference_score']
+            if '-' not in score:
+                continue
+            parts = score.split('-')
+            try:
+                gh, ga = int(parts[0]), int(parts[1])
+            except:
+                continue
+            form_timeline[r['home_team']].append((r['date'], gh, ga))
+            form_timeline[r['away_team']].append((r['date'], ga, gh))
+        for team in form_timeline:
+            form_timeline[team].sort(key=lambda x: x[0])
+        
+        conn.close()
+        
+        today = datetime.today().strftime('%Y-%m-%d')
+        
+        for m in matches:
+            ht = m.get('home_team') or m.get('home', '') or ''
+            at = m.get('away_team') or m.get('away', '') or ''
+            
+            # 补排名
+            if not m.get('home_rank') and ht in team_rank:
+                m['home_rank'] = team_rank[ht]
+            if not m.get('away_rank') and at in team_rank:
+                m['away_rank'] = team_rank[at]
+            
+            # 计算近期战绩
+            h_form = _get_form(form_timeline, ht, today)
+            a_form = _get_form(form_timeline, at, today)
+            m['home_form_pts'] = h_form[0]
+            m['home_form_gd'] = h_form[1]
+            m['away_form_pts'] = a_form[0]
+            m['away_form_gd'] = a_form[1]
+            
+    except Exception as e:
+        logger.warning(f"排名/近期战绩回填异常: {e}")
+
+
+def _get_form(timeline, team, today, window=FORM_WINDOW):
+    """从时间线提取某队近日场均积分和净胜球"""
+    matches = timeline.get(team, [])
+    recent = [m for m in matches if m[0] < today][-window:]
+    if not recent:
+        return (0.0, 0.0)
+    pts = 0
+    gd = 0
+    for m in recent:
+        gf, ga = m[1], m[2]
+        gd += gf - ga
+        if gf > ga:
+            pts += 3
+        elif gf == ga:
+            pts += 1
+    n = len(recent)
+    return (round(pts / n, 2), round(gd / n, 2))
+
 sys.path.insert(0, SCRIPT_DIR)
 from fetch_stats import fetch_match_stats
 
@@ -391,8 +499,10 @@ def extract_lgbm_features(ow, od, ol, model_w, model_d, model_l, margin,
                            poisson_w=None, poisson_d=None, poisson_l=None,
                            implied_w=None, implied_d=None, implied_l=None,
                            home_rank=None, away_rank=None,
-                           home_pts=None, away_pts=None):
-    """从当前比赛数据提取27维特征（与 train_lgbm.py 一致）"""
+                           home_pts=None, away_pts=None,
+                           home_form_pts=None, away_form_pts=None,
+                           home_form_gd=None, away_form_gd=None):
+    """从当前比赛数据提取31维特征（与 train_lgbm.py 一致）"""
     cw, cd, cl, _ = _implied_from_odds(ow, od, ol)
 
     # 开盘隐含概率
@@ -431,6 +541,12 @@ def extract_lgbm_features(ow, od, ol, model_w, model_d, model_l, margin,
     ar = float(away_rank) if away_rank and float(away_rank) > 0 else 0.0
     hp = float(home_pts) if home_pts and float(home_pts) > 0 else 0.0
     ap = float(away_pts) if away_pts and float(away_pts) > 0 else 0.0
+    
+    # 近期战绩
+    hfp = float(home_form_pts) if home_form_pts else 0.0
+    afp = float(away_form_pts) if away_form_pts else 0.0
+    hfg = float(home_form_gd) if home_form_gd else 0.0
+    afg = float(away_form_gd) if away_form_gd else 0.0
 
     return [
         p_w, p_d, p_l,                    # poisson_w/d/l
@@ -443,6 +559,7 @@ def extract_lgbm_features(ow, od, ol, model_w, model_d, model_l, margin,
         poisson_market_margin, poisson_market_draw_diff,
         odds_level, draw_premium,
         hr, ar, hp, ap,                    # home/away_rank, home/away_pts
+        hfp, afp, hfg, afg,               # home/away_form_pts, home/away_form_gd
     ]
 
 def load_lgbm_model():
@@ -818,6 +935,9 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             logger.debug(f"排名预取完成 ({len(matches)}场)")
         except Exception as e:
             logger.warning(f"排名预取失败: {e}，将使用默认值")
+    
+    # 从DB补填排名和近期战绩（覆盖fetch_live_rankings的默认值）
+    enrich_rankings_and_form_from_db(matches)
 
     # 新增：初始化贝叶斯模块（球队攻防实力模型 + 概率校准器）
     team_model, calibrator = init_bayesian_modules(DB_PATH)
@@ -892,7 +1012,9 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
                                           poisson_w=m.get('poisson_win'), poisson_d=m.get('poisson_draw'), poisson_l=m.get('poisson_loss'),
                                           implied_w=m.get('implied_prob_w'), implied_d=m.get('implied_prob_d'), implied_l=m.get('implied_prob_l'),
                                           home_rank=m.get('home_rank'), away_rank=m.get('away_rank'),
-                                          home_pts=m.get('home_points'), away_pts=m.get('away_points'))
+                                          home_pts=m.get('home_points'), away_pts=m.get('away_points'),
+                                          home_form_pts=m.get('home_form_pts'), away_form_pts=m.get('away_form_pts'),
+                                          home_form_gd=m.get('home_form_gd'), away_form_gd=m.get('away_form_gd'))
             proba = predict_lgbm(lgbm_model, feat)
             if proba:
                     lgbm_w, lgbm_d, lgbm_l = proba
@@ -1276,6 +1398,10 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             'away_rank': m.get('away_rank', 0),
             'home_pts': m.get('home_pts', 0),
             'away_pts': m.get('away_pts', 0),
+            'home_form_pts': m.get('home_form_pts', 0),
+            'away_form_pts': m.get('away_form_pts', 0),
+            'home_form_gd': m.get('home_form_gd', 0),
+            'away_form_gd': m.get('away_form_gd', 0),
             'warning': warning,
             'ts_win': ts_probs[0] if ts_probs else None,
             'ts_draw': ts_probs[1] if ts_probs else None,
