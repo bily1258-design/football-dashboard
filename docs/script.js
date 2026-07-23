@@ -232,13 +232,13 @@ function renderTable(matches){
       '<td class="team-name">'+m.home_team+'</td>'+
       '<td class="score-cell"><span>'+(m.score||'-')+'</span></td>'+
       '<td class="team-name">'+m.away_team+'</td>'+
-      '<td style="font-size:12px">'+dirText(m.lgbm_prediction)+' '+dirText(m.model_prediction)+(m.ah_home_covers_prob!=null?' ('+(m.ah_home_covers_prob>m.ah_away_covers_prob?(m.ah_home_covers_prob>m.ah_push_prob?'上':'走'):(m.ah_away_covers_prob>m.ah_push_prob?'下':'走'))+')':'')+'<span class="weight-badge" title="权重 '+m.importance_weight.toFixed(2)+'">⚡'+m.importance_weight.toFixed(2)+'</span>'+renderWarning(m.warning)+'<br>'+vbHtml+'</td>'+
+      '<td><span class="'+dirClass(m.lgbm_prediction)+'">'+dirText(m.lgbm_prediction)+'</span> <span style="font-size:11px;color:#999">'+dirText(m.model_prediction)+(m.ah_home_covers_prob!=null?' <span class="ah-pred-inline">('+(m.ah_home_covers_prob>m.ah_away_covers_prob?(m.ah_home_covers_prob>m.ah_push_prob?'上':'走'):(m.ah_away_covers_prob>m.ah_push_prob?'下':'走'))+')</span>':'')+'</span><span class="weight-badge" title="权重 '+m.importance_weight.toFixed(2)+'">⚡'+m.importance_weight.toFixed(2)+'</span>'+renderWarning(m.warning)+'<br>'+vbHtml+'</td>'+
 
       '<td class="'+hc+'">'+(m.hit||'')+'</td>'+
       '<td class="odds-cell">'+renderOdds(m.comparison, m.pin_comparison, m)+'</td>'+
-      '<td class="odds-cell"><div>模型: <span class="odds-val odds-w">'+fmtPct(m.model_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.model_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.model_loss)+'</span></div>'+
+      '<td class="odds-cell" style="font-size:12px"><div>模型: <span class="odds-val odds-w">'+fmtPct(m.model_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.model_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.model_loss)+'</span></div>'+
         '<div style="margin-top:3px">'+confDot(m.lgbm_confidence)+'LGBM: <span class="odds-val odds-w">'+fmtPct(m.lgbm_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.lgbm_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.lgbm_loss)+'</span>'+
-          '<div style="margin-top:2px;font-size:11px"><span class="oc-label" style="margin-right:3px">分</span>'+
+          '<div style="margin-top:2px"><span class="oc-label" style="margin-right:3px">分</span>'+
             '<span class="'+((m.model_win-m.lgbm_win)<-0.003?'oc-pct-down':(m.model_win-m.lgbm_win)>0.003?'oc-pct-up':'oc-pct-flat')+'">'+fmtPctSign((m.model_win-m.lgbm_win)*100)+'</span> '+
             '<span class="'+((m.model_draw-m.lgbm_draw)<-0.003?'oc-pct-down':(m.model_draw-m.lgbm_draw)>0.003?'oc-pct-up':'oc-pct-flat')+'">'+fmtPctSign((m.model_draw-m.lgbm_draw)*100)+'</span> '+
             '<span class="'+((m.model_loss-m.lgbm_loss)<-0.003?'oc-pct-down':(m.model_loss-m.lgbm_loss)>0.003?'oc-pct-up':'oc-pct-flat')+'">'+fmtPctSign((m.model_loss-m.lgbm_loss)*100)+'</span>'+
