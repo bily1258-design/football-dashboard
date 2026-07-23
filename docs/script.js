@@ -118,8 +118,8 @@ function renderBetSummary(){
     '<div class="bs-row"><span class="bs-label">总投注</span><span class="bs-val">'+total+'</span></div>'+
     '<div class="bs-row"><span class="bs-label">已结算</span><span class="bs-val">'+settled.length+' (胜'+wins.length+')</span></div>'+
     '<div class="bs-row"><span class="bs-label">总投入</span><span class="bs-val">'+totalStake.toFixed(2)+'</span></div>'+
-    '<div class="bs-row"><span class="bs-label">盈亏</span><span class="bs-val '+(totalProfit>=0?'bs-profit':'bs-loss')+'">'+(totalProfit>=0?'+':'')+totalProfit.toFixed(2)+'</span></div>'+
-    '<div class="bs-row"><span class="bs-label">ROI</span><span class="bs-val '+(roi>=0?'bs-profit':'bs-loss')+'">'+(roi>=0?'+':'')+roi.toFixed(1)+'%</span></div>';
+    '<div class="bs-row"><span class="bs-label">盈亏</span><span class="bs-val '+(totalProfit>=0?'bs-profit':'bs-loss')+'\">'+(totalProfit>=0?'+':'')+totalProfit.toFixed(2)+'</span></div>'+
+    '<div class="bs-row"><span class="bs-label">ROI</span><span class="bs-val '+(roi>=0?'bs-profit':'bs-loss')+'\">'+(roi>=0?'+':'')+roi.toFixed(1)+'%</span></div>';
 }
 function showBetModal(m,bv){
   var outcome=bv.outcome;
@@ -242,15 +242,14 @@ function renderTable(matches){
       '<td class="team-name">'+m.away_team+'</td>'+
       '<td><span class="'+dirClass(m.lgbm_prediction)+'">'+dirText(m.lgbm_prediction)+'</span> <span style="font-size:11px;color:#999">'+dirText(m.model_prediction)+(m.ah_home_covers_prob!=null?' <span class="ah-pred-inline">('+(m.ah_home_covers_prob>m.ah_away_covers_prob?(m.ah_home_covers_prob>m.ah_push_prob?'上':'走'):(m.ah_away_covers_prob>m.ah_push_prob?'下':'走'))+')</span>':'')+'</span><span class="weight-badge" title="权重 '+m.importance_weight.toFixed(2)+'">⚡'+m.importance_weight.toFixed(2)+'</span>'+renderWarning(m.warning)+'<br>'+vbHtml+'</td>'+
 
-      '<td class="'+hc+'">'+(ahDir(m)||m.hit||'')+'</td>'+
-
+      '<td class="'+hc+'">'+(m.hit||'')+(ahDir(m)?' <span class="ah-hit-dir">'+ahDir(m)+'</span>':'')+'</td>'+
       '<td class="odds-cell">'+renderOdds(m.comparison, m.pin_comparison, m)+'</td>'+
       '<td class="odds-cell" style="font-size:12px"><div>模型: <span class="odds-val odds-w">'+fmtPct(m.model_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.model_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.model_loss)+'</span></div>'+
         '<div style="margin-top:3px">'+confDot(m.lgbm_confidence)+'LGBM: <span class="odds-val odds-w">'+fmtPct(m.lgbm_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.lgbm_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.lgbm_loss)+'</span>'+
           '<div style="margin-top:2px"><span class="oc-label" style="margin-right:3px">分</span>'+
-            '<span class="'+((m.model_win-m.lgbm_win)<-0.003?'oc-pct-down':(m.model_win-m.lgbm_win)>0.003?'oc-pct-up':'oc-pct-flat')+'">'+fmtPctSign((m.model_win-m.lgbm_win)*100)+'</span> '+
-            '<span class="'+((m.model_draw-m.lgbm_draw)<-0.003?'oc-pct-down':(m.model_draw-m.lgbm_draw)>0.003?'oc-pct-up':'oc-pct-flat')+'">'+fmtPctSign((m.model_draw-m.lgbm_draw)*100)+'</span> '+
-            '<span class="'+((m.model_loss-m.lgbm_loss)<-0.003?'oc-pct-down':(m.model_loss-m.lgbm_loss)>0.003?'oc-pct-up':'oc-pct-flat')+'">'+fmtPctSign((m.model_loss-m.lgbm_loss)*100)+'</span>'+
+            '<span class="'+((m.model_win-m.lgbm_win)<-0.003?'oc-pct-down':(m.model_win-m.lgbm_win)>0.003?'oc-pct-up':'oc-pct-flat')+'\">'+fmtPctSign((m.model_win-m.lgbm_win)*100)+'</span> '+
+            '<span class="'+((m.model_draw-m.lgbm_draw)<-0.003?'oc-pct-down':(m.model_draw-m.lgbm_draw)>0.003?'oc-pct-up':'oc-pct-flat')+'\">'+fmtPctSign((m.model_draw-m.lgbm_draw)*100)+'</span> '+
+            '<span class="'+((m.model_loss-m.lgbm_loss)<-0.003?'oc-pct-down':(m.model_loss-m.lgbm_loss)>0.003?'oc-pct-up':'oc-pct-flat')+'\">'+fmtPctSign((m.model_loss-m.lgbm_loss)*100)+'</span>'+
           '</div>'+
         tsRow+
         '</div></td>'+
