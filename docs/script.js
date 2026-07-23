@@ -234,7 +234,7 @@ function renderTable(matches){
       '<td class="team-name">'+m.away_team+'</td>'+
       '<td><span class="'+dirClass(m.lgbm_prediction)+'">'+dirText(m.lgbm_prediction)+'</span> <span style="font-size:11px;color:#999">'+dirText(m.model_prediction)+'</span><span class="weight-badge" title="权重 '+m.importance_weight.toFixed(2)+'">⚡'+m.importance_weight.toFixed(2)+'</span>'+renderWarning(m.warning)+'<br>'+vbHtml+'</td>'+
       '<td class="'+hc+'">'+(m.hit||'')+'</td>'+
-      '<td class="odds-cell">'+renderOdds(m.comparison, m.pin_comparison)+'</td>'+
+      '<td class="odds-cell">'+renderOdds(m.comparison, m.pin_comparison, m)+'</td>'+
       '<td class="odds-cell"><div>模型: <span class="odds-val odds-w">'+fmtPct(m.model_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.model_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.model_loss)+'</span></div>'+
         '<div style="margin-top:3px">'+confDot(m.lgbm_confidence)+'LGBM: <span class="odds-val odds-w">'+fmtPct(m.lgbm_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.lgbm_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.lgbm_loss)+'</span>'+
           '<div style="margin-top:2px;font-size:11px"><span class="oc-label" style="margin-right:3px">分</span>'+
@@ -310,7 +310,7 @@ fetch('data/results.json?v='+Date.now())
     document.getElementById('loading').innerHTML = '❌ 数据加载失败，请刷新重试<br><small>'+err.message+'</small>';
   });
 
-function renderOdds(c, p){
+function renderOdds(c, p, m){
   var html = '';
   // 主赔率（动态标源）
   if(c && c.current){
@@ -342,7 +342,12 @@ function renderOdds(c, p){
       '<div class="oc-line"><span class="oc-label">初</span><span class="oc-open">'+o[0].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-open">'+o[1].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-open">'+o[2].toFixed(2)+'</span></div>'+
       '<div class="oc-line"><span class="oc-label">即</span><span class="oc-cur">'+cur[0].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+cur[1].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+cur[2].toFixed(2)+'</span></div>'+
       '<div class="oc-line oc-div"><span class="oc-label">分</span>'+divStr+'</div>';
-
+  }
+  // 亚盘
+  if(m && m.ah_home != null){
+    var ahOpen = '<span class="oc-label">亚初</span><span class="oc-open">'+m.ah_open_home.toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-open">'+(m.ah_open_handicap_text||m.ah_open_handicap.toFixed(2))+'</span><span class="oc-sep">/</span><span class="oc-open">'+m.ah_open_away.toFixed(2)+'</span>';
+    var ahCur = '<span class="oc-label">亚即</span><span class="oc-cur">'+m.ah_home.toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+(m.ah_handicap_text||m.ah_handicap.toFixed(2))+'</span><span class="oc-sep">/</span><span class="oc-cur">'+m.ah_away.toFixed(2)+'</span>';
+    html += '<div class="oc-sep-line"></div><div class="oc-line">'+ahOpen+'</div><div class="oc-line">'+ahCur+'</div>';
   }
   return '<div class="odds-combined">'+html+'</div>';
 }

@@ -939,6 +939,16 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
     # 从DB补填排名和近期战绩（覆盖fetch_live_rankings的默认值）
     enrich_rankings_and_form_from_db(matches)
 
+    # ─── 异步亚盘数据获取 ──────────────────────
+    if not os.environ.get('GITHUB_ACTIONS'):
+        logger.info("  获取亚洲盘口数据...")
+        ah_fids = [str(m.get('fid', '')) for m in matches if str(m.get('fid', '') or '') not in ('0', '')]
+        from titan007_utils import fetch_asian_odds_batch
+        ah_data_map = fetch_asian_odds_batch(ah_fids, max_workers=15)
+        logger.info(f"  亚盘数据: {len(ah_data_map)}/{len(ah_fids)} 场成功")
+    else:
+        ah_data_map = {}
+
     # 新增：初始化贝叶斯模块（球队攻防实力模型 + 概率校准器）
     team_model, calibrator = init_bayesian_modules(DB_PATH)
 
@@ -1350,6 +1360,10 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
         else:
             norm_time = raw_time or raw_date
 
+        # 亚盘数据查找
+        fid_str = str(m.get('fid', ''))
+        ah = ah_data_map.get(fid_str, {}) if ah_data_map else {}
+
         results.append({
             'fid': m.get('fid', ''),
             'date': raw_date,
@@ -1416,6 +1430,16 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             # 价值投注检测
             'value_bets': _compute_value_bets(cal_probs if cal_probs else [lgbm_w, lgbm_d, lgbm_l], comparison, pin_comparison),
             'best_value': _get_best_value(cal_probs if cal_probs else [lgbm_w, lgbm_d, lgbm_l], comparison, pin_comparison),
+            # 亚盘
+            'ah_open_home': ah.get('open_home_odds'),
+            'ah_open_handicap': ah.get('open_handicap'),
+            'ah_open_away': ah.get('open_away_odds'),
+            'ah_open_handicap_text': ah.get('open_handicap_text'),
+            'ah_home': ah.get('home_odds'),
+            'ah_handicap': ah.get('handicap'),
+            'ah_away': ah.get('away_odds'),
+            'ah_handicap_text': ah.get('handicap_text'),
+            'ah_company_id': ah.get('company_id'),
             # 近期战绩
             'stats': None,
         })
@@ -1689,7 +1713,7 @@ def generate_frontend(results: List[Dict]):
           <th>客队</th>
           <th>方向</th>
           <th>命中</th>
-          <th>赔率(初/即/分歧)</th>
+          <th>赔率(欧/亚)</th>
           <th>模型/LGBM</th>
           <th>相似历史</th>
         </tr>

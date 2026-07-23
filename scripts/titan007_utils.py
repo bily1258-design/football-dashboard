@@ -9,7 +9,7 @@ titan007_utils.py — titan007.com 数据源公用工具模块
   - get_analysis_data(sid)     → {h2h, home_form, away_form, eOdds, hOdds}
   - sid_to_oddsid(sid)         → 1555xxxxx 赔率页面ID
 """
-import re, json, time, urllib.request
+import re, json, time, urllib.request, ssl
 from datetime import datetime
 
 HEADERS = {
@@ -1056,6 +1056,165 @@ def titan007_to_match_dict(titan007_match, pinnacle_odds=None, hkjc_odds=None, a
 
 # ═══════════ 自测 ═══════════
 
+# ── 亚洲盘口（让球） ──────────────────────────────────────
+
+AH_HEADERS = {
+    'User-Agent': 'Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.6099.230 Mobile Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+    'Accept-Language': 'zh-CN,zh;q=0.9',
+    'Referer': 'https://vip.titan007.com/',
+}
+
+# handicap goals文本 → 数值映射（用于非goals属性的场景）
+HANDICAP_TEXT_MAP = {
+    '平手': 0,
+    '平手/半球': 0.25, '半球': 0.5, '半球/一球': 0.75,
+    '一球': 1.0, '一球/球半': 1.25, '球半': 1.5, '球半/两球': 1.75,
+    '两球': 2.0, '两球/两球半': 2.25, '两球半': 2.5,
+    '受让平手/半球': -0.25, '受让半球': -0.5, '受让半球/一球': -0.75,
+    '受让一球': -1.0, '受让一球/球半': -1.25, '受让球半': -1.5,
+    '受让球半/两球': -1.75, '受让两球': -2.0,
+}
+
+
+def parse_handicap_from_goals(goals_str):
+    """解析HTML中goals属性为数值handicap（从主队视角，负=主队让球）"""
+    try:
+        g = float(goals_str)
+        # titan007的goals属性：正=主队让，负=客队让
+        # 标准亚洲盘口：主队视角，负值=主队让球
+        return -g  # 反转：goals=1 → handicap=-1 (主队让1球)
+    except (ValueError, TypeError):
+        return None
+
+
+def fetch_asian_odds(fid, preferred_cids=None):
+    """获取单场比赛的亚洲盘口（让球）数据
+    
+    从AsianOdds_n.aspx解析Table5的即时盘赔率。
+    优先顺序：Pinnacle(177) → HKJC(432) → 第一个有数据的公司
+    
+    返回 {home_odds, handicap, away_odds, company_id} 或 None
+    handicap从主队视角：负=主队让球，正=主队受让
+    """
+    if preferred_cids is None:
+        preferred_cids = [CID_PINNACLE, CID_HKJC]
+    
+    url = f'https://vip.titan007.com/AsianOdds_n.aspx?id={fid}&l=0'
+    try:
+        req = urllib.request.Request(url, headers=AH_HEADERS)
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+        resp = urllib.request.urlopen(req, timeout=15, context=ctx)
+        raw = resp.read()
+    except Exception as e:
+        return None
+    
+    text = raw.decode('utf-8', errors='replace')
+    tables = re.findall(r'<table[^>]*>[\s\S]*?</table>', text)
+    if len(tables) < 6:
+        return None
+    t5 = tables[5]  # 汇总数据表
+    
+    # 找到所有公司ID
+    all_cids = re.findall(r'data-id=\"(\d+)\"', t5)
+    unique_cids = list(dict.fromkeys(all_cids))
+    
+    if not unique_cids:
+        return None
+    
+    # 按优先顺序选择公司
+    target_cid = None
+    for pcid in preferred_cids:
+        if pcid in unique_cids:
+            target_cid = pcid
+            break
+    if target_cid is None:
+        target_cid = unique_cids[0]
+    
+    # 找到该公司对应的HTML块
+    idx = t5.find(f'data-id=\"{target_cid}\"')
+    if idx < 0:
+        return None
+    section = t5[idx:idx+2000]
+    
+    # 找到公司名称+趋势图标之后的内容（跳过空输入+名称+趋势）
+    trend_end = section.find('</span></td>')
+    if trend_end < 0:
+        return None
+    after_trend = section[trend_end:trend_end+1000]
+    
+    # ── 初盘（开盘价）─ 带title属性的<td>，无oddstype ──
+    opening_cells = re.findall(r'<td[^>]*title="[^"]*"[^>]*>([^<]+)</td>', after_trend)
+    # 盘口的goals属性
+    opening_goals_m = re.search(r'<td[^>]*title="[^"]*"[^>]*goals="([^"]*)"', after_trend)
+    # 解码
+    open_home = f_float(opening_cells[0]) if len(opening_cells) > 0 else None
+    open_away = f_float(opening_cells[2]) if len(opening_cells) > 2 else None
+    open_handicap_text_raw = opening_cells[1].strip() if len(opening_cells) > 1 else ''
+    open_handicap = parse_handicap_from_goals(opening_goals_m.group(1)) if opening_goals_m else None
+    
+    # ── 即时盘（wholeOdds）─ 有oddstype="wholeOdds" ──
+    current_cells = re.findall(r'oddstype=\"wholeOdds\"[^>]*>([^<]+)</td>', section)
+    current_goals_m = re.search(r'oddstype=\"wholeOdds\"[^>]*goals=\"([^\"]*)\"', section)
+    if not current_goals_m:
+        current_goals_m = re.search(r'goals=\"([^\"]*)\"[^>]*oddstype=\"wholeOdds\"', section)
+    
+    cur_home = f_float(current_cells[0]) if len(current_cells) > 0 else None
+    cur_away = f_float(current_cells[2]) if len(current_cells) > 2 else None
+    cur_handicap_text_raw = current_cells[1].strip() if len(current_cells) > 1 else ''
+    cur_handicap = parse_handicap_from_goals(current_goals_m.group(1)) if current_goals_m else None
+    
+    if all(v is None for v in [open_home, cur_home]):
+        return None
+    
+    return {
+        'company_id': target_cid,
+        # 初盘
+        'open_home_odds': open_home,
+        'open_away_odds': open_away,
+        'open_handicap': open_handicap,
+        'open_handicap_text': open_handicap_text_raw,
+        # 即时盘
+        'home_odds': cur_home,
+        'away_odds': cur_away,
+        'handicap': cur_handicap,
+        'handicap_text': cur_handicap_text_raw,
+    }
+
+
+def fetch_asian_odds_batch(fids, max_workers=8, preferred_cids=None):
+    """批量获取亚洲盘口，使用线程池并行请求
+    
+    返回 {fid: dict_or_none, ...}
+    """
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    
+    result = {}
+    if not fids:
+        return result
+    
+    with ThreadPoolExecutor(max_workers=max_workers) as pool:
+        fut_map = {}
+        for fid in fids:
+            fut = pool.submit(fetch_asian_odds, fid, preferred_cids)
+            fut_map[fut] = fid
+        
+        for fut in as_completed(fut_map):
+            fid = fut_map[fut]
+            try:
+                data = fut.result()
+                if data:
+                    result[fid] = data
+            except:
+                pass
+    
+    return result
+
+
+# ── main ──────────────────────────────────────────────────
+
 if __name__ == '__main__':
     import sys
     
@@ -1065,6 +1224,7 @@ if __name__ == '__main__':
         print('  python3 titan007_utils.py list [date]  # 获取比赛列表')
         print('  python3 titan007_utils.py odds <sid> [cid]  # 获取赔率')
         print('  python3 titan007_utils.py analysis <sid>  # 获取分析数据')
+        print('  python3 titan007_utils.py ah <sid>       # 获取亚洲盘口')
         sys.exit(0)
     
     if len(sys.argv) >= 2 and sys.argv[1] == 'list':
@@ -1098,6 +1258,21 @@ if __name__ == '__main__':
             print(f'  eOdds: {len(data["eOdds"])} 家公司')
         else:
             print(f'[FAIL] sid={sid}')
+    
+    elif len(sys.argv) >= 2 and sys.argv[1] == 'ah':
+        sid = sys.argv[2] if len(sys.argv) > 2 else '2920917'
+        data = fetch_asian_odds(sid)
+        if data:
+            cid = data['company_id']
+            print(f'[OK] sid={sid} 公司ID={cid}')
+            
+            op_h = data.get('open_handicap_text', f'{data["open_handicap"]:+.2f}')
+            cur_h = data.get('handicap_text', f'{data["handicap"]:+.2f}')
+            
+            print(f'  初盘: {data["open_home_odds"]:.2f} / {op_h} ({data["open_handicap"]:+.2f}) / {data["open_away_odds"]:.2f}')
+            print(f'  即时: {data["home_odds"]:.2f} / {cur_h} ({data["handicap"]:+.2f}) / {data["away_odds"]:.2f}')
+        else:
+            print(f'[NO AH DATA] sid={sid}')
     
     else:
         # 默认测试

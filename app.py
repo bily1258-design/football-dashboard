@@ -183,6 +183,8 @@ if filtered:
     st.json({
         '比分': m.get('score'),
         '赔率': {'主': m.get('odds_win'), '平': m.get('odds_draw'), '客': m.get('odds_loss')},
+        '亚盘(初)': f"{m.get('ah_open_home','-')} / {m.get('ah_open_handicap_text') or m.get('ah_open_handicap','') or '-'} / {m.get('ah_open_away','-')}",
+        '亚盘(即)': f"{m.get('ah_home','-')} / {m.get('ah_handicap_text') or m.get('ah_handicap','') or '-'} / {m.get('ah_away','-')}",
         'LGBM方向': m.get('lgbm_prediction_cn'),
         'LGBM概率': f"{lgbm_cell_text if (lgbm_cell_text:=embed_lgbm_cell(m.get('lgbm_win'), m.get('lgbm_draw'), m.get('lgbm_loss'), m.get('lgbm_prediction_cn'))) else '无'}",
         'LGBM完整': f"主{w_pct} 平{d_pct} 客{l_pct}",
