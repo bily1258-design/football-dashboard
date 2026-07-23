@@ -927,10 +927,8 @@ def compute_ah_probs(team_model, home_team, away_team,
         return None
     s = team_model['strengths']
     league_avg = team_model.get('league_avg', 1.35)
-    ha = s.get(home_team)
-    aa = s.get(away_team)
-    if not ha or not aa:
-        return None
+    ha = s.get(home_team, {'attack': 1.0, 'defense': 1.0, 'n': 0, 'avg_scored': 1.5, 'avg_conceded': 1.5})
+    aa = s.get(away_team, {'attack': 1.0, 'defense': 1.0, 'n': 0, 'avg_scored': 1.5, 'avg_conceded': 1.5})
 
     # 1. Base 入球期望 λ
     exp_h = ha['attack'] * aa['defense'] * league_avg * home_adv
@@ -1735,13 +1733,6 @@ def generate_frontend(results: List[Dict]):
         json.dump(output, f, ensure_ascii=False, indent=2)
     logger.info(f"结果 → {rp} ({all_counts} 场)")
 
-    # 4. 球队相似度匹配 (Week 2)
-    try:
-        import team_similarity
-        team_similarity.run()
-    except Exception as e:
-        logger.warning("球队相似度匹配失败: %s", e)
-
     # 5. 比赛重要性权重 (Week 3)
     now = datetime.now()
     for match in results:
@@ -1799,6 +1790,13 @@ def generate_frontend(results: List[Dict]):
     # 回写 results.json（权重字段）
     with open(os.path.join(DOCS_DIR, 'data', 'results.json'), 'w', encoding='utf-8') as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
+
+    # 4. 球队相似度匹配 (Week 2) — 在最终写回后跑，不被覆盖
+    try:
+        import team_similarity
+        team_similarity.run()
+    except Exception as e:
+        logger.warning("球队相似度匹配失败: %s", e)
 
     # ─── index.html ──────────────────────────
     html = '''<!DOCTYPE html>
