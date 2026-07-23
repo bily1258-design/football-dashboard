@@ -349,5 +349,9 @@ function renderOdds(c, p, m){
     var ahCur = '<span class="oc-label">亚即</span><span class="oc-cur">'+m.ah_home.toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+(m.ah_handicap_text||m.ah_handicap.toFixed(2))+'</span><span class="oc-sep">/</span><span class="oc-cur">'+m.ah_away.toFixed(2)+'</span>';
     html += '<div class="oc-sep-line"></div><div class="oc-line">'+ahOpen+'</div><div class="oc-line">'+ahCur+'</div>';
   }
+  // 亚盘预测
+  if(m && m.ah_pred_desc){
+    html += '<div class="oc-sep-line"></div><div class="oc-line oc-pred">'+m.ah_pred_desc+'</div>';
+  }
   return '<div class="odds-combined">'+html+'</div>';
 }

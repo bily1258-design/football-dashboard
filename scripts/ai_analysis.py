@@ -908,6 +908,116 @@ def team_strength_prediction(model: Optional[Dict], home_team: str, away_team: s
     return _poisson_1x2(exp_h, exp_a)
 
 
+def compute_ah_probs(team_model, home_team, away_team,
+                      home_form_pts=0, away_form_pts=0,
+                      home_rank=0, away_rank=0,
+                      handicap_value=None, h2h_stats=None, home_adv=1.10):
+    """
+    泊松+战绩+排名+对赛 → 亚盘覆盖率概率
+
+    Args:
+        team_model: 球队实力模型 {'strengths': {...}, 'league_avg': float}
+        handicap_value: 让球数（主队视角，负=主让球）
+        h2h_stats: 可选，对赛记录 [{home_score, away_score, ...}]
+
+    Returns:
+        (home_covers, push_prob, away_covers, desc) 或 None
+    """
+    if not team_model or not team_model.get('strengths') or handicap_value is None:
+        return None
+    s = team_model['strengths']
+    league_avg = team_model.get('league_avg', 1.35)
+    ha = s.get(home_team)
+    aa = s.get(away_team)
+    if not ha or not aa:
+        return None
+
+    # 1. Base 入球期望 λ
+    exp_h = ha['attack'] * aa['defense'] * league_avg * home_adv
+    exp_a = aa['attack'] * ha['defense'] * league_avg
+    if exp_h <= 0 or exp_a <= 0:
+        return None
+
+    # 2. 近期战绩调整 (form_pts 场均积分 0~3)
+    fd = (home_form_pts or 0) - (away_form_pts or 0)
+    ff_h = math.exp(0.08 * fd)
+    ff_a = math.exp(-0.08 * fd)
+
+    # 3. 排名调整
+    rf_h, rf_a = 1.0, 1.0
+    hr = home_rank or 0
+    ar = away_rank or 0
+    if hr > 0 and ar > 0 and hr != ar:
+        rr = math.log(ar) / math.log(hr) if hr > 1 else (ar / 3.0)
+        rf_h = 1.0 + 0.05 * (rr - 1.0)
+        rf_a = 1.0 + 0.05 * (1.0 / rr - 1.0) if rr > 0 else 1.0
+
+    # 4. 对赛调整 (最近6场)
+    h2f_h, h2f_a = 1.0, 1.0
+    if h2h_stats and len(h2h_stats) > 0:
+        recent = h2h_stats[:6]
+        gd = sum((m.get('home_score', 0) or 0) - (m.get('away_score', 0) or 0) for m in recent)
+        gd_r = gd / (len(recent) * max(league_avg, 0.5))
+        h2f_h = math.exp(0.12 * gd_r)
+        h2f_a = math.exp(-0.12 * gd_r)
+
+    adj_h = max(0.1, min(5.0, exp_h * ff_h * rf_h * h2f_h))
+    adj_a = max(0.1, min(5.0, exp_a * ff_a * rf_a * h2f_a))
+
+    # 5. Poisson 比分分布
+    from scipy.stats import poisson as _poiss
+    max_g = 10
+    hp = [_poiss.pmf(i, adj_h) for i in range(max_g + 1)]
+    ap = [_poiss.pmf(j, adj_a) for j in range(max_g + 1)]
+
+    def _cov(h):
+        hc = pc = ac = 0.0
+        for i in range(max_g + 1):
+            phi = hp[i]
+            if phi < 1e-14:
+                continue
+            for j in range(max_g + 1):
+                prob = phi * ap[j]
+                if prob < 1e-14:
+                    continue
+                d = i - j
+                if d > h:
+                    hc += prob
+                elif d == h:
+                    pc += prob
+                else:
+                    ac += prob
+        total = hc + pc + ac
+        return (hc / total, pc / total, ac / total) if total > 0 else None
+
+    h = handicap_value
+    if h is None:
+        return None
+
+    is_q = abs((h * 2) % 1) > 0.001  # 1/4球盘
+    if is_q:
+        lo = math.floor(h * 2) / 2
+        hi = lo + 0.5
+        w = (h - lo) / 0.5
+        rl = _cov(lo)
+        rh = _cov(hi)
+        if rl is None or rh is None:
+            return None
+        hc = rl[0] * (1 - w) + rh[0] * w
+        pc = rl[1] * (1 - w) + rh[1] * w
+        ac = rl[2] * (1 - w) + rh[2] * w
+    else:
+        r = _cov(h)
+        if r is None:
+            return None
+        hc, pc, ac = r
+
+    max_p = max(hc, ac)
+    side = '上' if hc >= ac else '下'
+    desc = f"亚P:{side}{max_p*100:.0f}% 走{pc*100:.0f}%"
+    return (round(hc, 4), round(pc, 4), round(ac, 4), desc)
+
+
 def init_bayesian_modules(db_path: str = DB_PATH) -> Tuple[Optional[Dict], Optional[Dict]]:
     """初始化球队实力模型和概率校准器"""
     team_model = build_team_strength_model(db_path)
@@ -1527,6 +1637,40 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             for r in results:
                 r['stats'] = None
     
+    # ─── 亚盘预测第二遍（需要 stats 中的对赛数据） ──
+    ah_predicted = 0
+    h2h_used = 0
+    for r in results:
+        if r.get('ah_handicap') is None and r.get('ah_open_handicap') is not None:
+            h_v = r.get('ah_open_handicap')
+        else:
+            h_v = r.get('ah_handicap')
+        if h_v is None:
+            continue
+        h2h = None
+        if r.get('stats') and r['stats'].get('h2h'):
+            h2h = r['stats']['h2h']
+            h2h_used += 1
+        ah_r = compute_ah_probs(
+            team_model,
+            r.get('home_team', ''), r.get('away_team', ''),
+            home_form_pts=r.get('home_form_pts', 0) or 0,
+            away_form_pts=r.get('away_form_pts', 0) or 0,
+            home_rank=r.get('home_rank', 0) or 0,
+            away_rank=r.get('away_rank', 0) or 0,
+            handicap_value=h_v,
+            h2h_stats=h2h,
+        )
+        if ah_r:
+            r['ah_home_covers_prob'] = ah_r[0]
+            r['ah_push_prob'] = ah_r[1]
+            r['ah_away_covers_prob'] = ah_r[2]
+            r['ah_pred_desc'] = ah_r[3]
+            ah_predicted += 1
+    if ah_predicted:
+        extra = '+对赛' if h2h_used else ''
+        logger.info(f"亚盘预测: {ah_predicted} 场 (泊松+战绩+排名{extra})")
+    
     return results
 
 # ─── 前端生成 ──────────────────────────────────────
@@ -1816,6 +1960,7 @@ tr:hover{background:#f0f6ff}
 .oc-source{font-size:10px;color:#667788;margin:2px 0 1px;font-weight:600}
 .oc-source-hkjc{color:#92400e}
 .oc-sep-line{height:1px;background:#e0e4e8;margin:4px 0}
+.odds-combined .oc-pred{color:#2563eb;font-size:10px;font-weight:600}
 .warn-badge{display:inline-block;margin-left:3px;vertical-align:middle}
 .warn-badge .warn-trap{cursor:help;font-size:12px}
 .warn-badge .warn-uncert{cursor:help;font-size:12px;margin-left:1px}
