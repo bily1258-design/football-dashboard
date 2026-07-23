@@ -232,7 +232,7 @@ function renderTable(matches){
       '<td class="team-name">'+m.home_team+'</td>'+
       '<td class="score-cell"><span>'+(m.score||'-')+'</span></td>'+
       '<td class="team-name">'+m.away_team+'</td>'+
-      '<td><span class="'+dirClass(m.lgbm_prediction)+'">'+dirText(m.lgbm_prediction)+'</span> <span style="font-size:11px;color:#999">'+dirText(m.model_prediction)+'</span><span class="weight-badge" title="权重 '+m.importance_weight.toFixed(2)+'">⚡'+m.importance_weight.toFixed(2)+'</span>'+renderWarning(m.warning)+'<br>'+vbHtml+'</td>'+
+      '<td><span class="'+dirClass(m.lgbm_prediction)+'">'+dirText(m.lgbm_prediction)+'</span> <span style="font-size:11px;color:#999">'+dirText(m.model_prediction)+(m.ah_home_covers_prob!=null?' <span class="ah-pred-inline">('+(m.ah_home_covers_prob>m.ah_away_covers_prob?(m.ah_home_covers_prob>m.ah_push_prob?'上':'走'):(m.ah_away_covers_prob>m.ah_push_prob?'下':'走'))+')</span>':'')+'</span><span class="weight-badge" title="权重 '+m.importance_weight.toFixed(2)+'">⚡'+m.importance_weight.toFixed(2)+'</span>'+renderWarning(m.warning)+'<br>'+vbHtml+'</td>'+
       '<td class="'+hc+'">'+(m.hit||'')+'</td>'+
       '<td class="odds-cell">'+renderOdds(m.comparison, m.pin_comparison, m)+'</td>'+
       '<td class="odds-cell"><div>模型: <span class="odds-val odds-w">'+fmtPct(m.model_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.model_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.model_loss)+'</span></div>'+
@@ -349,9 +349,6 @@ function renderOdds(c, p, m){
     var ahCur = '<span class="oc-label">亚即</span><span class="oc-cur">'+m.ah_home.toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+(m.ah_handicap_text||m.ah_handicap.toFixed(2))+'</span><span class="oc-sep">/</span><span class="oc-cur">'+m.ah_away.toFixed(2)+'</span>';
     html += '<div class="oc-sep-line"></div><div class="oc-line">'+ahOpen+'</div><div class="oc-line">'+ahCur+'</div>';
   }
-  // 亚盘预测
-  if(m && m.ah_pred_desc){
-    html += '<div class="oc-sep-line"></div><div class="oc-line oc-pred">'+m.ah_pred_desc+'</div>';
-  }
+  // 亚盘预测 — 已移至推荐列
   return '<div class="odds-combined">'+html+'</div>';
 }
