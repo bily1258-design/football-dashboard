@@ -943,8 +943,14 @@ def compute_ah_probs(team_model, home_team, away_team,
 
     # 3. 排名调整
     rf_h, rf_a = 1.0, 1.0
-    hr = home_rank or 0
-    ar = away_rank or 0
+    try:
+        hr = int(home_rank) if home_rank else 0
+    except (ValueError, TypeError):
+        hr = 0
+    try:
+        ar = int(away_rank) if away_rank else 0
+    except (ValueError, TypeError):
+        ar = 0
     if hr > 0 and ar > 0 and hr != ar:
         rr = math.log(ar) / math.log(hr) if hr > 1 else (ar / 3.0)
         rf_h = 1.0 + 0.05 * (rr - 1.0)
@@ -1959,6 +1965,8 @@ tr:hover{background:#f0f6ff}
 .oc-source-hkjc{color:#92400e}
 .oc-sep-line{height:1px;background:#e0e4e8;margin:4px 0}
 .odds-combined .oc-pred{color:#2563eb;font-size:10px;font-weight:600}
+.ah-pred-inline{color:#2563eb;font-size:10px;font-weight:600}
+.ah-hit-dir{color:#7c3aed;font-size:10px;font-weight:600;margin-left:2px}
 .warn-badge{display:inline-block;margin-left:3px;vertical-align:middle}
 .warn-badge .warn-trap{cursor:help;font-size:12px}
 .warn-badge .warn-uncert{cursor:help;font-size:12px;margin-left:1px}
