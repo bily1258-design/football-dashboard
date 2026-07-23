@@ -356,6 +356,7 @@ def load_historical_matches(db_path: str = DB_PATH) -> list:
         FROM poisson_predictions
         WHERE home_team IS NOT NULL AND home_team != ''
           AND away_team IS NOT NULL AND away_team != ''
+          AND reference_score IS NOT NULL AND reference_score != ''
         ORDER BY date DESC
     """).fetchall()
     conn.close()
