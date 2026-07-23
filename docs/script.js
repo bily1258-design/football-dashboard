@@ -9,6 +9,14 @@ function fmtTime(t){if(!t)return'';var m=t.match(/^(?:\d{4}-)?(\d{2})-(\d{2})\s+
 function dirClass(d){return d==='home'?'dir-home':d==='draw'?'dir-draw':d==='away'?'dir-away':'dir-wait'}
 function dirText(d){return d==='home'?'主胜':d==='draw'?'平局':d==='away'?'客胜':'观望'}
 function dirZh(d){return d==='home'?'主':d==='draw'?'平':d==='away'?'客':'?'}
+function ahDir(m){
+  if(m.ah_home_covers_prob==null)return'';
+  var d=m.ah_home_covers_prob>m.ah_away_covers_prob
+    ?(m.ah_home_covers_prob>m.ah_push_prob?'上':'走')
+    :(m.ah_away_covers_prob>m.ah_push_prob?'下':'走');
+  var h=m.hit&&m.hit.indexOf('✓')>-1?'✔':(m.hit==='✘'?'✘':'');
+  return d+(m.ah_home_covers_prob!=null?h:'');
+}
 function renderWarning(w){
   if(!w)return'';
   var h='<span class="warn-badge">';
@@ -234,7 +242,8 @@ function renderTable(matches){
       '<td class="team-name">'+m.away_team+'</td>'+
       '<td><span class="'+dirClass(m.lgbm_prediction)+'">'+dirText(m.lgbm_prediction)+'</span> <span style="font-size:11px;color:#999">'+dirText(m.model_prediction)+(m.ah_home_covers_prob!=null?' <span class="ah-pred-inline">('+(m.ah_home_covers_prob>m.ah_away_covers_prob?(m.ah_home_covers_prob>m.ah_push_prob?'上':'走'):(m.ah_away_covers_prob>m.ah_push_prob?'下':'走'))+')</span>':'')+'</span><span class="weight-badge" title="权重 '+m.importance_weight.toFixed(2)+'">⚡'+m.importance_weight.toFixed(2)+'</span>'+renderWarning(m.warning)+'<br>'+vbHtml+'</td>'+
 
-      '<td class="'+hc+'">'+(m.hit||'')+'</td>'+
+      '<td class="'+hc+'">'+(ahDir(m)||m.hit||'')+'</td>'+
+
       '<td class="odds-cell">'+renderOdds(m.comparison, m.pin_comparison, m)+'</td>'+
       '<td class="odds-cell" style="font-size:12px"><div>模型: <span class="odds-val odds-w">'+fmtPct(m.model_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.model_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.model_loss)+'</span></div>'+
         '<div style="margin-top:3px">'+confDot(m.lgbm_confidence)+'LGBM: <span class="odds-val odds-w">'+fmtPct(m.lgbm_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.lgbm_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.lgbm_loss)+'</span>'+
