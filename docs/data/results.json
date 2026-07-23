@@ -398,7 +398,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1440700",
@@ -611,7 +613,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1440676",
@@ -770,7 +774,8 @@
         "kelly": 0.25,
         "odds": 1.2,
         "prob": 0.9551,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -995,7 +1000,9 @@
             "away_score": 3
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1359160",
@@ -1154,7 +1161,8 @@
         "kelly": 0.25,
         "odds": 1.61,
         "prob": 0.9702,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.225
       },
       "ah_open_home": 1.02,
       "ah_open_handicap": -1.75,
@@ -1374,7 +1382,9 @@
       "ah_home_covers_prob": 0.8935,
       "ah_push_prob": 0.0364,
       "ah_away_covers_prob": 0.0701,
-      "ah_pred_desc": "亚P:上89% 走4%"
+      "ah_pred_desc": "亚P:上89% 走4%",
+      "importance_weight": 0.9,
+      "low_priority": false
     },
     {
       "fid": "1363581",
@@ -1533,7 +1543,8 @@
         "kelly": 0.25,
         "odds": 1.8,
         "prob": 0.9592,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -1576,7 +1587,9 @@
             "away_score": 3
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1370861",
@@ -1694,7 +1707,8 @@
         "kelly": 0.25,
         "odds": 1.66,
         "prob": 0.9739,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.1925
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -1782,7 +1796,9 @@
             "away_score": 3
           }
         ]
-      }
+      },
+      "importance_weight": 0.77,
+      "low_priority": true
     },
     {
       "fid": "1364688",
@@ -1900,7 +1916,8 @@
         "kelly": 0.25,
         "odds": 1.63,
         "prob": 0.9536,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": 1.02,
       "ah_open_handicap": -0.25,
@@ -2006,7 +2023,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1382688",
@@ -2124,7 +2143,8 @@
         "kelly": 0.25,
         "odds": 2.34,
         "prob": 0.7948,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.1925
       },
       "ah_open_home": 1.05,
       "ah_open_handicap": 1.0,
@@ -2153,7 +2173,9 @@
       "ah_home_covers_prob": 0.8449,
       "ah_push_prob": 0.0923,
       "ah_away_covers_prob": 0.0628,
-      "ah_pred_desc": "亚P:上84% 走9%"
+      "ah_pred_desc": "亚P:上84% 走9%",
+      "importance_weight": 0.77,
+      "low_priority": true
     },
     {
       "fid": "1382689",
@@ -2271,7 +2293,8 @@
         "kelly": 0.25,
         "odds": 1.27,
         "prob": 0.9388,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.1925
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -2396,7 +2419,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 0.77,
+      "low_priority": true
     },
     {
       "fid": "1382690",
@@ -2514,7 +2539,8 @@
         "kelly": 0.25,
         "odds": 2.67,
         "prob": 0.8764,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.1925
       },
       "ah_open_home": 0.72,
       "ah_open_handicap": -0.0,
@@ -2797,7 +2823,9 @@
       "ah_home_covers_prob": 0.2181,
       "ah_push_prob": 0.2285,
       "ah_away_covers_prob": 0.5533,
-      "ah_pred_desc": "亚P:下55% 走23%"
+      "ah_pred_desc": "亚P:下55% 走23%",
+      "importance_weight": 0.77,
+      "low_priority": true
     },
     {
       "fid": "1382691",
@@ -2915,7 +2943,8 @@
         "kelly": 0.25,
         "odds": 1.91,
         "prob": 0.9725,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.1925
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -2940,7 +2969,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.77,
+      "low_priority": true
     },
     {
       "fid": "1382687",
@@ -3058,7 +3089,8 @@
         "kelly": 0.25,
         "odds": 2.44,
         "prob": 0.8896,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.1925
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -3083,7 +3115,9 @@
             "away_score": 3
           }
         ]
-      }
+      },
+      "importance_weight": 0.77,
+      "low_priority": true
     },
     {
       "fid": "1359166",
@@ -3242,7 +3276,8 @@
         "kelly": 0.25,
         "odds": 1.65,
         "prob": 0.9629,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.225
       },
       "ah_open_home": 0.98,
       "ah_open_handicap": -0.5,
@@ -3271,7 +3306,9 @@
       "ah_home_covers_prob": 0.8852,
       "ah_push_prob": 0.0,
       "ah_away_covers_prob": 0.1148,
-      "ah_pred_desc": "亚P:上89% 走0%"
+      "ah_pred_desc": "亚P:上89% 走0%",
+      "importance_weight": 0.9,
+      "low_priority": false
     },
     {
       "fid": "1364691",
@@ -3389,7 +3426,8 @@
         "kelly": 0.25,
         "odds": 1.53,
         "prob": 0.9,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -3677,7 +3715,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1384114",
@@ -3836,7 +3876,8 @@
         "kelly": 0.25,
         "odds": 1.9,
         "prob": 0.9501,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -3847,7 +3888,9 @@
       "ah_away": null,
       "ah_handicap_text": null,
       "ah_company_id": null,
-      "stats": null
+      "stats": null,
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1384118",
@@ -4006,7 +4049,8 @@
         "kelly": 0.25,
         "odds": 2.03,
         "prob": 0.9301,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -4112,7 +4156,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1373083",
@@ -4271,7 +4317,8 @@
         "kelly": 0.25,
         "odds": 2.54,
         "prob": 0.6167,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -4333,7 +4380,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1373075",
@@ -4492,7 +4541,8 @@
         "kelly": 0.25,
         "odds": 1.98,
         "prob": 0.9509,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -4527,7 +4577,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1373135",
@@ -4686,7 +4738,8 @@
         "kelly": 0.25,
         "odds": 1.72,
         "prob": 0.912,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -4720,7 +4773,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1373545",
@@ -4879,7 +4934,8 @@
         "kelly": 0.25,
         "odds": 1.32,
         "prob": 0.9076,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -4904,7 +4960,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1373546",
@@ -5063,7 +5121,8 @@
         "kelly": 0.25,
         "odds": 1.73,
         "prob": 0.9744,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -5124,7 +5183,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1373547",
@@ -5283,7 +5344,8 @@
         "kelly": 0.25,
         "odds": 1.74,
         "prob": 0.9657,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -5344,7 +5406,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1373548",
@@ -5503,7 +5567,8 @@
         "kelly": 0.25,
         "odds": 2.4,
         "prob": 0.9053,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -5719,7 +5784,9 @@
             "away_score": 3
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1364079",
@@ -5878,7 +5945,8 @@
         "kelly": 0.25,
         "odds": 2.23,
         "prob": 0.6855,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -6166,7 +6234,9 @@
             "away_score": 7
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1363587",
@@ -6325,7 +6395,8 @@
         "kelly": 0.25,
         "odds": 2.81,
         "prob": 0.82,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -6559,7 +6630,9 @@
             "away_score": 4
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1362699",
@@ -6718,7 +6791,8 @@
         "kelly": 0.2393,
         "odds": 2.91,
         "prob": 0.5007,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2034
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -6743,7 +6817,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1370862",
@@ -6861,7 +6937,8 @@
         "kelly": 0.25,
         "odds": 1.51,
         "prob": 0.969,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.1925
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -6895,7 +6972,9 @@
             "away_score": 8
           }
         ]
-      }
+      },
+      "importance_weight": 0.77,
+      "low_priority": true
     },
     {
       "fid": "1370863",
@@ -7013,7 +7092,8 @@
         "kelly": 0.25,
         "odds": 2.51,
         "prob": 0.7039,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.1925
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -7024,7 +7104,9 @@
       "ah_away": null,
       "ah_handicap_text": null,
       "ah_company_id": null,
-      "stats": null
+      "stats": null,
+      "importance_weight": 0.77,
+      "low_priority": true
     },
     {
       "fid": "1363701",
@@ -7183,7 +7265,8 @@
         "kelly": 0.25,
         "odds": 1.99,
         "prob": 0.8169,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -7317,7 +7400,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1363593",
@@ -7476,7 +7561,8 @@
         "kelly": 0.25,
         "odds": 1.3,
         "prob": 0.9617,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -7487,7 +7573,9 @@
       "ah_away": null,
       "ah_handicap_text": null,
       "ah_company_id": null,
-      "stats": null
+      "stats": null,
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1363600",
@@ -7646,7 +7734,8 @@
         "kelly": 0.25,
         "odds": 2.45,
         "prob": 0.9415,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -7762,7 +7851,9 @@
             "away_score": 3
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1362700",
@@ -7921,7 +8012,8 @@
         "kelly": 0.25,
         "odds": 1.44,
         "prob": 0.9259,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -7932,7 +8024,9 @@
       "ah_away": null,
       "ah_handicap_text": null,
       "ah_company_id": null,
-      "stats": null
+      "stats": null,
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1363732",
@@ -8091,7 +8185,8 @@
         "kelly": 0.25,
         "odds": 1.7,
         "prob": 0.9653,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -8207,7 +8302,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1364689",
@@ -8325,7 +8422,8 @@
         "kelly": 0.25,
         "odds": 1.77,
         "prob": 0.9575,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -8613,7 +8711,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1370864",
@@ -8731,7 +8831,8 @@
         "kelly": 0.25,
         "odds": 1.7,
         "prob": 0.8962,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.1925
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -8765,7 +8866,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 0.77,
+      "low_priority": true
     },
     {
       "fid": "1359171",
@@ -8924,7 +9027,8 @@
         "kelly": 0.25,
         "odds": 1.83,
         "prob": 0.9232,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.225
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -9212,7 +9316,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.9,
+      "low_priority": false
     },
     {
       "fid": "1359175",
@@ -9371,7 +9477,8 @@
         "kelly": 0.25,
         "odds": 1.78,
         "prob": 0.9074,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.225
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -9396,7 +9503,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 0.9,
+      "low_priority": false
     },
     {
       "fid": "1373064",
@@ -9555,7 +9664,8 @@
         "kelly": 0.25,
         "odds": 2.14,
         "prob": 0.7942,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -9589,7 +9699,9 @@
             "away_score": 3
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1373149",
@@ -9748,7 +9860,8 @@
         "kelly": 0.25,
         "odds": 2.27,
         "prob": 0.8076,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -9800,7 +9913,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1373144",
@@ -9959,7 +10074,8 @@
         "kelly": 0.25,
         "odds": 2.43,
         "prob": 0.8285,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -10056,7 +10172,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1373549",
@@ -10215,7 +10333,8 @@
         "kelly": 0.25,
         "odds": 2.26,
         "prob": 0.8872,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -10403,7 +10522,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1373550",
@@ -10562,7 +10683,8 @@
         "kelly": 0.25,
         "odds": 2.36,
         "prob": 0.862,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -10587,7 +10709,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1362697",
@@ -10746,7 +10870,8 @@
         "kelly": 0.25,
         "odds": 1.41,
         "prob": 0.9518,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -10852,7 +10977,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1362698",
@@ -11011,7 +11138,8 @@
         "kelly": 0.25,
         "odds": 1.95,
         "prob": 0.8197,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -11036,7 +11164,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1362701",
@@ -11195,7 +11325,8 @@
         "kelly": 0.25,
         "odds": 2.12,
         "prob": 0.8487,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -11265,7 +11396,9 @@
             "away_score": 8
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1363384",
@@ -11424,7 +11557,8 @@
         "kelly": 0.25,
         "odds": 1.51,
         "prob": 0.9123,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": 1.0,
       "ah_open_handicap": 0.75,
@@ -11576,7 +11710,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1384115",
@@ -11735,7 +11871,8 @@
         "kelly": 0.0657,
         "odds": 2.97,
         "prob": 0.3803,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.0532
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -11796,7 +11933,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1362696",
@@ -11955,7 +12094,8 @@
         "kelly": 0.25,
         "odds": 1.72,
         "prob": 0.9594,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -12061,7 +12201,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1362694",
@@ -12220,7 +12362,8 @@
         "kelly": 0.25,
         "odds": 1.67,
         "prob": 0.8959,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -12326,7 +12469,9 @@
         ],
         "away_recent": [],
         "h2h": []
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1364021",
@@ -12485,7 +12630,8 @@
         "kelly": 0.25,
         "odds": 1.42,
         "prob": 0.9286,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -12591,7 +12737,9 @@
             "away_score": 3
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1363977",
@@ -12750,7 +12898,8 @@
         "kelly": 0.25,
         "odds": 1.6,
         "prob": 0.9654,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -13038,7 +13187,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1363969",
@@ -13197,7 +13348,8 @@
         "kelly": 0.25,
         "odds": 1.99,
         "prob": 0.9656,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -13303,7 +13455,9 @@
             "away_score": 4
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1363576",
@@ -13462,7 +13616,8 @@
         "kelly": 0.25,
         "odds": 1.58,
         "prob": 0.8944,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -13687,7 +13842,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1440924",
@@ -13805,7 +13962,8 @@
         "kelly": 0.25,
         "odds": 1.52,
         "prob": 0.9552,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -13939,7 +14097,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1372744",
@@ -14057,7 +14217,8 @@
         "kelly": 0.25,
         "odds": 2.51,
         "prob": 0.5795,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -14082,7 +14243,9 @@
         ],
         "away_recent": [],
         "h2h": []
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1372743",
@@ -14200,7 +14363,8 @@
         "kelly": 0.25,
         "odds": 1.18,
         "prob": 0.9334,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -14325,7 +14489,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1372745",
@@ -14443,7 +14609,8 @@
         "kelly": 0.25,
         "odds": 1.52,
         "prob": 0.9496,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -14477,7 +14644,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1384475",
@@ -14636,7 +14805,8 @@
         "kelly": 0.25,
         "odds": 2.3,
         "prob": 0.8939,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -14752,7 +14922,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1405747",
@@ -14911,7 +15083,8 @@
         "kelly": 0.25,
         "odds": 2.73,
         "prob": 0.7828,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -15045,7 +15218,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1372677",
@@ -15163,7 +15338,8 @@
         "kelly": 0.25,
         "odds": 2.42,
         "prob": 0.5639,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -15279,7 +15455,9 @@
             "away_score": 3
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1384111",
@@ -15438,7 +15616,8 @@
         "kelly": 0.25,
         "odds": 2.46,
         "prob": 0.7853,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -15449,7 +15628,9 @@
       "ah_away": null,
       "ah_handicap_text": null,
       "ah_company_id": null,
-      "stats": null
+      "stats": null,
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1384113",
@@ -15608,7 +15789,8 @@
         "kelly": 0.25,
         "odds": 1.78,
         "prob": 0.9712,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -15751,7 +15933,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1362695",
@@ -15910,7 +16094,8 @@
         "kelly": 0.25,
         "odds": 1.23,
         "prob": 0.9398,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -16016,7 +16201,9 @@
         ],
         "away_recent": [],
         "h2h": []
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1372747",
@@ -16134,7 +16321,8 @@
         "kelly": 0.25,
         "odds": 1.87,
         "prob": 0.9483,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -16259,7 +16447,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1384110",
@@ -16418,7 +16608,8 @@
         "kelly": 0.25,
         "odds": 2.11,
         "prob": 0.9039,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -16443,7 +16634,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1384112",
@@ -16602,7 +16795,8 @@
         "kelly": 0.25,
         "odds": 1.96,
         "prob": 0.9393,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -16836,7 +17030,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1414900",
@@ -16995,7 +17191,8 @@
         "kelly": 0.25,
         "odds": 1.43,
         "prob": 0.9552,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -17129,7 +17326,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1414910",
@@ -17288,7 +17487,8 @@
         "kelly": 0.25,
         "odds": 1.55,
         "prob": 0.9581,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": 1.0,
       "ah_open_handicap": 1.0,
@@ -17386,7 +17586,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1359162",
@@ -17545,7 +17747,8 @@
         "kelly": 0.2245,
         "odds": 2.97,
         "prob": 0.4856,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2021
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -17556,7 +17759,9 @@
       "ah_away": null,
       "ah_handicap_text": null,
       "ah_company_id": null,
-      "stats": null
+      "stats": null,
+      "importance_weight": 0.9,
+      "low_priority": false
     },
     {
       "fid": "1427667",
@@ -17674,7 +17879,8 @@
         "kelly": 0.25,
         "odds": 1.31,
         "prob": 0.9322,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.225
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -17799,7 +18005,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.9,
+      "low_priority": false
     },
     {
       "fid": "1446319",
@@ -17958,7 +18166,8 @@
         "kelly": 0.25,
         "odds": 2.36,
         "prob": 0.7941,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -18064,7 +18273,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1370865",
@@ -18182,7 +18393,8 @@
         "kelly": 0.25,
         "odds": 1.58,
         "prob": 0.9526,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.1925
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -18288,7 +18500,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 0.77,
+      "low_priority": true
     },
     {
       "fid": "1359168",
@@ -18447,7 +18661,8 @@
         "kelly": 0.25,
         "odds": 2.85,
         "prob": 0.8269,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.225
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -18490,7 +18705,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.9,
+      "low_priority": false
     },
     {
       "fid": "1427669",
@@ -18649,7 +18866,8 @@
         "kelly": 0.25,
         "odds": 1.75,
         "prob": 0.8844,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.225
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -18846,7 +19064,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 0.9,
+      "low_priority": false
     },
     {
       "fid": "1440739",
@@ -19005,7 +19225,8 @@
         "kelly": 0.25,
         "odds": 1.66,
         "prob": 0.9669,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -19239,7 +19460,9 @@
             "away_score": 3
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1440702",
@@ -19634,7 +19857,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1442475",
@@ -19793,7 +20018,8 @@
         "kelly": 0.25,
         "odds": 1.39,
         "prob": 0.9004,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -19963,7 +20189,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1363485",
@@ -20122,7 +20350,8 @@
         "kelly": 0.25,
         "odds": 1.87,
         "prob": 0.9027,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -20338,7 +20567,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1440678",
@@ -20497,7 +20728,8 @@
         "kelly": 0.25,
         "odds": 1.94,
         "prob": 0.9276,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -20694,7 +20926,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1440687",
@@ -21071,7 +21305,9 @@
             "away_score": 5
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1405743",
@@ -21230,7 +21466,8 @@
         "kelly": 0.25,
         "odds": 1.97,
         "prob": 0.9059,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -21355,7 +21592,9 @@
             "away_score": 4
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1362373",
@@ -21514,7 +21753,8 @@
         "kelly": 0.25,
         "odds": 1.95,
         "prob": 0.9755,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -21593,7 +21833,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1362295",
@@ -21752,7 +21994,8 @@
         "kelly": 0.25,
         "odds": 1.81,
         "prob": 0.97,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -22022,7 +22265,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1384479",
@@ -22181,7 +22426,8 @@
         "kelly": 0.25,
         "odds": 1.84,
         "prob": 0.9187,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -22442,7 +22688,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1358412",
@@ -22601,7 +22849,8 @@
         "kelly": 0.25,
         "odds": 2.4,
         "prob": 0.926,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -22653,7 +22902,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1358414",
@@ -22812,7 +23063,8 @@
         "kelly": 0.25,
         "odds": 2.58,
         "prob": 0.8168,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -22955,7 +23207,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1358416",
@@ -23114,7 +23368,8 @@
         "kelly": 0.25,
         "odds": 1.49,
         "prob": 0.9546,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -23248,7 +23503,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1405745",
@@ -23407,7 +23664,8 @@
         "kelly": 0.25,
         "odds": 1.52,
         "prob": 0.8792,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -23532,7 +23790,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1417971",
@@ -23691,7 +23951,8 @@
         "kelly": 0.25,
         "odds": 1.94,
         "prob": 0.9654,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": 0.76,
       "ah_open_handicap": -0.25,
@@ -23979,7 +24240,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1358418",
@@ -24138,7 +24401,8 @@
         "kelly": 0.25,
         "odds": 1.52,
         "prob": 0.9457,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -24172,7 +24436,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1417972",
@@ -24331,7 +24597,8 @@
         "kelly": 0.25,
         "odds": 2.1,
         "prob": 0.8113,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -24619,7 +24886,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1434616",
@@ -24737,7 +25006,8 @@
         "kelly": 0.25,
         "odds": 2.54,
         "prob": 0.8099,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -24843,7 +25113,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "2940079",
@@ -25002,7 +25274,8 @@
         "kelly": 0.25,
         "odds": 2.14,
         "prob": 0.8846,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -25199,7 +25472,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "2940081",
@@ -25358,7 +25633,8 @@
         "kelly": 0.25,
         "odds": 2.55,
         "prob": 0.7304,
-        "source": "hkjc"
+        "source": "hkjc",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -25592,7 +25868,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "2908636",
@@ -25751,7 +26029,8 @@
         "kelly": 0.25,
         "odds": 1.56,
         "prob": 0.9399,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -26039,7 +26318,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "2976487",
@@ -26198,7 +26479,8 @@
         "kelly": 0.25,
         "odds": 1.42,
         "prob": 0.9579,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -26486,7 +26768,9 @@
             "away_score": 3
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "2997342",
@@ -26645,7 +26929,8 @@
         "kelly": 0.25,
         "odds": 2.19,
         "prob": 0.8605,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -26933,7 +27218,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "2997341",
@@ -27092,7 +27379,8 @@
         "kelly": 0.25,
         "odds": 1.65,
         "prob": 0.9271,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -27380,7 +27668,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "2908637",
@@ -27539,7 +27829,8 @@
         "kelly": 0.25,
         "odds": 2.13,
         "prob": 0.8092,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -27827,7 +28118,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "2997343",
@@ -27986,7 +28279,8 @@
         "kelly": 0.25,
         "odds": 1.73,
         "prob": 0.9508,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -28274,7 +28568,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "2929658",
@@ -28433,7 +28729,8 @@
         "kelly": 0.25,
         "odds": 1.65,
         "prob": 0.9699,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -28721,7 +29018,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "2929657",
@@ -28880,7 +29179,8 @@
         "kelly": 0.25,
         "odds": 2.56,
         "prob": 0.873,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -29168,7 +29468,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "2929660",
@@ -29327,7 +29629,8 @@
         "kelly": 0.25,
         "odds": 2.52,
         "prob": 0.6131,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -29615,7 +29918,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "2929659",
@@ -29774,7 +30079,8 @@
         "kelly": 0.25,
         "odds": 2.51,
         "prob": 0.6437,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": 0.86,
       "ah_open_handicap": 0.25,
@@ -30066,7 +30372,9 @@
       "ah_home_covers_prob": 0.5465,
       "ah_push_prob": 0.1038,
       "ah_away_covers_prob": 0.3496,
-      "ah_pred_desc": "亚P:上55% 走10%"
+      "ah_pred_desc": "亚P:上55% 走10%",
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "2925471",
@@ -30225,7 +30533,8 @@
         "kelly": 0.1413,
         "odds": 3.39,
         "prob": 0.3946,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.1145
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -30513,7 +30822,9 @@
             "away_score": 3
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "2925472",
@@ -30672,7 +30983,8 @@
         "kelly": 0.2206,
         "odds": 3.39,
         "prob": 0.4505,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.1787
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -30960,7 +31272,9 @@
             "away_score": 3
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "2925473",
@@ -31119,7 +31433,8 @@
         "kelly": 0.25,
         "odds": 2.43,
         "prob": 0.5806,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -31407,7 +31722,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "2925470",
@@ -31566,7 +31883,8 @@
         "kelly": 0.25,
         "odds": 2.05,
         "prob": 0.9084,
-        "source": "hkjc"
+        "source": "hkjc",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -31773,7 +32091,9 @@
             "away_score": 3
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "2914627",
@@ -31891,7 +32211,8 @@
         "kelly": 0.25,
         "odds": 2.33,
         "prob": 0.9177,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -32179,7 +32500,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "2913664",
@@ -32338,7 +32661,8 @@
         "kelly": 0.25,
         "odds": 2.17,
         "prob": 0.945,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -32626,7 +32950,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "2912835",
@@ -32785,7 +33111,8 @@
         "kelly": 0.25,
         "odds": 1.94,
         "prob": 0.9306,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -33073,7 +33400,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "2912203",
@@ -33232,7 +33561,8 @@
         "kelly": 0.25,
         "odds": 2.6,
         "prob": 0.7839,
-        "source": "hkjc"
+        "source": "hkjc",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -33520,7 +33850,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "2914629",
@@ -33638,7 +33970,8 @@
         "kelly": 0.25,
         "odds": 2.22,
         "prob": 0.8927,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -33926,7 +34259,9 @@
             "away_score": 3
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "2921895",
@@ -34044,7 +34379,8 @@
         "kelly": 0.25,
         "odds": 1.98,
         "prob": 0.852,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.1925
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -34332,7 +34668,9 @@
             "away_score": 3
           }
         ]
-      }
+      },
+      "importance_weight": 0.77,
+      "low_priority": true
     },
     {
       "fid": "2913665",
@@ -34491,7 +34829,8 @@
         "kelly": 0.25,
         "odds": 2.31,
         "prob": 0.8902,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -34779,7 +35118,9 @@
             "away_score": 4
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "2913666",
@@ -34938,7 +35279,8 @@
         "kelly": 0.25,
         "odds": 2.5,
         "prob": 0.8435,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -35226,7 +35568,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "2912836",
@@ -35385,7 +35729,8 @@
         "kelly": 0.25,
         "odds": 2.17,
         "prob": 0.7722,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -35673,7 +36018,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "2912837",
@@ -35832,7 +36179,8 @@
         "kelly": 0.25,
         "odds": 1.66,
         "prob": 0.9713,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -36120,7 +36468,9 @@
             "away_score": 3
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "2912839",
@@ -36279,7 +36629,8 @@
         "kelly": 0.25,
         "odds": 2.29,
         "prob": 0.6237,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -36567,7 +36918,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "2921896",
@@ -36685,7 +37038,8 @@
         "kelly": 0.25,
         "odds": 1.73,
         "prob": 0.9634,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.1925
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -36973,7 +37327,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.77,
+      "low_priority": true
     },
     {
       "fid": "2914628",
@@ -37091,7 +37447,8 @@
         "kelly": 0.25,
         "odds": 2.17,
         "prob": 0.7983,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -37379,7 +37736,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "3010358",
@@ -37497,7 +37856,8 @@
         "kelly": 0.25,
         "odds": 2.33,
         "prob": 0.6699,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -37785,7 +38145,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "2912838",
@@ -37944,7 +38306,8 @@
         "kelly": 0.25,
         "odds": 2.14,
         "prob": 0.927,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -38232,7 +38595,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "2912841",
@@ -38391,7 +38756,8 @@
         "kelly": 0.25,
         "odds": 1.26,
         "prob": 0.9317,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": 0.94,
       "ah_open_handicap": -1.75,
@@ -38679,7 +39045,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "2995200",
@@ -38838,7 +39206,8 @@
         "kelly": 0.25,
         "odds": 1.32,
         "prob": 0.9345,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -39063,7 +39432,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "2924599",
@@ -39462,7 +39833,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "3010361",
@@ -39580,7 +39953,8 @@
         "kelly": 0.25,
         "odds": 1.44,
         "prob": 0.9639,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -39868,7 +40242,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "2940078",
@@ -40027,7 +40403,8 @@
         "kelly": 0.25,
         "odds": 1.75,
         "prob": 0.959,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -40315,7 +40692,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "2940082",
@@ -40474,7 +40853,8 @@
         "kelly": 0.25,
         "odds": 1.72,
         "prob": 0.9123,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -40762,7 +41142,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "2940084",
@@ -40921,7 +41303,8 @@
         "kelly": 0.25,
         "odds": 1.97,
         "prob": 0.9643,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -41173,7 +41556,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "2924600",
@@ -41291,7 +41676,8 @@
         "kelly": 0.25,
         "odds": 1.78,
         "prob": 0.9098,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -41579,7 +41965,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "2907407",
@@ -41738,7 +42126,8 @@
         "kelly": 0.25,
         "odds": 1.91,
         "prob": 0.9654,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.225
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -41999,7 +42388,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.9,
+      "low_priority": false
     },
     {
       "fid": "2940076",
@@ -42158,7 +42549,8 @@
         "kelly": 0.25,
         "odds": 2.06,
         "prob": 0.9538,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -42374,7 +42766,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "2997344",
@@ -42533,7 +42927,8 @@
         "kelly": 0.25,
         "odds": 2.44,
         "prob": 0.9002,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -42821,7 +43216,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "2997345",
@@ -42980,7 +43377,8 @@
         "kelly": 0.25,
         "odds": 2.24,
         "prob": 0.9174,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -43268,7 +43666,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "2997346",
@@ -43427,7 +43827,8 @@
         "kelly": 0.25,
         "odds": 1.56,
         "prob": 0.9511,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -43715,7 +44116,9 @@
             "away_score": 3
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "2913667",
@@ -43874,7 +44277,8 @@
         "kelly": 0.25,
         "odds": 1.85,
         "prob": 0.8647,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -44162,7 +44566,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "2924603",
@@ -44280,7 +44686,8 @@
         "kelly": 0.25,
         "odds": 1.51,
         "prob": 0.9608,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -44568,7 +44975,9 @@
             "away_score": 3
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "3010359",
@@ -44686,7 +45095,8 @@
         "kelly": 0.25,
         "odds": 1.88,
         "prob": 0.8511,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -44974,7 +45384,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "2907406",
@@ -45133,7 +45545,8 @@
         "kelly": 0.25,
         "odds": 2.26,
         "prob": 0.829,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.225
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -45376,7 +45789,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.9,
+      "low_priority": false
     },
     {
       "fid": "2997347",
@@ -45535,7 +45950,8 @@
         "kelly": 0.25,
         "odds": 1.89,
         "prob": 0.9175,
-        "source": "hkjc"
+        "source": "hkjc",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -45823,7 +46239,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "2929662",
@@ -45982,7 +46400,8 @@
         "kelly": 0.25,
         "odds": 1.63,
         "prob": 0.9039,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -46198,7 +46617,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "2925475",
@@ -46357,7 +46778,8 @@
         "kelly": 0.25,
         "odds": 1.67,
         "prob": 0.9368,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -46645,7 +47067,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "2925474",
@@ -46804,7 +47228,8 @@
         "kelly": 0.25,
         "odds": 2.36,
         "prob": 0.8267,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": 0.96,
       "ah_open_handicap": -0.0,
@@ -47096,7 +47521,9 @@
       "ah_home_covers_prob": 0.7072,
       "ah_push_prob": 0.0999,
       "ah_away_covers_prob": 0.1929,
-      "ah_pred_desc": "亚P:上71% 走10%"
+      "ah_pred_desc": "亚P:上71% 走10%",
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "2925477",
@@ -47255,7 +47682,8 @@
         "kelly": 0.25,
         "odds": 3.03,
         "prob": 0.7095,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -47462,7 +47890,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "2925476",
@@ -47621,7 +48051,8 @@
         "kelly": 0.25,
         "odds": 1.32,
         "prob": 0.9648,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -47828,7 +48259,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "2929661",
@@ -47987,7 +48420,8 @@
         "kelly": 0.25,
         "odds": 1.72,
         "prob": 0.962,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -48275,7 +48709,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "2914626",
@@ -48393,7 +48829,8 @@
         "kelly": 0.25,
         "odds": 1.58,
         "prob": 0.9644,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -48618,7 +49055,9 @@
             "away_score": 4
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "2914624",
@@ -48736,7 +49175,8 @@
         "kelly": 0.25,
         "odds": 2.22,
         "prob": 0.9037,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -48933,7 +49373,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "2914630",
@@ -49051,7 +49493,8 @@
         "kelly": 0.25,
         "odds": 2.31,
         "prob": 0.9277,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -49339,7 +49782,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "2924602",
@@ -49457,7 +49902,8 @@
         "kelly": 0.25,
         "odds": 2.02,
         "prob": 0.7815,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -49745,7 +50191,9 @@
             "away_score": 3
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "3010360",
@@ -49863,7 +50311,8 @@
         "kelly": 0.25,
         "odds": 2.13,
         "prob": 0.8546,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -50151,7 +50600,9 @@
             "away_score": 3
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "2912206",
@@ -50310,7 +50761,8 @@
         "kelly": 0.25,
         "odds": 1.53,
         "prob": 0.9303,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -50598,7 +51050,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "2912207",
@@ -50757,7 +51211,8 @@
         "kelly": 0.25,
         "odds": 1.21,
         "prob": 0.9468,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -51045,7 +51500,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "2912204",
@@ -51204,7 +51661,8 @@
         "kelly": 0.25,
         "odds": 2.02,
         "prob": 0.9074,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -51492,7 +51950,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "2913668",
@@ -51651,7 +52111,8 @@
         "kelly": 0.25,
         "odds": 2.89,
         "prob": 0.723,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -51939,7 +52400,9 @@
             "away_score": 3
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "3010354",
@@ -52057,7 +52520,8 @@
         "kelly": 0.25,
         "odds": 1.95,
         "prob": 0.9103,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -52300,7 +52764,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "2913669",
@@ -52459,7 +52925,8 @@
         "kelly": 0.25,
         "odds": 1.5,
         "prob": 0.9181,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -52747,7 +53214,9 @@
             "away_score": 3
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "2912208",
@@ -52906,7 +53375,8 @@
         "kelly": 0.25,
         "odds": 2.82,
         "prob": 0.7781,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -53194,7 +53664,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "2914625",
@@ -53312,7 +53784,8 @@
         "kelly": 0.25,
         "odds": 2.01,
         "prob": 0.9544,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -53564,7 +54037,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "2912210",
@@ -53723,7 +54198,8 @@
         "kelly": 0.25,
         "odds": 1.38,
         "prob": 0.915,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -54002,7 +54478,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "3010355",
@@ -54120,7 +54598,8 @@
         "kelly": 0.25,
         "odds": 1.66,
         "prob": 0.9636,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -54408,7 +54887,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "2924601",
@@ -54526,7 +55007,8 @@
         "kelly": 0.25,
         "odds": 2.14,
         "prob": 0.8805,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -54814,7 +55296,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "2924604",
@@ -54932,7 +55416,8 @@
         "kelly": 0.25,
         "odds": 2.27,
         "prob": 0.7256,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": 0.75,
       "ah_open_handicap": 0.5,
@@ -55224,7 +55709,9 @@
       "ah_home_covers_prob": 0.298,
       "ah_push_prob": 0.1091,
       "ah_away_covers_prob": 0.5928,
-      "ah_pred_desc": "亚P:下59% 走11%"
+      "ah_pred_desc": "亚P:下59% 走11%",
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "2929665",
@@ -55383,7 +55870,8 @@
         "kelly": 0.25,
         "odds": 2.39,
         "prob": 0.8964,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -55671,7 +56159,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "2929663",
@@ -55830,7 +56320,8 @@
         "kelly": 0.25,
         "odds": 1.97,
         "prob": 0.8695,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -56118,7 +56609,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "2929664",
@@ -56277,7 +56770,8 @@
         "kelly": 0.25,
         "odds": 2.1,
         "prob": 0.9515,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -56565,7 +57059,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "2921886",
@@ -56683,7 +57179,8 @@
         "kelly": 0.25,
         "odds": 2.39,
         "prob": 0.7499,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.255
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -56971,7 +57468,9 @@
             "away_score": 3
           }
         ]
-      }
+      },
+      "importance_weight": 1.02,
+      "low_priority": false
     },
     {
       "fid": "3033090",
@@ -57320,7 +57819,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.2,
+      "low_priority": false
     },
     {
       "fid": "3033092",
@@ -57479,7 +57980,8 @@
         "kelly": 0.25,
         "odds": 1.6,
         "prob": 0.9587,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.3
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -57676,7 +58178,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.2,
+      "low_priority": false
     },
     {
       "fid": "2999989",
@@ -57835,7 +58339,8 @@
         "kelly": 0.25,
         "odds": 2.13,
         "prob": 0.9122,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.3
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -58032,7 +58537,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.2,
+      "low_priority": false
     },
     {
       "fid": "2914623",
@@ -58150,7 +58657,8 @@
         "kelly": 0.25,
         "odds": 2.04,
         "prob": 0.9465,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.27
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -58438,7 +58946,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 1.08,
+      "low_priority": false
     },
     {
       "fid": "2999990",
@@ -58597,7 +59107,8 @@
         "kelly": 0.25,
         "odds": 1.19,
         "prob": 0.9443,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.3
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -58794,7 +59305,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.2,
+      "low_priority": false
     },
     {
       "fid": "2999991",
@@ -58953,7 +59466,8 @@
         "kelly": 0.25,
         "odds": 1.75,
         "prob": 0.9672,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.3
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -59150,7 +59664,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.2,
+      "low_priority": false
     },
     {
       "fid": "2995210",
@@ -59309,7 +59825,8 @@
         "kelly": 0.25,
         "odds": 1.26,
         "prob": 0.9332,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.27
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -59579,7 +60096,9 @@
             "away_score": 4
           }
         ]
-      }
+      },
+      "importance_weight": 1.08,
+      "low_priority": false
     },
     {
       "fid": "2995212",
@@ -59738,7 +60257,8 @@
         "kelly": 0.25,
         "odds": 1.9,
         "prob": 0.8416,
-        "source": "hkjc"
+        "source": "hkjc",
+        "kelly_weighted": 0.27
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -60026,7 +60546,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 1.08,
+      "low_priority": false
     },
     {
       "fid": "3033093",
@@ -60185,7 +60707,8 @@
         "kelly": 0.0077,
         "odds": 15.0,
         "prob": 0.0739,
-        "source": "hkjc"
+        "source": "hkjc",
+        "kelly_weighted": 0.0092
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -60382,7 +60905,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.2,
+      "low_priority": false
     },
     {
       "fid": "2991836",
@@ -60541,7 +61066,8 @@
         "kelly": 0.25,
         "odds": 2.91,
         "prob": 0.6968,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -60738,7 +61264,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2910807",
@@ -60897,7 +61425,8 @@
         "kelly": 0.25,
         "odds": 2.14,
         "prob": 0.9664,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -61185,7 +61714,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2940086",
@@ -61344,7 +61875,8 @@
         "kelly": 0.25,
         "odds": 2.2,
         "prob": 0.8951,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.27
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -61632,7 +62164,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 1.08,
+      "low_priority": false
     },
     {
       "fid": "2940092",
@@ -61791,7 +62325,8 @@
         "kelly": 0.25,
         "odds": 2.29,
         "prob": 0.9137,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.27
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -62061,7 +62596,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 1.08,
+      "low_priority": false
     },
     {
       "fid": "2991841",
@@ -62220,7 +62757,8 @@
         "kelly": 0.1058,
         "odds": 3.36,
         "prob": 0.3719,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.1206
       },
       "ah_open_home": 0.98,
       "ah_open_handicap": 0.5,
@@ -62417,7 +62955,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2940094",
@@ -62576,7 +63116,8 @@
         "kelly": 0.25,
         "odds": 2.59,
         "prob": 0.7762,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.27
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -62846,7 +63387,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 1.08,
+      "low_priority": false
     },
     {
       "fid": "2997348",
@@ -63005,7 +63548,8 @@
         "kelly": 0.25,
         "odds": 1.35,
         "prob": 0.9321,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -63293,7 +63837,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2997349",
@@ -63452,7 +63998,8 @@
         "kelly": 0.25,
         "odds": 1.56,
         "prob": 0.9542,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -63740,7 +64287,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "2929668",
@@ -63899,7 +64448,8 @@
         "kelly": 0.25,
         "odds": 1.71,
         "prob": 0.97,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -64187,7 +64737,9 @@
             "away_score": 4
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "2929667",
@@ -64346,7 +64898,8 @@
         "kelly": 0.25,
         "odds": 2.22,
         "prob": 0.8145,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -64634,7 +65187,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "2929666",
@@ -64793,7 +65348,8 @@
         "kelly": 0.25,
         "odds": 2.88,
         "prob": 0.5726,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -65081,7 +65637,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "2912814",
@@ -65240,7 +65798,8 @@
         "kelly": 0.25,
         "odds": 2.19,
         "prob": 0.6513,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -65528,7 +66087,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2912745",
@@ -65968,7 +66529,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "3033097",
@@ -66127,7 +66690,8 @@
         "kelly": 0.25,
         "odds": 1.65,
         "prob": 0.9613,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.3
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -66343,7 +66907,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 1.2,
+      "low_priority": false
     },
     {
       "fid": "3036796",
@@ -66502,7 +67068,8 @@
         "kelly": 0.25,
         "odds": 1.16,
         "prob": 0.9204,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -66699,7 +67266,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2991835",
@@ -66858,7 +67427,8 @@
         "kelly": 0.25,
         "odds": 2.56,
         "prob": 0.6826,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -67055,7 +67625,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2940088",
@@ -67214,7 +67786,8 @@
         "kelly": 0.25,
         "odds": 2.31,
         "prob": 0.8964,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.27
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -67502,7 +68075,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 1.08,
+      "low_priority": false
     },
     {
       "fid": "2940093",
@@ -67661,7 +68236,8 @@
         "kelly": 0.25,
         "odds": 1.34,
         "prob": 0.9305,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.27
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -67949,7 +68525,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 1.08,
+      "low_priority": false
     },
     {
       "fid": "2908638",
@@ -68108,7 +68686,8 @@
         "kelly": 0.25,
         "odds": 1.88,
         "prob": 0.9711,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -68396,7 +68975,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2908639",
@@ -68555,7 +69136,8 @@
         "kelly": 0.25,
         "odds": 1.85,
         "prob": 0.8764,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -68780,7 +69362,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2908640",
@@ -68939,7 +69523,8 @@
         "kelly": 0.25,
         "odds": 2.39,
         "prob": 0.7217,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -69227,7 +69812,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2908641",
@@ -69386,7 +69973,8 @@
         "kelly": 0.25,
         "odds": 2.06,
         "prob": 0.9337,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": 0.89,
       "ah_open_handicap": -0.5,
@@ -69674,7 +70262,9 @@
             "away_score": 3
           }
         ]
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2908642",
@@ -69833,7 +70423,8 @@
         "kelly": 0.25,
         "odds": 1.73,
         "prob": 0.9605,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -70121,7 +70712,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2940090",
@@ -70280,7 +70873,8 @@
         "kelly": 0.25,
         "odds": 2.1,
         "prob": 0.9078,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.27
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -70568,7 +71162,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 1.08,
+      "low_priority": false
     },
     {
       "fid": "2908643",
@@ -70727,7 +71323,8 @@
         "kelly": 0.25,
         "odds": 2.1,
         "prob": 0.933,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -71006,7 +71603,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2908644",
@@ -71165,7 +71764,8 @@
         "kelly": 0.25,
         "odds": 2.3,
         "prob": 0.6068,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -71453,7 +72053,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2908645",
@@ -71612,7 +72214,8 @@
         "kelly": 0.25,
         "odds": 1.81,
         "prob": 0.9572,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -71900,7 +72503,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2908646",
@@ -72059,7 +72664,8 @@
         "kelly": 0.25,
         "odds": 1.52,
         "prob": 0.9446,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -72347,7 +72953,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2908647",
@@ -72506,7 +73114,8 @@
         "kelly": 0.25,
         "odds": 2.02,
         "prob": 0.8389,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -72794,7 +73403,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2910809",
@@ -72953,7 +73564,8 @@
         "kelly": 0.25,
         "odds": 1.45,
         "prob": 0.9145,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -73241,7 +73853,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2910815",
@@ -73400,7 +74014,8 @@
         "kelly": 0.25,
         "odds": 2.03,
         "prob": 0.9695,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -73688,7 +74303,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2991840",
@@ -73847,7 +74464,8 @@
         "kelly": 0.25,
         "odds": 1.35,
         "prob": 0.9376,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -74044,7 +74662,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2991838",
@@ -74203,7 +74823,8 @@
         "kelly": 0.25,
         "odds": 3.34,
         "prob": 0.5722,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -74400,7 +75021,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2940091",
@@ -74559,7 +75182,8 @@
         "kelly": 0.25,
         "odds": 1.81,
         "prob": 0.963,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.27
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -74847,7 +75471,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 1.08,
+      "low_priority": false
     },
     {
       "fid": "2908648",
@@ -75006,7 +75632,8 @@
         "kelly": 0.25,
         "odds": 2.03,
         "prob": 0.9321,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -75222,7 +75849,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2908649",
@@ -75381,7 +76010,8 @@
         "kelly": 0.25,
         "odds": 1.68,
         "prob": 0.9593,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -75669,7 +76299,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2908651",
@@ -75828,7 +76460,8 @@
         "kelly": 0.25,
         "odds": 2.22,
         "prob": 0.8914,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -76116,7 +76749,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2908650",
@@ -76275,7 +76910,8 @@
         "kelly": 0.25,
         "odds": 2.26,
         "prob": 0.8726,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -76545,7 +77181,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2908652",
@@ -76704,7 +77342,8 @@
         "kelly": 0.25,
         "odds": 1.67,
         "prob": 0.9188,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -76965,7 +77604,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "3035507",
@@ -77124,7 +77765,8 @@
         "kelly": 0.25,
         "odds": 1.44,
         "prob": 0.9594,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": 0.63,
       "ah_open_handicap": -0.75,
@@ -77349,7 +77991,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "3036802",
@@ -77467,7 +78111,8 @@
         "kelly": 0.25,
         "odds": 2.24,
         "prob": 0.6725,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -77664,7 +78309,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "3036805",
@@ -77782,7 +78429,8 @@
         "kelly": 0.0213,
         "odds": 25.97,
         "prob": 0.059,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.0243
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -77979,7 +78627,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2999954",
@@ -78138,7 +78788,8 @@
         "kelly": 0.25,
         "odds": 1.95,
         "prob": 0.9207,
-        "source": "hkjc"
+        "source": "hkjc",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -78335,7 +78986,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2999910",
@@ -78494,7 +79147,8 @@
         "kelly": 0.25,
         "odds": 2.38,
         "prob": 0.6395,
-        "source": "hkjc"
+        "source": "hkjc",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -78691,7 +79345,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2999956",
@@ -78850,7 +79506,8 @@
         "kelly": 0.25,
         "odds": 1.4,
         "prob": 0.96,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -79047,7 +79704,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "3036815",
@@ -79206,7 +79865,8 @@
         "kelly": 0.25,
         "odds": 2.1,
         "prob": 0.8938,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -79403,7 +80063,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2999953",
@@ -79562,7 +80224,8 @@
         "kelly": 0.25,
         "odds": 2.08,
         "prob": 0.8585,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -79759,7 +80422,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2999955",
@@ -79918,7 +80583,8 @@
         "kelly": 0.25,
         "odds": 1.41,
         "prob": 0.9105,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -80115,7 +80781,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "3035510",
@@ -80274,7 +80942,8 @@
         "kelly": 0.25,
         "odds": 1.54,
         "prob": 0.9678,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -80471,7 +81140,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "3036819",
@@ -80589,7 +81260,8 @@
         "kelly": 0.25,
         "odds": 1.4,
         "prob": 0.9545,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -80786,7 +81458,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "3036812",
@@ -80904,7 +81578,8 @@
         "kelly": 0.0185,
         "odds": 22.5,
         "prob": 0.0621,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.0211
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -81101,7 +81776,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "3036814",
@@ -81219,7 +81896,8 @@
         "kelly": 0.25,
         "odds": 2.28,
         "prob": 0.6899,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": 0.92,
       "ah_open_handicap": -0.0,
@@ -81416,7 +82094,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2999920",
@@ -81534,7 +82214,8 @@
         "kelly": 0.25,
         "odds": 2.24,
         "prob": 0.8488,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -81731,7 +82412,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2991839",
@@ -81890,7 +82573,8 @@
         "kelly": 0.25,
         "odds": 1.59,
         "prob": 0.965,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -82087,7 +82771,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2962504",
@@ -82246,7 +82932,8 @@
         "kelly": 0.25,
         "odds": 2.67,
         "prob": 0.8653,
-        "source": "hkjc"
+        "source": "hkjc",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -82534,7 +83221,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2962516",
@@ -82693,7 +83382,8 @@
         "kelly": 0.1147,
         "odds": 2.91,
         "prob": 0.4189,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.1308
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -82954,7 +83644,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2910658",
@@ -83113,7 +83805,8 @@
         "kelly": 0.25,
         "odds": 1.8,
         "prob": 0.9605,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -83401,7 +84094,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2910810",
@@ -83560,7 +84255,8 @@
         "kelly": 0.25,
         "odds": 1.53,
         "prob": 0.9671,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -83776,7 +84472,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2940085",
@@ -83935,7 +84633,8 @@
         "kelly": 0.25,
         "odds": 2.06,
         "prob": 0.9055,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.27
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -84142,7 +84841,9 @@
             "away_score": 4
           }
         ]
-      }
+      },
+      "importance_weight": 1.08,
+      "low_priority": false
     },
     {
       "fid": "2991834",
@@ -84301,7 +85002,8 @@
         "kelly": 0.0104,
         "odds": 13.45,
         "prob": 0.084,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.0119
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -84498,7 +85200,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2940087",
@@ -84657,7 +85361,8 @@
         "kelly": 0.25,
         "odds": 2.78,
         "prob": 0.7429,
-        "source": "hkjc"
+        "source": "hkjc",
+        "kelly_weighted": 0.27
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -84909,7 +85614,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 1.08,
+      "low_priority": false
     },
     {
       "fid": "2991837",
@@ -85068,7 +85775,8 @@
         "kelly": 0.25,
         "odds": 1.36,
         "prob": 0.9333,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -85284,7 +85992,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2962505",
@@ -85443,7 +86153,8 @@
         "kelly": 0.25,
         "odds": 1.91,
         "prob": 0.966,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -85731,7 +86442,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "1414849",
@@ -85890,7 +86603,8 @@
         "kelly": 0.25,
         "odds": 1.32,
         "prob": 0.8863,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -85901,7 +86615,9 @@
       "ah_away": null,
       "ah_handicap_text": null,
       "ah_company_id": null,
-      "stats": null
+      "stats": null,
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1414859",
@@ -86056,7 +86772,8 @@
         "kelly": 0.25,
         "odds": 2.1,
         "prob": 0.9011,
-        "source": "hkjc"
+        "source": "hkjc",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -86344,7 +87061,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1414860",
@@ -86499,7 +87218,8 @@
         "kelly": 0.25,
         "odds": 1.19,
         "prob": 0.931,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -86633,7 +87353,9 @@
             "away_score": 6
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1414869",
@@ -86792,7 +87514,8 @@
         "kelly": 0.0366,
         "odds": 14.5,
         "prob": 0.103,
-        "source": "hkjc"
+        "source": "hkjc",
+        "kelly_weighted": 0.0311
       },
       "ah_open_home": 0.75,
       "ah_open_handicap": 0.25,
@@ -86939,7 +87662,9 @@
       "ah_home_covers_prob": 0.2515,
       "ah_push_prob": 0.1002,
       "ah_away_covers_prob": 0.6482,
-      "ah_pred_desc": "亚P:下65% 走10%"
+      "ah_pred_desc": "亚P:下65% 走10%",
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1414880",
@@ -87094,7 +87819,8 @@
         "kelly": 0.25,
         "odds": 1.19,
         "prob": 0.8921,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -87200,7 +87926,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1414889",
@@ -87355,7 +88083,8 @@
         "kelly": 0.2136,
         "odds": 2.92,
         "prob": 0.4829,
-        "source": "hkjc"
+        "source": "hkjc",
+        "kelly_weighted": 0.173
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -87598,7 +88327,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1427681",
@@ -87757,7 +88488,8 @@
         "kelly": 0.25,
         "odds": 1.56,
         "prob": 0.9118,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.225
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -87863,7 +88595,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 0.9,
+      "low_priority": false
     },
     {
       "fid": "1427687",
@@ -88022,7 +88756,8 @@
         "kelly": 0.25,
         "odds": 1.64,
         "prob": 0.956,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.225
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -88247,7 +88982,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.9,
+      "low_priority": false
     },
     {
       "fid": "1436905",
@@ -88402,7 +89139,8 @@
         "kelly": 0.25,
         "odds": 1.66,
         "prob": 0.9648,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -88508,7 +89246,9 @@
         ],
         "away_recent": [],
         "h2h": []
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1436906",
@@ -88663,7 +89403,8 @@
         "kelly": 0.25,
         "odds": 1.93,
         "prob": 0.792,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -88769,7 +89510,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1441117",
@@ -88928,7 +89671,8 @@
         "kelly": 0.25,
         "odds": 1.72,
         "prob": 0.953,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -89044,7 +89788,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1444904",
@@ -89162,7 +89908,8 @@
         "kelly": 0.25,
         "odds": 2.12,
         "prob": 0.6961,
-        "source": "hkjc"
+        "source": "hkjc",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -89268,7 +90015,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1367741",
@@ -89427,7 +90176,8 @@
         "kelly": 0.25,
         "odds": 2.52,
         "prob": 0.5966,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -89670,7 +90420,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1367742",
@@ -89829,7 +90581,8 @@
         "kelly": 0.25,
         "odds": 1.86,
         "prob": 0.9253,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": 0.8,
       "ah_open_handicap": -2.0,
@@ -89840,7 +90593,9 @@
       "ah_away": 0.85,
       "ah_handicap_text": "两球半",
       "ah_company_id": "8",
-      "stats": null
+      "stats": null,
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1367772",
@@ -89999,7 +90754,8 @@
         "kelly": 0.25,
         "odds": 1.65,
         "prob": 0.9483,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -90105,7 +90861,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1395954",
@@ -90264,7 +91022,8 @@
         "kelly": 0.25,
         "odds": 3.1,
         "prob": 0.7244,
-        "source": "hkjc"
+        "source": "hkjc",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -90552,7 +91311,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1395955",
@@ -90711,7 +91472,8 @@
         "kelly": 0.25,
         "odds": 1.66,
         "prob": 0.9501,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2125
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -90954,7 +91716,9 @@
             "away_score": 3
           }
         ]
-      }
+      },
+      "importance_weight": 0.85,
+      "low_priority": false
     },
     {
       "fid": "1427673",
@@ -91113,7 +91877,8 @@
         "kelly": 0.25,
         "odds": 2.29,
         "prob": 0.8719,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.225
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -91238,7 +92003,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.9,
+      "low_priority": false
     },
     {
       "fid": "1436908",
@@ -91397,7 +92164,8 @@
         "kelly": 0.25,
         "odds": 1.62,
         "prob": 0.9522,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -91408,7 +92176,9 @@
       "ah_away": null,
       "ah_handicap_text": null,
       "ah_company_id": null,
-      "stats": null
+      "stats": null,
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1440641",
@@ -91567,7 +92337,8 @@
         "kelly": 0.25,
         "odds": 1.64,
         "prob": 0.9575,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -91692,7 +92463,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1440650",
@@ -91851,7 +92624,8 @@
         "kelly": 0.25,
         "odds": 1.3,
         "prob": 0.9594,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -91985,7 +92759,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1440652",
@@ -92144,7 +92920,8 @@
         "kelly": 0.25,
         "odds": 2.04,
         "prob": 0.9094,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -92278,7 +93055,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1440653",
@@ -92437,7 +93216,8 @@
         "kelly": 0.25,
         "odds": 1.75,
         "prob": 0.8919,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -92634,7 +93414,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1440654",
@@ -92793,7 +93575,8 @@
         "kelly": 0.25,
         "odds": 1.99,
         "prob": 0.9259,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -92963,7 +93746,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "1446475",
@@ -93122,7 +93907,8 @@
         "kelly": 0.25,
         "odds": 1.47,
         "prob": 0.958,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.1925
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -93347,7 +94133,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.77,
+      "low_priority": true
     },
     {
       "fid": "2903524",
@@ -93465,7 +94253,8 @@
         "kelly": 0.25,
         "odds": 1.5,
         "prob": 0.9415,
-        "source": "hkjc"
+        "source": "hkjc",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -93753,7 +94542,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "3025298",
@@ -93912,7 +94703,8 @@
         "kelly": 0.25,
         "odds": 2.72,
         "prob": 0.76,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -94200,7 +94992,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "3025297",
@@ -94359,7 +95153,8 @@
         "kelly": 0.25,
         "odds": 1.79,
         "prob": 0.9768,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -94647,7 +95442,9 @@
             "away_score": 4
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "3034467",
@@ -94765,7 +95562,8 @@
         "kelly": 0.25,
         "odds": 2.05,
         "prob": 0.6883,
-        "source": "hkjc"
+        "source": "hkjc",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": 0.9,
       "ah_open_handicap": 0.75,
@@ -95053,7 +95851,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "2995203",
@@ -95212,7 +96012,8 @@
         "kelly": 0.25,
         "odds": 1.59,
         "prob": 0.9693,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.27
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -95500,7 +96301,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 1.08,
+      "low_priority": false
     },
     {
       "fid": "2995206",
@@ -95659,7 +96462,8 @@
         "kelly": 0.25,
         "odds": 1.14,
         "prob": 0.94,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.27
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -95875,7 +96679,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 1.08,
+      "low_priority": false
     },
     {
       "fid": "2995208",
@@ -96034,7 +96840,8 @@
         "kelly": 0.25,
         "odds": 2.05,
         "prob": 0.8011,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.27
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -96322,7 +97129,9 @@
             "away_score": 5
           }
         ]
-      }
+      },
+      "importance_weight": 1.08,
+      "low_priority": false
     },
     {
       "fid": "2995213",
@@ -96481,7 +97290,8 @@
         "kelly": 0.25,
         "odds": 1.17,
         "prob": 0.9024,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.27
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -96769,7 +97579,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 1.08,
+      "low_priority": false
     },
     {
       "fid": "2995215",
@@ -96928,7 +97740,8 @@
         "kelly": 0.25,
         "odds": 1.27,
         "prob": 0.9327,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.27
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -97216,7 +98029,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 1.08,
+      "low_priority": false
     },
     {
       "fid": "2995216",
@@ -97375,7 +98190,8 @@
         "kelly": 0.25,
         "odds": 1.25,
         "prob": 0.9293,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.27
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -97663,7 +98479,9 @@
             "away_score": 3
           }
         ]
-      }
+      },
+      "importance_weight": 1.08,
+      "low_priority": false
     },
     {
       "fid": "2999992",
@@ -97822,7 +98640,8 @@
         "kelly": 0.25,
         "odds": 1.91,
         "prob": 0.8452,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.3
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -98019,7 +98838,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.2,
+      "low_priority": false
     },
     {
       "fid": "3012943",
@@ -98178,7 +98999,8 @@
         "kelly": 0.0544,
         "odds": 27.8,
         "prob": 0.0884,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.0441
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -98375,7 +99197,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "3012941",
@@ -98534,7 +99358,8 @@
         "kelly": 0.25,
         "odds": 2.08,
         "prob": 0.7194,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -98731,7 +99556,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "3012942",
@@ -98890,7 +99717,8 @@
         "kelly": 0.25,
         "odds": 1.93,
         "prob": 0.6971,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -99097,7 +99925,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "3012944",
@@ -99256,7 +100086,8 @@
         "kelly": 0.25,
         "odds": 1.28,
         "prob": 0.8809,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -99453,7 +100284,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "3032721",
@@ -99571,7 +100404,8 @@
         "kelly": 0.25,
         "odds": 2.01,
         "prob": 0.7197,
-        "source": "hkjc"
+        "source": "hkjc",
+        "kelly_weighted": 0.27
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -99796,7 +100630,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 1.08,
+      "low_priority": false
     },
     {
       "fid": "3033091",
@@ -99955,7 +100791,8 @@
         "kelly": 0.25,
         "odds": 2.58,
         "prob": 0.677,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.3
       },
       "ah_open_home": 0.77,
       "ah_open_handicap": -0.0,
@@ -100152,7 +100989,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.2,
+      "low_priority": false
     },
     {
       "fid": "3033094",
@@ -100311,7 +101150,8 @@
         "kelly": 0.25,
         "odds": 2.09,
         "prob": 0.8947,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.3
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -100508,7 +101348,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.2,
+      "low_priority": false
     },
     {
       "fid": "3033096",
@@ -100667,7 +101509,8 @@
         "kelly": 0.25,
         "odds": 2.1,
         "prob": 0.8837,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.3
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -100864,7 +101707,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.2,
+      "low_priority": false
     },
     {
       "fid": "3036791",
@@ -101023,7 +101868,8 @@
         "kelly": 0.25,
         "odds": 1.41,
         "prob": 0.9619,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -101220,7 +102066,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2910811",
@@ -101379,7 +102227,8 @@
         "kelly": 0.25,
         "odds": 2.07,
         "prob": 0.8393,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -101667,7 +102516,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2910813",
@@ -101826,7 +102677,8 @@
         "kelly": 0.25,
         "odds": 2.37,
         "prob": 0.8906,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -102114,7 +102966,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2942512",
@@ -102273,7 +103127,8 @@
         "kelly": 0.25,
         "odds": 1.46,
         "prob": 0.9545,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.255
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -102498,7 +103353,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 1.02,
+      "low_priority": false
     },
     {
       "fid": "2942513",
@@ -102657,7 +103514,8 @@
         "kelly": 0.25,
         "odds": 1.78,
         "prob": 0.9473,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.255
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -102873,7 +103731,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 1.02,
+      "low_priority": false
     },
     {
       "fid": "2995217",
@@ -103032,7 +103892,8 @@
         "kelly": 0.25,
         "odds": 1.37,
         "prob": 0.8865,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.27
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -103275,7 +104136,9 @@
             "away_score": 3
           }
         ]
-      }
+      },
+      "importance_weight": 1.08,
+      "low_priority": false
     },
     {
       "fid": "2999919",
@@ -103434,7 +104297,8 @@
         "kelly": 0.25,
         "odds": 2.64,
         "prob": 0.7749,
-        "source": "hkjc"
+        "source": "hkjc",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -103641,7 +104505,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "3012945",
@@ -103800,7 +104666,8 @@
         "kelly": 0.25,
         "odds": 2.0,
         "prob": 0.9205,
-        "source": "hkjc"
+        "source": "hkjc",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -103997,7 +104864,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "3012946",
@@ -104156,7 +105025,8 @@
         "kelly": 0.25,
         "odds": 2.19,
         "prob": 0.9133,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.2025
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -104353,7 +105223,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "3012947",
@@ -104512,7 +105384,8 @@
         "kelly": 0.0761,
         "odds": 20.63,
         "prob": 0.1209,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.0616
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -104709,7 +105582,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 0.81,
+      "low_priority": false
     },
     {
       "fid": "3031830",
@@ -104868,7 +105743,8 @@
         "kelly": 0.25,
         "odds": 2.03,
         "prob": 0.6228,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.1925
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -105075,7 +105951,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 0.77,
+      "low_priority": true
     },
     {
       "fid": "3031835",
@@ -105234,7 +106112,8 @@
         "kelly": 0.25,
         "odds": 2.42,
         "prob": 0.8511,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.1925
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -105486,7 +106365,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 0.77,
+      "low_priority": true
     },
     {
       "fid": "3031834",
@@ -105645,7 +106526,8 @@
         "kelly": 0.25,
         "odds": 1.58,
         "prob": 0.8854,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.255
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -105870,7 +106752,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 1.02,
+      "low_priority": false
     },
     {
       "fid": "3033095",
@@ -106029,7 +106913,8 @@
         "kelly": 0.25,
         "odds": 2.17,
         "prob": 0.8302,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.3
       },
       "ah_open_home": 1.0,
       "ah_open_handicap": -0.5,
@@ -106226,7 +107111,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.2,
+      "low_priority": false
     },
     {
       "fid": "3035382",
@@ -106385,7 +107272,8 @@
         "kelly": 0.25,
         "odds": 1.93,
         "prob": 0.876,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.255
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -106601,7 +107489,9 @@
             "away_score": 1
           }
         ]
-      }
+      },
+      "importance_weight": 1.02,
+      "low_priority": false
     },
     {
       "fid": "3036794",
@@ -106760,7 +107650,8 @@
         "kelly": 0.25,
         "odds": 1.7,
         "prob": 0.9688,
-        "source": "hkjc"
+        "source": "hkjc",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -106957,7 +107848,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "3037008",
@@ -107116,7 +108009,8 @@
         "kelly": 0.25,
         "odds": 1.16,
         "prob": 0.9279,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.255
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -107313,7 +108207,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.02,
+      "low_priority": false
     },
     {
       "fid": "3038250",
@@ -107472,7 +108368,8 @@
         "kelly": 0.25,
         "odds": 1.34,
         "prob": 0.9667,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.1925
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -107669,7 +108566,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 0.77,
+      "low_priority": true
     },
     {
       "fid": "2940089",
@@ -107828,7 +108727,8 @@
         "kelly": 0.25,
         "odds": 2.05,
         "prob": 0.9452,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.27
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -108116,7 +109016,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 1.08,
+      "low_priority": false
     },
     {
       "fid": "2999907",
@@ -108275,7 +109177,8 @@
         "kelly": 0.25,
         "odds": 2.09,
         "prob": 0.9044,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -108482,7 +109385,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2999912",
@@ -108641,7 +109546,8 @@
         "kelly": 0.25,
         "odds": 1.27,
         "prob": 0.9592,
-        "source": "hkjc"
+        "source": "hkjc",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -108838,7 +109744,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2999911",
@@ -108997,7 +109905,8 @@
         "kelly": 0.25,
         "odds": 2.18,
         "prob": 0.7365,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -109194,7 +110103,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2999915",
@@ -109543,7 +110454,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "2999916",
@@ -109702,7 +110615,8 @@
         "kelly": 0.25,
         "odds": 1.65,
         "prob": 0.874,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -109899,7 +110813,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "3035511",
@@ -110058,7 +110974,8 @@
         "kelly": 0.25,
         "odds": 2.09,
         "prob": 0.903,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.27
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -110255,7 +111172,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.08,
+      "low_priority": false
     },
     {
       "fid": "3035508",
@@ -110414,7 +111333,8 @@
         "kelly": 0.25,
         "odds": 2.41,
         "prob": 0.753,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.27
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -110611,7 +111531,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.08,
+      "low_priority": false
     },
     {
       "fid": "3035509",
@@ -110770,7 +111692,8 @@
         "kelly": 0.25,
         "odds": 2.22,
         "prob": 0.6951,
-        "source": "hkjc"
+        "source": "hkjc",
+        "kelly_weighted": 0.27
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -110967,7 +111890,9 @@
           }
         ],
         "h2h": []
-      }
+      },
+      "importance_weight": 1.08,
+      "low_priority": false
     },
     {
       "fid": "3036798",
@@ -111126,7 +112051,8 @@
         "kelly": 0.25,
         "odds": 2.01,
         "prob": 0.8463,
-        "source": "pinnacle"
+        "source": "pinnacle",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -111342,7 +112268,9 @@
             "away_score": 2
           }
         ]
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     },
     {
       "fid": "3036818",
@@ -111501,7 +112429,8 @@
         "kelly": 0.25,
         "odds": 1.46,
         "prob": 0.899,
-        "source": "hkjc"
+        "source": "hkjc",
+        "kelly_weighted": 0.285
       },
       "ah_open_home": null,
       "ah_open_handicap": null,
@@ -111717,7 +112646,9 @@
             "away_score": 0
           }
         ]
-      }
+      },
+      "importance_weight": 1.14,
+      "low_priority": false
     }
   ]
 }
