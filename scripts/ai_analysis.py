@@ -1821,8 +1821,8 @@ def generate_frontend(results: List[Dict]):
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>足彩价值投注看板</title>
-<link rel="stylesheet" href="style.css?v=20260724v3">
-<script src="script.js?v=20260724v3"></script>
+<link rel="stylesheet" href="style.css?v=20260724v4">
+<script src="script.js?v=20260724v4"></script>
 </head>
 <body>
 <div class="container">

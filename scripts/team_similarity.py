@@ -349,15 +349,26 @@ def load_historical_matches(db_path: str = DB_PATH, limit: int = 300) -> list:
         return []
     conn = sqlite3.connect(db_path)
     cur = conn.cursor()
-    rows = cur.execute(f"""
-        SELECT home_team, away_team, league, date,
+    rows = cur.execute(f"""        SELECT home_team, away_team, league, date,
                reference_score, poisson_win, poisson_draw, poisson_loss,
                actual_outcome, home_lambda, away_lambda
-        FROM poisson_predictions
-        WHERE home_team IS NOT NULL AND home_team != ''
-          AND away_team IS NOT NULL AND away_team != ''
-          AND (reference_score IS NOT NULL AND reference_score != ''
-               OR actual_outcome IS NOT NULL AND actual_outcome != '')
+        FROM (
+            SELECT home_team, away_team, league, date,
+                   reference_score, poisson_win, poisson_draw, poisson_loss,
+                   actual_outcome, home_lambda, away_lambda,
+                   ROW_NUMBER() OVER (
+                       PARTITION BY home_team, away_team, date
+                       ORDER BY
+                           CASE WHEN reference_score IS NOT NULL AND reference_score != '' THEN 1 ELSE 2 END,
+                           poisson_win DESC
+                   ) AS rn
+            FROM poisson_predictions
+            WHERE home_team IS NOT NULL AND home_team != ''
+              AND away_team IS NOT NULL AND away_team != ''
+              AND (reference_score IS NOT NULL AND reference_score != ''
+                   OR actual_outcome IS NOT NULL AND actual_outcome != '')
+        ) deduped
+        WHERE rn = 1
         ORDER BY date DESC
         LIMIT {int(limit)}
     """).fetchall()
@@ -434,7 +445,15 @@ def find_similar_matches(
         })
 
     scored.sort(key=lambda x: -x['similarity'])
-    return scored[:top_k]
+    # 按(主队,客队)去重，同两队只保留相似度最高的一场
+    seen_pairs = set()
+    deduped = []
+    for s in scored:
+        pair = (s['home_team'], s['away_team'])
+        if pair not in seen_pairs:
+            seen_pairs.add(pair)
+            deduped.append(s)
+    return deduped[:top_k]
 
 
 def run(results_path: str = RESULTS_PATH, db_path: str = DB_PATH,
