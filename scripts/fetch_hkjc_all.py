@@ -203,6 +203,17 @@ def fetch_hkjc_matches(date_str, max_matches=0, delay=0.3, workers=3):
         if not match['match_time']:
             match['match_time'] = f'{date_str} 00:00'
         
+        # 修正日期：match_time的日期和date不一致时，以match_time为准
+        mt_date = match.get('match_time', '')[:10]
+        if mt_date and len(mt_date) == 10 and mt_date != match['date']:
+            old_date = match['date']
+            match['date'] = mt_date
+            # 仅当日不一致时报日志（月移位已在_filter中处理）
+            if abs((datetime.strptime(mt_date, '%Y-%m-%d') - datetime.strptime(old_date, '%Y-%m-%d')).days) == 1:
+                pass  # 凌晨跨日，静默修正
+            else:
+                print(f'[INFO] 日期修正 {old_date}->{mt_date} {match.get("home_team","")} vs {match.get("away_team","")}')
+        
         # 3. 获取平博赔率（同一次1x2d API调用）
         pinnacle = odds.get(CID_PINNACLE)
         if pinnacle:
