@@ -249,7 +249,7 @@ function renderTable(matches){
       '<td>'+fmtTime(m.match_time)+'</td>'+
       '<td><span class="tag tag-'+m.source+'">'+(m.event||m.source)+'</span></td>'+
       '<td class="team-name">'+m.home_team+'</td>'+
-      '<td class="score-cell"><span>'+(m.score||'-')+'</span></td>'+
+      '<td class="score-cell"><span>'+(m.score||(m.postponed?'推迟':'-'))+'</span></td>'+
       '<td class="team-name">'+m.away_team+'</td>'+
       '<td><span class="'+dirClass(m.lgbm_prediction)+'">'+dirText(m.lgbm_prediction)+'</span> <span style="font-size:11px;color:#999">'+dirText(m.model_prediction)+(m.ah_home_covers_prob!=null?' <span class="ah-pred-inline">('+(m.ah_home_covers_prob>m.ah_away_covers_prob?(m.ah_home_covers_prob>m.ah_push_prob?'上':'走'):(m.ah_away_covers_prob>m.ah_push_prob?'下':'走'))+')</span>':'')+'</span><span class="weight-badge" title="权重 '+m.importance_weight.toFixed(2)+'">⚡'+m.importance_weight.toFixed(2)+'</span>'+renderWarning(m.warning)+'<br>'+vbHtml+'</td>'+
 
