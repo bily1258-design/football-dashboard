@@ -282,7 +282,7 @@ def get_score_from_titan007(sid):
 def get_scores_from_over_page(date_str):
     """从titan007 Over_日期.htm 页面获取当天所有完场比分
     
-    返回: { (home_team, away_team): score_str } 字典
+    返回: { sid: score_str } 字典（按SID匹配，无需队名翻译对齐）
     """
     import re, urllib.request
     try:
@@ -293,32 +293,25 @@ def get_scores_from_over_page(date_str):
         html = raw.decode('gb2312', errors='replace')
         
         scores = {}
-        rows = re.findall(r'<tr[^>]*>.*?</tr>', html, re.DOTALL|re.IGNORECASE)
-        for row in rows:
-            tds = re.findall(r'<td[^>]*>(.*?)</td>', row, re.DOTALL|re.IGNORECASE)
-            if len(tds) >= 6:
-                tds_clean = []
-                for td in tds:
-                    c = re.sub(r'<[^>]+>', ' ', td).strip()
-                    c = re.sub(r'\s+', ' ', c)
-                    tds_clean.append(c)
-                home = tds_clean[3].strip()
-                score = tds_clean[4].strip()
-                away = tds_clean[5].strip()
-                if re.match(r'^\d+\s*-\s*\d+$', score):
-                    home_clean = re.sub(r'\s*\[[^\]]*\]', '', home).strip()
-                    away_clean = re.sub(r'\s*\[[^\]]*\]', '', away).strip()
-                    home_clean = re.sub(r'\([^)]*\)', '', home_clean).strip()
-                    away_clean = re.sub(r'\([^)]*\)', '', away_clean).strip()
-                    scores[(home_clean, away_clean)] = score
+        # 每行格式: <tr ... sId='3038222' ...>
+        #    <td class=style1>完</td>
+        #    <td align=right>主队名</td>
+        #    <td ... onclick='showgoallist(3038222)'><font color=red>X</font>-<font color=blue>Y</font></td>
+        #    <td align=left>客队名</td>
+        for m in re.finditer(
+            r"sId='(\d+)'.*?<td\s+class=style1\s+style='cursor:pointer;'\s+onclick='showgoallist\(\1\)'>"
+            r"<font\s+color=red>(\d+)</font>-<font\s+color=blue>(\d+)</font></td>",
+            html, re.DOTALL):
+            sid, hs, gs = m.group(1), m.group(2), m.group(3)
+            scores[sid] = f"{hs}-{gs}"
         return scores
     except Exception as e:
-        print(f'[WARN] Over页面抓取失败: {e}')
+        print(f'[WARN] Over页面抓取失败（SID匹配）: {e}')
         return {}
 
 
 def do_backfill(fpath, date_str):
-    """比分回填：titan007 Over页 → wanchang兜底"""
+    """比分回填：bfdata → Over页 → wanchang兜底"""
     if not os.path.exists(fpath):
         print(f'[WARN] {fpath} 不存在，跳过回填')
         return
@@ -338,35 +331,97 @@ def do_backfill(fpath, date_str):
     
     existing_matches = {m['fid']: m for m in existing.get('matches', [])}
     
-    # 1. titan007 Over页完整比分表 — 所有sid通用，按队名匹配
+    # 0. bfdata_ut.js 按SID直接抓比分（最可靠，无需队名匹配）
     unscored = [(fid, m) for fid, m in existing_matches.items()
                 if not m.get('score') and m.get('match_time')]
+    if unscored:
+        try:
+            from fetch_zqdc import fetch_bfdata
+            bf_matches = fetch_bfdata()
+            bf_scores = {}
+            for bm in bf_matches:
+                sid = bm.get('sid', '')
+                f = bm.get('fields', [])
+                if len(f) > 15:
+                    try:
+                        status = int(f[13])
+                        if status in (-1, 3):
+                            hs = int(f[14])
+                            aas = int(f[15])
+                            bf_scores[sid] = f"{hs}-{aas}"
+                    except (ValueError, IndexError):
+                        pass
+            bf_ok = 0
+            for fid, m in unscored:
+                if fid in bf_scores:
+                    m['score'] = bf_scores[fid]
+                    bf_ok += 1
+            if bf_ok:
+                existing['matches'] = list(existing_matches.values())
+                existing['fetched_at'] = datetime.now().isoformat()
+                with open(fpath, 'w', encoding='utf-8') as f:
+                    json.dump(existing, f, ensure_ascii=False, indent=2)
+                print(f'[BACKFILL] bfdata_ut.js按SID → {bf_ok}/{len(unscored)} 场')
+                # 重新计算unscored（已补的跳过后续步骤）
+                unscored = [(fid, m) for fid, m in existing_matches.items()
+                            if not m.get('score') and m.get('match_time')]
+                if not unscored:
+                    return
+        except Exception as e:
+            print(f'[BACKFILL] bfdata_ut.js抓取失败: {e}')
+    
+    # 1. titan007 Over页完整比分表 — 按SID直接匹配（无需队名翻译对齐）
     if unscored:
         scores = get_scores_from_over_page(date_str)
         if scores:
             over_ok = 0
             for fid, m in unscored:
-                home = m.get('home_team', '').strip()
-                away = m.get('away_team', '').strip()
-                key = (home, away)
-                if key in scores:
-                    m['score'] = scores[key]
-                    over_ok += 1
-                elif (away, home) in scores:
-                    m['score'] = scores[(away, home)]
+                if fid in scores:
+                    m['score'] = scores[fid]
                     over_ok += 1
             if over_ok:
                 existing['matches'] = list(existing_matches.values())
                 existing['fetched_at'] = datetime.now().isoformat()
                 with open(fpath, 'w', encoding='utf-8') as f:
                     json.dump(existing, f, ensure_ascii=False, indent=2)
-                print(f'[BACKFILL] titan007 Over页 → {over_ok}/{len(unscored)} 场')
+                print(f'[BACKFILL] titan007 Over页按SID → {over_ok}/{len(unscored)} 场')
+                unscored = [(fid, m) for fid, m in existing_matches.items()
+                            if not m.get('score') and m.get('match_time')]
             else:
                 print(f'[BACKFILL] titan007 Over页 → 未匹配到比分')
         else:
             print(f'[BACKFILL] titan007 Over页 → 页面无完场数据')
     
-    # 2. wanchang兜底（500.com，补Over页漏掉的旧sid）
+    # 2. Analysis页按SID抓比分（universal兜底，世界杯等特殊赛事也可用）
+    if unscored:
+        print(f'[BACKFILL] Analysis页抓比分: {len(unscored)} 场待补…')
+        ana_ok = 0
+        for fid, m in unscored:
+            try:
+                from titan007_utils import fetch_url
+                import re
+                html = fetch_url(f'https://zq.titan007.com/Analysis/{fid}.htm', timeout=8)
+                home_m = re.search(r'var\s+homeScoreStr\s*=\s*\["(\d+)"\]', html)
+                guest_m = re.search(r'var\s+guestScoreStr\s*=\s*\["(\d+)"\]', html)
+                if home_m and guest_m:
+                    s = f'{home_m.group(1)}-{guest_m.group(1)}'
+                    if s != '0-0' or '完场' in html or '完赛' in html:
+                        m['score'] = s
+                        ana_ok += 1
+            except Exception:
+                pass
+        if ana_ok:
+            existing['matches'] = list(existing_matches.values())
+            existing['fetched_at'] = datetime.now().isoformat()
+            with open(fpath, 'w', encoding='utf-8') as f:
+                json.dump(existing, f, ensure_ascii=False, indent=2)
+            print(f'[BACKFILL] Analysis页按SID → {ana_ok}/{len(unscored)} 场')
+            unscored = [(fid, m) for fid, m in existing_matches.items()
+                        if not m.get('score') and m.get('match_time')]
+        else:
+            print(f'[BACKFILL] Analysis页→未找到比分')
+    
+    # 3. wanchang兜底（500.com，补Over页漏掉的旧sid）
     wc_unscored = [(fid, m) for fid, m in existing_matches.items()
                    if not m.get('score') and m.get('match_time')]
     if wc_unscored:
@@ -493,6 +548,37 @@ def do_backfill(fpath, date_str):
             print(f'[BACKFILL] ESPN → {espn_updated} 场比分已更新')
         else:
             print('[BACKFILL] ESPN兜底→无新比分')
+    
+    # 5. 最后检查：已过比赛时间的仍缺分 → 标为推迟（不影响_score字段，后续仍可补分）
+    postponed = []
+    for fid, m in existing_matches.items():
+        if m.get('score') or m.get('postponed'):
+            continue
+        mt = m.get('match_time', '')
+        if not mt:
+            continue
+        try:
+            match_dt = datetime.fromisoformat(mt[:16].replace(' ', 'T'))
+            match_utc = match_dt - timedelta(hours=8)
+            if match_utc < datetime.utcnow() - timedelta(hours=4):
+                m['postponed'] = True
+                m['score'] = '推迟'
+                postponed.append((fid, m.get('home_team',''), m.get('away_team','')))
+        except:
+            pass
+    
+    if postponed:
+        existing['matches'] = list(existing_matches.values())
+        existing['generated_at'] = datetime.now(timezone(timedelta(hours=8))).strftime('%Y-%m-%d %H:%M:%S')
+        with open(fpath, 'w', encoding='utf-8') as f:
+            json.dump(existing, f, ensure_ascii=False, indent=2)
+        print(f'[BACKFILL] 推迟标记 → {len(postponed)} 场')
+        for fid, h, a in postponed[:5]:
+            print(f'  ✗ {h} vs {a} (fid={fid})')
+        if len(postponed) > 5:
+            print(f'  ... 还有 {len(postponed)-5} 场')
+    else:
+        print('[BACKFILL] 无可标记推迟的比赛')
 
 
 def main():
