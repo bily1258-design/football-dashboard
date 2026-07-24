@@ -15,8 +15,9 @@ import sys
 import sqlite3
 import logging
 import re
-from math import sqrt
+from math import sqrt, exp
 from collections import defaultdict
+from datetime import datetime, timedelta
 
 logger = logging.getLogger(__name__)
 
@@ -344,7 +345,7 @@ def standardize_features(features: dict, cols: list) -> dict:
 
 
 def load_historical_matches(db_path: str = DB_PATH, limit: int = 2000) -> list:
-    """加载历史对局（默认取最近300场）"""
+    """加载历史对局（默认取最近2000场）"""
     if not os.path.exists(db_path):
         return []
     conn = sqlite3.connect(db_path)
@@ -407,6 +408,7 @@ def find_similar_matches(
     2. 客队特征向量 vs 历史客队 余弦相似度
     3. 综合 = sqrt(sim_h * sim_a) → 保证两边都匹配
     4. 同联赛加成 x1.15
+    5. 时间衰减：90天内无衰减，之后指数衰减
     """
     ht_vec = team_features.get(home_team, {}).get('_vec')
     at_vec = team_features.get(away_team, {}).get('_vec')
@@ -427,10 +429,22 @@ def find_similar_matches(
         sim_a = max(_cosine_sim(at_vec, a_vec), 0.0)
         combined = sqrt(sim_h * sim_a)
 
-        # 同联赛加成
+        # 同联赛加成（大幅提高权重，确保同联赛比赛优先）
         if hm['league'] and league and \
            (hm['league'] == league or league in hm['league'] or hm['league'] in league):
-            combined = min(combined * 1.15, 1.0)
+            combined = min(combined * 1.5, 1.0)
+
+        # 时间衰减：近期比赛权重高
+        if hm['date']:
+            try:
+                match_date = datetime.strptime(hm['date'], '%Y-%m-%d')
+                days_ago = (datetime.now() - match_date).days
+                if days_ago >= 0:
+                    # 90天内无衰减，之后指数衰减
+                    time_weight = 1.0 if days_ago < 90 else exp(-(days_ago - 90) / 365)
+                    combined *= time_weight
+            except ValueError:
+                pass
 
         scored.append({
             'home_team': hm['home_team'],
