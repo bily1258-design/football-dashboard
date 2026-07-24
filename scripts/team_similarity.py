@@ -356,16 +356,25 @@ def load_historical_matches(db_path: str = DB_PATH) -> list:
         FROM poisson_predictions
         WHERE home_team IS NOT NULL AND home_team != ''
           AND away_team IS NOT NULL AND away_team != ''
-          AND reference_score IS NOT NULL AND reference_score != ''
+          AND (reference_score IS NOT NULL AND reference_score != ''
+               OR actual_outcome IS NOT NULL AND actual_outcome != '')
         ORDER BY date DESC
     """).fetchall()
     conn.close()
 
     matches = []
     for r in rows:
+        # reference_score (r[4]) 或从 actual_outcome (r[8]) 提取比分
+        score = r[4] or ''
+        if not score and r[8]:
+            # actual_outcome 格式: "home (2-0)" or "away (1-3)" or "draw (0-0)"
+            import re as _re
+            m = _re.search(r'\((\d+)\s*-\s*(\d+)\)', r[8])
+            if m:
+                score = f'{m.group(1)}-{m.group(2)}'
         matches.append({
             'home_team': r[0], 'away_team': r[1], 'league': r[2] or '',
-            'date': r[3] or '', 'score': r[4] or '',
+            'date': r[3] or '', 'score': score,
             'poisson_win': r[5] or 0, 'poisson_draw': r[6] or 0,
             'poisson_loss': r[7] or 0, 'actual': r[8] or '',
             'home_lambda': r[9] or 0, 'away_lambda': r[10] or 0,
