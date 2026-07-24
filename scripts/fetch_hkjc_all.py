@@ -282,9 +282,11 @@ def get_score_from_titan007(sid):
 
 
 def get_scores_from_over_page(date_str):
-    """从titan007 Over_日期.htm 页面获取当天所有完场比分
+    """从titan007 Over_日期.htm 页面获取比分和推迟信息
     
-    返回: { sid: score_str } 字典（按SID匹配，无需队名翻译对齐）
+    返回: (scores, postponed_sids) 元组
+        scores: { sid: score_str } 完赛比分
+        postponed_sids: set 推迟比赛的SID集合
     """
     import re, urllib.request
     try:
@@ -295,21 +297,30 @@ def get_scores_from_over_page(date_str):
         html = raw.decode('gb2312', errors='replace')
         
         scores = {}
-        # 每行格式: <tr ... sId='3038222' ...>
+        postponed_sids = set()
+        
+        # 1. 完赛比分: <tr ... sId='3038222' ...>
         #    <td class=style1>完</td>
         #    <td align=right>主队名</td>
         #    <td ... onclick='showgoallist(3038222)'><font color=red>X</font>-<font color=blue>Y</font></td>
-        #    <td align=left>客队名</td>
         for m in re.finditer(
             r"sId='(\d+)'.*?<td\s+class=style1\s+style='cursor:pointer;'\s+onclick='showgoallist\(\1\)'>"
             r"<font\s+color=red>(\d+)</font>-<font\s+color=blue>(\d+)</font></td>",
             html, re.DOTALL):
             sid, hs, gs = m.group(1), m.group(2), m.group(3)
             scores[sid] = f"{hs}-{gs}"
-        return scores
+        
+        # 2. 推迟比赛: <tr ... sId='...' ...>
+        #    <td class=style1>推迟</td>  （无onclick、无比分单元格）
+        for m in re.finditer(
+            r"sId='(\d+)'.*?<td\s+class=style1[^>]*>(?:推迟|延期|取消)</td>",
+            html, re.DOTALL):
+            postponed_sids.add(m.group(1))
+        
+        return scores, postponed_sids
     except Exception as e:
         print(f'[WARN] Over页面抓取失败（SID匹配）: {e}')
-        return {}
+        return {}, {}
 
 
 def do_backfill(fpath, date_str):
@@ -374,7 +385,7 @@ def do_backfill(fpath, date_str):
     
     # 1. titan007 Over页完整比分表 — 按SID直接匹配（无需队名翻译对齐）
     if unscored:
-        scores = get_scores_from_over_page(date_str)
+        scores, postponed_sids = get_scores_from_over_page(date_str)
         if scores:
             over_ok = 0
             for fid, m in unscored:
@@ -389,10 +400,29 @@ def do_backfill(fpath, date_str):
                 print(f'[BACKFILL] titan007 Over页按SID → {over_ok}/{len(unscored)} 场')
                 unscored = [(fid, m) for fid, m in existing_matches.items()
                             if not m.get('score') and m.get('match_time')]
-            else:
-                print(f'[BACKFILL] titan007 Over页 → 未匹配到比分')
         else:
             print(f'[BACKFILL] titan007 Over页 → 页面无完场数据')
+        
+        # 1b. 从Over页标记推迟的比赛（"推迟"字样的才是真推迟，不瞎猜）
+        if postponed_sids:
+            postponed = []
+            for fid, m in existing_matches.items():
+                if not m.get('score') and fid in postponed_sids and not m.get('postponed'):
+                    m['postponed'] = True
+                    m['score'] = '推迟'
+                    postponed.append((fid, m.get('home_team',''), m.get('away_team','')))
+            if postponed:
+                existing['matches'] = list(existing_matches.values())
+                existing['fetched_at'] = datetime.now().isoformat()
+                with open(fpath, 'w', encoding='utf-8') as f:
+                    json.dump(existing, f, ensure_ascii=False, indent=2)
+                print(f'[BACKFILL] Over页标记推迟 → {len(postponed)} 场')
+                for fid, h, a in postponed[:5]:
+                    print(f'  ✗ {h} vs {a} (fid={fid})')
+                if len(postponed) > 5:
+                    print(f'  ... 还有 {len(postponed)-5} 场')
+                unscored = [(fid, m) for fid, m in existing_matches.items()
+                            if not m.get('score') and m.get('match_time')]
     
     # 2. Analysis页按SID抓比分（universal兜底，世界杯等特殊赛事也可用）
     if unscored:
@@ -551,36 +581,17 @@ def do_backfill(fpath, date_str):
         else:
             print('[BACKFILL] ESPN兜底→无新比分')
     
-    # 5. 最后检查：已过比赛时间的仍缺分 → 标为推迟（不影响_score字段，后续仍可补分）
-    postponed = []
-    for fid, m in existing_matches.items():
-        if m.get('score') or m.get('postponed'):
-            continue
-        mt = m.get('match_time', '')
-        if not mt:
-            continue
-        try:
-            match_dt = datetime.fromisoformat(mt[:16].replace(' ', 'T'))
-            match_utc = match_dt - timedelta(hours=8)
-            if match_utc < datetime.utcnow() - timedelta(hours=4):
-                m['postponed'] = True
-                m['score'] = '推迟'
-                postponed.append((fid, m.get('home_team',''), m.get('away_team','')))
-        except:
-            pass
-    
-    if postponed:
-        existing['matches'] = list(existing_matches.values())
-        existing['generated_at'] = datetime.now(timezone(timedelta(hours=8))).strftime('%Y-%m-%d %H:%M:%S')
-        with open(fpath, 'w', encoding='utf-8') as f:
-            json.dump(existing, f, ensure_ascii=False, indent=2)
-        print(f'[BACKFILL] 推迟标记 → {len(postponed)} 场')
-        for fid, h, a in postponed[:5]:
-            print(f'  ✗ {h} vs {a} (fid={fid})')
-        if len(postponed) > 5:
-            print(f'  ... 还有 {len(postponed)-5} 场')
+    # 5. 剩余无分比赛：不猜推迟，仅留空等待下一次回填
+    remaining = [m for m in existing_matches.values()
+                 if not m.get('score') and m.get('match_time')]
+    if remaining:
+        print(f'[BACKFILL] 仍缺分 {len(remaining)} 场（未在Over页标记推迟，待下轮回填）')
+        for m in remaining[:3]:
+            print(f'  ? {m.get("home_team","")} vs {m.get("away_team","")}')
+        if len(remaining) > 3:
+            print(f'  ... 还有 {len(remaining)-3} 场')
     else:
-        print('[BACKFILL] 无可标记推迟的比赛')
+        print('[BACKFILL] 所有已过比赛时间的比赛均已回填比分或标记推迟')
 
 
 def main():
