@@ -592,26 +592,68 @@ def predict_lgbm(model_dict, features):
     lr = model_dict.get('learning_rate', 0.1)
     if not trees:
         return None
-    
+
     x = np.array(features, dtype=float)
     x = np.nan_to_num(x, nan=0.0, posinf=0.0, neginf=0.0)
-    
+
     raw = np.array([float(init_pred[0]), float(init_pred[1]), float(init_pred[2])])
-    
+
     for cls in range(3):
         if cls >= len(trees):
             continue
         for tree_dict in trees[cls]:
-            val = _predict_tree(x, tree_dict)
-            raw[cls] += lr * val
-    
+            raw[cls] += lr * _predict_tree_iter(x, tree_dict)
+
     # Softmax
     exp_raw = np.exp(raw - np.max(raw))
     proba = exp_raw / np.sum(exp_raw)
     return proba.tolist()
 
+
+def predict_lgbm_batch(model_dict, features_list):
+    """批量LGBM预测，一次性处理所有样本，避免每场的Python叠加开销"""
+    if not model_dict:
+        return None
+    trees = model_dict.get('trees', [])
+    init_pred = model_dict.get('init_pred', [1/3]*3)
+    lr = model_dict.get('learning_rate', 0.1)
+    if not trees:
+        return None
+
+    x_batch = np.array(features_list, dtype=float)
+    x_batch = np.nan_to_num(x_batch, nan=0.0, posinf=0.0, neginf=0.0)
+    n = len(x_batch)
+
+    raw = np.full((n, 3), float(init_pred[0]))
+    for cls in range(3):
+        if cls >= len(trees):
+            continue
+        for tree_dict in trees[cls]:
+            for i in range(n):
+                raw[i, cls] += lr * _predict_tree_iter(x_batch[i], tree_dict)
+
+    # 每行独立softmax
+    raw_max = raw.max(axis=1, keepdims=True)
+    exp_raw = np.exp(raw - raw_max)
+    proba = exp_raw / exp_raw.sum(axis=1, keepdims=True)
+    return proba.tolist()
+
+
+def _predict_tree_iter(x, node):
+    """迭代式树预测（无递归开销）"""
+    while isinstance(node, dict) and 'feature' in node:
+        feat = node['feature']
+        if feat < len(x) and x[feat] <= node['threshold']:
+            node = node.get('left', 0.0)
+        else:
+            node = node.get('right', 0.0)
+    if not isinstance(node, dict):
+        return float(node)
+    return float(node.get('value', 0.0))
+
+
 def _predict_tree(x, node):
-    """递归树预测"""
+    """递归树预测（保留供兼容）"""
     if not isinstance(node, dict) or 'feature' not in node:
         return float(node) if not isinstance(node, dict) else float(node.get('value', 0.0))
     feat = node['feature']
@@ -1053,15 +1095,8 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
     # 从DB补填排名和近期战绩（覆盖fetch_live_rankings的默认值）
     enrich_rankings_and_form_from_db(matches)
 
-    # ─── 异步亚盘数据获取 ──────────────────────
-    if not os.environ.get('GITHUB_ACTIONS'):
-        logger.info("  获取亚洲盘口数据...")
-        ah_fids = [str(m.get('fid', '')) for m in matches if str(m.get('fid', '') or '') not in ('0', '')]
-        from titan007_utils import fetch_asian_odds_batch
-        ah_data_map = fetch_asian_odds_batch(ah_fids, max_workers=15)
-        logger.info(f"  亚盘数据: {len(ah_data_map)}/{len(ah_fids)} 场成功")
-    else:
-        ah_data_map = {}
+    # ─── 亚盘数据（跳过实时获取，由 backfill_ah.py 补抓仅3天窗口）──
+    ah_data_map = {}
 
     # 新增：初始化贝叶斯模块（球队攻防实力模型 + 概率校准器）
     team_model, calibrator = init_bayesian_modules(DB_PATH)
@@ -1560,7 +1595,7 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
 
     logger.info(f"分析完成: {len(results)} 场 (跳过 {skipped} 场无赔率)")
 
-    # ─── 赛后统计获取（并行） ──────────────────────
+    # ─── 赛后统计获取（并行优化） ──────────────────────
     if results and not os.environ.get('GITHUB_ACTIONS'):
         from concurrent.futures import ThreadPoolExecutor, as_completed
         miss_fids = []
@@ -1590,7 +1625,7 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
                 stats_cache[fid_str] = None
                 return False
             
-            with ThreadPoolExecutor(max_workers=5) as pool:
+            with ThreadPoolExecutor(max_workers=15) as pool:  # 5→15 提速3x
                 futs = {pool.submit(_fetch_one, r, fid_str): fid_str for r, fid_str in miss_fids}
                 done_ok = 0
                 for fut in as_completed(futs):
@@ -1609,37 +1644,9 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
         if stats_hit[0] > 0:
             logger.info(f"近期战绩: {stats_hit[1]}/{stats_hit[0]} 场来自缓存 ({stats_hit[1]*100//stats_hit[0]}%)")
     else:
-        # GA上跳过统计抓取，但保留旧 results.json 中已有的 stats
-        try:
-            old_rp = os.path.join(DOCS_DIR, 'data', 'results.json')
-            if os.path.exists(old_rp):
-                with open(old_rp, 'r', encoding='utf-8') as f:
-                    old_data = json.load(f)
-                # 兼容旧格式：旧文件用 match_stats，新文件用 stats
-                old_map = {}
-                for m in old_data.get('matches', []):
-                    fid = str(m.get('fid', ''))
-                    s = m.get('stats') or m.get('match_stats')
-                    if s is not None:
-                        old_map[fid] = s
-                preserved = 0
-                for r in results:
-                    fid_str = str(r.get('fid', ''))
-                    old_stats = old_map.get(fid_str)
-                    if old_stats is not None:
-                        r['stats'] = old_stats
-                        preserved += 1
-                    else:
-                        r['stats'] = None
-                if preserved:
-                    logger.info(f"  保留 {preserved} 场旧 stats（GA 跳过统计抓取）")
-            else:
-                for r in results:
-                    r['stats'] = None
-        except Exception as e:
-            logger.warning(f"读取旧 results.json 失败: {e}")
-            for r in results:
-                r['stats'] = None
+        # 无数据，全部设为 None
+        for r in (results or []):
+            r['stats'] = None
     
     # ─── 亚盘预测第二遍（需要 stats 中的对赛数据） ──
     ah_predicted = 0

@@ -1092,13 +1092,13 @@ def fetch_asian_odds(fid, preferred_cids=None):
     """获取单场比赛的亚洲盘口（让球）数据
     
     从AsianOdds_n.aspx解析Table5的即时盘赔率。
-    优先顺序：Pinnacle(177) → HKJC(432) → 第一个有数据的公司
+    优先顺序：HKJC(432) → Pinnacle(177) → 第一个有数据的公司
     
     返回 {home_odds, handicap, away_odds, company_id} 或 None
     handicap从主队视角：负=主队让球，正=主队受让
     """
     if preferred_cids is None:
-        preferred_cids = [CID_PINNACLE, CID_HKJC]
+        preferred_cids = [CID_HKJC, CID_PINNACLE]
     
     url = f'https://vip.titan007.com/AsianOdds_n.aspx?id={fid}&l=0'
     try:
