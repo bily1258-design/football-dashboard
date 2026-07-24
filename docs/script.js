@@ -20,9 +20,10 @@ function ahDir(m){
     var sh=parseInt(sc[0]),sa=parseInt(sc[1]);
     var hc=m.ah_handicap||m.ah_open_handicap||0;
     if(!isNaN(sh)&&!isNaN(sa)){
-      var net=sh+hc-sa; // >0=上盘赢，=0=走水，<0=上盘输
-      if(d==='上') return d+(net>0?'✔':(net===0?'走':'✘'));
-      return d+(net<0?'✔':(net===0?'走':'✘'));
+      var net=sh+hc-sa; // hc<0主队让球：net>0→上盘(主)赢；hc>0主队受让：net>0→下盘(主)赢
+      var upperWon=hc<=0?net>0:net<0; // 让球方(上盘)是否赢盘
+      if(d==='上') return d+(upperWon?'✔':(net===0?'走':'✘'));
+      return d+(!upperWon?'✔':(net===0?'走':'✘'));
     }
   }
   return d;
