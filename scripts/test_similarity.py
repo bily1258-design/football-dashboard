@@ -231,12 +231,8 @@ def main():
 
     # Segments: (name, target slice, pool = entire history)
     segments = [
-        ("全量12044场", all_matches),
-        ("最近10000场", all_matches[:10000]),
-        ("最近5000场", all_matches[:5000]),
-        ("最近1000场", all_matches[:1000]),
-        ("最近500场",  all_matches[:500]),
-        ("最近300场",  all_matches[:300]),
+        ("最近200场",  all_matches[:200]),
+        ("最近100场",  all_matches[:100]),
     ]
 
     results = []
