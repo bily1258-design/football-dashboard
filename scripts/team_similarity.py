@@ -343,7 +343,7 @@ def standardize_features(features: dict, cols: list) -> dict:
     return features
 
 
-def load_historical_matches(db_path: str = DB_PATH, limit: int = 300) -> list:
+def load_historical_matches(db_path: str = DB_PATH, limit: int = 2000) -> list:
     """加载历史对局（默认取最近300场）"""
     if not os.path.exists(db_path):
         return []
