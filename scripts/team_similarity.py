@@ -344,8 +344,8 @@ def standardize_features(features: dict, cols: list) -> dict:
     return features
 
 
-def load_historical_matches(db_path: str = DB_PATH, limit: int = 2000) -> list:
-    """加载历史对局（默认取最近2000场）"""
+def load_historical_matches(db_path: str = DB_PATH, limit: int = 500) -> list:
+    """加载历史对局（默认取最近500场）"""
     if not os.path.exists(db_path):
         return []
     conn = sqlite3.connect(db_path)
