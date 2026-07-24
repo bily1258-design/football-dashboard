@@ -39,10 +39,41 @@ def f_float(v):
     return None
 
 
-def fetch_1x2d_odds(sid):
-    """从1x2d.titan007.com/{sid}.js获取全公司赔率
+def _parse_match_time_from_1x2d(text):
+    """从1x2d.js文本中提取MatchTime(UTC)并转为中国时间(UTC+8)
     
-    返回 {cid: {name, init_w/d/l, curr_w/d/l, init_rr, curr_rr}} 或 None
+    1x2d.js格式: MatchTime="2026,07-1,25,03,00,00"  (UTC)
+    → `07-1`中`07`是月, `-1`是固定后缀忽略
+    → 返回: '2026-07-25 11:00' (中国时间)
+    """
+    m = re.search(r'MatchTime="([^"]*)"', text)
+    if not m:
+        return ''
+    parts = m.group(1).split(',')
+    if len(parts) < 6:
+        return ''
+    try:
+        year = parts[0].strip()
+        month = parts[1].split('-')[0].strip()  # "07-1" → "07"
+        day = parts[2].strip()
+        hour = parts[3].strip()
+        minute = parts[4].strip()
+        utc_str = f'{year}-{month.zfill(2)}-{day.zfill(2)} {hour.zfill(2)}:{minute.zfill(2)}'
+        from datetime import datetime, timedelta, timezone
+        utc_dt = datetime.strptime(utc_str, '%Y-%m-%d %H:%M')
+        utc_dt = utc_dt.replace(tzinfo=timezone.utc)
+        cn_dt = utc_dt.astimezone(timezone(timedelta(hours=8)))
+        return cn_dt.strftime('%Y-%m-%d %H:%M')
+    except (ValueError, IndexError):
+        return ''
+
+
+def fetch_1x2d_odds(sid):
+    """从1x2d.titan007.com/{sid}.js获取全公司赔率 及 比赛时间
+    
+    返回 (odds, match_time)
+    - odds: {cid: {name, init_w/d/l, curr_w/d/l, init_rr, curr_rr}} 或 None
+    - match_time: 中国时间 'YYYY-MM-DD HH:MM' 或 ''（从MatchTime UTC转换）
     
     CID验证: '432'=香港马会(HKJC), '177'=平博(Pinnacle)
     """
@@ -56,11 +87,14 @@ def fetch_1x2d_odds(sid):
         resp = urllib.request.urlopen(req, timeout=10)
         text = resp.read().decode('utf-8-sig')
     except Exception as e:
-        return None
+        return None, ''
+
+    # 提取MatchTime（同时在响应中）
+    match_time = _parse_match_time_from_1x2d(text)
 
     game_match = re.search(r'var game=Array\(([\s\S]*?)\);', text)
     if not game_match:
-        return None
+        return None, match_time
 
     raw = game_match.group(1)
     companies = re.findall(r'"([^"]*)"', raw)
@@ -85,7 +119,7 @@ def fetch_1x2d_odds(sid):
             }
         except (ValueError, IndexError):
             pass
-    return odds
+    return odds, match_time
 CID_INTERWETTEN = '1'
 
 ODDSID_OFFSET = 152595753  # sid + offset = oddsHistory ID

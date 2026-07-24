@@ -255,7 +255,7 @@ def fetch_odds(matches, delay=0.3, workers=3):
             'away_rank': 0,
         }
 
-        odds = fetch_1x2d_odds(sid)
+        odds, _ = fetch_1x2d_odds(sid)
         if odds:
             # Pinnacle (cid=177)
             p = odds.get('177')

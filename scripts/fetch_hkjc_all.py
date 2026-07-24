@@ -131,7 +131,7 @@ def fetch_hkjc_matches(date_str, max_matches=0, delay=0.3, workers=3):
     def check_one(m):
         sid = m['sid']
         # 用1x2d API替代OddsHistory API（后者限频严重且常返回开盘价）
-        odds = fetch_1x2d_odds(sid)
+        odds, match_time_1x2d = fetch_1x2d_odds(sid)
         if not odds:
             return None
         hkjc = odds.get(CID_HKJC)
@@ -174,11 +174,18 @@ def fetch_hkjc_matches(date_str, max_matches=0, delay=0.3, workers=3):
             except ValueError:
                 return None
         
+        # 确定比赛日期和时间 (优先级: 1x2d MatchTime > bfdata > get_match_list > 占位)
+        if match_time_1x2d:
+            mt_date = match_time_1x2d[:10]
+        else:
+            mt_date = bf_match_date or date_str
+        mt_time = match_time_1x2d or bf_mt or m.get('match_time', '') or f'{date_str} 00:00'
+        
         # 有HKJC赔率，构建比赛记录
         match = {
             'fid': sid,  # 用sid代替fid（保持下游兼容）
-            'date': bf_match_date or date_str,  # 用bfdata实际日期
-            'match_time': bf_mt or m.get('match_time', ''),  # bfdata时间优先
+            'date': mt_date,  # 1x2d MatchTime日期优先
+            'match_time': mt_time,  # 1x2d MatchTime时间优先
             'event': m.get('event', m.get('league', '')),
             'home_team': home_name,
             'away_team': away_name,
@@ -197,11 +204,6 @@ def fetch_hkjc_matches(date_str, max_matches=0, delay=0.3, workers=3):
             'odds_hkjc_changes': 1,
             'odds_hkjc_company': 'HKJC',
         }
-        
-        # 提取比赛时间
-        # （不再依赖OddsHistory时间戳，用已有字段）
-        if not match['match_time']:
-            match['match_time'] = f'{date_str} 00:00'
         
         # 3. 获取平博赔率（同一次1x2d API调用）
         pinnacle = odds.get(CID_PINNACLE)
