@@ -289,7 +289,7 @@ function renderStats(data){
 }
 
 // 加载
-fetch('data/results.json?v='+Date.now())
+fetch('data/results_v3.json?v='+Date.now())
   .then(function(r){return r.json()})
   .then(function(data){
     allData = data;
