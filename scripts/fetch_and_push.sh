@@ -46,6 +46,10 @@ python3 scripts/fetch_hkjc_all.py --date "$DATE" --parallel 5 --delay 0.15
 echo "[$(date '+%H:%M:%S')] 分析 $DATE ..."
 python3 scripts/ai_analysis.py
 
+echo "[$(date '+%H:%M:%S')] 补抓亚盘..."
+python3 scripts/backfill_ah.py
+python3 scripts/backfill_ah_probs.py
+
 echo "[$(date '+%H:%M:%S')] 推送至GitHub..."
 git add -A
 git commit -m "数据+分析 $DATE" || echo "无新数据"
