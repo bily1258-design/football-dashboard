@@ -14,8 +14,18 @@ function ahDir(m){
   var d=m.ah_home_covers_prob>m.ah_away_covers_prob
     ?(m.ah_home_covers_prob>m.ah_push_prob?'上':'走')
     :(m.ah_away_covers_prob>m.ah_push_prob?'下':'走');
-  var h=m.hit&&m.hit.indexOf('✓')>-1?'✔':(m.hit==='✘'?'✘':'');
-  return d+(m.ah_home_covers_prob!=null?h:'');
+  // 用比分+盘口独立计算命中，不依赖 m.hit（那是比赛预测命中）
+  var sc=m.score?m.score.split('-'):null;
+  if(sc&&sc.length===2){
+    var sh=parseInt(sc[0]),sa=parseInt(sc[1]);
+    var hc=m.ah_handicap||m.ah_open_handicap||0;
+    if(!isNaN(sh)&&!isNaN(sa)){
+      var net=sh+hc-sa; // >0=上盘赢，=0=走水，<0=上盘输
+      if(d==='上') return d+(net>0?'✔':(net===0?'走':'✘'));
+      return d+(net<0?'✔':(net===0?'走':'✘'));
+    }
+  }
+  return d;
 }
 function renderWarning(w){
   if(!w)return'';
