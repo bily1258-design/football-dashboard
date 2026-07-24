@@ -343,13 +343,13 @@ def standardize_features(features: dict, cols: list) -> dict:
     return features
 
 
-def load_historical_matches(db_path: str = DB_PATH) -> list:
-    """加载历史对局"""
+def load_historical_matches(db_path: str = DB_PATH, limit: int = 500) -> list:
+    """加载历史对局（默认取最近500场，经测试赛果命中率最优）"""
     if not os.path.exists(db_path):
         return []
     conn = sqlite3.connect(db_path)
     cur = conn.cursor()
-    rows = cur.execute("""
+    rows = cur.execute(f"""
         SELECT home_team, away_team, league, date,
                reference_score, poisson_win, poisson_draw, poisson_loss,
                actual_outcome, home_lambda, away_lambda
@@ -359,6 +359,7 @@ def load_historical_matches(db_path: str = DB_PATH) -> list:
           AND (reference_score IS NOT NULL AND reference_score != ''
                OR actual_outcome IS NOT NULL AND actual_outcome != '')
         ORDER BY date DESC
+        LIMIT {int(limit)}
     """).fetchall()
     conn.close()
 
