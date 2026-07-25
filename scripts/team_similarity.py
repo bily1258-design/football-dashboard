@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 """
-球队相似度匹配 (Week 2)
-=======================
-从 poisson_predictions 数据库读取历史球队数据，为每场比赛构建球队特征向量，
-通过余弦相似度找出最相似的 Top 5 历史对局，写入 results.json 的 `similar_matches` 字段。
+球队相似度匹配 v2 — 43维LGBM特征
+==============================
+从 results.json 每场比赛提取43维特征向量（含模型概率、赔率结构、球队近况、
+盘路风格、技术统计），按球队聚合后余弦相似度匹配历史对局。
 
-特征维度: [lambda, avg_goals_scored, avg_goals_conceded, lambda_vs_league, tier]
-使用 sklearn StandardScaler 标准化。
+改动要点:
+- 特征从5维 [lambda, gs, gc, lam_vs_league, tier] 升级为43维LGBM特征
+- 同联赛加成从×1.5降为×1.2（43维特征已含联赛信息）
+- 对手互换场次自动跳过（避免"卡拉巴赫vs维斯特里"匹配"维斯特里vs卡拉巴赫"100%）
 """
 
 import json
@@ -69,111 +71,106 @@ def _get_league_tier(league: str) -> float:
     return DEFAULT_TIER
 
 
-def load_team_features(db_path: str = DB_PATH) -> dict:
+def _extract_43d_vector(m: dict) -> list:
+    """从单场比赛dict提取43维特征向量，保证全数值"""
+    def _n(v, default=0.0):
+        try: return float(v) if v is not None and v != '' else default
+        except: return default
+    return [
+        # 0-2: 模型概率
+        _n(m.get('model_win')), _n(m.get('model_draw')), _n(m.get('model_loss')),
+        # 3-5: LGBM概率
+        _n(m.get('lgbm_win')), _n(m.get('lgbm_draw')), _n(m.get('lgbm_loss')),
+        # 6-8: 泊松开赔
+        _n(m.get('poisson_open_w')), _n(m.get('poisson_open_d')), _n(m.get('poisson_open_l')),
+        # 9-11: Pinnacle开盘
+        _n(m.get('open_win_pin')), _n(m.get('open_draw_pin')), _n(m.get('open_loss_pin')),
+        # 12-14: Pinnacle封盘
+        _n(m.get('pin_close_w')), _n(m.get('pin_close_d')), _n(m.get('pin_close_l')),
+        # 15-17: 模型波动
+        _n(m.get('model_win'))-_n(m.get('poisson_win')),
+        _n(m.get('model_draw'))-_n(m.get('poisson_draw')),
+        _n(m.get('model_loss'))-_n(m.get('poisson_loss')),
+        # 18-21: 保留位
+        0, 0, 0, 0,
+        # 22-23: 保留位
+        0, 0,
+        # 24-25: 联赛排名
+        _n(m.get('home_rank')), _n(m.get('away_rank')),
+        # 26-27: 联赛积分
+        _n(m.get('home_pts')), _n(m.get('away_pts')),
+        # 28-31: 近况
+        _n(m.get('home_form_pts')), _n(m.get('away_form_pts')),
+        _n(m.get('home_form_gd')), _n(m.get('away_form_gd')),
+        # 32-35: 盘路风格
+        _n(m.get('home_handicap_wr')), _n(m.get('away_handicap_wr')),
+        _n(m.get('home_over_rate')), _n(m.get('away_over_rate')),
+        # 36-42: 技术统计
+        _n(m.get('home_possession')), _n(m.get('away_possession')),
+        _n(m.get('home_shots')), _n(m.get('away_shots')),
+        _n(m.get('home_shots_on_target')), _n(m.get('away_shots_on_target')),
+        _n(m.get('home_corners')), _n(m.get('away_corners')),
+    ]
+
+
+def load_team_features(results_path: str = RESULTS_PATH) -> dict:
     """
-    从 poisson_predictions 表读取所有球队特征。
-    返回 dict: {team_name: {...features...}, ...}
+    从 results.json 每场比赛提取43维特征，按球队聚合后做均值。
+    返回 dict: {team_name: {'_vec': [43维标准化向量], 'league': str}, ...}
     """
-    if not os.path.exists(db_path):
-        logger.warning("DB不存在: %s", db_path)
+    if not os.path.exists(results_path):
+        logger.warning("results.json 不存在: %s", results_path)
         return {}
 
-    conn = sqlite3.connect(db_path)
-    cur = conn.cursor()
-    rows = cur.execute("""
-        SELECT home_team, away_team, league,
-               home_lambda, away_lambda,
-               home_avg_goals, away_avg_goals,
-               home_avg_conceded, away_avg_conceded,
-               reference_score, actual_outcome
-        FROM poisson_predictions
-        WHERE home_team IS NOT NULL AND home_team != ''
-          AND away_team IS NOT NULL AND away_team != ''
-    """).fetchall()
-    conn.close()
+    with open(results_path, 'r', encoding='utf-8') as f:
+        data = json.load(f)
 
-    # 聚合数据
-    team_data = defaultdict(lambda: {
-        'lambdas': [], 'goals_scored': [], 'goals_conceded': [],
-        'tiers': [], 'league': None,
-    })
+    all_matches = data.get('matches', [])
+    if not all_matches:
+        logger.warning("results.json 无 matches")
+        return {}
 
-    for row in rows:
-        ht, at, league, hl, al, hg, ag, hc, ac, score, outcome = row
-        tier = _get_league_tier(league)
+    # 每场比赛提取43维向量，按队伍聚合
+    team_vectors = defaultdict(list)
+    team_league = {}
+    for m in all_matches:
+        ht, at = m.get('home_team', ''), m.get('away_team', '')
+        if not ht or not at:
+            continue
+        vec = _extract_43d_vector(m)
+        team_vectors[ht].append(vec)
+        team_vectors[at].append(vec)
+        league = m.get('league', '') or m.get('event', '')
+        if league:
+            team_league[ht] = league
+            team_league[at] = league
 
-        # 主队
-        td_h = team_data[ht]
-        td_h['lambdas'].append(hl if hl and hl > 0 else None)
-        td_h['tiers'].append(tier)
-        td_h['league'] = league or td_h['league']
-        # 从参考比分解析主队进球
-        if score:
-            m = SCORE_RE.match(score)
-            if m:
-                g_h, g_a = int(m.group(1)), int(m.group(2))
-                td_h['goals_scored'].append(g_h)
-                td_h['goals_conceded'].append(g_a)
+    # 求均值
+    team_avg = {}
+    for team, vecs in team_vectors.items():
+        n = len(vecs)
+        team_avg[team] = [sum(v[i] for v in vecs) / n for i in range(43)]
 
-        # 客队
-        td_a = team_data[at]
-        td_a['lambdas'].append(al if al and al > 0 else None)
-        td_a['tiers'].append(tier)
-        td_a['league'] = league or td_a['league']
-        if score:
-            m = SCORE_RE.match(score)
-            if m:
-                g_h, g_a = int(m.group(1)), int(m.group(2))
-                td_a['goals_scored'].append(g_a)
-                td_a['goals_conceded'].append(g_h)
+    # 标准化（Z-score）
+    teams = list(team_avg.keys())
+    n = len(teams)
+    if n == 0:
+        return {}
+    means = [sum(team_avg[t][i] for t in teams) / n for i in range(43)]
+    stds = [sqrt(sum((team_avg[t][i] - means[i]) ** 2 for t in teams) / n) or 1.0 for i in range(43)]
 
-    # 联赛平均 lambda
-    league_lambdas = _compute_league_avg_lambda(db_path)
-
-    # 合成特征向量
+    # 标准化后存入 _vec
     features = {}
-    for team, d in team_data.items():
-        lam_vals = [v for v in d['lambdas'] if v is not None]
-        gs_vals = d['goals_scored']
-        gc_vals = d['goals_conceded']
-        t_vals = d['tiers']
-
-        avg_lam = sum(lam_vals) / len(lam_vals) if lam_vals else 0.5
-        avg_gs = sum(gs_vals) / len(gs_vals) if gs_vals else 0.0
-        avg_gc = sum(gc_vals) / len(gc_vals) if gc_vals else 0.0
-
-        # 联赛平均 lambda (该队主要所属联赛)
-        team_league = d['league'] or ''
-        league_avg_lam = league_lambdas.get(team_league, avg_lam)
-        lam_vs_league = avg_lam - league_avg_lam
-
-        tier_val = sum(t_vals) / len(t_vals) if t_vals else DEFAULT_TIER
-        appearances = len(lam_vals) + len(gs_vals)
-
+    for team in teams:
+        vec = team_avg[team]
+        normed = [(vec[i] - means[i]) / stds[i] for i in range(43)]
         features[team] = {
-            'lambda': avg_lam,
-            'avg_goals_scored': avg_gs,
-            'avg_goals_conceded': avg_gc,
-            'lambda_vs_league': lam_vs_league,
-            'tier': tier_val,
-            'appearances': appearances,
+            '_vec': normed,
+            'league': team_league.get(team, ''),
         }
-    logger.info("球队特征: %d 队", len(features))
+
+    logger.info("球队特征(43维): %d 队 (来自 %d 场比赛)", len(features), len(all_matches))
     return features
-
-
-def _compute_league_avg_lambda(db_path: str) -> dict:
-    """计算每个联赛的 lambda 平均值"""
-    conn = sqlite3.connect(db_path)
-    cur = conn.cursor()
-    rows = cur.execute("""
-        SELECT league, AVG(home_lambda) as avg_l
-        FROM poisson_predictions
-        WHERE home_lambda > 0 AND league IS NOT NULL AND league != ''
-        GROUP BY league
-    """).fetchall()
-    conn.close()
-    return {r[0]: r[1] for r in rows}
 
 
 def _resolve_team_name(name: str, known_teams: set) -> str:
@@ -319,31 +316,6 @@ def _cosine_sim(a: list, b: list) -> float:
     return dot / (na * nb)
 
 
-def standardize_features(features: dict, cols: list) -> dict:
-    """
-    对指定特征列做 StandardScaler (均值0, 方差1) 标准化。
-    原地修改 features 并返回。
-    """
-    vals = {team: [f.get(c, 0) for c in cols] for team, f in features.items()}
-    n = len(vals)
-    if n == 0:
-        return features
-    means, stds = [], []
-    for i, col in enumerate(cols):
-        col_vals = [v[i] for v in vals.values()]
-        mu = sum(col_vals) / n
-        var = sum((x - mu) ** 2 for x in col_vals) / n
-        means.append(mu)
-        stds.append(sqrt(var) if var > 1e-10 else 1.0)
-
-    for team, f in features.items():
-        vec = [f.get(c, 0) for c in cols]
-        normed = [(vec[i] - means[i]) / stds[i] for i in range(len(cols))]
-        f['_vec'] = normed
-    logger.info("标准化完成: 列=%s", cols)
-    return features
-
-
 def load_historical_matches(db_path: str = DB_PATH, limit: int = 500) -> list:
     """加载历史对局（默认取最近500场）"""
     if not os.path.exists(db_path):
@@ -402,13 +374,14 @@ def find_similar_matches(
     top_k: int = 5,
 ) -> list:
     """
-    为一场比赛找最相似的历史对局。
+    为一场比赛找最相似的历史对局（43维LGBM特征版）。
     策略：
     1. 主队特征向量 vs 历史主队 余弦相似度
     2. 客队特征向量 vs 历史客队 余弦相似度
     3. 综合 = sqrt(sim_h * sim_a) → 保证两边都匹配
-    4. 同联赛加成 x1.15
+    4. 同联赛加成 x1.2（43维特征已含联赛信息，不过度提权）
     5. 时间衰减：90天内无衰减，之后指数衰减
+    6. 对手互换场次自动跳过（如卡拉巴赫vs维斯特里 → 维斯特里vs卡拉巴赫的100%匹配）
     """
     ht_vec = team_features.get(home_team, {}).get('_vec')
     at_vec = team_features.get(away_team, {}).get('_vec')
@@ -417,7 +390,11 @@ def find_similar_matches(
 
     scored = []
     for hm in historical_matches:
+        # 跳过完全相同的对局
         if hm['home_team'] == home_team and hm['away_team'] == away_team:
+            continue
+        # 跳过对手互换（主客对调）
+        if hm['home_team'] == away_team and hm['away_team'] == home_team:
             continue
 
         h_vec = team_features.get(hm['home_team'], {}).get('_vec')
@@ -429,10 +406,10 @@ def find_similar_matches(
         sim_a = max(_cosine_sim(at_vec, a_vec), 0.0)
         combined = sqrt(sim_h * sim_a)
 
-        # 同联赛加成（大幅提高权重，确保同联赛比赛优先）
+        # 同联赛加成（43维特征已含联赛信息，温和提权即可）
         if hm['league'] and league and \
            (hm['league'] == league or league in hm['league'] or hm['league'] in league):
-            combined = min(combined * 1.5, 1.0)
+            combined = min(combined * 1.2, 1.0)
 
         # 时间衰减：近期比赛权重高
         if hm['date']:
@@ -490,15 +467,11 @@ def run(results_path: str = RESULTS_PATH, db_path: str = DB_PATH,
             logger.info("所有 %d 场已有相似数据，跳过", already)
             return already
 
-    team_features = load_team_features(db_path)
+    team_features = load_team_features(results_path)
     if not team_features:
         logger.warning("无球队特征数据")
         return 0
 
-    # 标准化
-    feature_cols = ['lambda', 'avg_goals_scored', 'avg_goals_conceded',
-                    'lambda_vs_league', 'tier']
-    team_features = standardize_features(team_features, feature_cols)
     known_teams = set(team_features.keys())
 
     historical_matches = load_historical_matches(db_path)
