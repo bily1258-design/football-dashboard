@@ -704,15 +704,27 @@ def main():
         # 过滤：仅当前赛季 + 跳过已处理的
         conn = get_db()
         done = set(str(r[0]) for r in conn.execute("SELECT sid FROM match_analysis").fetchall())
-        conn.close()
-        if recent_mode:
-            # 仅最近比赛 (SID >= 2950000, 约最近1~2周)
-            sids = sorted(s for s in all_sids if is_sid_active(s) and s not in done and int(s) >= 2950000)
+        if '--backfill-training' in sys.argv:
+            # 补训练集缺失的analysis数据
+            train_sids = set(str(r[0]) for r in conn.execute("""
+                SELECT match_id FROM poisson_predictions
+                WHERE pinnacle_close_w > 1.01
+                  AND reference_score IS NOT NULL AND reference_score != ''
+                  AND match_id != ''
+            """).fetchall())
+            conn.close()
+            sids = sorted(s for s in all_sids if s in train_sids and s not in done)
+            print(f"训练集SID: {len(train_sids)}, 已处理: {len(done & train_sids)}, 待补: {len(sids)}")
         else:
-            sids = sorted(s for s in all_sids if is_sid_active(s) and s not in done)
-        print(f"流水线加载: {len(all_sids)} 个SID")
-        print(f"  → 活跃过滤后: {sum(1 for s in all_sids if is_sid_active(s))}")
-        print(f"  → {'最近模式' if recent_mode else '全量'}: {len(sids)} 个待处理")
+            conn.close()
+            if recent_mode:
+                # 仅最近比赛 (SID >= 2950000, 约最近1~2周)
+                sids = sorted(s for s in all_sids if is_sid_active(s) and s not in done and int(s) >= 2950000)
+            else:
+                sids = sorted(s for s in all_sids if is_sid_active(s) and s not in done)
+            print(f"流水线加载: {len(all_sids)} 个SID")
+            print(f"  → 活跃过滤后: {sum(1 for s in all_sids if is_sid_active(s))}")
+        print(f"  → {'训练集补全' if '--backfill-training' in sys.argv else '最近模式' if recent_mode else '全量'}: {len(sids)} 个待处理")
     
     if not sids:
         print("没有找到要处理的 SID。")

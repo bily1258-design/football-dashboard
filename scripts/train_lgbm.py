@@ -499,8 +499,10 @@ def main():
     print(f"测试集: {len(X_test)} 场 (后20%)")
     
     # 训练
-    print("\n训练 SimpleLGBM (30棵树, 深度4)...")
-    model = SimpleLGBM(n_estimators=30, max_depth=4, learning_rate=0.1)
+    # 允许命令行指定树数
+    n_trees = int(sys.argv[1]) if len(sys.argv) > 1 and sys.argv[1].isdigit() else 60
+    print(f"\n训练 SimpleLGBM ({n_trees}棵树, 深度4)...")
+    model = SimpleLGBM(n_estimators=n_trees, max_depth=4, learning_rate=0.1)
     model.min_samples = 10
     model.fit(X_train, y_train)
     
@@ -546,11 +548,12 @@ def main():
     os.makedirs(CACHE_DIR, exist_ok=True)
     model_dict = model.to_dict()
     model_dict['feature_names'] = FEATURE_NAMES
-    model_dict['version'] = 8
+    model_dict['version'] = 9
     model_dict['train_date'] = '2026-07-25'
     model_dict['train_samples'] = len(X_train)
     model_dict['test_accuracy'] = round(test_acc, 4)
     model_dict['baseline_accuracy'] = round(baseline_acc, 4)
+    model_dict['n_trees'] = n_trees
     
     with open(MODEL_PATH, 'w') as f:
         json.dump(model_dict, f, cls=NumpyEncoder)
