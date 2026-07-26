@@ -148,7 +148,7 @@ def load_team_features(results_path: str = RESULTS_PATH) -> dict:
             team_league[at] = league
         used_count += 1
 
-    logger.info("球队特征计算用 %d/%d 场(有比分的已完赛)", used_count, len(all_matches))
+    logger.info("球队特征: 用 %d/%d 场(有比分的已完赛)", used_count, len(all_matches))
 
     # 求均值
     team_avg = {}
