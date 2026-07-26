@@ -54,9 +54,6 @@ echo "[$(date '+%H:%M:%S')] 补抓亚盘..."
 python3 scripts/backfill_ah.py
 python3 scripts/backfill_ah_probs.py
 
-echo "[$(date '+%H:%M:%S')] 回填技术统计（滚动特征数据）..."
-python3 scripts/backfill_tech_stats.py --limit 3000 --workers 5
-
 echo "[$(date '+%H:%M:%S')] 抓取xG特征数据（历史趋势表）..."
 python3 scripts/fetch_daily_xg.py
 

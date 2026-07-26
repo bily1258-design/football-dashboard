@@ -139,54 +139,13 @@ def _get_form(timeline, team, today, window=FORM_WINDOW):
 
 
 def enrich_analysis_features_from_cache(matches: List[Dict]) -> None:
-    """从 team_stats_cache 和 match_analysis 表补填盘路/技术统计特征
-
-    写入 match['home_handicap_wr'], match['away_handicap_wr'] 等
-    """
+    """从 xg_features 表补填xG历史趋势特征"""
     if not matches:
         return
     if not os.path.exists(DB_PATH):
         return
     try:
         conn = sqlite3.connect(DB_PATH)
-        # 1. 加载 team_stats_cache (盘路胜率、大球率)
-        cache_cur = conn.execute("""
-            SELECT team_name, league, stat_type,
-                   handicap_win_rate, over_rate, win_rate,
-                   total_matches, goals_for, goals_against
-            FROM team_stats_cache
-        """)
-        team_stats = {}
-        for r in cache_cur.fetchall():
-            tn, lg, st, hwr, ovr, wr, tot, gf, ga = r
-            key = (tn, lg)
-            if key not in team_stats:
-                team_stats[key] = {}
-            team_stats[key][st] = {
-                'handicap_win_rate': hwr,
-                'over_rate': ovr,
-                'win_rate': wr,
-                'total_matches': tot,
-                'goals_for': gf,
-                'goals_against': ga,
-            }
-
-        # 2. 加载 match_analysis (技术统计)
-        mid_cur = conn.execute("""
-            SELECT sid, home_team, away_team, home_tech_stats, away_tech_stats
-            FROM match_analysis
-        """)
-        tech_by_sid = {}
-        for r in mid_cur.fetchall():
-            sid, ht, at, hts, ats = r
-            tech_by_sid[sid] = {
-                'home_team': ht,
-                'away_team': at,
-                'home_tech': json.loads(hts) if hts and hts != '{}' else {},
-                'away_tech': json.loads(ats) if ats and ats != '{}' else {},
-            }
-
-        # 3. 加载 xg_features (历史趋势, v10)
         xg_cur = conn.execute("""
             SELECT sid, home_goals_3, away_goals_3, home_conceded_3, away_conceded_3,
                    xg_home_3, xg_away_3, xg_home_10, xg_away_10
@@ -200,56 +159,14 @@ def enrich_analysis_features_from_cache(matches: List[Dict]) -> None:
                 'xg_home_3': r[5], 'xg_away_3': r[6],
                 'xg_home_10': r[7], 'xg_away_10': r[8],
             }
-
         conn.close()
 
         for m in matches:
-            home = m.get('home_team', '') or m.get('home', '') or ''
-            away = m.get('away_team', '') or m.get('away', '') or ''
-            league = m.get('event', '') or m.get('league', '')
-
-            h_stats = _find_team_stats(team_stats, home, league)
-            a_stats = _find_team_stats(team_stats, away, league)
-
-            m['home_handicap_wr'] = h_stats.get('handicap_win_rate', 0.0) if h_stats else 0.0
-            m['away_handicap_wr'] = a_stats.get('handicap_win_rate', 0.0) if a_stats else 0.0
-            m['home_over_rate'] = h_stats.get('over_rate', 0.0) if h_stats else 0.0
-            m['away_over_rate'] = a_stats.get('over_rate', 0.0) if a_stats else 0.0
-            m['home_win_rate'] = h_stats.get('win_rate', 0.0) if h_stats else 0.0
-            m['away_win_rate'] = a_stats.get('win_rate', 0.0) if a_stats else 0.0
-            m['home_goals_avg'] = (h_stats.get('goals_for', 0) / max(h_stats.get('total_matches', 1), 1)) if h_stats else 0.0
-            m['away_goals_avg'] = (a_stats.get('goals_for', 0) / max(a_stats.get('total_matches', 1), 1)) if a_stats else 0.0
-
-            # match_analysis 技术统计
             sid = m.get('sid') or m.get('fid') or 0
             try:
                 sid_int = int(sid)
             except (ValueError, TypeError):
                 sid_int = 0
-
-            if sid_int in tech_by_sid:
-                tech = tech_by_sid[sid_int]
-                h_tech = tech.get('home_tech', {})
-                a_tech = tech.get('away_tech', {})
-                m['home_possession'] = round(float(h_tech.get('控球率', 0) or 0), 1)
-                m['away_possession'] = round(float(a_tech.get('控球率', 0) or 0), 1)
-                m['home_shots'] = round(float(h_tech.get('射门', 0) or 0), 1)
-                m['away_shots'] = round(float(a_tech.get('射门', 0) or 0), 1)
-                m['home_shots_on_target'] = round(float(h_tech.get('射正', 0) or 0), 1)
-                m['away_shots_on_target'] = round(float(a_tech.get('射正', 0) or 0), 1)
-                m['home_corners'] = round(float(h_tech.get('角球', 0) or 0), 1)
-                m['away_corners'] = round(float(a_tech.get('角球', 0) or 0), 1)
-            else:
-                m['home_possession'] = 0.0
-                m['away_possession'] = 0.0
-                m['home_shots'] = 0.0
-                m['away_shots'] = 0.0
-                m['home_shots_on_target'] = 0.0
-                m['away_shots_on_target'] = 0.0
-                m['home_corners'] = 0.0
-                m['away_corners'] = 0.0
-
-            # xg_features (v10) - 历史趋势特征
             m['home_goals_3'] = xg_by_sid.get(sid_int, {}).get('home_goals_3', 0.0)
             m['away_goals_3'] = xg_by_sid.get(sid_int, {}).get('away_goals_3', 0.0)
             m['home_conceded_3'] = xg_by_sid.get(sid_int, {}).get('home_conceded_3', 0.0)
@@ -259,38 +176,12 @@ def enrich_analysis_features_from_cache(matches: List[Dict]) -> None:
             m['xg_home_10'] = xg_by_sid.get(sid_int, {}).get('xg_home_10', 0.0)
             m['xg_away_10'] = xg_by_sid.get(sid_int, {}).get('xg_away_10', 0.0)
 
-        filled = sum(1 for m in matches if m.get('home_handicap_wr', 0) > 0)
+        filled = sum(1 for m in matches if m.get('xg_home_3', 0) > 0)
         if filled > 0:
-            logger.info(f"分析特征: {filled}/{len(matches)} 场有盘路/技术统计数据")
+            logger.info(f"xG特征: {filled}/{len(matches)} 场加载完成")
 
     except Exception as e:
-        logger.warning(f"分析特征回填异常: {e}")
-
-
-def _find_team_stats(cache, team_name: str, league: str) -> dict:
-    """在 team_stats_cache 中模糊匹配球队数据"""
-    if not team_name:
-        return {}
-    for st in ('home_all', 'away_all'):
-        for key, val in cache.items():
-            if key[0] == team_name and key[1] == league and st in val:
-                return val[st]
-    clean = re.sub(r'^[\d]+', '', team_name).strip()
-    if clean != team_name:
-        for st in ('home_all', 'away_all'):
-            for key, val in cache.items():
-                if key[0] == clean and key[1] == league and st in val:
-                    return val[st]
-    for st in ('home_all', 'away_all'):
-        for key, val in cache.items():
-            if key[0] == team_name and st in val:
-                return val[st]
-    if clean != team_name:
-        for st in ('home_all', 'away_all'):
-            for key, val in cache.items():
-                if key[0] == clean and st in val:
-                    return val[st]
-    return {}
+        logger.warning(f"xG特征回填异常: {e}")
 
 
 sys.path.insert(0, SCRIPT_DIR)
@@ -658,17 +549,11 @@ def extract_lgbm_features(ow, od, ol, model_w, model_d, model_l, margin,
                            home_pts=None, away_pts=None,
                            home_form_pts=None, away_form_pts=None,
                            home_form_gd=None, away_form_gd=None,
-                           home_handicap_wr=None, away_handicap_wr=None,
-                           home_over_rate=None, away_over_rate=None,
-                           home_possession=None, away_possession=None,
-                           home_shots=None, away_shots=None,
-                           home_shots_target=None, away_shots_target=None,
-                           home_corners=None, away_corners=None,
                            home_goals_3=None, away_goals_3=None,
                            home_conceded_3=None, away_conceded_3=None,
                            xg_home_3=None, xg_away_3=None,
                            xg_home_10=None, xg_away_10=None):
-
+    """从当前比赛数据提取39维特征（v11: 31维基础 + 8维xG）"""
     # xG特征 (v10)
     h_g3 = float(home_goals_3) if home_goals_3 else 0.0
     a_g3 = float(away_goals_3) if away_goals_3 else 0.0
@@ -678,8 +563,6 @@ def extract_lgbm_features(ow, od, ol, model_w, model_d, model_l, margin,
     xg_a3 = float(xg_away_3) if xg_away_3 else 0.0
     xg_h10 = float(xg_home_10) if xg_home_10 else 0.0
     xg_a10 = float(xg_away_10) if xg_away_10 else 0.0
-
-    """从当前比赛数据提取51维特征（v10追加8维xG特征）"""
     cw, cd, cl, _ = _implied_from_odds(ow, od, ol)
 
     # 开盘隐含概率
@@ -737,20 +620,7 @@ def extract_lgbm_features(ow, od, ol, model_w, model_d, model_l, margin,
         odds_level, draw_premium,
         hr, ar, hp, ap,                    # home/away_rank, home/away_pts
         hfp, afp, hfg, afg,               # home/away_form_pts, home/away_form_gd
-        # 盘路/技术统计 (12维, 末尾追加, 当前模型忽略)
-        float(home_handicap_wr) if home_handicap_wr else 0.0,
-        float(away_handicap_wr) if away_handicap_wr else 0.0,
-        float(home_over_rate) if home_over_rate else 0.0,
-        float(away_over_rate) if away_over_rate else 0.0,
-        float(home_possession) if home_possession else 0.0,
-        float(away_possession) if away_possession else 0.0,
-        float(home_shots) if home_shots else 0.0,
-        float(away_shots) if away_shots else 0.0,
-        float(home_shots_target) if home_shots_target else 0.0,
-        float(away_shots_target) if away_shots_target else 0.0,
-        float(home_corners) if home_corners else 0.0,
-        float(away_corners) if away_corners else 0.0,
-        # xG特征 8维 (v10)
+        # xG特征 8维 (v11)
         h_g3, a_g3, h_c3, a_c3,
         xg_h3, xg_a3, xg_h10, xg_a10,
     ]
@@ -1369,12 +1239,6 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
                                           home_pts=m.get('home_points'), away_pts=m.get('away_points'),
                                           home_form_pts=m.get('home_form_pts'), away_form_pts=m.get('away_form_pts'),
                                           home_form_gd=m.get('home_form_gd'), away_form_gd=m.get('away_form_gd'),
-                                          home_handicap_wr=m.get('home_handicap_wr'), away_handicap_wr=m.get('away_handicap_wr'),
-                                          home_over_rate=m.get('home_over_rate'), away_over_rate=m.get('away_over_rate'),
-                                          home_possession=m.get('home_possession'), away_possession=m.get('away_possession'),
-                                          home_shots=m.get('home_shots'), away_shots=m.get('away_shots'),
-                                          home_shots_target=m.get('home_shots_on_target'), away_shots_target=m.get('away_shots_on_target'),
-                                          home_corners=m.get('home_corners'), away_corners=m.get('away_corners'),
                                           home_goals_3=m.get('home_goals_3'), away_goals_3=m.get('away_goals_3'),
                                           home_conceded_3=m.get('home_conceded_3'), away_conceded_3=m.get('away_conceded_3'),
                                           xg_home_3=m.get('xg_home_3'), xg_away_3=m.get('xg_away_3'),
@@ -1770,23 +1634,6 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             'away_form_pts': m.get('away_form_pts', 0),
             'home_form_gd': m.get('home_form_gd', 0),
             'away_form_gd': m.get('away_form_gd', 0),
-            # 盘路/技术统计特征
-            'home_handicap_wr': m.get('home_handicap_wr', 0),
-            'away_handicap_wr': m.get('away_handicap_wr', 0),
-            'home_over_rate': m.get('home_over_rate', 0),
-            'away_over_rate': m.get('away_over_rate', 0),
-            'home_win_rate': m.get('home_win_rate', 0),
-            'away_win_rate': m.get('away_win_rate', 0),
-            'home_goals_avg': m.get('home_goals_avg', 0),
-            'away_goals_avg': m.get('away_goals_avg', 0),
-            'home_possession': m.get('home_possession', 0),
-            'away_possession': m.get('away_possession', 0),
-            'home_shots': m.get('home_shots', 0),
-            'away_shots': m.get('away_shots', 0),
-            'home_shots_on_target': m.get('home_shots_on_target', 0),
-            'away_shots_on_target': m.get('away_shots_on_target', 0),
-            'home_corners': m.get('home_corners', 0),
-            'away_corners': m.get('away_corners', 0),
             'warning': warning,
             'ts_win': ts_probs[0] if ts_probs else None,
             'ts_draw': ts_probs[1] if ts_probs else None,

@@ -202,13 +202,6 @@ FEATURE_NAMES = [
     'odds_level','draw_premium',
     'home_rank','away_rank','home_pts','away_pts',
     'home_form_pts','away_form_pts','home_form_gd','away_form_gd',
-    # 盘路/技术统计特征 (v8, 12维)
-    'home_handicap_wr','away_handicap_wr',
-    'home_over_rate','away_over_rate',
-    'home_possession','away_possession',
-    'home_shots','away_shots',
-    'home_shots_on_target','away_shots_on_target',
-    'home_corners','away_corners',
     # xG特征 (v10, 8维 - 历史趋势表, 全量覆盖)
     'home_goals_3','away_goals_3',
     'home_conceded_3','away_conceded_3',
@@ -280,69 +273,14 @@ def extract_features(row, stats=None, form_data=None, conn=None):
     else:
         hfp = afp = hfg = afg = 0.0
     
-    # ─── 新增盘路/技术统计特征 (v8) ───────────────────
-    h_hw = a_hw = h_or = a_or = 0.0
-    h_poss = a_poss = h_shots = a_shots = 0.0
-    h_sot = a_sot = h_corners = a_corners = 0.0
-    
-    if conn:
-        home_team = row.get('home_team', '')
-        away_team = row.get('away_team', '')
-        
-        # 盘路特征: team_stats_cache (by team_name, stat_type=home_all/away_all)
-        cur = conn.execute(
-            'SELECT handicap_win_rate, over_rate FROM team_stats_cache '
-            'WHERE team_name = ? AND stat_type = ?',
-            (home_team, 'home_all')
-        )
-        r = cur.fetchone()
-        if r:
-            h_hw = _safe_float(r[0]) / 100.0  # DB存的是0-100，转为0-1
-            h_or = _safe_float(r[1]) / 100.0
-        
-        cur = conn.execute(
-            'SELECT handicap_win_rate, over_rate FROM team_stats_cache '
-            'WHERE team_name = ? AND stat_type = ?',
-            (away_team, 'away_all')
-        )
-        r = cur.fetchone()
-        if r:
-            a_hw = _safe_float(r[0]) / 100.0
-            a_or = _safe_float(r[1]) / 100.0
-        
-        # 技术统计: match_analysis (by sid)
-        sid = row.get('match_id', '')
-        if sid:
-            try:
-                sid_int = int(sid)
-            except (ValueError, TypeError):
-                sid_int = None
-            if sid_int:
-                cur = conn.execute(
-                    'SELECT home_tech_stats, away_tech_stats FROM match_analysis WHERE sid = ?',
-                    (sid_int,)
-                )
-                r = cur.fetchone()
-                if r and r[0] and r[1]:
-                    try:
-                        h_tech = json.loads(r[0]) if r[0] not in ('', '{}') else {}
-                        a_tech = json.loads(r[1]) if r[1] not in ('', '{}') else {}
-                    except (json.JSONDecodeError, TypeError):
-                        h_tech = a_tech = {}
-                    h_poss = _safe_float(h_tech.get('控球率', 0)) / 100.0
-                    a_poss = _safe_float(a_tech.get('控球率', 0)) / 100.0
-                    h_shots = _safe_float(h_tech.get('射门', 0))
-                    a_shots = _safe_float(a_tech.get('射门', 0))
-                    h_sot = _safe_float(h_tech.get('射正', 0))
-                    a_sot = _safe_float(a_tech.get('射正', 0))
-                    # 角球: 部分表用"角球"，部分在tech_stats里没有独立字段，保持0
-                    # 从stats_json中解析（如果有）
-                    h_corners = _safe_float(h_tech.get('角球', 0))
-                    a_corners = _safe_float(a_tech.get('角球', 0))
-    
     # ─── 新增xG特征 (v10) ────────────────────────────
     h_g3 = a_g3 = h_c3 = a_c3 = 0.0
     xg_h3 = xg_a3 = xg_h10 = xg_a10 = 0.0
+    sid_raw = row.get('sid') or row.get('match_id') or 0
+    try:
+        sid_int = int(sid_raw) if sid_raw else 0
+    except (ValueError, TypeError):
+        sid_int = 0
     if conn and sid_int:
         cur = conn.execute(
             'SELECT home_goals_3, away_goals_3, home_conceded_3, away_conceded_3, '
@@ -368,12 +306,6 @@ def extract_features(row, stats=None, form_data=None, conn=None):
         odds_level, draw_premium,
         hr, ar, hp, ap,
         hfp, afp, hfg, afg,
-        # 盘路/技术统计 12维
-        h_hw, a_hw, h_or, a_or,
-        h_poss, a_poss,
-        h_shots, a_shots,
-        h_sot, a_sot,
-        h_corners, a_corners,
         # xG特征 8维
         h_g3, a_g3, h_c3, a_c3,
         xg_h3, xg_a3, xg_h10, xg_a10,

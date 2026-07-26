@@ -72,10 +72,9 @@ def _get_league_tier(league: str) -> float:
     return DEFAULT_TIER
 
 
-def _extract_46d_vector(m: dict) -> list:
-    """从单场比赛dict提取46维特征向量（v3: 38维原始 + 8维xG历史趋势），保证全数值
-    组成：前32维(模型/赔率/排名/形态) + 6维技术统计 + 8维xG
-    盘路胜率/大球率/角球因覆盖过低已移除"""
+def _extract_40d_vector(m: dict) -> list:
+    """从单场比赛dict提取40维特征向量（v4: 32维基础 + 8维xG历史趋势），保证全数值
+    组成：前32维(模型/赔率/排名/形态/近况) + 8维xG"""
     def _n(v, default=0.0):
         try: return float(v) if v is not None and v != '' else default
         except: return default
@@ -103,11 +102,7 @@ def _extract_46d_vector(m: dict) -> list:
         # 28-31: 近况
         _n(m.get('home_form_pts')), _n(m.get('away_form_pts')),
         _n(m.get('home_form_gd')), _n(m.get('away_form_gd')),
-        # 32-37: 技术统计（去掉盘路/大球/角球）
-        _n(m.get('home_possession')), _n(m.get('away_possession')),
-        _n(m.get('home_shots')), _n(m.get('away_shots')),
-        _n(m.get('home_shots_on_target')), _n(m.get('away_shots_on_target')),
-        # 38-45: xG历史趋势特征 8维 (v3)
+        # 32-39: xG历史趋势特征 8维 (v3)
         _n(m.get('home_goals_3')), _n(m.get('away_goals_3')),
         _n(m.get('home_conceded_3')), _n(m.get('away_conceded_3')),
         _n(m.get('xg_home_3')), _n(m.get('xg_away_3')),
@@ -116,10 +111,8 @@ def _extract_46d_vector(m: dict) -> list:
 
 
 def load_team_features(results_path: str = RESULTS_PATH) -> dict:
-    """
-    从 results.json 每场比赛提取46维特征（含xG），按球队聚合后做均值。
-    返回 dict: {team_name: {'_vec': [46维标准化向量], 'league': str}, ...}
-    """
+    """从 results.json 每场比赛提取40维特征（含xG），按球队聚合后做均值。
+    返回 dict: {team_name: {'_vec': [40维标准化向量], 'league': str}, ...}"""
     if not os.path.exists(results_path):
         logger.warning("results.json 不存在: %s", results_path)
         return {}
@@ -180,7 +173,7 @@ def load_team_features(results_path: str = RESULTS_PATH) -> dict:
             m['xg_away_3'] = xg['xg_away_3']
             m['xg_home_10'] = xg['xg_home_10']
             m['xg_away_10'] = xg['xg_away_10']
-        vec = _extract_46d_vector(m)
+        vec = _extract_40d_vector(m)
         team_vectors[ht].append(vec)
         team_vectors[at].append(vec)
         league = m.get('league', '') or m.get('event', '')
@@ -195,21 +188,21 @@ def load_team_features(results_path: str = RESULTS_PATH) -> dict:
     team_avg = {}
     for team, vecs in team_vectors.items():
         n = len(vecs)
-        team_avg[team] = [sum(v[i] for v in vecs) / n for i in range(46)]
+        team_avg[team] = [sum(v[i] for v in vecs) / n for i in range(40)]
 
     # 标准化（Z-score）
     teams = list(team_avg.keys())
     n = len(teams)
     if n == 0:
         return {}
-    means = [sum(team_avg[t][i] for t in teams) / n for i in range(46)]
-    stds = [sqrt(sum((team_avg[t][i] - means[i]) ** 2 for t in teams) / n) or 1.0 for i in range(46)]
+    means = [sum(team_avg[t][i] for t in teams) / n for i in range(40)]
+    stds = [sqrt(sum((team_avg[t][i] - means[i]) ** 2 for t in teams) / n) or 1.0 for i in range(40)]
 
     # 标准化后存入 _vec
     features = {}
     for team in teams:
         vec = team_avg[team]
-        normed = [(vec[i] - means[i]) / stds[i] for i in range(46)]
+        normed = [(vec[i] - means[i]) / stds[i] for i in range(40)]
         features[team] = {
             '_vec': normed,
             'league': team_league.get(team, ''),
