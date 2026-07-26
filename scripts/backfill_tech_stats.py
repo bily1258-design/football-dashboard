@@ -4,11 +4,10 @@
 流程：
   1. 从 poisson_predictions 取最近 N 场（默认1000）
   2. 先从 results.json 和 match_analysis 已有的数据直接填充
-  3. 其余用 sid 去 titan007 detail 页并发抓取
+  3. 其余用 sid 去 titan007 detail 页串行抓取
   4. 存入 match_tech_stats 表
 """
 import json, sqlite3, os, sys, re, time
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 
 DB_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'football.db')
@@ -46,25 +45,32 @@ def _extract_tech_from_html(html):
     stats = {}
 
     # ---- 新版 (div.data > span) ----
-    # 射门
-    m = re.search(r"<div class='data'><span[^>]*>([^<]+)</span><span>射门</span><span[^>]*>([^<]+)</span></div>", html)
-    if m:
-        stats['shots'] = {'home': float(m.group(1).replace('%', '')), 'away': float(m.group(2).replace('%', ''))}
+    stats_map = {
+        'shots': '射门',
+        'shots_on_target': '射正',
+        'possession': '控球率',
+        'corners': '角球',
+    }
 
-    # 射正
-    m = re.search(r"<div class='data'><span[^>]*>([^<]+)</span><span>射正</span><span[^>]*>([^<]+)</span></div>", html)
-    if m:
-        stats['shots_on_target'] = {'home': float(m.group(1).replace('%', '')), 'away': float(m.group(2).replace('%', ''))}
-
-    # 控球率
-    m = re.search(r"<div class='data'><span[^>]*>([^<]+)%</span><span>控球率</span><span[^>]*>([^<]+)%</span></div>", html)
-    if m:
-        stats['possession'] = {'home': float(m.group(1)), 'away': float(m.group(2))}
-
-    # 角球
-    m = re.search(r"<div class='data'><span[^>]*>([^<]+)</span><span>角球</span><span[^>]*>([^<]+)</span></div>", html)
-    if m:
-        stats['corners'] = {'home': float(m.group(1).replace('%', '')), 'away': float(m.group(2).replace('%', ''))}
+    for key, label in stats_map.items():
+        # 控球率带 %，其他不带
+        if key == 'possession':
+            m = re.search(
+                r"<div class='data'><span[^>]*>([^<]+)%</span><span>" + re.escape(label) + r"</span><span[^>]*>([^<]+)%</span></div>",
+                html
+            )
+        else:
+            m = re.search(
+                r"<div class='data'><span[^>]*>([^<]+)</span><span>" + re.escape(label) + r"</span><span[^>]*>([^<]+)</span></div>",
+                html
+            )
+        if m:
+            home_val = m.group(1).replace('%', '')
+            away_val = m.group(2).replace('%', '')
+            try:
+                stats[key] = {'home': float(home_val), 'away': float(away_val)}
+            except ValueError:
+                pass
 
     # ---- 旧版 (td 表格布局) ----
     if not stats:
@@ -73,23 +79,17 @@ def _extract_tech_from_html(html):
             r"<td[^>]*>([^<]+)</td>\s*<td[^>]*>([^<]+)</td>\s*<td[^>]*>([^<]+)</td>",
             html, re.DOTALL
         )
+        label_map = {'射门': 'shots', '射正': 'shots_on_target', '控球率': 'possession', '角球': 'corners'}
         for home_val, label, away_val in td_pairs:
             label = label.strip()
+            if label not in label_map:
+                continue
             home_val = home_val.strip().rstrip('%')
             away_val = away_val.strip().rstrip('%')
             try:
-                hv = float(home_val)
-                av = float(away_val)
+                stats[label_map[label]] = {'home': float(home_val), 'away': float(away_val)}
             except ValueError:
                 continue
-            if label == '射门':
-                stats['shots'] = {'home': hv, 'away': av}
-            elif label == '射正':
-                stats['shots_on_target'] = {'home': hv, 'away': av}
-            elif label == '控球率':
-                stats['possession'] = {'home': hv, 'away': av}
-            elif label == '角球':
-                stats['corners'] = {'home': hv, 'away': av}
 
     return stats if stats else None
 
@@ -222,10 +222,14 @@ def backfill_from_match_analysis(conn):
     print(f'  从 match_analysis 导入: {count} 场')
     return count
 
-def fetch_and_store_batch(conn, matches, max_workers=15):
-    """并发抓取技术统计"""
-    def fetch_one(match):
-        home, away, date, sid = match
+def fetch_and_store_batch(conn, matches, max_workers=5):
+    """串行抓取技术统计（单线程防限频）"""
+    total = len(matches)
+    success = 0
+    fail = 0
+    for idx, (home, away, date, sid) in enumerate(matches):
+        if (idx+1) % 100 == 0 or idx == 0:
+            print(f'  [{idx+1}/{total}] 成功={success} 失败={fail}', end='\r')
         tech = fetch_tech_stats_by_sid(sid)
         if tech:
             hp = tech.get('possession', {}).get('home', 0)
@@ -237,26 +241,18 @@ def fetch_and_store_batch(conn, matches, max_workers=15):
             hc = tech.get('corners', {}).get('home', 0)
             ac = tech.get('corners', {}).get('away', 0)
             if any([hp, ap, hs, ash, hst, ast, hc, ac]):
-                return (home, away, date, hp, ap, hs, ash, hst, ast, hc, ac, sid)
-        return None
-
-    success = 0
-    fail = 0
-    with ThreadPoolExecutor(max_workers=max_workers) as pool:
-        fut_map = {pool.submit(fetch_one, m): m for m in matches}
-        for fut in as_completed(fut_map):
-            result = fut.result()
-            if result:
                 conn.execute("""
                     INSERT OR REPLACE INTO match_tech_stats
                         (home_team, away_team, date, home_possession, away_possession,
                          home_shots, away_shots, home_shots_on_target, away_shots_on_target,
                          home_corners, away_corners, sid)
                     VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
-                """, result)
+                """, (home, away, date, hp, ap, hs, ash, hst, ast, hc, ac, sid))
                 success += 1
             else:
                 fail += 1
+        else:
+            fail += 1
 
     conn.commit()
     return success, fail
@@ -267,7 +263,7 @@ def main():
     parser.add_argument('--limit', type=int, default=1000,
                        help='补抓最近的 N 场 (default: 1000)')
     parser.add_argument('--workers', type=int, default=5,
-                       help='并发爬取线程数 (default: 5)')
+                       help='爬取间隔控制（实际为串行，此参数保留兼容）')
     parser.add_argument('--skip-fetch', action='store_true',
                        help='跳过爬取，仅从已有数据源导入')
     parser.add_argument('--force-fetch', action='store_true',
@@ -332,8 +328,8 @@ def main():
         conn.close()
         return
 
-    # 3. 并发爬取
-    print(f'\n=== 第三步：并发爬取 ({args.workers} 线程) ===')
+    # 3. 串行爬取（单线程防限频）
+    print(f'\n=== 第三步：串行爬取 ===')
     t0 = time.time()
     success, fail = fetch_and_store_batch(conn, to_fetch, max_workers=args.workers)
     elapsed = time.time() - t0
