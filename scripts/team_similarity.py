@@ -689,6 +689,9 @@ def run(results_path: str = RESULTS_PATH, db_path: str = DB_PATH,
 
     # 预加载所有比赛的λ值（用于计算当前比赛的总进球TOP3）
     lambda_lookup = {}
+    # 同时构建球队平均λ（回退用）
+    team_home_lambdas = {}   # team → list of home_lambda
+    team_away_lambdas = {}   # team → list of away_lambda
     try:
         conn = sqlite3.connect(db_path)
         for row in conn.execute("""
@@ -700,9 +703,23 @@ def run(results_path: str = RESULTS_PATH, db_path: str = DB_PATH,
             key = (row[0], row[1], row[2] or '')
             if key not in lambda_lookup:
                 lambda_lookup[key] = (row[3] or 0, row[4] or 0)
+            # 累加球队λ均值
+            team_home_lambdas.setdefault(row[0], []).append(row[3] or 0)
+            team_away_lambdas.setdefault(row[1], []).append(row[4] or 0)
         conn.close()
     except Exception:
         pass
+    # 计算球队平均λ（仅保留最近5场，取均值）
+    team_avg_home_lambda = {}
+    team_avg_away_lambda = {}
+    for team, vals in team_home_lambdas.items():
+        recent = sorted(vals, reverse=True)[:5]
+        if recent:
+            team_avg_home_lambda[team] = sum(recent) / len(recent)
+    for team, vals in team_away_lambdas.items():
+        recent = sorted(vals, reverse=True)[:5]
+        if recent:
+            team_avg_away_lambda[team] = sum(recent) / len(recent)
     rolling_stats = load_team_rolling_stats(db_path, last_n=10)
 
     historical_matches = load_historical_matches(db_path, limit=pool_size)
@@ -768,6 +785,12 @@ def run(results_path: str = RESULTS_PATH, db_path: str = DB_PATH,
                 break
         if lam_found:
             hl, al = lam_found
+            if hl > 0 or al > 0:
+                m['total_goals_top3'] = _compute_total_goals_top3(hl, al)
+        else:
+            # 回退：用各队最近5场平均λ
+            hl = team_avg_home_lambda.get(home) or team_avg_home_lambda.get(resolved_home) or 0
+            al = team_avg_away_lambda.get(away) or team_avg_away_lambda.get(resolved_away) or 0
             if hl > 0 or al > 0:
                 m['total_goals_top3'] = _compute_total_goals_top3(hl, al)
         if similar:
