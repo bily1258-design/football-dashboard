@@ -127,13 +127,18 @@ def load_team_features(results_path: str = RESULTS_PATH) -> dict:
         logger.warning("results.json 无 matches")
         return {}
 
-    # 每场比赛提取37维向量，按队伍聚合
+    # 每场比赛提取37维向量，按队伍聚合。
+    # 只使用有比分(已完赛)的比赛，排除预览比赛的大量零值噪音
     team_vectors = defaultdict(list)
     team_league = {}
+    used_count = 0
     for m in all_matches:
         ht, at = m.get('home_team', ''), m.get('away_team', '')
         if not ht or not at:
             continue
+        score = m.get('score', '').strip()
+        if not score or score == '-':
+            continue  # 跳过预览/未完成比赛
         vec = _extract_37d_vector(m)
         team_vectors[ht].append(vec)
         team_vectors[at].append(vec)
@@ -141,6 +146,9 @@ def load_team_features(results_path: str = RESULTS_PATH) -> dict:
         if league:
             team_league[ht] = league
             team_league[at] = league
+        used_count += 1
+
+    logger.info("球队特征计算用 %d/%d 场(有比分的已完赛)", used_count, len(all_matches))
 
     # 求均值
     team_avg = {}
