@@ -40,10 +40,12 @@ def safe_fetch(url, headers=None, retries=3, timeout=15, delay=0.2):
 def _extract_tech_from_html(html):
     """从 live.titan007.com 的 HTML 中解析技术统计
 
-    格式: <div class='data'><span class='red'>HOME</span><span>LABEL</span><span >AWAY</span></div>
+    新版格式: <div class='data'><span class='red'>HOME</span><span>LABEL</span><span >AWAY</span></div>
+    旧版格式: <td width=...>HOME</td><td width=...>LABEL</td><td width=...>AWAY</td>
     """
     stats = {}
 
+    # ---- 新版 (div.data > span) ----
     # 射门
     m = re.search(r"<div class='data'><span[^>]*>([^<]+)</span><span>射门</span><span[^>]*>([^<]+)</span></div>", html)
     if m:
@@ -63,6 +65,31 @@ def _extract_tech_from_html(html):
     m = re.search(r"<div class='data'><span[^>]*>([^<]+)</span><span>角球</span><span[^>]*>([^<]+)</span></div>", html)
     if m:
         stats['corners'] = {'home': float(m.group(1).replace('%', '')), 'away': float(m.group(2).replace('%', ''))}
+
+    # ---- 旧版 (td 表格布局) ----
+    if not stats:
+        # 收集所有td行: 值-标签-值三元组
+        td_pairs = re.findall(
+            r"<td[^>]*>([^<]+)</td>\s*<td[^>]*>([^<]+)</td>\s*<td[^>]*>([^<]+)</td>",
+            html, re.DOTALL
+        )
+        for home_val, label, away_val in td_pairs:
+            label = label.strip()
+            home_val = home_val.strip().rstrip('%')
+            away_val = away_val.strip().rstrip('%')
+            try:
+                hv = float(home_val)
+                av = float(away_val)
+            except ValueError:
+                continue
+            if label == '射门':
+                stats['shots'] = {'home': hv, 'away': av}
+            elif label == '射正':
+                stats['shots_on_target'] = {'home': hv, 'away': av}
+            elif label == '控球率':
+                stats['possession'] = {'home': hv, 'away': av}
+            elif label == '角球':
+                stats['corners'] = {'home': hv, 'away': av}
 
     return stats if stats else None
 
