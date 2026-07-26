@@ -316,7 +316,40 @@ def _cosine_sim(a: list, b: list) -> float:
     return dot / (na * nb)
 
 
-def load_historical_matches(db_path: str = DB_PATH, limit: int = 500) -> list:
+def _compute_total_goals_top3(h_lambda: float, a_lambda: float,
+                              top_k: int = 3) -> list:
+    """从泊松λ值计算总进球概率分布，返回top_k个 (total_goals, prob) 列表"""
+    from math import exp as _exp
+    # λ=0 时返回空（无有效数据）
+    if (h_lambda is None or a_lambda is None
+        or h_lambda <= 0 or a_lambda <= 0):
+        return []
+    # 截断范围：λ*3+2 覆盖99.9%概率
+    max_g = max(int(max(h_lambda, a_lambda) * 3 + 2), 6)
+
+    # 计算泊松概率
+    def poisson_pmf(k, lam):
+        if lam <= 0:
+            return 1.0 if k == 0 else 0.0
+        p = _exp(-lam)
+        for i in range(1, k + 1):
+            p *= lam / i
+        return p
+
+    home_probs = [poisson_pmf(k, h_lambda) for k in range(max_g + 1)]
+    away_probs = [poisson_pmf(k, a_lambda) for k in range(max_g + 1)]
+
+    total_probs = {}
+    for h in range(max_g + 1):
+        for a in range(max_g + 1):
+            t = h + a
+            total_probs[t] = total_probs.get(t, 0.0) + home_probs[h] * away_probs[a]
+
+    top = sorted(total_probs.items(), key=lambda x: -x[1])[:top_k]
+    return [{'total_goals': t, 'prob': round(p, 3)} for t, p in top]
+
+
+def load_historical_matches(db_path: str = DB_PATH, limit: int = 3000) -> list:
     """加载历史对局（默认取最近500场）"""
     if not os.path.exists(db_path):
         return []
@@ -433,6 +466,8 @@ def find_similar_matches(
             'sim_h': round(sim_h, 3),
             'sim_a': round(sim_a, 3),
             'similarity': round(combined, 3),
+            'total_goals_top3': _compute_total_goals_top3(
+                hm.get('home_lambda', 0), hm.get('away_lambda', 0)),
         })
 
     scored.sort(key=lambda x: -x['similarity'])
@@ -473,6 +508,24 @@ def run(results_path: str = RESULTS_PATH, db_path: str = DB_PATH,
         return 0
 
     known_teams = set(team_features.keys())
+
+    # 预加载所有比赛的λ值（用于计算当前比赛的总进球TOP3）
+    lambda_lookup = {}
+    try:
+        conn = sqlite3.connect(db_path)
+        for row in conn.execute("""
+            SELECT home_team, away_team, date, home_lambda, away_lambda
+            FROM poisson_predictions
+            WHERE home_lambda IS NOT NULL AND away_lambda IS NOT NULL
+              AND home_lambda > 0 AND away_lambda > 0
+        """):
+            key = (row[0], row[1], row[2] or '')
+            if key not in lambda_lookup:
+                lambda_lookup[key] = (row[3] or 0, row[4] or 0)
+        conn.close()
+    except Exception:
+        pass
+    logger.info("λ查找表: %d 条", len(lambda_lookup))
 
     historical_matches = load_historical_matches(db_path)
     if not historical_matches:
@@ -516,6 +569,20 @@ def run(results_path: str = RESULTS_PATH, db_path: str = DB_PATH,
 
         similar = find_similar_matches(resolved_home, resolved_away, league,
                                        team_features, historical_matches)
+        # 当前比赛的总进球TOP3（从DB的λ值计算）
+        match_date = m.get('date', '')[:10]
+        # 尝试多种key组合：先原队名后解析队名
+        lam_found = None
+        for hh, aa in [(home, away), (resolved_home, resolved_away),
+                        (home, resolved_away), (resolved_home, away)]:
+            key = (hh, aa, match_date)
+            if key in lambda_lookup:
+                lam_found = lambda_lookup[key]
+                break
+        if lam_found:
+            hl, al = lam_found
+            if hl > 0 or al > 0:
+                m['total_goals_top3'] = _compute_total_goals_top3(hl, al)
         if similar:
             m['similar_matches'] = similar
             matched_count += 1
