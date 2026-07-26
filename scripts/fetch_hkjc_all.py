@@ -423,8 +423,52 @@ def do_backfill(fpath, date_str):
                     print(f'  ... 还有 {len(postponed)-5} 场')
                 unscored = [(fid, m) for fid, m in existing_matches.items()
                             if not m.get('score') and m.get('match_time')]
-    
-    # 2. Analysis页按SID抓比分（universal兜底，世界杯等特殊赛事也可用）
+
+    # 1.5 按队名从zqdc数据找真实titan007 FID + 比分
+    if unscored:
+        import glob
+        zqdc_map = {}  # {(h_lower, a_lower): (real_fid, score)}
+        for zfp in sorted(glob.glob(os.path.join(DATA_DIR, 'matches_*.json'))):
+            try:
+                with open(zfp) as f:
+                    zd = json.load(f)
+            except Exception:
+                continue
+            zlist = zd.get('matches', zd if isinstance(zd, list) else [])
+            for zm in zlist:
+                zfid = str(zm.get('fid', ''))
+                zscore = str(zm.get('score', ''))
+                if zfid and zscore:
+                    key = (zm.get('home_team', '').strip().lower(),
+                           zm.get('away_team', '').strip().lower())
+                    if key[0] and key[1]:
+                        zqdc_map[key] = (zfid, zscore)
+        # 剥(中)后缀匹配
+        import re as _re
+        name_ok = 0
+        for fid, m in unscored:
+            h = m.get('home_team', '').strip().lower()
+            a = m.get('away_team', '').strip().lower()
+            h_clean = _re.sub(r'\s*\(?[中)]?\s*', '', h)
+            a_clean = _re.sub(r'\s*\(?[中)]?\s*', '', a)
+            for key, (real_fid, score) in zqdc_map.items():
+                kh, ka = key
+                if (h == kh and a == ka) or (h_clean == kh and a_clean == ka) or \
+                   (h in kh and a in ka):
+                    m['score'] = score
+                    m['fid'] = real_fid
+                    name_ok += 1
+                    break
+        if name_ok:
+            existing['matches'] = list(existing_matches.values())
+            existing['fetched_at'] = datetime.now().isoformat()
+            with open(fpath, 'w', encoding='utf-8') as f:
+                json.dump(existing, f, ensure_ascii=False, indent=2)
+            print(f'[BACKFILL] 按队名配zqdc真实FID → {name_ok}/{len(unscored)} 场')
+            unscored = [(m['fid'], m) for m in existing_matches.values()
+                        if not m.get('score') and m.get('match_time')]
+
+    # 2. Analysis页按SID抓比分（此时fid已可能是真实SID，universal兜底）
     if unscored:
         print(f'[BACKFILL] Analysis页抓比分: {len(unscored)} 场待补…')
         ana_ok = 0
