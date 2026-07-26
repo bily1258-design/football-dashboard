@@ -1,26 +1,67 @@
 #!/usr/bin/env python3
-"""补抓亚盘盘口数据，适度并行，防限流"""
+"""补抓亚盘盘口数据，适度并行，防限流
+
+速度优化: BATCH_SIZE=30 每批30个fid并发, MAX_WORKERS=10线程
+避免重复请求: 失败fid缓存到独立文件, 每7天自动重试一次
+"""
 
 import json, time, sys, os
 from datetime import datetime, timedelta
 sys.path.insert(0, os.path.dirname(__file__))
 from titan007_utils import fetch_asian_odds_batch
 
-RESULTS = os.path.join(os.path.dirname(__file__), '..', 'docs', 'data', 'results.json')
-BATCH_SIZE = 30         # 每批30个fid（原5，HTTP延迟是瓶颈，并行才有效果）
+SCRIPT_DIR = os.path.dirname(__file__)
+RESULTS = os.path.join(SCRIPT_DIR, '..', 'docs', 'data', 'results.json')
+FAILED_CACHE = os.path.join(SCRIPT_DIR, '..', '.ah_failed_cache.json')
+
+BATCH_SIZE = 30         # 每批30个fid并发
 MAX_WORKERS = 10        # 10线程并行
-BATCH_DELAY = 0.05      # 每批间隔0.05s
+BATCH_DELAY = 0.05      # 每批间隔
+RETRY_DAYS = 7          # 失败fid超过N天未重试时再试一次
+
+def load_failed_cache():
+    """加载失败fid缓存 {fid: last_attempt_epoch}"""
+    if os.path.exists(FAILED_CACHE):
+        try:
+            with open(FAILED_CACHE) as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return {}
+
+def save_failed_cache(cache):
+    with open(FAILED_CACHE, 'w') as f:
+        json.dump(cache, f, ensure_ascii=False)
 
 def main():
     with open(RESULTS) as f:
         d = json.load(f)
 
     matches = d['matches']
-    _cutoff_start = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')  # 昨天
-    _cutoff_end = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')   # 明天
-    need = [(i, str(m.get('fid', ''))) for i, m in enumerate(matches)
-            if m.get('fid') and m.get('fid') not in ('0', '') and m.get('ah_home') is None
-            and (_cutoff_start <= (m.get('date', '')[:10]) <= _cutoff_end)]
+    failed_cache = load_failed_cache()
+    now = datetime.now()
+    now_ts = time.time()
+    retry_threshold = now_ts - RETRY_DAYS * 86400
+
+    _cutoff_start = (now - timedelta(days=1)).strftime('%Y-%m-%d')
+    _cutoff_end = (now + timedelta(days=1)).strftime('%Y-%m-%d')
+
+    need = []
+    for i, m in enumerate(matches):
+        fid = str(m.get('fid', ''))
+        if not fid or fid == '0':
+            continue
+        if m.get('ah_home') is not None:
+            continue
+        date_str = m.get('date', '')[:10]
+        if not (_cutoff_start <= date_str <= _cutoff_end):
+            continue
+        # 跳过已失败过的fid（超过RETRY_DAYS的再试一次）
+        if fid in failed_cache:
+            last_attempt = failed_cache[fid]
+            if last_attempt > retry_threshold:
+                continue
+        need.append((i, fid))
 
     seen = {}
     for idx, fid in need:
@@ -28,7 +69,8 @@ def main():
     unique_fids = list(seen.keys())
 
     already = sum(1 for m in matches if m.get('ah_home') is not None)
-    print(f"共 {len(matches)} 场比赛, 已有AH: {already}, 需补抓: {len(unique_fids)} 个唯一fid")
+    print(f"共 {len(matches)} 场比赛, 已有AH: {already}, "
+          f"已确认无AH: {len(failed_cache)}, 本次需抓: {len(unique_fids)} 个唯一fid")
 
     if not unique_fids:
         print("无需补抓")
@@ -58,19 +100,27 @@ def main():
                     m['ah_company_id'] = r.get('company_id')
             else:
                 fail += 1
+                failed_cache[fid] = now_ts
 
         processed = batch_start + len(batch)
         elapsed = time.time() - t0
         print(f"  [{processed}/{len(unique_fids)}] 成功={ok} 失败={fail}  耗时={elapsed:.0f}s")
 
-        # 定期保存
+        # 定期保存结果+缓存
+        save_failed_cache(failed_cache)
         with open(RESULTS, 'w') as f:
             json.dump(d, f, ensure_ascii=False, indent=2)
         time.sleep(BATCH_DELAY)
 
+    # 最终保存
+    save_failed_cache(failed_cache)
+    with open(RESULTS, 'w') as f:
+        json.dump(d, f, ensure_ascii=False, indent=2)
+
     elapsed = time.time() - t0
     print(f"\n完成! 成功: {ok}, 失败: {fail}, 总耗时: {elapsed:.0f}s")
     print(f"最终有AH盘口: {sum(1 for m in matches if m.get('ah_home') is not None)}/{len(matches)}")
+    print(f"累计确认无AH的fid: {len(failed_cache)}")
 
 if __name__ == '__main__':
     main()
