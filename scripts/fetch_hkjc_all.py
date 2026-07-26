@@ -497,6 +497,29 @@ def do_backfill(fpath, date_str):
         else:
             print(f'[BACKFILL] Analysis页→未找到比分')
     
+    # 2.5 live.titan007.com/detail 页面抓比分（HKJC类FID也能用）
+    if unscored:
+        import re as _re2
+        detail_ok = 0
+        for fid, m in unscored:
+            try:
+                from titan007_utils import fetch_url
+                html = fetch_url(f'https://live.titan007.com/detail/{fid}cn.htm', timeout=8)
+                dm = _re2.search(r'比赛结束[！!]?\s*比分[：:]\s*(\d+)-(\d+)', html)
+                if dm:
+                    m['score'] = f'{dm.group(1)}-{dm.group(2)}'
+                    detail_ok += 1
+            except Exception:
+                pass
+        if detail_ok:
+            existing['matches'] = list(existing_matches.values())
+            existing['fetched_at'] = datetime.now().isoformat()
+            with open(fpath, 'w', encoding='utf-8') as f:
+                json.dump(existing, f, ensure_ascii=False, indent=2)
+            print(f'[BACKFILL] live detail页按FID → {detail_ok}/{len(unscored)} 场')
+            unscored = [(fid, m) for fid, m in existing_matches.items()
+                        if not m.get('score') and m.get('match_time')]
+    
     # 5. 剩余无分比赛：不猜推迟，仅留空等待下一次回填
     remaining = [m for m in existing_matches.values()
                  if not m.get('score') and m.get('match_time')]
