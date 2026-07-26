@@ -1996,8 +1996,8 @@ def generate_frontend(results: List[Dict]):
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>足彩价值投注看板</title>
-<link rel="stylesheet" href="style.css?v=20260724v5">
-<script src="script.js?v=20260724v5"></script>
+<link rel="stylesheet" href="style.css?v=20260726v1">
+<script src="script.js?v=20260726v1"></script>
 </head>
 <body>
 <div class="container">
@@ -2041,11 +2041,11 @@ def generate_frontend(results: List[Dict]):
           <th>主队</th>
           <th>比分</th>
           <th>客队</th>
+          <th>相似历史</th>
           <th>方向</th>
           <th>命中</th>
           <th>赔率(欧/亚)</th>
           <th>模型/LGBM</th>
-          <th>相似历史</th>
         </tr>
       </thead>
       <tbody id="matchBody"></tbody>
@@ -2199,6 +2199,7 @@ tr:hover{background:#f0f6ff}
 .sim-teams{color:#3a4a5c;overflow:hidden;text-overflow:ellipsis;max-width:130px}
 .sim-score{color:#667788;font-size:10px}
 .sim-pct{color:#2563eb;font-weight:600;font-size:10px;margin-left:auto}
+.sim-goals{font-size:11px;color:#e67e22;margin-top:3px;padding-top:2px;border-top:1px dashed #e0e4e8}
 .weight-badge{display:inline-block;font-size:10px;color:#888;margin-left:3px;cursor:help;vertical-align:middle}
 .lp-row{opacity:0.55}
 .lp-row:hover{opacity:0.85}'''

@@ -61,7 +61,17 @@ function renderSimilarMatches(m){
       '</div>'
     );
   }
-  return '<div class="sim-list">'+items.join('')+'</div>';
+  var html = '<div class="sim-list">'+items.join('')+'</div>';
+  // 总进球TOP3预测
+  if(m.total_goals_top3 && m.total_goals_top3.length>0){
+    var goals = [];
+    for(var i=0;i<Math.min(m.total_goals_top3.length,3);i++){
+      var g = m.total_goals_top3[i];
+      goals.push(g.total_goals+'球'+(g.prob*100).toFixed(0)+'%');
+    }
+    html += '<div class="sim-goals">⚽ '+goals.join(' ')+'</div>';
+  }
+  return html;
 }
 function confDot(c){
   if(c==null)return'';
@@ -251,6 +261,7 @@ function renderTable(matches){
       '<td class="team-name">'+m.home_team+'</td>'+
       '<td class="score-cell"><span>'+(m.score||(m.postponed?'推迟':'-'))+'</span></td>'+
       '<td class="team-name">'+m.away_team+'</td>'+
+      '<td class="sim-cell">'+renderSimilarMatches(m)+'</td>'+
       '<td><span class="'+dirClass(m.lgbm_prediction)+'">'+dirText(m.lgbm_prediction)+'</span> <span style="font-size:11px;color:#999">'+dirText(m.model_prediction)+(m.ah_home_covers_prob!=null?' <span class="ah-pred-inline">('+(m.ah_home_covers_prob>m.ah_away_covers_prob?(m.ah_home_covers_prob>m.ah_push_prob?'上':'走'):(m.ah_away_covers_prob>m.ah_push_prob?'下':'走'))+')</span>':'')+'</span><span class="weight-badge" title="权重 '+m.importance_weight.toFixed(2)+'">⚡'+m.importance_weight.toFixed(2)+'</span>'+renderWarning(m.warning)+'<br>'+vbHtml+'</td>'+
 
       '<td class="'+hc+'">'+(m.hit||'')+(ahDir(m)?' <span class="ah-hit-dir">'+ahDir(m)+'</span>':'')+'</td>'+
@@ -263,8 +274,8 @@ function renderTable(matches){
             '<span class="'+((m.model_loss-m.lgbm_loss)<-0.003?'oc-pct-down':(m.model_loss-m.lgbm_loss)>0.003?'oc-pct-up':'oc-pct-flat')+'\">'+fmtPctSign((m.model_loss-m.lgbm_loss)*100)+'</span>'+
           '</div>'+
         tsRow+
-        '</div></td>'+
-      '<td class="sim-cell">'+renderSimilarMatches(m)+'</td>';
+        '</div></td>'
+    ;
     // 绑定点击事件 - 价值标签
     var vbb = tr.querySelector('.vb-badge');
     if(vbb){

@@ -170,6 +170,156 @@ def load_team_features(results_path: str = RESULTS_PATH) -> dict:
     return features
 
 
+def load_team_rolling_stats(db_path: str = DB_PATH, last_n: int = 10) -> dict:
+    """从 match_tech_stats 计算球队近 N 场滚动均值（控球率/射门/射正/角球）。
+    返回 dict: {team_name: {'rolling': [8维向量], 'match_count': int}}
+    8维 = [自身控球率, 自身射门, 自身射正, 自身角球, 对手控球率, 对手射门, 对手射正, 对手角球]
+    """
+    import sqlite3, os
+    if not os.path.exists(db_path):
+        return {}
+    conn = sqlite3.connect(db_path)
+    cur = conn.cursor()
+
+    # 获取所有球队的技统数据，按日期排序
+    all_teams = {}
+    rows = cur.execute("""
+        SELECT home_team, away_team, date,
+               home_possession, away_possession,
+               home_shots, away_shots,
+               home_shots_on_target, away_shots_on_target,
+               home_corners, away_corners
+        FROM match_tech_stats
+        ORDER BY date
+    """).fetchall()
+    conn.close()
+
+    for r in rows:
+        ht, at, d = r[0], r[1], r[2]
+        hp, ap = r[3], r[4]
+        hs, ash = r[5], r[6]
+        hst, ast = r[7], r[8]
+        hc, ac = r[9], r[10]
+
+        # 主队各项统计
+        if ht not in all_teams:
+            all_teams[ht] = []
+        all_teams[ht].append((d, hp, hs, hst, hc, ap, ash, ast, ac))
+
+        # 客队各项统计（注意：客队在客场的指标是对手的表现，但我们关心的是球队自身表现）
+        if at not in all_teams:
+            all_teams[at] = []
+        all_teams[at].append((d, ap, ash, ast, ac, hp, hs, hst, hc))
+
+    result = {}
+    for team, games in all_teams.items():
+        games.sort(key=lambda x: x[0])  # 按日期排序
+        last_n_games = games[-last_n:] if len(games) > last_n else games
+
+        # 球队自身场均：控球率/射门/射正/角球
+        self_poss = sum(g[1] for g in last_n_games) / max(len(last_n_games), 1)
+        self_shots = sum(g[2] for g in last_n_games) / max(len(last_n_games), 1)
+        self_sot = sum(g[3] for g in last_n_games) / max(len(last_n_games), 1)
+        self_cor = sum(g[4] for g in last_n_games) / max(len(last_n_games), 1)
+
+        # 对手在球队参加比赛中场均（对手控球率/射门等——反映球队防守水平）
+        opp_poss = sum(g[5] for g in last_n_games) / max(len(last_n_games), 1)
+        opp_shots = sum(g[6] for g in last_n_games) / max(len(last_n_games), 1)
+        opp_sot = sum(g[7] for g in last_n_games) / max(len(last_n_games), 1)
+        opp_cor = sum(g[8] for g in last_n_games) / max(len(last_n_games), 1)
+
+        result[team] = {
+            'rolling': [self_poss, self_shots, self_sot, self_cor,
+                        opp_poss, opp_shots, opp_sot, opp_cor],
+            'match_count': len(games),
+        }
+
+    logger.info("球队滚动技统(近%d场): %d 队", last_n, len(result))
+    return result
+
+
+def _pre_match_rolling(team: str, cutoff: str, team_home: dict, team_away: dict, last_n: int = 10):
+    """计算某支球队在 cutoff 日期前的赛前滚动均值（严格截断，无前视偏差）"""
+    # 球队主场比赛
+    home_stats = team_home.get(team, [])
+    prev_home = [s for d, s in home_stats if d < cutoff]
+    home_self = [sum(c)/len(c) for c in zip(*prev_home)] if prev_home else [0, 0, 0, 0]
+
+    # 球队客场比赛
+    away_stats = team_away.get(team, [])
+    prev_away = [s for d, s in away_stats if d < cutoff]
+    away_self = [sum(c)/len(c) for c in zip(*prev_away)] if prev_away else [0, 0, 0, 0]
+
+    # 限 last_n 场
+    if len(prev_home) > last_n:
+        recent_h = [s for _, s in prev_home[-last_n:]]
+        home_self = [sum(c)/len(c) for c in zip(*recent_h)]
+    if len(prev_away) > last_n:
+        recent_a = [s for _, s in prev_away[-last_n:]]
+        away_self = [sum(c)/len(c) for c in zip(*recent_a)]
+
+    # 球队自身统计 4维 + 对手统计 4维（球队在主场面对对手的表现 = 对手的客场表现）
+    # 对于主场比赛，对手统计从 away_stats 拿（因为对手是客队）
+    # 对于客场比赛，对手统计从 home_stats 拿（因为对手是主队）
+    # 简化处理：用对手"反向"数据
+    # 自身: home_self 是对手在球队主场时的数据，away_self 是对手在球队客场时的数据
+    # 但 team_home/team_away 存的是"球队自己的"主/客数据，不是对手的
+    #
+    # 重新想: team_home[team] = [(d, [控球率, 射门, 射正, 角球])] 这是在球队主场比赛时球队自己的数据
+    # team_away[team] = [(d, [控球率, 射门, 射正, 角球])] 这是在球队客场比赛时球队自己的数据
+    #
+    # 所以 8 维 = [home_自身4, away_自身4]
+
+    return home_self + away_self
+
+
+def enrich_matches_with_rolling(matches: list, db_path: str, last_n: int = 10) -> list:
+    """对历史池每场比赛，按该场比赛的日期截断，计算主客队赛前滚动均值。
+    存入 match dict 的 pre_h_rolling 和 pre_a_rolling（各8维）。
+    """
+    import sqlite3, os
+    if not os.path.exists(db_path):
+        return matches
+
+    conn = sqlite3.connect(db_path)
+    rows = conn.execute("""
+        SELECT home_team, away_team, date,
+               home_possession, home_shots, home_shots_on_target, home_corners,
+               away_possession, away_shots, away_shots_on_target, away_corners
+        FROM match_tech_stats
+        WHERE home_possession IS NOT NULL
+        ORDER BY date ASC
+    """).fetchall()
+    conn.close()
+
+    # 球队主客场比赛时间线
+    team_home = {}
+    team_away = {}
+    for r in rows:
+        d = r[2] or ''
+        h_stats = [float(r[3] or 0), float(r[4] or 0), float(r[5] or 0), float(r[6] or 0)]
+        a_stats = [float(r[7] or 0), float(r[8] or 0), float(r[9] or 0), float(r[10] or 0)]
+        if r[0] not in team_home:
+            team_home[r[0]] = []
+            team_away[r[0]] = []
+        if r[1] not in team_home:
+            team_home[r[1]] = []
+            team_away[r[1]] = []
+        team_home[r[0]].append((d, h_stats))
+        team_away[r[1]].append((d, a_stats))
+
+    for m in matches:
+        d = m.get('date', '')[:10]
+        if not d:
+            continue
+        h_team = m.get('home_team', '')
+        a_team = m.get('away_team', '')
+        m['pre_h_rolling'] = _pre_match_rolling(h_team, d, team_home, team_away, last_n)
+        m['pre_a_rolling'] = _pre_match_rolling(a_team, d, team_home, team_away, last_n)
+
+    return matches
+
+
 def _resolve_team_name(name: str, known_teams: set) -> str:
     """
     队伍名模糊匹配：
@@ -358,7 +508,9 @@ def load_historical_matches(db_path: str = DB_PATH, limit: int = 3000) -> list:
                COALESCE(mts.home_shots, 0) AS hs,
                COALESCE(mts.away_shots, 0) AS asht,
                COALESCE(mts.home_shots_on_target, 0) AS hst,
-               COALESCE(mts.away_shots_on_target, 0) AS ast
+               COALESCE(mts.away_shots_on_target, 0) AS ast,
+               COALESCE(mts.home_corners, 0) AS hc,
+               COALESCE(mts.away_corners, 0) AS ac
         FROM (
             SELECT home_team, away_team, league, date,
                    reference_score, poisson_win, poisson_draw, poisson_loss,
@@ -404,6 +556,7 @@ def load_historical_matches(db_path: str = DB_PATH, limit: int = 3000) -> list:
             'home_possession': r[11] or 0, 'away_possession': r[12] or 0,
             'home_shots': r[13] or 0, 'away_shots': r[14] or 0,
             'home_shots_on_target': r[15] or 0, 'away_shots_on_target': r[16] or 0,
+            'home_corners': r[17] or 0, 'away_corners': r[18] or 0,
         })
     logger.info("历史对局: %d 场", len(matches))
     return matches
@@ -412,17 +565,19 @@ def load_historical_matches(db_path: str = DB_PATH, limit: int = 3000) -> list:
 def find_similar_matches(
     home_team: str, away_team: str, league: str,
     team_features: dict, historical_matches: list,
+    rolling_stats: dict = None,
     top_k: int = 5,
 ) -> list:
     """
-    为一场比赛找最相似的历史对局（37维LGBM特征版）。
+    为一场比赛找最相似的历史对局（37维LGBM特征 + 赛前技统形态版）。
     策略：
-    1. 主队特征向量 vs 历史主队 余弦相似度
-    2. 客队特征向量 vs 历史客队 余弦相似度
-    3. 综合 = sqrt(sim_h * sim_a) → 保证两边都匹配
-    4. 同联赛加成 x1.2（37维特征已含联赛信息，不过度提权）
-    5. 时间衰减：90天内无衰减，之后指数衰减
-    6. 对手互换场次自动跳过（如卡拉巴赫vs维斯特里 → 维斯特里vs卡拉巴赫的100%匹配）
+    1. 主队37维特征向量 vs 历史主队 余弦相似度
+    2. 客队37维特征向量 vs 历史客队 余弦相似度
+    3. 若 rolling_stats 可用，加入技统形态余弦相似度（权重0.3）
+    4. 综合 = sqrt(sim_h * sim_a) [加上技统加权]
+    5. 同联赛加成 x1.2（37维特征已含联赛信息，不过度提权）
+    6. 时间衰减：90天内无衰减，之后指数衰减
+    7. 对手互换场次自动跳过
     """
     ht_vec = team_features.get(home_team, {}).get('_vec')
     at_vec = team_features.get(away_team, {}).get('_vec')
@@ -447,6 +602,19 @@ def find_similar_matches(
         sim_h = max(_cosine_sim(ht_vec, h_vec), 0.0)
         sim_a = max(_cosine_sim(at_vec, a_vec), 0.0)
         combined = sqrt(sim_h * sim_a)
+
+        # 赛前技统形态相似度（权重0.3，仅当两队都有滚动数据时）
+        if rolling_stats:
+            ht_roll = rolling_stats.get(home_team, {}).get('rolling', None)
+            at_roll = rolling_stats.get(away_team, {}).get('rolling', None)
+            # 历史比赛使用当时赛前截断的滚动均值（无前视偏差）
+            h_roll = hm.get('pre_h_rolling', None)
+            a_roll = hm.get('pre_a_rolling', None)
+            if all([ht_roll, at_roll, h_roll, a_roll]):
+                roll_sim_h = max(_cosine_sim(ht_roll, h_roll), 0.0)
+                roll_sim_a = max(_cosine_sim(at_roll, a_roll), 0.0)
+                roll_sim = sqrt(roll_sim_h * roll_sim_a)
+                combined = combined * 0.7 + roll_sim * 0.3
 
         # 同联赛加成（37维特征已含联赛信息，温和提权即可）
         if hm['league'] and league and \
@@ -492,7 +660,8 @@ def find_similar_matches(
 
 
 def run(results_path: str = RESULTS_PATH, db_path: str = DB_PATH,
-        force: bool = False, pool_size: int = 500) -> int:
+        force: bool = False, pool_size: int = 500,
+        no_rolling: bool = False) -> int:
     if not os.path.exists(results_path):
         logger.error("results.json 不存在: %s", results_path)
         return 0
@@ -534,12 +703,20 @@ def run(results_path: str = RESULTS_PATH, db_path: str = DB_PATH,
         conn.close()
     except Exception:
         pass
-    logger.info("λ查找表: %d 条", len(lambda_lookup))
+    rolling_stats = load_team_rolling_stats(db_path, last_n=10)
 
     historical_matches = load_historical_matches(db_path, limit=pool_size)
     if not historical_matches:
         logger.warning("无历史对局数据")
         return 0
+
+    if not no_rolling:
+        # 对历史池每场比赛计算赛前滚动均值（严格时间截断，无前视偏差）
+        logger.info("正在计算历史对局赛前技统滚动均值...")
+        enrich_matches_with_rolling(historical_matches, db_path, last_n=10)
+    else:
+        logger.info("已禁用技统滚动匹配（--no-rolling）")
+        rolling_stats = None
 
     # 提取联赛和队伍名不相匹配的问题：DB用的是标准队伍名
     # results.json的队名可能不同，需要软匹配
@@ -577,7 +754,8 @@ def run(results_path: str = RESULTS_PATH, db_path: str = DB_PATH,
             continue
 
         similar = find_similar_matches(resolved_home, resolved_away, league,
-                                       team_features, historical_matches)
+                                       team_features, historical_matches,
+                                       rolling_stats=rolling_stats)
         # 当前比赛的总进球TOP3（从DB的λ值计算）
         match_date = m.get('date', '')[:10]
         # 尝试多种key组合：先原队名后解析队名
@@ -614,7 +792,8 @@ if __name__ == '__main__':
     )
     force = '--force' in sys.argv
     pool_size = 500
+    no_rolling = '--no-rolling' in sys.argv
     for a in sys.argv:
         if a.startswith('--pool-size='):
             pool_size = int(a.split('=')[1])
-    run(force=force, pool_size=pool_size)
+    run(force=force, pool_size=pool_size, no_rolling=no_rolling)

@@ -50,6 +50,9 @@ echo "[$(date '+%H:%M:%S')] 补抓亚盘..."
 python3 scripts/backfill_ah.py
 python3 scripts/backfill_ah_probs.py
 
+echo "[$(date '+%H:%M:%S')] 回填技术统计（滚动特征数据）..."
+python3 scripts/backfill_tech_stats.py --limit 3000 --workers 15
+
 echo "[$(date '+%H:%M:%S')] 推送至GitHub..."
 git add -A
 git commit -m "数据+分析 $DATE" || echo "无新数据"

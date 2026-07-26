@@ -22,11 +22,12 @@ def _n(v, default=0.0):
     except:
         return default
 
-def safe_fetch(url, headers=None, retries=3, timeout=15):
-    """带重试的请求"""
+def safe_fetch(url, headers=None, retries=3, timeout=15, delay=0.2):
+    """带重试的请求，默认延迟防反爬"""
     import urllib.request
     for i in range(retries):
         try:
+            time.sleep(delay)  # 延迟防反爬
             req = urllib.request.Request(url, headers=headers or {})
             with urllib.request.urlopen(req, timeout=timeout) as resp:
                 return resp.read().decode('utf-8', errors='replace')
@@ -36,60 +37,52 @@ def safe_fetch(url, headers=None, retries=3, timeout=15):
             else:
                 return None
 
+def _extract_tech_from_html(html):
+    """从 live.titan007.com 的 HTML 中解析技术统计
+
+    格式: <div class='data'><span class='red'>HOME</span><span>LABEL</span><span >AWAY</span></div>
+    """
+    stats = {}
+
+    # 射门
+    m = re.search(r"<div class='data'><span[^>]*>([^<]+)</span><span>射门</span><span[^>]*>([^<]+)</span></div>", html)
+    if m:
+        stats['shots'] = {'home': float(m.group(1).replace('%', '')), 'away': float(m.group(2).replace('%', ''))}
+
+    # 射正
+    m = re.search(r"<div class='data'><span[^>]*>([^<]+)</span><span>射正</span><span[^>]*>([^<]+)</span></div>", html)
+    if m:
+        stats['shots_on_target'] = {'home': float(m.group(1).replace('%', '')), 'away': float(m.group(2).replace('%', ''))}
+
+    # 控球率
+    m = re.search(r"<div class='data'><span[^>]*>([^<]+)%</span><span>控球率</span><span[^>]*>([^<]+)%</span></div>", html)
+    if m:
+        stats['possession'] = {'home': float(m.group(1)), 'away': float(m.group(2))}
+
+    # 角球
+    m = re.search(r"<div class='data'><span[^>]*>([^<]+)</span><span>角球</span><span[^>]*>([^<]+)</span></div>", html)
+    if m:
+        stats['corners'] = {'home': float(m.group(1).replace('%', '')), 'away': float(m.group(2).replace('%', ''))}
+
+    return stats if stats else None
+
 def fetch_tech_stats_by_sid(sid):
-    """从 titan007 detail 页抓取技术统计，返回解析后的 dict"""
-    url = f'https://bf.titan007.com/detail/{sid}.htm'
-    html = safe_fetch(url, headers={
-        'Referer': 'https://bf.titan007.com/',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-    })
+    """从 live.titan007.com 详情页抓取技术统计，返回解析后的 dict"""
+    url = f'https://live.titan007.com/detail/{sid}cn.htm'
+    headers = {
+        'Referer': 'https://live.titan007.com/',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'Cookie': 'UseCookie=yes; sport=1',
+    }
+    html = safe_fetch(url, headers=headers, delay=0.15)
     if not html:
         return None
 
-    result = {}
+    # 先检查页面是否包含技术统计区域（快速排除空页面）
+    if '>射门<' not in html or '>控球率<' not in html:
+        return None
 
-    # teamTvStatisticData 变量
-    m = re.search(r'teamTvStatisticData\s*=\s*"([^"]+)"', html)
-    if m:
-        raw = m.group(1)
-        parsed = parse_team_tv_stats(raw)
-        if parsed:
-            # 提取我们需要的字段
-            # 索引: 2=控球率, 4=射门, 5=射正 (见 fetch_analysis_data.py parse_team_tv_stats)
-            if 2 in parsed:
-                result['possession'] = {'home': parsed[2]['home'], 'away': parsed[2]['away']}
-            if 4 in parsed:
-                result['shots'] = {'home': parsed[4]['home'], 'away': parsed[4]['away']}
-            if 5 in parsed:
-                result['shots_on_target'] = {'home': parsed[5]['home'], 'away': parsed[5]['away']}
-
-    return result if result else None
-
-def parse_team_tv_stats(raw):
-    """解析 teamTvStatisticData 编码变量"""
-    if not raw:
-        return {}
-
-    parts = raw.split('^')
-    stats = {}
-    for p in parts:
-        if not p.strip():
-            continue
-        fields = p.split(',')
-        if len(fields) >= 5:
-            try:
-                idx = int(fields[0])
-                home_val = float(fields[1]) if fields[1] else 0
-                away_val = float(fields[2]) if fields[2] else 0
-                home_pct = float(fields[3]) if fields[3] else 0
-                away_pct = float(fields[4]) if fields[4] else 0
-                stats[idx] = {
-                    'home': home_val, 'away': away_val,
-                    'home_pct': home_pct, 'away_pct': away_pct
-                }
-            except:
-                continue
-    return stats
+    return _extract_tech_from_html(html)
 
 def parse_tech_from_match_analysis(stats_json_str):
     """从 match_analysis 的 tech_stats JSON 解析出需要的字段"""
@@ -120,6 +113,8 @@ def ensure_table(conn):
             away_shots REAL DEFAULT 0,
             home_shots_on_target REAL DEFAULT 0,
             away_shots_on_target REAL DEFAULT 0,
+            home_corners REAL DEFAULT 0,
+            away_corners REAL DEFAULT 0,
             sid INTEGER,
             updated_at TEXT DEFAULT (datetime('now')),
             PRIMARY KEY (home_team, away_team, date)
@@ -145,14 +140,18 @@ def backfill_from_results(conn):
         hst = _n(m.get('home_shots_on_target'))
         ast = _n(m.get('away_shots_on_target'))
 
-        if any([hp, ap, hs, ash, hst, ast]):
+        # 角球（如果在results.json中有）
+        hc = _n(m.get('home_corners'))
+        ac = _n(m.get('away_corners'))
+        if any([hp, ap, hs, ash, hst, ast, hc, ac]):
             conn.execute("""
                 INSERT OR REPLACE INTO match_tech_stats
                     (home_team, away_team, date, home_possession, away_possession,
-                     home_shots, away_shots, home_shots_on_target, away_shots_on_target)
-                VALUES (?,?,?,?,?,?,?,?,?)
+                     home_shots, away_shots, home_shots_on_target, away_shots_on_target,
+                     home_corners, away_corners)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?)
             """, (m['home_team'], m['away_team'], m['date'],
-                  hp, ap, hs, ash, hst, ast))
+                  hp, ap, hs, ash, hst, ast, hc, ac))
             count += 1
 
     conn.commit()
@@ -208,8 +207,10 @@ def fetch_and_store_batch(conn, matches, max_workers=15):
             ash = tech.get('shots', {}).get('away', 0)
             hst = tech.get('shots_on_target', {}).get('home', 0)
             ast = tech.get('shots_on_target', {}).get('away', 0)
-            if any([hp, ap, hs, ash, hst, ast]):
-                return (home, away, date, hp, ap, hs, ash, hst, ast, sid)
+            hc = tech.get('corners', {}).get('home', 0)
+            ac = tech.get('corners', {}).get('away', 0)
+            if any([hp, ap, hs, ash, hst, ast, hc, ac]):
+                return (home, away, date, hp, ap, hs, ash, hst, ast, hc, ac, sid)
         return None
 
     success = 0
@@ -222,8 +223,9 @@ def fetch_and_store_batch(conn, matches, max_workers=15):
                 conn.execute("""
                     INSERT OR REPLACE INTO match_tech_stats
                         (home_team, away_team, date, home_possession, away_possession,
-                         home_shots, away_shots, home_shots_on_target, away_shots_on_target, sid)
-                    VALUES (?,?,?,?,?,?,?,?,?,?)
+                         home_shots, away_shots, home_shots_on_target, away_shots_on_target,
+                         home_corners, away_corners, sid)
+                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
                 """, result)
                 success += 1
             else:
