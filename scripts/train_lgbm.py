@@ -209,6 +209,11 @@ FEATURE_NAMES = [
     'home_shots','away_shots',
     'home_shots_on_target','away_shots_on_target',
     'home_corners','away_corners',
+    # xG特征 (v10, 8维 - 历史趋势表, 全量覆盖)
+    'home_goals_3','away_goals_3',
+    'home_conceded_3','away_conceded_3',
+    'xg_home_3','xg_away_3',
+    'xg_home_10','xg_away_10',
 ]
 
 def extract_features(row, stats=None, form_data=None, conn=None):
@@ -335,6 +340,22 @@ def extract_features(row, stats=None, form_data=None, conn=None):
                     h_corners = _safe_float(h_tech.get('角球', 0))
                     a_corners = _safe_float(a_tech.get('角球', 0))
     
+    # ─── 新增xG特征 (v10) ────────────────────────────
+    h_g3 = a_g3 = h_c3 = a_c3 = 0.0
+    xg_h3 = xg_a3 = xg_h10 = xg_a10 = 0.0
+    if conn and sid_int:
+        cur = conn.execute(
+            'SELECT home_goals_3, away_goals_3, home_conceded_3, away_conceded_3, '
+            'xg_home_3, xg_away_3, xg_home_10, xg_away_10 FROM xg_features WHERE sid = ?',
+            (sid_int,)
+        )
+        r = cur.fetchone()
+        if r:
+            h_g3 = _safe_float(r[0]); a_g3 = _safe_float(r[1])
+            h_c3 = _safe_float(r[2]); a_c3 = _safe_float(r[3])
+            xg_h3 = _safe_float(r[4]); xg_a3 = _safe_float(r[5])
+            xg_h10 = _safe_float(r[6]); xg_a10 = _safe_float(r[7])
+    
     return [
         pw, pd_, pl,
         fw, fd_, fl,
@@ -353,6 +374,9 @@ def extract_features(row, stats=None, form_data=None, conn=None):
         h_shots, a_shots,
         h_sot, a_sot,
         h_corners, a_corners,
+        # xG特征 8维
+        h_g3, a_g3, h_c3, a_c3,
+        xg_h3, xg_a3, xg_h10, xg_a10,
     ]
 
 
@@ -548,8 +572,8 @@ def main():
     os.makedirs(CACHE_DIR, exist_ok=True)
     model_dict = model.to_dict()
     model_dict['feature_names'] = FEATURE_NAMES
-    model_dict['version'] = 9
-    model_dict['train_date'] = '2026-07-25'
+    model_dict['version'] = 10
+    model_dict['train_date'] = '2026-07-27'
     model_dict['train_samples'] = len(X_train)
     model_dict['test_accuracy'] = round(test_acc, 4)
     model_dict['baseline_accuracy'] = round(baseline_acc, 4)

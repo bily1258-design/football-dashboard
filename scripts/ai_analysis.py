@@ -186,6 +186,21 @@ def enrich_analysis_features_from_cache(matches: List[Dict]) -> None:
                 'away_tech': json.loads(ats) if ats and ats != '{}' else {},
             }
 
+        # 3. 加载 xg_features (历史趋势, v10)
+        xg_cur = conn.execute("""
+            SELECT sid, home_goals_3, away_goals_3, home_conceded_3, away_conceded_3,
+                   xg_home_3, xg_away_3, xg_home_10, xg_away_10
+            FROM xg_features
+        """)
+        xg_by_sid = {}
+        for r in xg_cur.fetchall():
+            xg_by_sid[r[0]] = {
+                'home_goals_3': r[1], 'away_goals_3': r[2],
+                'home_conceded_3': r[3], 'away_conceded_3': r[4],
+                'xg_home_3': r[5], 'xg_away_3': r[6],
+                'xg_home_10': r[7], 'xg_away_10': r[8],
+            }
+
         conn.close()
 
         for m in matches:
@@ -233,6 +248,16 @@ def enrich_analysis_features_from_cache(matches: List[Dict]) -> None:
                 m['away_shots_on_target'] = 0.0
                 m['home_corners'] = 0.0
                 m['away_corners'] = 0.0
+
+            # xg_features (v10) - 历史趋势特征
+            m['home_goals_3'] = xg_by_sid.get(sid_int, {}).get('home_goals_3', 0.0)
+            m['away_goals_3'] = xg_by_sid.get(sid_int, {}).get('away_goals_3', 0.0)
+            m['home_conceded_3'] = xg_by_sid.get(sid_int, {}).get('home_conceded_3', 0.0)
+            m['away_conceded_3'] = xg_by_sid.get(sid_int, {}).get('away_conceded_3', 0.0)
+            m['xg_home_3'] = xg_by_sid.get(sid_int, {}).get('xg_home_3', 0.0)
+            m['xg_away_3'] = xg_by_sid.get(sid_int, {}).get('xg_away_3', 0.0)
+            m['xg_home_10'] = xg_by_sid.get(sid_int, {}).get('xg_home_10', 0.0)
+            m['xg_away_10'] = xg_by_sid.get(sid_int, {}).get('xg_away_10', 0.0)
 
         filled = sum(1 for m in matches if m.get('home_handicap_wr', 0) > 0)
         if filled > 0:
@@ -638,8 +663,23 @@ def extract_lgbm_features(ow, od, ol, model_w, model_d, model_l, margin,
                            home_possession=None, away_possession=None,
                            home_shots=None, away_shots=None,
                            home_shots_target=None, away_shots_target=None,
-                           home_corners=None, away_corners=None):
-    """从当前比赛数据提取43维特征（与 train_lgbm.py 一致，末尾12维为新增盘路/技术统计）"""
+                           home_corners=None, away_corners=None,
+                           home_goals_3=None, away_goals_3=None,
+                           home_conceded_3=None, away_conceded_3=None,
+                           xg_home_3=None, xg_away_3=None,
+                           xg_home_10=None, xg_away_10=None):
+
+    # xG特征 (v10)
+    h_g3 = float(home_goals_3) if home_goals_3 else 0.0
+    a_g3 = float(away_goals_3) if away_goals_3 else 0.0
+    h_c3 = float(home_conceded_3) if home_conceded_3 else 0.0
+    a_c3 = float(away_conceded_3) if away_conceded_3 else 0.0
+    xg_h3 = float(xg_home_3) if xg_home_3 else 0.0
+    xg_a3 = float(xg_away_3) if xg_away_3 else 0.0
+    xg_h10 = float(xg_home_10) if xg_home_10 else 0.0
+    xg_a10 = float(xg_away_10) if xg_away_10 else 0.0
+
+    """从当前比赛数据提取51维特征（v10追加8维xG特征）"""
     cw, cd, cl, _ = _implied_from_odds(ow, od, ol)
 
     # 开盘隐含概率
@@ -710,6 +750,9 @@ def extract_lgbm_features(ow, od, ol, model_w, model_d, model_l, margin,
         float(away_shots_target) if away_shots_target else 0.0,
         float(home_corners) if home_corners else 0.0,
         float(away_corners) if away_corners else 0.0,
+        # xG特征 8维 (v10)
+        h_g3, a_g3, h_c3, a_c3,
+        xg_h3, xg_a3, xg_h10, xg_a10,
     ]
 
 def load_lgbm_model():
@@ -1331,7 +1374,11 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
                                           home_possession=m.get('home_possession'), away_possession=m.get('away_possession'),
                                           home_shots=m.get('home_shots'), away_shots=m.get('away_shots'),
                                           home_shots_target=m.get('home_shots_on_target'), away_shots_target=m.get('away_shots_on_target'),
-                                          home_corners=m.get('home_corners'), away_corners=m.get('away_corners'))
+                                          home_corners=m.get('home_corners'), away_corners=m.get('away_corners'),
+                                          home_goals_3=m.get('home_goals_3'), away_goals_3=m.get('away_goals_3'),
+                                          home_conceded_3=m.get('home_conceded_3'), away_conceded_3=m.get('away_conceded_3'),
+                                          xg_home_3=m.get('xg_home_3'), xg_away_3=m.get('xg_away_3'),
+                                          xg_home_10=m.get('xg_home_10'), xg_away_10=m.get('xg_away_10'))
             proba = predict_lgbm(lgbm_model, feat)
             if proba:
                     lgbm_w, lgbm_d, lgbm_l = proba

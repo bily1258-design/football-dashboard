@@ -93,23 +93,63 @@ def _extract_tech_from_html(html):
 
     return stats if stats else None
 
+# BF端点索引映射（与 fetch_analysis_data.py 一致）
+TECH_IDX_MAP = {
+    0: 'goals',
+    2: 'yellow_cards',
+    4: 'shots',
+    5: 'shots_on_target',
+    6: 'attack',
+    7: 'dangerous_attack',
+    11: 'possession',
+}
+
+def parse_team_tv_stats(raw):
+    """解析 BF 端点 teamTvStatisticData 编码变量"""
+    if not raw:
+        return {}
+    result = {}
+    sections = raw.split('^')
+    for sec in sections:
+        parts = sec.split(',')
+        if len(parts) < 5:
+            continue
+        try:
+            idx = int(parts[0])
+            home_raw = parts[1]
+            away_raw = parts[2]
+            home_pct = float(parts[3]) if parts[3] else 0
+            away_pct = float(parts[4]) if parts[4] else 0
+            label = TECH_IDX_MAP.get(idx)
+            if label:
+                # 控球率等百分比类：取数值
+                if label == 'possession':
+                    home_val = float(home_raw.rstrip('%')) if home_raw else 0
+                    away_val = float(away_raw.rstrip('%')) if away_raw else 0
+                else:
+                    home_val = float(home_raw) if home_raw else 0
+                    away_val = float(away_raw) if away_raw else 0
+                result[label] = {'home': home_val, 'away': away_val, 'home_pct': home_pct, 'away_pct': away_pct}
+        except (ValueError, IndexError):
+            continue
+    return result
+
 def fetch_tech_stats_by_sid(sid):
-    """从 live.titan007.com 详情页抓取技术统计，返回解析后的 dict"""
-    url = f'https://live.titan007.com/detail/{sid}cn.htm'
+    """从 bf.titan007.com 详情页抓取技术统计（teamTvStatisticData），返回解析后的 dict"""
+    url = f'https://bf.titan007.com/detail/{sid}.htm'
     headers = {
-        'Referer': 'https://live.titan007.com/',
+        'Referer': 'https://bf.titan007.com/',
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-        'Cookie': 'UseCookie=yes; sport=1',
     }
     html = safe_fetch(url, headers=headers, delay=0.15)
     if not html:
         return None
 
-    # 先检查页面是否包含技术统计区域（快速排除空页面）
-    if '>射门<' not in html or '>控球率<' not in html:
+    m = re.search(r'teamTvStatisticData\s*=\s*"([^"]+)"', html)
+    if not m:
         return None
 
-    return _extract_tech_from_html(html)
+    return parse_team_tv_stats(m.group(1))
 
 def parse_tech_from_match_analysis(stats_json_str):
     """从 match_analysis 的 tech_stats JSON 解析出需要的字段"""
