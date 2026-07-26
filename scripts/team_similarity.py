@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """
-球队相似度匹配 v2 — 43维LGBM特征
+球队相似度匹配 v2 — 37维LGBM特征（删盘路/大球/角球，仅留技术统计）
 ==============================
-从 results.json 每场比赛提取43维特征向量（含模型概率、赔率结构、球队近况、
-盘路风格、技术统计），按球队聚合后余弦相似度匹配历史对局。
+从 results.json 每场比赛提取37维特征向量（模型概率、赔率结构、球队近况、
+技术统计），按球队聚合后余弦相似度匹配历史对局。
 
 改动要点:
-- 特征从5维 [lambda, gs, gc, lam_vs_league, tier] 升级为43维LGBM特征
-- 同联赛加成从×1.5降为×1.2（43维特征已含联赛信息）
+- 特征从5维 [lambda, gs, gc, lam_vs_league, tier] 升级为37维LGBM特征
+- 删减12维尾部（盘路胜率/大球率/角球因覆盖过低已移除）
+- 同联赛加成从×1.5降为×1.2（37维特征已含联赛信息）
 - 对手互换场次自动跳过（避免"卡拉巴赫vs维斯特里"匹配"维斯特里vs卡拉巴赫"100%）
 """
 
@@ -71,8 +72,10 @@ def _get_league_tier(league: str) -> float:
     return DEFAULT_TIER
 
 
-def _extract_43d_vector(m: dict) -> list:
-    """从单场比赛dict提取43维特征向量，保证全数值"""
+def _extract_37d_vector(m: dict) -> list:
+    """从单场比赛dict提取37维特征向量，保证全数值
+    组成：前31维(模型/赔率/排名/形态) + 6维(技术统计: possession/shots/shots_on_target x2)
+    盘路胜率/大球率/角球因覆盖过低已移除"""
     def _n(v, default=0.0):
         try: return float(v) if v is not None and v != '' else default
         except: return default
@@ -87,14 +90,12 @@ def _extract_43d_vector(m: dict) -> list:
         _n(m.get('open_win_pin')), _n(m.get('open_draw_pin')), _n(m.get('open_loss_pin')),
         # 12-14: Pinnacle封盘
         _n(m.get('pin_close_w')), _n(m.get('pin_close_d')), _n(m.get('pin_close_l')),
-        # 15-17: 模型波动
+        # 15-17: 模型波动（模型 - 泊松开赔）
         _n(m.get('model_win'))-_n(m.get('poisson_win')),
         _n(m.get('model_draw'))-_n(m.get('poisson_draw')),
         _n(m.get('model_loss'))-_n(m.get('poisson_loss')),
-        # 18-21: 保留位
-        0, 0, 0, 0,
-        # 22-23: 保留位
-        0, 0,
+        # 18-23: 保留位（原赛事级别/节奏指标，暂时为0）
+        0, 0, 0, 0, 0, 0,
         # 24-25: 联赛排名
         _n(m.get('home_rank')), _n(m.get('away_rank')),
         # 26-27: 联赛积分
@@ -102,21 +103,17 @@ def _extract_43d_vector(m: dict) -> list:
         # 28-31: 近况
         _n(m.get('home_form_pts')), _n(m.get('away_form_pts')),
         _n(m.get('home_form_gd')), _n(m.get('away_form_gd')),
-        # 32-35: 盘路风格
-        _n(m.get('home_handicap_wr')), _n(m.get('away_handicap_wr')),
-        _n(m.get('home_over_rate')), _n(m.get('away_over_rate')),
-        # 36-42: 技术统计
+        # 32-37: 技术统计（去掉盘路/大球/角球）
         _n(m.get('home_possession')), _n(m.get('away_possession')),
         _n(m.get('home_shots')), _n(m.get('away_shots')),
         _n(m.get('home_shots_on_target')), _n(m.get('away_shots_on_target')),
-        _n(m.get('home_corners')), _n(m.get('away_corners')),
     ]
 
 
 def load_team_features(results_path: str = RESULTS_PATH) -> dict:
     """
-    从 results.json 每场比赛提取43维特征，按球队聚合后做均值。
-    返回 dict: {team_name: {'_vec': [43维标准化向量], 'league': str}, ...}
+    从 results.json 每场比赛提取37维特征，按球队聚合后做均值。
+    返回 dict: {team_name: {'_vec': [37维标准化向量], 'league': str}, ...}
     """
     if not os.path.exists(results_path):
         logger.warning("results.json 不存在: %s", results_path)
@@ -130,14 +127,14 @@ def load_team_features(results_path: str = RESULTS_PATH) -> dict:
         logger.warning("results.json 无 matches")
         return {}
 
-    # 每场比赛提取43维向量，按队伍聚合
+    # 每场比赛提取37维向量，按队伍聚合
     team_vectors = defaultdict(list)
     team_league = {}
     for m in all_matches:
         ht, at = m.get('home_team', ''), m.get('away_team', '')
         if not ht or not at:
             continue
-        vec = _extract_43d_vector(m)
+        vec = _extract_37d_vector(m)
         team_vectors[ht].append(vec)
         team_vectors[at].append(vec)
         league = m.get('league', '') or m.get('event', '')
@@ -149,27 +146,27 @@ def load_team_features(results_path: str = RESULTS_PATH) -> dict:
     team_avg = {}
     for team, vecs in team_vectors.items():
         n = len(vecs)
-        team_avg[team] = [sum(v[i] for v in vecs) / n for i in range(43)]
+        team_avg[team] = [sum(v[i] for v in vecs) / n for i in range(37)]
 
     # 标准化（Z-score）
     teams = list(team_avg.keys())
     n = len(teams)
     if n == 0:
         return {}
-    means = [sum(team_avg[t][i] for t in teams) / n for i in range(43)]
-    stds = [sqrt(sum((team_avg[t][i] - means[i]) ** 2 for t in teams) / n) or 1.0 for i in range(43)]
+    means = [sum(team_avg[t][i] for t in teams) / n for i in range(37)]
+    stds = [sqrt(sum((team_avg[t][i] - means[i]) ** 2 for t in teams) / n) or 1.0 for i in range(37)]
 
     # 标准化后存入 _vec
     features = {}
     for team in teams:
         vec = team_avg[team]
-        normed = [(vec[i] - means[i]) / stds[i] for i in range(43)]
+        normed = [(vec[i] - means[i]) / stds[i] for i in range(37)]
         features[team] = {
             '_vec': normed,
             'league': team_league.get(team, ''),
         }
 
-    logger.info("球队特征(43维): %d 队 (来自 %d 场比赛)", len(features), len(all_matches))
+    logger.info("球队特征(37维): %d 队 (来自 %d 场比赛)", len(features), len(all_matches))
     return features
 
 
@@ -407,12 +404,12 @@ def find_similar_matches(
     top_k: int = 5,
 ) -> list:
     """
-    为一场比赛找最相似的历史对局（43维LGBM特征版）。
+    为一场比赛找最相似的历史对局（37维LGBM特征版）。
     策略：
     1. 主队特征向量 vs 历史主队 余弦相似度
     2. 客队特征向量 vs 历史客队 余弦相似度
     3. 综合 = sqrt(sim_h * sim_a) → 保证两边都匹配
-    4. 同联赛加成 x1.2（43维特征已含联赛信息，不过度提权）
+    4. 同联赛加成 x1.2（37维特征已含联赛信息，不过度提权）
     5. 时间衰减：90天内无衰减，之后指数衰减
     6. 对手互换场次自动跳过（如卡拉巴赫vs维斯特里 → 维斯特里vs卡拉巴赫的100%匹配）
     """
@@ -435,11 +432,12 @@ def find_similar_matches(
         if not h_vec or not a_vec:
             continue
 
-        sim_h = max(_cosine_sim(ht_vec, h_vec), 0.0)
-        sim_a = max(_cosine_sim(at_vec, a_vec), 0.0)
+        # 相似对比只用前31维（技术统计仅存于results.json，历史DB无此数据）
+        sim_h = max(_cosine_sim(ht_vec[:31], h_vec[:31]), 0.0)
+        sim_a = max(_cosine_sim(at_vec[:31], a_vec[:31]), 0.0)
         combined = sqrt(sim_h * sim_a)
 
-        # 同联赛加成（43维特征已含联赛信息，温和提权即可）
+        # 同联赛加成（37维特征已含联赛信息，温和提权即可）
         if hm['league'] and league and \
            (hm['league'] == league or league in hm['league'] or hm['league'] in league):
             combined = min(combined * 1.2, 1.0)
