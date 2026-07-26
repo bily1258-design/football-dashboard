@@ -464,8 +464,9 @@ def _cosine_sim(a: list, b: list) -> float:
 
 
 def _compute_total_goals_top3(h_lambda: float, a_lambda: float,
-                              top_k: int = 3) -> list:
-    """从泊松λ值计算总进球概率分布，返回top_k个 (total_goals, prob) 列表"""
+                              top_k: int = 3, min_prob: float = 0.15) -> list:
+    """从泊松λ值计算总进球概率分布，返回top_k个 (total_goals, prob) 列表
+       仅保留概率 ≥ min_prob (默认15%) 的结果"""
     from math import exp as _exp
     # λ=0 时返回空（无有效数据）
     if (h_lambda is None or a_lambda is None
@@ -492,7 +493,9 @@ def _compute_total_goals_top3(h_lambda: float, a_lambda: float,
             t = h + a
             total_probs[t] = total_probs.get(t, 0.0) + home_probs[h] * away_probs[a]
 
-    top = sorted(total_probs.items(), key=lambda x: -x[1])[:top_k]
+    # 只保留概率 ≥ min_prob 的结果，再取 top_k
+    filtered = [(t, p) for t, p in total_probs.items() if p >= min_prob]
+    top = sorted(filtered, key=lambda x: -x[1])[:top_k]
     return [{'total_goals': t, 'prob': round(p, 3)} for t, p in top]
 
 
