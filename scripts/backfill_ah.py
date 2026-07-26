@@ -7,9 +7,9 @@ sys.path.insert(0, os.path.dirname(__file__))
 from titan007_utils import fetch_asian_odds_batch
 
 RESULTS = os.path.join(os.path.dirname(__file__), '..', 'docs', 'data', 'results.json')
-BATCH_SIZE = 5         # 每次提交5个fid
-MAX_WORKERS = 5        # 内部5线程并行
-BATCH_DELAY = 0.2      # 每批间隔0.2s（原0.5s太保守）
+BATCH_SIZE = 30         # 每批30个fid（原5，HTTP延迟是瓶颈，并行才有效果）
+MAX_WORKERS = 10        # 10线程并行
+BATCH_DELAY = 0.05      # 每批间隔0.05s
 
 def main():
     with open(RESULTS) as f:
