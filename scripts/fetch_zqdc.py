@@ -358,8 +358,21 @@ def do_backfill(fpath, date_str):
     existing_matches = {m['fid']: m for m in existing.get('matches', [])}
     updated = 0
 
-    unscored = [(fid, m) for fid, m in existing_matches.items()
-                if not m.get('score') and m.get('match_time')]
+    today_str = date.today().isoformat()
+    now = datetime.now()
+    unscored = []
+    for fid, m in existing_matches.items():
+        if m.get('score') or not m.get('match_time'):
+            continue
+        # 当天比赛只回填2.5小时前的（防止回填进行中的比赛）
+        if date_str == today_str:
+            try:
+                mt = datetime.strptime(m['match_time'][:16], '%Y-%m-%d %H:%M')
+                if (now - mt).total_seconds() < 2.5 * 3600:
+                    continue
+            except (ValueError, IndexError):
+                pass
+        unscored.append((fid, m))
     if unscored:
         scores = get_scores_from_over_page(date_str)
 

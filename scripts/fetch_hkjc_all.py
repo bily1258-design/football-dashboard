@@ -344,9 +344,26 @@ def do_backfill(fpath, date_str):
     
     existing_matches = {m['fid']: m for m in existing.get('matches', [])}
     
+    def _filter_unscored():
+        """当天比赛只取2.5小时前的，防止回填进行中的比赛"""
+        today_str = date.today().isoformat()
+        now = datetime.now()
+        result = []
+        for fid, m in existing_matches.items():
+            if m.get('score') or not m.get('match_time'):
+                continue
+            if date_str == today_str:
+                try:
+                    mt = datetime.strptime(m['match_time'][:16], '%Y-%m-%d %H:%M')
+                    if (now - mt).total_seconds() < 2.5 * 3600:
+                        continue
+                except (ValueError, IndexError):
+                    pass
+            result.append((fid, m))
+        return result
+    
     # 0. bfdata_ut.js 按SID直接抓比分（最可靠，无需队名匹配）
-    unscored = [(fid, m) for fid, m in existing_matches.items()
-                if not m.get('score') and m.get('match_time')]
+    unscored = _filter_unscored()
     if unscored:
         try:
             from fetch_zqdc import fetch_bfdata
@@ -376,8 +393,7 @@ def do_backfill(fpath, date_str):
                     json.dump(existing, f, ensure_ascii=False, indent=2)
                 print(f'[BACKFILL] bfdata_ut.js按SID → {bf_ok}/{len(unscored)} 场')
                 # 重新计算unscored（已补的跳过后续步骤）
-                unscored = [(fid, m) for fid, m in existing_matches.items()
-                            if not m.get('score') and m.get('match_time')]
+                unscored = _filter_unscored()
                 if not unscored:
                     return
         except Exception as e:
@@ -398,8 +414,7 @@ def do_backfill(fpath, date_str):
                 with open(fpath, 'w', encoding='utf-8') as f:
                     json.dump(existing, f, ensure_ascii=False, indent=2)
                 print(f'[BACKFILL] titan007 Over页按SID → {over_ok}/{len(unscored)} 场')
-                unscored = [(fid, m) for fid, m in existing_matches.items()
-                            if not m.get('score') and m.get('match_time')]
+                unscored = _filter_unscored()
         else:
             print(f'[BACKFILL] titan007 Over页 → 页面无完场数据')
         
@@ -421,8 +436,7 @@ def do_backfill(fpath, date_str):
                     print(f'  ✗ {h} vs {a} (fid={fid})')
                 if len(postponed) > 5:
                     print(f'  ... 还有 {len(postponed)-5} 场')
-                unscored = [(fid, m) for fid, m in existing_matches.items()
-                            if not m.get('score') and m.get('match_time')]
+                unscored = _filter_unscored()
 
     # 1.5 按队名从zqdc数据找真实titan007 FID + 比分
     if unscored:
