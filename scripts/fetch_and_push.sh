@@ -39,6 +39,10 @@ for i in 0 1 2 3; do
     fi
 done
 
+# ========== 同步比分到 reference_score，重算 λ（在分析之前） ==========
+echo "[$(date '+%H:%M:%S')] 同步比分到 reference_score，重算 λ..."
+python3 scripts/sync_scores_and_lambdas.py
+
 # ========== 香港马会赔率全量抓取（今天） ==========
 echo "[$(date '+%H:%M:%S')] 抓取 $DATE 香港马会比赛..."
 python3 scripts/fetch_hkjc_all.py --date "$DATE" --parallel 5 --delay 0.15
