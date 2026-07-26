@@ -55,7 +55,7 @@ python3 scripts/backfill_ah.py
 python3 scripts/backfill_ah_probs.py
 
 echo "[$(date '+%H:%M:%S')] 回填技术统计（滚动特征数据）..."
-python3 scripts/backfill_tech_stats.py --limit 3000 --workers 15
+python3 scripts/backfill_tech_stats.py --limit 3000 --workers 5
 
 echo "[$(date '+%H:%M:%S')] 推送至GitHub..."
 git add -A

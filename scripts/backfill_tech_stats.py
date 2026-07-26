@@ -266,8 +266,8 @@ def main():
     parser = argparse.ArgumentParser(description='补抓技术统计到DB')
     parser.add_argument('--limit', type=int, default=1000,
                        help='补抓最近的 N 场 (default: 1000)')
-    parser.add_argument('--workers', type=int, default=15,
-                       help='并发爬取线程数 (default: 15)')
+    parser.add_argument('--workers', type=int, default=5,
+                       help='并发爬取线程数 (default: 5)')
     parser.add_argument('--skip-fetch', action='store_true',
                        help='跳过爬取，仅从已有数据源导入')
     parser.add_argument('--force-fetch', action='store_true',
