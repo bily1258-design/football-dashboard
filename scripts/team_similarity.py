@@ -352,9 +352,13 @@ def load_historical_matches(db_path: str = DB_PATH, limit: int = 3000) -> list:
         return []
     conn = sqlite3.connect(db_path)
     cur = conn.cursor()
-    rows = cur.execute(f"""        SELECT home_team, away_team, league, date,
-               reference_score, poisson_win, poisson_draw, poisson_loss,
-               actual_outcome, home_lambda, away_lambda
+    rows = cur.execute(f"""        SELECT deduped.*,
+               COALESCE(mts.home_possession, 0) AS hp,
+               COALESCE(mts.away_possession, 0) AS ap,
+               COALESCE(mts.home_shots, 0) AS hs,
+               COALESCE(mts.away_shots, 0) AS asht,
+               COALESCE(mts.home_shots_on_target, 0) AS hst,
+               COALESCE(mts.away_shots_on_target, 0) AS ast
         FROM (
             SELECT home_team, away_team, league, date,
                    reference_score, poisson_win, poisson_draw, poisson_loss,
@@ -371,8 +375,12 @@ def load_historical_matches(db_path: str = DB_PATH, limit: int = 3000) -> list:
               AND (reference_score IS NOT NULL AND reference_score != ''
                    OR actual_outcome IS NOT NULL AND actual_outcome != '')
         ) deduped
-        WHERE rn = 1
-        ORDER BY date DESC
+        LEFT JOIN match_tech_stats mts
+            ON mts.home_team = deduped.home_team
+            AND mts.away_team = deduped.away_team
+            AND mts.date = deduped.date
+        WHERE deduped.rn = 1
+        ORDER BY deduped.date DESC
         LIMIT {int(limit)}
     """).fetchall()
     conn.close()
@@ -393,6 +401,9 @@ def load_historical_matches(db_path: str = DB_PATH, limit: int = 3000) -> list:
             'poisson_win': r[5] or 0, 'poisson_draw': r[6] or 0,
             'poisson_loss': r[7] or 0, 'actual': r[8] or '',
             'home_lambda': r[9] or 0, 'away_lambda': r[10] or 0,
+            'home_possession': r[11] or 0, 'away_possession': r[12] or 0,
+            'home_shots': r[13] or 0, 'away_shots': r[14] or 0,
+            'home_shots_on_target': r[15] or 0, 'away_shots_on_target': r[16] or 0,
         })
     logger.info("历史对局: %d 场", len(matches))
     return matches
@@ -432,9 +443,9 @@ def find_similar_matches(
         if not h_vec or not a_vec:
             continue
 
-        # 相似对比只用前31维（技术统计仅存于results.json，历史DB无此数据）
-        sim_h = max(_cosine_sim(ht_vec[:31], h_vec[:31]), 0.0)
-        sim_a = max(_cosine_sim(at_vec[:31], a_vec[:31]), 0.0)
+        # 使用全37维进行余弦相似对比
+        sim_h = max(_cosine_sim(ht_vec, h_vec), 0.0)
+        sim_a = max(_cosine_sim(at_vec, a_vec), 0.0)
         combined = sqrt(sim_h * sim_a)
 
         # 同联赛加成（37维特征已含联赛信息，温和提权即可）
@@ -481,7 +492,7 @@ def find_similar_matches(
 
 
 def run(results_path: str = RESULTS_PATH, db_path: str = DB_PATH,
-        force: bool = False) -> int:
+        force: bool = False, pool_size: int = 500) -> int:
     if not os.path.exists(results_path):
         logger.error("results.json 不存在: %s", results_path)
         return 0
@@ -525,7 +536,7 @@ def run(results_path: str = RESULTS_PATH, db_path: str = DB_PATH,
         pass
     logger.info("λ查找表: %d 条", len(lambda_lookup))
 
-    historical_matches = load_historical_matches(db_path)
+    historical_matches = load_historical_matches(db_path, limit=pool_size)
     if not historical_matches:
         logger.warning("无历史对局数据")
         return 0
@@ -602,4 +613,8 @@ if __name__ == '__main__':
         format='%(asctime)s | %(levelname)-8s | %(message)s',
     )
     force = '--force' in sys.argv
-    run(force=force)
+    pool_size = 500
+    for a in sys.argv:
+        if a.startswith('--pool-size='):
+            pool_size = int(a.split('=')[1])
+    run(force=force, pool_size=pool_size)
