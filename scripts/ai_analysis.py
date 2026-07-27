@@ -176,7 +176,7 @@ def enrich_analysis_features_from_cache(matches: List[Dict]) -> None:
             m['xg_home_10'] = xg_by_sid.get(sid_int, {}).get('xg_home_10', 0.0)
             m['xg_away_10'] = xg_by_sid.get(sid_int, {}).get('xg_away_10', 0.0)
 
-        filled = sum(1 for m in matches if m.get('xg_home_3', 0) > 0)
+        filled = sum(1 for m in matches if (m.get('xg_home_3', 0) or 0) > 0)
         if filled > 0:
             logger.info(f"xG特征: {filled}/{len(matches)} 场加载完成")
 
@@ -852,10 +852,10 @@ def fit_calibrator(db_path: str = DB_PATH) -> Optional[Dict]:
     try:
         conn = sqlite3.connect(db_path)
         rows = conn.execute("""
-            SELECT lgb_win, lgb_draw, lgb_loss, reference_score
+            SELECT poisson_win, poisson_draw, poisson_loss, reference_score
             FROM poisson_predictions
             WHERE reference_score IS NOT NULL AND reference_score != ''
-              AND lgb_win > 0.01 AND lgb_loss > 0.01
+              AND poisson_win > 0.01 AND poisson_loss > 0.01
         """).fetchall()
         conn.close()
         if len(rows) < 100:
