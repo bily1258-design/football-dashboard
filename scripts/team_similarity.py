@@ -431,6 +431,12 @@ TEAM_ALIAS: dict = {
     '亚特兰大联': '阿特兰大联',
     '洛杉矶FC': '洛杉矶FC',
     '洛杉矶银河': '洛杉矶银河',
+    # 中文译名变体
+    '桑讷菲尤尔': '桑德菲杰',
+    '年轻人': '年青人',
+    '加尔斯': '加尔韦斯',
+    '国际图尔库': '图尔库国际',
+    '奥达斯': '奥斯达',
 }
 
 
@@ -509,10 +515,13 @@ def _compute_total_goals_top3(h_lambda: float, a_lambda: float,
                               min_prob: float = 0.15) -> list:
     """从泊松λ值计算总进球概率分布，返回概率 ≥ min_prob (默认15%) 的所有结果"""
     from math import exp as _exp
-    # λ=0 时返回空（无有效数据）
+    # λ=0 时泊松PMF自然处理（一方不进球则卷积结果≈对方分布）
     if (h_lambda is None or a_lambda is None
         or h_lambda <= 0 or a_lambda <= 0):
-        return []
+        if (h_lambda or 0) <= 0 and (a_lambda or 0) <= 0:
+            return []
+        h_lambda = max(h_lambda or 0, 0.01)
+        a_lambda = max(a_lambda or 0, 0.01)
     # 截断范围：λ*3+2 覆盖99.9%概率
     max_g = max(int(max(h_lambda, a_lambda) * 3 + 2), 6)
 
@@ -764,6 +773,91 @@ def run(results_path: str = RESULTS_PATH, db_path: str = DB_PATH,
         recent = sorted(vals, reverse=True)[:5]
         if recent:
             team_avg_away_lambda[team] = sum(recent) / len(recent)
+    # 额外查询：单方λ>0的球队也收录（不限制对方λ），补全全南天龙等队
+    try:
+        conn = sqlite3.connect(db_path)
+        for row in conn.execute(
+            "SELECT home_team, home_lambda FROM poisson_predictions "
+            "WHERE home_lambda IS NOT NULL AND home_lambda > 0"
+        ):
+            team_home_lambdas.setdefault(row[0], []).append(row[1])
+        for row in conn.execute(
+            "SELECT away_team, away_lambda FROM poisson_predictions "
+            "WHERE away_lambda IS NOT NULL AND away_lambda > 0"
+        ):
+            team_away_lambdas.setdefault(row[0], []).append(row[1])
+        conn.close()
+    except Exception:
+        pass
+    # 重新计算平均值（包含补充的球队）
+    for team, vals in team_home_lambdas.items():
+        recent = sorted(vals, reverse=True)[:5]
+        if recent:
+            team_avg_home_lambda[team] = sum(recent) / len(recent)
+    for team, vals in team_away_lambdas.items():
+        recent = sorted(vals, reverse=True)[:5]
+        if recent:
+            team_avg_away_lambda[team] = sum(recent) / len(recent)
+    # 从DB队名构造λ兜底字典（含TEAM_ALIAS映射）
+    _all_db_names = set(team_avg_home_lambda) | set(team_avg_away_lambda)
+    ahl_fuzzy = {}
+    aal_fuzzy = {}
+    for name in _all_db_names:
+        if team_avg_home_lambda.get(name, 0) > 0:
+            ahl_fuzzy[name] = team_avg_home_lambda[name]
+        if team_avg_away_lambda.get(name, 0) > 0:
+            aal_fuzzy[name] = team_avg_away_lambda[name]
+    for alias, db_name in TEAM_ALIAS.items():
+        if db_name in _all_db_names:
+            if team_avg_home_lambda.get(db_name, 0) > 0:
+                ahl_fuzzy[alias] = team_avg_home_lambda[db_name]
+            if team_avg_away_lambda.get(db_name, 0) > 0:
+                aal_fuzzy[alias] = team_avg_away_lambda[db_name]
+    # 子串匹配兜底：对results.json的队名，若DB有子串/超串关系则加λ
+    _rs_names = set(m.get('home_team','') for m in matches) | set(m.get('away_team','') for m in matches)
+    for rn in _rs_names:
+        if rn in _all_db_names or rn in ahl_fuzzy:
+            continue
+        for dbn in _all_db_names:
+            if rn in dbn or dbn in rn:
+                hl = team_avg_home_lambda.get(dbn, 0)
+                al = team_avg_away_lambda.get(dbn, 0)
+                if hl > 0: ahl_fuzzy.setdefault(rn, hl)
+                if al > 0: aal_fuzzy.setdefault(rn, al)
+                if hl > 0 or al > 0:
+                    break
+    # 预计算所有比赛的 total_goals_top3（独立于 similar_matches 状态）
+    for m in matches:
+        match_date = m.get('date', '')[:10]
+        home = m.get('home_team', '')
+        away = m.get('away_team', '')
+        if not home or not away:
+            continue
+        # 尝试四种队名组合匹配λ
+        lam_found = None
+        rh = _resolve_team_name(home, known_teams)
+        ra = _resolve_team_name(away, known_teams)
+        for hh, aa in [(home, away), (rh, ra), (home, ra), (rh, away)]:
+            key = (hh, aa, match_date)
+            if key in lambda_lookup:
+                lam_found = lambda_lookup[key]
+                break
+        if lam_found:
+            hl, al = lam_found
+            if hl > 0 or al > 0:
+                m['total_goals_top3'] = _compute_total_goals_top3(hl, al)
+        else:
+            hl = team_avg_home_lambda.get(home) or team_avg_home_lambda.get(rh) \
+                  or team_avg_away_lambda.get(home) or team_avg_away_lambda.get(rh) or 0
+            al = team_avg_away_lambda.get(away) or team_avg_away_lambda.get(ra) \
+                  or team_avg_home_lambda.get(away) or team_avg_home_lambda.get(ra) or 0
+            if hl <= 0 and al <= 0:
+                # 兜底：Fuzzy匹配DB队名
+                hl = ahl_fuzzy.get(home) or ahl_fuzzy.get(rh) or 0
+                al = aal_fuzzy.get(away) or aal_fuzzy.get(ra) or 0
+            if hl > 0 or al > 0:
+                m['total_goals_top3'] = _compute_total_goals_top3(hl, al)
+
     rolling_stats = load_team_rolling_stats(db_path, last_n=10)
 
     historical_matches = load_historical_matches(db_path, limit=pool_size)
@@ -833,8 +927,10 @@ def run(results_path: str = RESULTS_PATH, db_path: str = DB_PATH,
                 m['total_goals_top3'] = _compute_total_goals_top3(hl, al)
         else:
             # 回退：用各队最近5场平均λ
-            hl = team_avg_home_lambda.get(home) or team_avg_home_lambda.get(resolved_home) or 0
-            al = team_avg_away_lambda.get(away) or team_avg_away_lambda.get(resolved_away) or 0
+            hl = team_avg_home_lambda.get(home) or team_avg_home_lambda.get(resolved_home) \
+                  or team_avg_away_lambda.get(home) or team_avg_away_lambda.get(resolved_home) or 0
+            al = team_avg_away_lambda.get(away) or team_avg_away_lambda.get(resolved_away) \
+                  or team_avg_home_lambda.get(away) or team_avg_home_lambda.get(resolved_away) or 0
             if hl > 0 or al > 0:
                 m['total_goals_top3'] = _compute_total_goals_top3(hl, al)
         if similar:
