@@ -241,14 +241,6 @@ function renderTable(matches){
     var tr = document.createElement('tr');
     if(m.low_priority) tr.className = 'lp-row';
     var hc=m.hit&&m.hit.indexOf('✓')>-1?'hit-yes':m.hit==='✘'?'hit-no':'';
-    var tsRow = '';
-    if(m.ts_win != null){
-      tsRow = '<div style="margin-top:3px;border-top:1px dashed #888;padding-top:2px;font-size:12px">'+
-        '<span style="color:#999">TS: </span>'+
-        '<span class="odds-val odds-w">'+fmtPct(m.ts_win)+'</span> '+
-        '<span class="odds-val odds-d">'+fmtPct(m.ts_draw)+'</span> '+
-        '<span class="odds-val odds-l">'+fmtPct(m.ts_loss)+'</span></div>';
-    }
     var bv = m.best_value;
     var vbHtml = bv && bv.ev > 0.05 ?
       '<span class="vb-badge '+(bv.ev>0.5?'vb-hot':bv.ev>0.2?'vb-warm':'vb-cool')+
