@@ -1779,7 +1779,7 @@ def generate_frontend(results: List[Dict]):
             if len(mt) >= 16 and base_date < today_str:
                 try:
                     h = int(mt[11:13])
-                    if h < 12:
+                    if h < 7:
                         from datetime import timedelta
                         new_date = (datetime.strptime(base_date, '%Y-%m-%d') + timedelta(days=1)).strftime('%Y-%m-%d')
                         # 同步更新match_time日期字段，让前端时间显示与分组一致
