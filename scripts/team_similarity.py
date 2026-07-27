@@ -780,12 +780,12 @@ def run(results_path: str = RESULTS_PATH, db_path: str = DB_PATH,
             "SELECT home_team, home_lambda FROM poisson_predictions "
             "WHERE home_lambda IS NOT NULL AND home_lambda > 0"
         ):
-            team_home_lambdas.setdefault(row[0], []).append(row[1])
+            team_home_lambdas.setdefault(row[0], []).append(float(row[1]))
         for row in conn.execute(
             "SELECT away_team, away_lambda FROM poisson_predictions "
             "WHERE away_lambda IS NOT NULL AND away_lambda > 0"
         ):
-            team_away_lambdas.setdefault(row[0], []).append(row[1])
+            team_away_lambdas.setdefault(row[0], []).append(float(row[1]))
         conn.close()
     except Exception:
         pass
@@ -798,6 +798,23 @@ def run(results_path: str = RESULTS_PATH, db_path: str = DB_PATH,
         recent = sorted(vals, reverse=True)[:5]
         if recent:
             team_avg_away_lambda[team] = sum(recent) / len(recent)
+    # 第三补：DB中λ=0的队伍也收录队名（用于回退查找）
+    _all_db_teams = set()  # 所有在DB中出现过的队名（含λ=0）
+    try:
+        conn = sqlite3.connect(db_path)
+        for row in conn.execute(
+            "SELECT DISTINCT home_team FROM poisson_predictions "
+            "WHERE home_lambda IS NOT NULL"
+        ):
+            _all_db_teams.add(row[0])
+        for row in conn.execute(
+            "SELECT DISTINCT away_team FROM poisson_predictions "
+            "WHERE away_lambda IS NOT NULL"
+        ):
+            _all_db_teams.add(row[0])
+        conn.close()
+    except Exception:
+        pass
     # 从DB队名构造λ兜底字典（含TEAM_ALIAS映射）
     _all_db_names = set(team_avg_home_lambda) | set(team_avg_away_lambda)
     ahl_fuzzy = {}
@@ -818,6 +835,8 @@ def run(results_path: str = RESULTS_PATH, db_path: str = DB_PATH,
     for rn in _rs_names:
         if rn in _all_db_names or rn in ahl_fuzzy:
             continue
+        # 先在含λ>0的DB队名中找子串匹配
+        found = False
         for dbn in _all_db_names:
             if rn in dbn or dbn in rn:
                 hl = team_avg_home_lambda.get(dbn, 0)
@@ -825,7 +844,12 @@ def run(results_path: str = RESULTS_PATH, db_path: str = DB_PATH,
                 if hl > 0: ahl_fuzzy.setdefault(rn, hl)
                 if al > 0: aal_fuzzy.setdefault(rn, al)
                 if hl > 0 or al > 0:
+                    found = True
                     break
+        # 若在λ>0集中没找到，去λ=0集中查队名是否存在
+        if not found and rn in _all_db_teams:
+            ahl_fuzzy.setdefault(rn, 0)
+            aal_fuzzy.setdefault(rn, 0)
     # 预计算所有比赛的 total_goals_top3（独立于 similar_matches 状态）
     for m in matches:
         match_date = m.get('date', '')[:10]
@@ -857,6 +881,10 @@ def run(results_path: str = RESULTS_PATH, db_path: str = DB_PATH,
                 al = aal_fuzzy.get(away) or aal_fuzzy.get(ra) or 0
             if hl > 0 or al > 0:
                 m['total_goals_top3'] = _compute_total_goals_top3(hl, al)
+            elif hl == 0 and al == 0 and (home in _all_db_teams or away in _all_db_teams
+                   or rh in _all_db_teams or ra in _all_db_teams):
+                # λ=0但队伍在DB中存在，用0.01兜底计算
+                m['total_goals_top3'] = _compute_total_goals_top3(0.01, 0.01)
 
     rolling_stats = load_team_rolling_stats(db_path, last_n=10)
 
