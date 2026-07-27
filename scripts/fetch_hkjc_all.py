@@ -14,7 +14,7 @@
   python3 scripts/fetch_hkjc_all.py --date 2026-07-14
   python3 scripts/fetch_hkjc_all.py --date 2026-07-14 --merge          # 合并到已有数据
 """
-import re, json, os, argparse, urllib.request, time, sys
+import re, json, os, argparse, urllib.request, time, sys, opencc
 from datetime import datetime, date, timezone, timedelta
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -23,11 +23,13 @@ DOCS_DATA_DIR = os.path.join(os.path.dirname(SCRIPT_DIR), "docs", "data")
 
 # 导入titan007工具
 sys.path.insert(0, SCRIPT_DIR)
-from titan007_utils import get_match_list, get_odds_history, fetch_url, translate_team_name, fetch_1x2d_odds
+from titan007_utils import get_match_list, get_odds_history, fetch_url, translate_team_name, fetch_1x2d_odds, _normalize_league
 
 # titan007 cid映射: 177=平博, 432=HKJC
 CID_PINNACLE = '177'  # 平博(Pinnacle)
 CID_HKJC = '432'      # 香港马会(HKJC)
+
+_s2t = opencc.OpenCC('s2t')  # 简体→繁体转换
 
 
 def fetch_bfdata_cn_map():
@@ -99,7 +101,7 @@ def _get_cn_from_1x2d(sid):
     h_cn = decode(re.search(rb'var hometeam_cn="([^"]*)"', raw))
     a_cn = decode(re.search(rb'var guestteam_cn="([^"]*)"', raw))
     if h_cn and a_cn:
-        return (h_cn.strip(), a_cn.strip())
+        return (_s2t.convert(h_cn.strip()), _s2t.convert(a_cn.strip()))
     return None
 
 
@@ -605,8 +607,17 @@ def main():
             existing = {'matches': [], 'generated_at': '', 'total_matches': 0, 'date_range': '', 'daily_stats': []}
         
         existing_keys = {(m.get('home_team',''), m.get('away_team',''), m.get('date','')) for m in existing_matches}
+        
+        # 归一化已有的联赛名（旧数据可能存在未归一化的）
+        for m in existing_matches:
+            ev = m.get('event', '')
+            m['event'] = _normalize_league(ev)
+        
         new_count = 0
         for m in hkjc_matches:
+            # 新数据也走归一化（额外安全）
+            ev = m.get('event', '')
+            m['event'] = _normalize_league(ev)
             key = (m.get('home_team',''), m.get('away_team',''), m.get('date',''))
             if key not in existing_keys:
                 existing_matches.append(m)

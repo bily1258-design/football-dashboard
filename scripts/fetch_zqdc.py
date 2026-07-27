@@ -14,10 +14,20 @@
 
 输出: data/matches_{YYYYMMDD}.json
 """
-import re, json, os, argparse, urllib.request, time, sys
+import re, json, os, argparse, urllib.request, time, sys, opencc
 from datetime import datetime, date, timezone, timedelta
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+_s2t = opencc.OpenCC('s2t')  # 简体→繁体
+
+# 联赛名归一化：球探同一联赛偶尔缩写不同
+_LEAGUE_NORMALIZE = {'巴乙': '巴西乙'}
+
+def _normalize_league(name):
+    if not name: return name
+    return _LEAGUE_NORMALIZE.get(name.strip(), name.strip())
+
 DATA_DIR = os.path.join(os.path.dirname(SCRIPT_DIR), "data")
 sys.path.insert(0, SCRIPT_DIR)
 
@@ -61,9 +71,9 @@ def fetch_bfdata():
                 continue
             matches.append({
                 'sid': fields[0],
-                'league': re.sub(r'<[^>]+>', '', fields[2]),
-                'hometeam': re.sub(r'<[^>]+>', '', fields[5]) if len(fields) > 5 else '',
-                'awayteam': re.sub(r'<[^>]+>', '', fields[8]) if len(fields) > 8 else '',
+                'league': _normalize_league(_s2t.convert(re.sub(r'<[^>]+>', '', fields[2]))),
+                'hometeam': _s2t.convert(re.sub(r'<[^>]+>', '', fields[5])) if len(fields) > 5 else '',
+                'awayteam': _s2t.convert(re.sub(r'<[^>]+>', '', fields[8])) if len(fields) > 8 else '',
                 'time': fields[12] if len(fields) > 12 else '',
                 'display_time': fields[11] if len(fields) > 11 else '',
                 'fields': fields,
@@ -340,7 +350,7 @@ def get_scores_from_over_page(date_str):
                     away_clean = re.sub(r'\s*\[[^\]]*\]', '', away).strip()
                     home_clean = re.sub(r'\([^)]*\)', '', home_clean).strip()
                     away_clean = re.sub(r'\([^)]*\)', '', away_clean).strip()
-                    scores[(home_clean, away_clean)] = score
+                    scores[(_s2t.convert(home_clean), _s2t.convert(away_clean))] = score
         return scores
     except Exception as e:
         print(f'[WARN] Over页面抓取失败: {e}')

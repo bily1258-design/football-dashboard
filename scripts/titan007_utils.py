@@ -9,8 +9,21 @@ titan007_utils.py — titan007.com 数据源公用工具模块
   - get_analysis_data(sid)     → {h2h, home_form, away_form, eOdds, hOdds}
   - sid_to_oddsid(sid)         → 1555xxxxx 赔率页面ID
 """
-import re, json, time, urllib.request, ssl
+import re, json, time, urllib.request, ssl, opencc
 from datetime import datetime
+
+_s2t = opencc.OpenCC('s2t')  # 简体→繁体转换，用于统一队名匹配
+
+# 联赛名归一化：球探同一联赛偶尔缩写不同
+LEAGUE_NORMALIZE = {
+    '巴乙': '巴西乙',     # 巴西乙级联赛
+}
+
+def _normalize_league(name):
+    """归一化联赛名"""
+    if not name:
+        return name
+    return LEAGUE_NORMALIZE.get(name.strip(), name.strip())
 
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
@@ -971,20 +984,20 @@ def translate_team_name(en_name):
     return TEAM_CN_MAP.get(en_name, en_name)
 
 def translate_match_list(matches):
-    """将全英文队名的 match list 转为中文"""
+    """将全英文队名的 match list 转为中文（繁体）"""
     for m in matches:
         if 'home_team' in m and all(ord(c) < 128 for c in m['home_team']):
-            m['home_team'] = translate_team_name(m['home_team'])
+            m['home_team'] = _s2t.convert(translate_team_name(m['home_team']))
         if 'away_team' in m and all(ord(c) < 128 for c in m['away_team']):
-            m['away_team'] = translate_team_name(m['away_team'])
+            m['away_team'] = _s2t.convert(translate_team_name(m['away_team']))
         # 联赛名也翻译
         if 'league' in m:
             league_cn = {
                 'World Cup': '世界杯',
-                'MLS': '美职联',
+                'MLS': '美职业',
                 'AUS QSL': '澳昆超',
                 'BRA D1': '巴甲',
-                'BRA D2': '巴乙',
+                'BRA D2': '巴西乙',
                 'SWE D1': '瑞典超',
                 'NOR D1': '挪超',
                 'FIN D1': '芬超',
@@ -992,8 +1005,40 @@ def translate_match_list(matches):
                 'AUS SASL': '澳南超',
                 'AUS VPL': '澳维超',
                 'INT CF': '国际友谊赛',
+                # — 欧洲赛事 —
+                'UEFA CL': '欧冠杯',
+                'UEFA EL': '欧罗巴杯',
+                'UEFA ECL': '欧协联',
+                # — 各国联赛 —
+                'KOR D1': '韩K联',
+                'KOR WD1': '韩女联',
+                'RUS PR': '俄超',
+                'URU D1': '乌拉甲',
+                'ARG D1': '阿甲',
+                'ARGW D1': '阿女甲',
+                'MEX D1': '墨西联春',
+                'MEX Lig2': '墨西乙',
+                'AUS NSW': '澳新超',
+                'USA WD1': '美职女联',
+                'USL CH': '美超',
+                'SWE WD1': '瑞典女超',
+                'BRA SPWL': '巴圣保罗女联',
+                # — 各国杯赛 —
+                'SCO LC': '苏联杯',
+                'AUS CUP': '澳洲杯',
+                'AUT CUP': '奥地利杯',
+                'ASEAN Cup': '东南亚锦标',
+                'CNCF U20Q': '中北美U20',
+                'CAF WNC': '非女杯',
+                'CON CSA': '南美杯',
+                'MEX CC': '墨西杯',
+                # — 女足赛事 —
+                'BR W Tmt': '巴西女锦',
+                'BRA WCUP': '巴女足杯',
+                'RUS WC': '俄女杯',
+                'MEX WCC': '墨女杯',
             }.get(m['league'], m['league'])
-            m['league'] = league_cn
+            m['league'] = _normalize_league(_s2t.convert(league_cn))
     return matches
 
 
