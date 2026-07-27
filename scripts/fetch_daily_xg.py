@@ -6,7 +6,7 @@ DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 HEADERS = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
            'Accept-Language': 'zh-CN,zh;q=0.9'}
 
-def safe_fetch(url, delay=1.2, timeout=15):
+def safe_fetch(url, delay=0.6, timeout=10):
     time.sleep(delay)
     try:
         req = urllib.request.Request(url, headers=HEADERS)
