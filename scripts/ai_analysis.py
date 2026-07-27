@@ -1574,7 +1574,14 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
         elif raw_time and raw_date and len(raw_date) >= 4:
             # 北单: "07-15 02:45" → prepend year from date
             parts = raw_time.split(' ', 1)
-            norm_time = raw_date[:4] + '-' + raw_time if len(parts) == 2 else raw_time
+            if len(parts) == 2:
+                if re.match(r'^\d{4}-\d{2}-\d{2}$', raw_date):
+                    norm_time = raw_date[:4] + '-' + raw_time
+                else:
+                    # raw_date 可能是 "07-12"（无年份），用当年
+                    norm_time = datetime.now().strftime('%Y') + '-' + raw_time
+            else:
+                norm_time = raw_time
         else:
             norm_time = raw_time or raw_date
 
