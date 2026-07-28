@@ -59,12 +59,79 @@
           "pick": "胜",
           "confidence": "模型优先"
         }
-      ]
+      ],
+      "results": [
+        {
+          "match": "阿蒂斯布爾諾 vs 博雷斯拉夫",
+          "pick": "负",
+          "score": "2-4",
+          "actual": "负",
+          "hit": true
+        },
+        {
+          "match": "赫根 vs 索爾納",
+          "pick": "胜",
+          "score": "0-0",
+          "actual": "平",
+          "hit": false
+        },
+        {
+          "match": "盧賓扎格勒比 vs 皮亞斯特",
+          "pick": "平",
+          "score": "2-0",
+          "actual": "胜",
+          "hit": false
+        },
+        {
+          "match": "奧雷布洛 vs 奧迪沃特",
+          "pick": "平",
+          "score": "0-0",
+          "actual": "平",
+          "hit": true
+        },
+        {
+          "match": "貝雷達比歷克 vs 韋斯特曼納埃亞爾",
+          "pick": "胜",
+          "score": "1-0",
+          "actual": "胜",
+          "hit": true
+        },
+        {
+          "match": "沃伦塔里 vs 博托沙尼",
+          "pick": "负",
+          "score": "2-2",
+          "actual": "平",
+          "hit": false
+        },
+        {
+          "match": "巴西雷加塔斯 vs 累西腓航海",
+          "pick": "负",
+          "score": "2-1",
+          "actual": "胜",
+          "hit": false
+        },
+        {
+          "match": "戈亚尼亚竞技 vs 欧帕尔利奥",
+          "pick": "胜",
+          "score": "3-1",
+          "actual": "胜",
+          "hit": true
+        },
+        {
+          "match": "拉卡莱拉联 vs 维尼亚德马埃弗顿",
+          "pick": "胜",
+          "score": "1-1",
+          "actual": "平",
+          "hit": false
+        }
+      ],
+      "hit_count": 4,
+      "total_count": 9
     }
   ],
   "stats": {
     "total": 9,
-    "hit": 0,
+    "hit": 4,
     "miss": 0
   }
 }
