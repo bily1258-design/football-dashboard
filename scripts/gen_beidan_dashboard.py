@@ -51,9 +51,9 @@ def parse_matches_p3(text):
         matches[num] = {
             "num": num, "league": vals[1], "time": vals[2],
             "home": vals[3], "handicap": vals[4], "away": vals[5],
-            "h_prob": int(probs[0]) if len(probs) > 0 else -1,
-            "d_prob": int(probs[1]) if len(probs) > 1 else -1,
-            "a_prob": int(probs[2]) if len(probs) > 2 else -1,
+            "p3_h": int(probs[0]) if len(probs) > 0 else -1,
+            "p3_d": int(probs[1]) if len(probs) > 1 else -1,
+            "p3_a": int(probs[2]) if len(probs) > 2 else -1,
         }
     return matches
 
@@ -86,7 +86,7 @@ def parse_matches_p0(text):
 
 
 def merge_matches(m3, m0):
-    """Merge by match number, using playid=3 as base + probabilities from both"""
+    """Merge by match number, using playid=3 as base + probabilities from both pages"""
     merged = []
     for num in sorted(m3):
         b = m3[num]
@@ -95,9 +95,14 @@ def merge_matches(m3, m0):
             "num": b["num"], "league": b["league"], "time": b["time"],
             "home": b["home"], "handicap": b["handicap"], "away": b["away"],
             "ah_desc": o.get("ah_desc", ""),
-            "h_prob": o.get("h_prob", b.get("h_prob", -1)),
-            "d_prob": o.get("d_prob", b.get("d_prob", -1)),
-            "a_prob": o.get("a_prob", b.get("a_prob", -1)),
+            # 亚盘历史概率 (playid=0 胜负过关)
+            "h_prob": o.get("h_prob", -1),
+            "d_prob": o.get("d_prob", -1),
+            "a_prob": o.get("a_prob", -1),
+            # 单场历史赛果概率 (playid=3 让球胜平负)
+            "p3_h": b.get("p3_h", -1),
+            "p3_d": b.get("p3_d", -1),
+            "p3_a": b.get("p3_a", -1),
         })
     return merged
 
@@ -175,6 +180,7 @@ tr:nth-child(even) td {{ background:#fafafa; }}
 .prob-bar {{ display:inline-block; width:60px; height:14px; background:#eee; border-radius:7px; vertical-align:middle; position:relative; overflow:hidden; }}
 .prob-fill {{ height:100%; border-radius:7px; line-height:14px; font-size:9px; color:#fff; text-align:center; }}
 .ah-desc {{ color:#555; font-size:11px; }}
+.sub-hdr {{ font-weight:400; font-size:10px; color:#78909c; }}
 .footer {{ text-align:center; padding:20px; color:#999; font-size:12px; }}
 </style>
 </head>
@@ -216,7 +222,7 @@ tr:nth-child(even) td {{ background:#fafafa; }}
         if not d["matches"]:
             continue
         rows_html = ""
-        for m in d["matches"][:50]:  # 最多50场
+        for m in d["matches"][:40]:  # 最多40场（更多列，少些行）
             hdcp_class = ""
             try:
                 hn = int(m["handicap"])
@@ -227,15 +233,21 @@ tr:nth-child(even) td {{ background:#fafafa; }}
             except:
                 pass
 
-            # 概率进度条
-            h_p, d_p, a_p = m["h_prob"], m["d_prob"], m["a_prob"]
-            h_color = "#c62828" if h_p >= 40 else "#e65100" if h_p >= 30 else "#1565c0" if h_p >= 20 else "#999"
-            d_color = "#e65100" if d_p >= 30 else "#1565c0" if d_p >= 25 else "#999"
-            a_color = "#1565c0" if a_p >= 40 else "#e65100" if a_p >= 30 else "#c62828" if a_p >= 20 else "#999"
+            def bar(val, high_color="#c62828", mid_color="#e65100"):
+                if val < 0:
+                    return '-'
+                c = high_color if val >= 40 else mid_color if val >= 30 else "#1565c0" if val >= 20 else "#999"
+                return f'<div class="prob-bar"><div class="prob-fill" style="width:{val}%;background:{c}">{val}%</div></div>'
 
-            bar_h = f'<div class="prob-bar"><div class="prob-fill" style="width:{h_p}%;background:{h_color}">{h_p}%</div></div>' if h_p >= 0 else '-'
-            bar_d = f'<div class="prob-bar"><div class="prob-fill" style="width:{d_p}%;background:{d_color}">{d_p}%</div></div>' if d_p >= 0 else '-'
-            bar_a = f'<div class="prob-bar"><div class="prob-fill" style="width:{a_p}%;background:{a_color}">{a_p}%</div></div>' if a_p >= 0 else '-'
+            # 亚盘历史概率 (playid=0)
+            bar_ah_h = bar(m["h_prob"])
+            bar_ah_d = bar(m["d_prob"])
+            bar_ah_a = bar(m["a_prob"], mid_color="#c62828")
+
+            # 单场历史赛果概率 (playid=3)
+            bar_p3_h = bar(m["p3_h"])
+            bar_p3_d = bar(m["p3_d"])
+            bar_p3_a = bar(m["p3_a"], mid_color="#c62828")
 
             rows_html += f"""<tr>
   <td>{m['num']}</td>
@@ -245,21 +257,25 @@ tr:nth-child(even) td {{ background:#fafafa; }}
   <td{hdcp_class}>{m['handicap']}</td>
   <td>{m['away']}</td>
   <td class="ah-desc">{m['ah_desc']}</td>
-  <td>{bar_h}</td>
-  <td>{bar_d}</td>
-  <td>{bar_a}</td>
+  <td>{bar_ah_h}</td>
+  <td>{bar_ah_d}</td>
+  <td>{bar_ah_a}</td>
+  <td>{bar_p3_h}</td>
+  <td>{bar_p3_d}</td>
+  <td>{bar_p3_a}</td>
 </tr>
 """
-        show = min(50, d["count"])
+        show = min(40, d["count"])
         more = f'<p style="padding:10px;text-align:center;color:#999;font-size:13px">仅显示前{show}场，完整{d["count"]}场请下载Excel</p>' if d["count"] > 50 else ""
         html += f"""
 <div class="table-wrap">
-  <h3>第{p['expect']}期 比赛列表 ({d['count']}场) · 皇冠历史相同亚盘概率</h3>
+  <h3>第{p['expect']}期 比赛列表 ({d['count']}场) · 皇冠历史相同亚盘概率 + 赛果出现概率</h3>
   <div style="overflow-x:auto">
   <table>
     <thead><tr>
       <th>#</th><th>联赛</th><th>时间</th><th>主队</th><th>让球</th><th>客队</th>
-      <th>亚盘</th><th>主胜%</th><th>平%</th><th>客负%</th>
+      <th>亚盘</th><th>主胜%<br><span class="sub-hdr">亚盘</span></th><th>平%<br><span class="sub-hdr">亚盘</span></th><th>客负%<br><span class="sub-hdr">亚盘</span></th>
+      <th>胜/3<br><span class="sub-hdr">赛果</span></th><th>平/1<br><span class="sub-hdr">赛果</span></th><th>负/0<br><span class="sub-hdr">赛果</span></th>
     </tr></thead>
     <tbody>{rows_html}</tbody>
   </table>
