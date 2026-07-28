@@ -155,14 +155,20 @@ def main():
     ws = wb.active
     ws.title = "北单26079期"
 
-    ws.cell(row=1, column=1, value=f"⚽ 北京单场26079期 比赛看板 — {TODAY}").font = TITLE_FONT
-
     headers = [
         "序号", "联赛", "开赛时间", "主队", "让球(胜平负)", "客队",
-        "亚盘(胜负过关)", "历史概率% (主胜)", "历史概率% (平)", "历史概率% (客胜)"
+        "亚盘(胜负过关)", "皇冠历史概率% (主胜)", "皇冠历史概率% (平)", "皇冠历史概率% (客胜)"
     ]
     max_col = len(headers)
+
+    ws.cell(row=1, column=1, value=f"⚽ 北京单场26079期 比赛看板（皇冠历史相同亚盘） — {TODAY}").font = TITLE_FONT
     ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=max_col)
+    
+    
+    ws.cell(row=2, column=1, value="数据来源：500.com 皇冠公司（cid=280）历史相同亚盘概率").font = Font(
+        name="微软雅黑", size=9, italic=True, color="888888"
+    )
+    ws.merge_cells(start_row=2, start_column=1, end_row=2, end_column=max_col)
 
     for i, h in enumerate(headers, 1):
         ws.cell(row=3, column=i, value=h)
