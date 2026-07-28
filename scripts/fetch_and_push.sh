@@ -54,6 +54,10 @@ echo "[$(date '+%H:%M:%S')] 补抓亚盘..."
 python3 scripts/backfill_ah.py
 python3 scripts/backfill_ah_probs.py
 
+# ========== 同步 results.json → poisson_predictions（让xG/历史相似/总进球覆盖当日） ==========
+echo "[$(date '+%H:%M:%S')] 同步AI分析结果到数据库..."
+python3 scripts/sync_results_to_db.py
+
 echo "[$(date '+%H:%M:%S')] 抓取xG特征数据（历史趋势表）..."
 python3 scripts/fetch_daily_xg.py
 
