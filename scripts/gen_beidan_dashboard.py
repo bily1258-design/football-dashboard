@@ -1,11 +1,8 @@
 #!/usr/bin/env python3
-"""
-生成北单多期汇总看板（HTML）
-显示26077/26078/26079三期概览及对比
-"""
-
+"""生成北单多期汇总看板（HTML），含皇冠历史相同亚盘概率"""
 import re, os, sys
 from datetime import datetime
+from urllib.request import Request, urlopen
 
 PROJ_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUTPUT_DIR = os.path.join(PROJ_DIR, "docs")
@@ -19,7 +16,6 @@ PERIODS = [
 
 
 def fetch_page(playid, expect):
-    from urllib.request import Request, urlopen
     url = f"https://zx.500.com/zqdc/saiguo.php?playid={playid}&expect={expect}"
     req = Request(url, headers={
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
@@ -34,12 +30,13 @@ def fetch_page(playid, expect):
         return raw.decode("gbk", errors="replace")
 
 
-def parse_matches(text):
+def parse_matches_p3(text):
+    """playid=3: 让球胜平负. prob cols: [9]胜% [11]平% [13]负%"""
     rows = re.findall(r'<tr[^>]*>(.*?)</tr>', text, re.DOTALL)
-    matches = []
+    matches = {}
     for r in rows:
         cells = re.findall(r'<td[^>]*>(.*?)</td>', r, re.DOTALL)
-        if len(cells) < 6:
+        if len(cells) < 14:
             continue
         vals = []
         for c in cells:
@@ -49,15 +46,67 @@ def parse_matches(text):
         first = vals[0].strip()
         if not first.isdigit():
             continue
-        matches.append({
-            "num": int(first),
-            "league": vals[1] if len(vals) > 1 else "",
-            "time": vals[2] if len(vals) > 2 else "",
-            "home": vals[3] if len(vals) > 3 else "",
-            "hdcp": vals[4] if len(vals) > 4 else "",
-            "away": vals[5] if len(vals) > 5 else "",
-        })
+        num = int(first)
+        probs = [v.rstrip("%") for v in [vals[9], vals[11], vals[13]] if "%" in v]
+        matches[num] = {
+            "num": num, "league": vals[1], "time": vals[2],
+            "home": vals[3], "handicap": vals[4], "away": vals[5],
+            "h_prob": int(probs[0]) if len(probs) > 0 else -1,
+            "d_prob": int(probs[1]) if len(probs) > 1 else -1,
+            "a_prob": int(probs[2]) if len(probs) > 2 else -1,
+        }
     return matches
+
+
+def parse_matches_p0(text):
+    """playid=0: 胜负过关. prob cols: [10]胜% [12]平% [14]负%, [8]亚盘"""
+    rows = re.findall(r'<tr[^>]*>(.*?)</tr>', text, re.DOTALL)
+    matches = {}
+    for r in rows:
+        cells = re.findall(r'<td[^>]*>(.*?)</td>', r, re.DOTALL)
+        if len(cells) < 15:
+            continue
+        vals = []
+        for c in cells:
+            clean = re.sub(r'<[^>]+>', ' ', c)
+            clean = re.sub(r'&nbsp;|\s+', ' ', clean).strip()
+            vals.append(clean)
+        first = vals[0].strip()
+        if not first.isdigit():
+            continue
+        num = int(first)
+        probs = [v.rstrip("%") for v in [vals[10], vals[12], vals[14]] if "%" in v]
+        matches[num] = {
+            "num": num, "ah_desc": vals[8],
+            "h_prob": int(probs[0]) if len(probs) > 0 else -1,
+            "d_prob": int(probs[1]) if len(probs) > 1 else -1,
+            "a_prob": int(probs[2]) if len(probs) > 2 else -1,
+        }
+    return matches
+
+
+def merge_matches(m3, m0):
+    """Merge by match number, using playid=3 as base + probabilities from both"""
+    merged = []
+    for num in sorted(m3):
+        b = m3[num]
+        o = m0.get(num, {})
+        merged.append({
+            "num": b["num"], "league": b["league"], "time": b["time"],
+            "home": b["home"], "handicap": b["handicap"], "away": b["away"],
+            "ah_desc": o.get("ah_desc", ""),
+            "h_prob": o.get("h_prob", b.get("h_prob", -1)),
+            "d_prob": o.get("d_prob", b.get("d_prob", -1)),
+            "a_prob": o.get("a_prob", b.get("a_prob", -1)),
+        })
+    return merged
+
+
+def prob_bar(p):
+    """Generate inline CSS bar for probability"""
+    p = max(0, int(p))
+    color = "#c62828" if p >= 40 else "#e65100" if p >= 30 else "#1565c0"
+    return f'<div style="background:#e0e0e0;border-radius:8px;height:14px;width:50px;display:inline-block;vertical-align:middle"><div style="background:{color};width:{p}%;height:14px;border-radius:8px;font-size:9px;line-height:14px;color:#fff;text-align:center">{p}%</div></div>'
 
 
 def main():
@@ -66,22 +115,25 @@ def main():
         expect = p["expect"]
         print(f"🔄 抓取北单{expect}期...")
         try:
-            m3 = parse_matches(fetch_page(3, expect))
-            # 获取简要统计
+            m3 = parse_matches_p3(fetch_page(3, expect))
+            m0 = parse_matches_p0(fetch_page(0, expect))
+            merged = merge_matches(m3, m0)
             leagues = {}
-            for m in m3:
+            for m in merged:
                 l = m["league"]
                 leagues[l] = leagues.get(l, 0) + 1
             top_leagues = sorted(leagues.items(), key=lambda x: -x[1])[:8]
             all_data[expect] = {
-                "count": len(m3),
+                "count": len(merged),
                 "leagues": top_leagues,
-                "matches": m3,
+                "matches": merged,
                 "period": p["period"],
             }
-            print(f"   ✓ {len(m3)} 场, {len(leagues)} 联赛")
+            print(f"   ✓ {len(merged)} 场, {len(leagues)} 联赛, 含概率数据 ✓")
         except Exception as e:
             print(f"   ✗ {e}")
+            import traceback
+            traceback.print_exc()
             all_data[expect] = {"count": 0, "leagues": [], "matches": [], "period": p["period"]}
 
     # 生成 HTML
@@ -97,7 +149,7 @@ body {{ font-family:-apple-system,'Microsoft YaHei',sans-serif; background:#f5f7
 .header {{ background:linear-gradient(135deg,#1a237e,#283593); color:white; padding:24px 20px; text-align:center; }}
 .header h1 {{ font-size:22px; margin-bottom:4px; }}
 .header p {{ font-size:13px; opacity:.8; }}
-.container {{ max-width:1200px; margin:0 auto; padding:16px; }}
+.container {{ max-width:1400px; margin:0 auto; padding:16px; }}
 .summary-cards {{ display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:12px; margin-bottom:20px; }}
 .card {{ background:white; border-radius:10px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,.08); }}
 .card h2 {{ font-size:16px; color:#1a237e; margin-bottom:8px; }}
@@ -108,15 +160,21 @@ body {{ font-family:-apple-system,'Microsoft YaHei',sans-serif; background:#f5f7
 .league-tag {{ display:inline-block; background:#e8eaf6; color:#283593; border-radius:12px; padding:2px 10px; font-size:12px; margin:2px; }}
 .table-wrap {{ background:white; border-radius:10px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.08); margin-bottom:20px; }}
 .table-wrap h3 {{ background:#283593; color:white; padding:10px 16px; font-size:14px; }}
-table {{ width:100%; border-collapse:collapse; font-size:13px; }}
-th {{ background:#e8eaf6; color:#283593; padding:8px 6px; text-align:center; font-weight:600; position:sticky; top:0; }}
-td {{ padding:6px; text-align:center; border-bottom:1px solid #f0f0f0; }}
+table {{ width:100%; border-collapse:collapse; font-size:12px; }}
+th {{ background:#e8eaf6; color:#283593; padding:6px 4px; text-align:center; font-weight:600; position:sticky; top:0; white-space:nowrap; }}
+td {{ padding:5px 4px; text-align:center; border-bottom:1px solid #f0f0f0; }}
 tr:nth-child(even) td {{ background:#fafafa; }}
-.league {{ color:#666; font-size:12px; }}
-.time {{ color:#888; font-size:12px; font-family:monospace; }}
+.league {{ color:#666; font-size:11px; }}
+.time {{ color:#888; font-size:11px; font-family:monospace; }}
 .hdcp {{ font-weight:600; }}
 .hdcp-neg {{ color:#2e7d32; }}
 .hdcp-pos {{ color:#c62828; }}
+.prob-h {{ color:#c62828; font-weight:600; }}
+.prob-d {{ color:#e65100; font-weight:600; }}
+.prob-a {{ color:#1565c0; font-weight:600; }}
+.prob-bar {{ display:inline-block; width:60px; height:14px; background:#eee; border-radius:7px; vertical-align:middle; position:relative; overflow:hidden; }}
+.prob-fill {{ height:100%; border-radius:7px; line-height:14px; font-size:9px; color:#fff; text-align:center; }}
+.ah-desc {{ color:#555; font-size:11px; }}
 .footer {{ text-align:center; padding:20px; color:#999; font-size:12px; }}
 </style>
 </head>
@@ -158,25 +216,51 @@ tr:nth-child(even) td {{ background:#fafafa; }}
         if not d["matches"]:
             continue
         rows_html = ""
-        for m in d["matches"][:30]:  # 最多30场
+        for m in d["matches"][:50]:  # 最多50场
             hdcp_class = ""
             try:
-                hn = int(m["hdcp"])
+                hn = int(m["handicap"])
                 if hn < 0:
                     hdcp_class = ' class="hdcp-neg"'
                 elif hn > 0:
                     hdcp_class = ' class="hdcp-pos"'
             except:
                 pass
-            rows_html += f"""<tr><td>{m['num']}</td><td class="league">{m['league']}</td><td class="time">{m['time']}</td><td>{m['home']}</td><td{hdcp_class}>{m['hdcp']}</td><td>{m['away']}</td></tr>
+
+            # 概率进度条
+            h_p, d_p, a_p = m["h_prob"], m["d_prob"], m["a_prob"]
+            h_color = "#c62828" if h_p >= 40 else "#e65100" if h_p >= 30 else "#1565c0" if h_p >= 20 else "#999"
+            d_color = "#e65100" if d_p >= 30 else "#1565c0" if d_p >= 25 else "#999"
+            a_color = "#1565c0" if a_p >= 40 else "#e65100" if a_p >= 30 else "#c62828" if a_p >= 20 else "#999"
+
+            bar_h = f'<div class="prob-bar"><div class="prob-fill" style="width:{h_p}%;background:{h_color}">{h_p}%</div></div>' if h_p >= 0 else '-'
+            bar_d = f'<div class="prob-bar"><div class="prob-fill" style="width:{d_p}%;background:{d_color}">{d_p}%</div></div>' if d_p >= 0 else '-'
+            bar_a = f'<div class="prob-bar"><div class="prob-fill" style="width:{a_p}%;background:{a_color}">{a_p}%</div></div>' if a_p >= 0 else '-'
+
+            rows_html += f"""<tr>
+  <td>{m['num']}</td>
+  <td class="league">{m['league']}</td>
+  <td class="time">{m['time']}</td>
+  <td>{m['home']}</td>
+  <td{hdcp_class}>{m['handicap']}</td>
+  <td>{m['away']}</td>
+  <td class="ah-desc">{m['ah_desc']}</td>
+  <td>{bar_h}</td>
+  <td>{bar_d}</td>
+  <td>{bar_a}</td>
+</tr>
 """
-        more = f'<p style="padding:10px;text-align:center;color:#999;font-size:13px">仅显示前30场，完整{d["count"]}场请下载Excel</p>' if d["count"] > 30 else ""
+        show = min(50, d["count"])
+        more = f'<p style="padding:10px;text-align:center;color:#999;font-size:13px">仅显示前{show}场，完整{d["count"]}场请下载Excel</p>' if d["count"] > 50 else ""
         html += f"""
 <div class="table-wrap">
-  <h3>第{p['expect']}期 比赛列表 ({d['count']}场)</h3>
+  <h3>第{p['expect']}期 比赛列表 ({d['count']}场) · 皇冠历史相同亚盘概率</h3>
   <div style="overflow-x:auto">
   <table>
-    <thead><tr><th>#</th><th>联赛</th><th>时间</th><th>主队</th><th>让球</th><th>客队</th></tr></thead>
+    <thead><tr>
+      <th>#</th><th>联赛</th><th>时间</th><th>主队</th><th>让球</th><th>客队</th>
+      <th>亚盘</th><th>主胜%</th><th>平%</th><th>客负%</th>
+    </tr></thead>
     <tbody>{rows_html}</tbody>
   </table>
   </div>
@@ -185,7 +269,7 @@ tr:nth-child(even) td {{ background:#fafafa; }}
 
     html += """
 <div class="footer">
-  <p>⚡ 自动生成 · data from 500.com</p>
+  <p>⚡ 自动生成 · 概率数据来自500.com 皇冠历史相同亚盘</p>
 </div>
 </div>
 </body>
