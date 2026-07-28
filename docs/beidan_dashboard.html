@@ -36,6 +36,8 @@ tr:nth-child(even) td { background:#fafafa; }
 .prob-bar { display:inline-block; width:60px; height:14px; background:#eee; border-radius:7px; vertical-align:middle; position:relative; overflow:hidden; }
 .prob-fill { height:100%; border-radius:7px; line-height:14px; font-size:9px; color:#fff; text-align:center; }
 .ah-desc { color:#555; font-size:11px; }
+.score { font-family:monospace; font-weight:600; color:#333; font-size:13px; }
+.result { font-weight:600; color:#1565c0; }
 .sub-hdr { font-weight:400; font-size:10px; color:#78909c; }
 .footer { text-align:center; padding:20px; color:#999; font-size:12px; }
 </style>
@@ -43,7 +45,7 @@ tr:nth-child(even) td { background:#fafafa; }
 <body>
 <div class="header">
   <h1>⚽ 北京单场看板</h1>
-  <p>第26077期 ～ 第26079期 · 数据更新：2026-07-28 22:26</p>
+  <p>第26077期 ～ 第26079期 · 数据更新：2026-07-28 23:21</p>
   <p style="margin-top:6px;font-size:12px;opacity:.7">数据来源：500.com 皇冠公司历史相同亚盘</p>
 </div>
 <div class="container">
@@ -85,6 +87,7 @@ tr:nth-child(even) td { background:#fafafa; }
   <table>
     <thead><tr>
       <th>#</th><th>联赛</th><th>时间</th><th>主队</th><th>让球</th><th>客队</th>
+      <th>比分</th><th>赛果</th>
       <th>亚盘</th><th>主胜%<br><span class="sub-hdr">亚盘</span></th><th>平%<br><span class="sub-hdr">亚盘</span></th><th>客负%<br><span class="sub-hdr">亚盘</span></th>
       <th>胜/3<br><span class="sub-hdr">赛果</span></th><th>平/1<br><span class="sub-hdr">赛果</span></th><th>负/0<br><span class="sub-hdr">赛果</span></th>
     </tr></thead>
@@ -95,6 +98,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>济州SK FC</td>
   <td>0</td>
   <td>江原FC</td>
+  <td class="score">1:1</td>
+  <td class="result">平</td>
   <td class="ah-desc">受平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:29%;background:#1565c0">29%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:28%;background:#1565c0">28%</div></div></td>
@@ -110,6 +115,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>蔚山HD</td>
   <td>0</td>
   <td>仁川联</td>
+  <td class="score">1:2</td>
+  <td class="result">负</td>
   <td class="ah-desc">平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:42%;background:#c62828">42%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:30%;background:#e65100">30%</div></div></td>
@@ -125,6 +132,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>全北现代</td>
   <td class="hdcp-neg">-1</td>
   <td>大田市民</td>
+  <td class="score">0:0</td>
+  <td class="result">负</td>
   <td class="ah-desc">半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:17%;background:#999">17%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:29%;background:#1565c0">29%</div></div></td>
@@ -140,6 +149,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>米亚尔比</td>
   <td class="hdcp-neg">-2</td>
   <td>林肯红魔</td>
+  <td class="score">3:0</td>
+  <td class="result">胜</td>
   <td class="ah-desc">两球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:43%;background:#c62828">43%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:21%;background:#1565c0">21%</div></div></td>
@@ -155,6 +166,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>卡亚尼卡帕</td>
   <td>0</td>
   <td>克鲁比04</td>
+  <td class="score">0:2</td>
+  <td class="result">负</td>
   <td class="ah-desc">平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:36%;background:#e65100">36%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:26%;background:#1565c0">26%</div></div></td>
@@ -170,6 +183,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>奥胡斯</td>
   <td>0</td>
   <td>波兹南莱赫</td>
+  <td class="score">1:4</td>
+  <td class="result">负</td>
   <td class="ah-desc">平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:39%;background:#e65100">39%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:30%;background:#e65100">30%</div></div></td>
@@ -185,6 +200,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>法尔肯堡</td>
   <td>0</td>
   <td>赫尔辛堡</td>
+  <td class="score">2:3</td>
+  <td class="result">负</td>
   <td class="ah-desc">平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:100%;background:#c62828">100%</div></div></td>
@@ -200,6 +217,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>费内巴切</td>
   <td class="hdcp-neg">-2</td>
   <td>扎布热矿工</td>
+  <td class="score">1:0</td>
+  <td class="result">负</td>
   <td class="ah-desc">球半/两球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:44%;background:#c62828">44%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:17%;background:#999">17%</div></div></td>
@@ -215,6 +234,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>格拉茨风暴</td>
   <td class="hdcp-neg">-1</td>
   <td>哈茨</td>
+  <td class="score">4:0</td>
+  <td class="result">胜</td>
   <td class="ah-desc">半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:30%;background:#e65100">30%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:29%;background:#1565c0">29%</div></div></td>
@@ -230,6 +251,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>因弗内斯</td>
   <td class="hdcp-pos">+1</td>
   <td>圣约翰斯通</td>
+  <td class="score">1:0</td>
+  <td class="result">胜</td>
   <td class="ah-desc">受半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:50%;background:#c62828">50%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:16%;background:#999">16%</div></div></td>
@@ -245,6 +268,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>帕尔蒂克</td>
   <td class="hdcp-neg">-2</td>
   <td>斯坦豪斯摩尔</td>
+  <td class="score">2:2</td>
+  <td class="result">负</td>
   <td class="ah-desc">球半/两球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:100%;background:#c62828">100%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
@@ -260,6 +285,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>拉恩</td>
   <td class="hdcp-pos">+2</td>
   <td>贝尔格莱德红星</td>
+  <td class="score">0:4</td>
+  <td class="result">负</td>
   <td class="ah-desc">受两球/两球半</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:100%;background:#c62828">100%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
@@ -275,6 +302,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>乌拉圭民族</td>
   <td>0</td>
   <td>堤格雷</td>
+  <td class="score">0:3</td>
+  <td class="result">负</td>
   <td class="ah-desc">半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:54%;background:#c62828">54%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:16%;background:#999">16%</div></div></td>
@@ -290,6 +319,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>米内罗竞技</td>
   <td>0</td>
   <td>巴伊亚</td>
+  <td class="score">1:1</td>
+  <td class="result">平</td>
   <td class="ah-desc">平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:46%;background:#c62828">46%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:28%;background:#1565c0">28%</div></div></td>
@@ -305,6 +336,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>诺瓦里桑蒂诺</td>
   <td>0</td>
   <td>克里丘马</td>
+  <td class="score">0:1</td>
+  <td class="result">负</td>
   <td class="ah-desc">平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:44%;background:#c62828">44%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:29%;background:#1565c0">29%</div></div></td>
@@ -320,6 +353,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>阿瓦伊</td>
   <td>0</td>
   <td>米内罗美洲</td>
+  <td class="score">2:1</td>
+  <td class="result">胜</td>
   <td class="ah-desc">平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:44%;background:#c62828">44%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:29%;background:#1565c0">29%</div></div></td>
@@ -335,6 +370,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>委内瑞拉中央大学</td>
   <td>0</td>
   <td>桑托斯</td>
+  <td class="score">1:4</td>
+  <td class="result">负</td>
   <td class="ah-desc">受半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:12%;background:#999">12%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:62%;background:#c62828">62%</div></div></td>
@@ -350,6 +387,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>维拉诺瓦</td>
   <td>0</td>
   <td>福塔雷萨</td>
+  <td class="score">2:1</td>
+  <td class="result">胜</td>
   <td class="ah-desc">平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:44%;background:#c62828">44%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:29%;background:#1565c0">29%</div></div></td>
@@ -365,6 +404,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>蓝十字</td>
   <td class="hdcp-neg">-2</td>
   <td>普埃布拉</td>
+  <td class="score">2:1</td>
+  <td class="result">负</td>
   <td class="ah-desc">球半</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:33%;background:#e65100">33%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:33%;background:#e65100">33%</div></div></td>
@@ -380,6 +421,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>托卢卡</td>
   <td class="hdcp-neg">-1</td>
   <td>美洲狮</td>
+  <td class="score">1:2</td>
+  <td class="result">负</td>
   <td class="ah-desc">一球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:22%;background:#1565c0">22%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:31%;background:#e65100">31%</div></div></td>
@@ -395,6 +438,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>富川FC</td>
   <td>0</td>
   <td>安养FC</td>
+  <td class="score">2:3</td>
+  <td class="result">负</td>
   <td class="ah-desc">平手</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:35%;background:#e65100">35%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:29%;background:#1565c0">29%</div></div></td>
@@ -410,6 +455,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>光州FC</td>
   <td>0</td>
   <td>金泉尚武</td>
+  <td class="score">1:1</td>
+  <td class="result">平</td>
   <td class="ah-desc">受半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:31%;background:#e65100">31%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:27%;background:#1565c0">27%</div></div></td>
@@ -425,6 +472,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>FC首尔</td>
   <td>0</td>
   <td>浦项铁人</td>
+  <td class="score">3:1</td>
+  <td class="result">胜</td>
   <td class="ah-desc">半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:52%;background:#c62828">52%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:29%;background:#1565c0">29%</div></div></td>
@@ -440,6 +489,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>奥莫尼亚</td>
   <td class="hdcp-neg">-1</td>
   <td>凯拉特</td>
+  <td class="score">1:0</td>
+  <td class="result">平</td>
   <td class="ah-desc">半球/一球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:37%;background:#e65100">37%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:21%;background:#1565c0">21%</div></div></td>
@@ -455,6 +506,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>博德闪耀</td>
   <td class="hdcp-neg">-2</td>
   <td>汉坎</td>
+  <td class="score">3:0</td>
+  <td class="result">胜</td>
   <td class="ah-desc">两球半</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
@@ -470,6 +523,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>利勒斯特罗姆</td>
   <td>0</td>
   <td>维京</td>
+  <td class="score">1:2</td>
+  <td class="result">负</td>
   <td class="ah-desc">受平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:32%;background:#e65100">32%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:26%;background:#1565c0">26%</div></div></td>
@@ -485,6 +540,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>巴萨克赛尔</td>
   <td class="hdcp-neg">-2</td>
   <td>图尔库国际</td>
+  <td class="score">1:1</td>
+  <td class="result">负</td>
   <td class="ah-desc">球半/两球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
@@ -500,6 +557,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>麦德林独立</td>
   <td>0</td>
   <td>瓦斯科达伽马</td>
+  <td class="score">2:2</td>
+  <td class="result">平</td>
   <td class="ah-desc">平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:30%;background:#e65100">30%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:38%;background:#e65100">38%</div></div></td>
@@ -515,6 +574,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>铁路工人</td>
   <td class="hdcp-neg">-1</td>
   <td>庞特普雷塔</td>
+  <td class="score">3:2</td>
+  <td class="result">平</td>
   <td class="ah-desc">一球/球半</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:35%;background:#e65100">35%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:29%;background:#1565c0">29%</div></div></td>
@@ -530,6 +591,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>塞阿拉</td>
   <td>0</td>
   <td>雷加塔斯巴西</td>
+  <td class="score">0:1</td>
+  <td class="result">负</td>
   <td class="ah-desc">平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:44%;background:#c62828">44%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:29%;background:#1565c0">29%</div></div></td>
@@ -545,6 +608,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>辛辛那提FC</td>
   <td>0</td>
   <td>温哥华白浪</td>
+  <td class="score">4:3</td>
+  <td class="result">胜</td>
   <td class="ah-desc">受半球/一球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
@@ -560,6 +625,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>哥伦布机员</td>
   <td>0</td>
   <td>纽约城</td>
+  <td class="score">1:2</td>
+  <td class="result">负</td>
   <td class="ah-desc">半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:49%;background:#c62828">49%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:28%;background:#1565c0">28%</div></div></td>
@@ -575,6 +642,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>迈阿密国际</td>
   <td>0</td>
   <td>芝加哥火焰</td>
+  <td class="score">3:2</td>
+  <td class="result">胜</td>
   <td class="ah-desc">半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:49%;background:#c62828">49%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:28%;background:#1565c0">28%</div></div></td>
@@ -590,6 +659,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>新英格兰革命</td>
   <td class="hdcp-neg">-1</td>
   <td>多伦多FC</td>
+  <td class="score">0:0</td>
+  <td class="result">负</td>
   <td class="ah-desc">半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:29%;background:#1565c0">29%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:27%;background:#1565c0">27%</div></div></td>
@@ -605,6 +676,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>费城联合</td>
   <td class="hdcp-neg">-1</td>
   <td>纽约红牛</td>
+  <td class="score">3:1</td>
+  <td class="result">胜</td>
   <td class="ah-desc">半球/一球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:26%;background:#1565c0">26%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:28%;background:#1565c0">28%</div></div></td>
@@ -620,6 +693,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>戈亚斯</td>
   <td>0</td>
   <td>累西腓体育</td>
+  <td class="score">1:1</td>
+  <td class="result">平</td>
   <td class="ah-desc">平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:44%;background:#c62828">44%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:29%;background:#1565c0">29%</div></div></td>
@@ -635,6 +710,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>夏洛特FC</td>
   <td class="hdcp-neg">-1</td>
   <td>亚特兰大联</td>
+  <td class="score">2:2</td>
+  <td class="result">负</td>
   <td class="ah-desc">半球/一球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:26%;background:#1565c0">26%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:28%;background:#1565c0">28%</div></div></td>
@@ -650,6 +727,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>水晶竞技</td>
   <td>0</td>
   <td>布拉干蒂诺RB</td>
+  <td class="score">0:0</td>
+  <td class="result">平</td>
   <td class="ah-desc">受平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:18%;background:#999">18%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:31%;background:#e65100">31%</div></div></td>
@@ -665,6 +744,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>拉努斯</td>
   <td class="hdcp-neg">-1</td>
   <td>西恩夏诺</td>
+  <td class="score">2:0</td>
+  <td class="result">胜</td>
   <td class="ah-desc">一球/球半</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:33%;background:#e65100">33%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:12%;background:#999">12%</div></div></td>
@@ -680,6 +761,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>沙佩科恩斯</td>
   <td class="hdcp-pos">+1</td>
   <td>弗拉门戈</td>
+  <td class="score">0:4</td>
+  <td class="result">负</td>
   <td class="ah-desc">受一球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:100%;background:#c62828">100%</div></div></td>
@@ -699,6 +782,7 @@ tr:nth-child(even) td { background:#fafafa; }
   <table>
     <thead><tr>
       <th>#</th><th>联赛</th><th>时间</th><th>主队</th><th>让球</th><th>客队</th>
+      <th>比分</th><th>赛果</th>
       <th>亚盘</th><th>主胜%<br><span class="sub-hdr">亚盘</span></th><th>平%<br><span class="sub-hdr">亚盘</span></th><th>客负%<br><span class="sub-hdr">亚盘</span></th>
       <th>胜/3<br><span class="sub-hdr">赛果</span></th><th>平/1<br><span class="sub-hdr">赛果</span></th><th>负/0<br><span class="sub-hdr">赛果</span></th>
     </tr></thead>
@@ -709,6 +793,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>首尔衣恋</td>
   <td class="hdcp-neg">-1</td>
   <td>天安城</td>
+  <td class="score">4:3</td>
+  <td class="result">1</td>
   <td class="ah-desc">一球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:38%;background:#e65100">38%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
@@ -724,6 +810,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>金海</td>
   <td>0</td>
   <td>忠北清州</td>
+  <td class="score">1:1</td>
+  <td class="result">1</td>
   <td class="ah-desc">受平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:29%;background:#1565c0">29%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:25%;background:#1565c0">25%</div></div></td>
@@ -739,6 +827,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>UTA阿拉德</td>
   <td>0</td>
   <td>加拉茨钢铁</td>
+  <td class="score">2:2</td>
+  <td class="result">1</td>
   <td class="ah-desc">平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:40%;background:#c62828">40%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:35%;background:#e65100">35%</div></div></td>
@@ -754,6 +844,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>拉多米亚克</td>
   <td>0</td>
   <td>KS莫摩斯</td>
+  <td class="score">2:1</td>
+  <td class="result">3</td>
   <td class="ah-desc">平手</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:43%;background:#c62828">43%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:29%;background:#1565c0">29%</div></div></td>
@@ -769,6 +861,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>雅罗</td>
   <td>0</td>
   <td>塞那乔其</td>
+  <td class="score">2:1</td>
+  <td class="result">3</td>
   <td class="ah-desc">受平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:24%;background:#1565c0">24%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:32%;background:#e65100">32%</div></div></td>
@@ -784,6 +878,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>瓦埃勒</td>
   <td class="hdcp-neg">-1</td>
   <td>AB格莱萨克瑟</td>
+  <td class="score">2:2</td>
+  <td class="result">0</td>
   <td class="ah-desc">半球/一球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:33%;background:#e65100">33%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:20%;background:#1565c0">20%</div></div></td>
@@ -799,6 +895,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>维堡</td>
   <td>0</td>
   <td>欧登塞</td>
+  <td class="score">1:0</td>
+  <td class="result">3</td>
   <td class="ah-desc">平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:40%;background:#c62828">40%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:30%;background:#e65100">30%</div></div></td>
@@ -814,6 +912,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>瓦斯特拉斯</td>
   <td class="hdcp-neg">-1</td>
   <td>奥尔格里特</td>
+  <td class="score">2:0</td>
+  <td class="result">3</td>
   <td class="ah-desc">一球/球半</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:45%;background:#c62828">45%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:23%;background:#1565c0">23%</div></div></td>
@@ -829,6 +929,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>奥尔堡</td>
   <td>0</td>
   <td>希勒罗德</td>
+  <td class="score">1:0</td>
+  <td class="result">3</td>
   <td class="ah-desc">平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:41%;background:#c62828">41%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:29%;background:#1565c0">29%</div></div></td>
@@ -844,6 +946,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>纳沙泰尔</td>
   <td class="hdcp-neg">-1</td>
   <td>克里恩斯</td>
+  <td class="score">3:2</td>
+  <td class="result">1</td>
   <td class="ah-desc">一球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
@@ -859,6 +963,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>乌契</td>
   <td class="hdcp-neg">-1</td>
   <td>尼奈斯</td>
+  <td class="score">2:0</td>
+  <td class="result">3</td>
   <td class="ah-desc">一球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
@@ -874,6 +980,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>瑞普斯威尔</td>
   <td>0</td>
   <td>韦尔</td>
+  <td class="score">4:5</td>
+  <td class="result">0</td>
   <td class="ah-desc">受平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:50%;background:#c62828">50%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
@@ -889,6 +997,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>卡洛治</td>
   <td class="hdcp-pos">+1</td>
   <td>阿劳</td>
+  <td class="score">3:0</td>
+  <td class="result">3</td>
   <td class="ah-desc">受一球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
@@ -904,6 +1014,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>温特图尔</td>
   <td>0</td>
   <td>伊韦尔东</td>
+  <td class="score">2:2</td>
+  <td class="result">1</td>
   <td class="ah-desc">平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:75%;background:#c62828">75%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
@@ -919,6 +1031,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>阿格斯</td>
   <td>0</td>
   <td>佩特罗鲁</td>
+  <td class="score">1:0</td>
+  <td class="result">3</td>
   <td class="ah-desc">平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:40%;background:#c62828">40%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:35%;background:#e65100">35%</div></div></td>
@@ -934,6 +1048,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>什切青波贡</td>
   <td>0</td>
   <td>华沙莱吉亚</td>
+  <td class="score">0:1</td>
+  <td class="result">0</td>
   <td class="ah-desc">平手</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:43%;background:#c62828">43%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:29%;background:#1565c0">29%</div></div></td>
@@ -949,6 +1065,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>凯里FC</td>
   <td class="hdcp-neg">-1</td>
   <td>费恩夏普</td>
+  <td class="score">2:1</td>
+  <td class="result">1</td>
   <td class="ah-desc">半球/一球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:39%;background:#e65100">39%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:20%;background:#1565c0">20%</div></div></td>
@@ -964,6 +1082,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>科布漫步者</td>
   <td>0</td>
   <td>布雷流浪者</td>
+  <td class="score">1:2</td>
+  <td class="result">0</td>
   <td class="ah-desc">平手</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:41%;background:#c62828">41%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:21%;background:#1565c0">21%</div></div></td>
@@ -979,6 +1099,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>都柏林大学</td>
   <td>0</td>
   <td>科克城</td>
+  <td class="score">5:2</td>
+  <td class="result">3</td>
   <td class="ah-desc">受平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:33%;background:#e65100">33%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:20%;background:#1565c0">20%</div></div></td>
@@ -994,6 +1116,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>条约联</td>
   <td>0</td>
   <td>阿斯隆城</td>
+  <td class="score">2:1</td>
+  <td class="result">3</td>
   <td class="ah-desc">平手</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:41%;background:#c62828">41%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:21%;background:#1565c0">21%</div></div></td>
@@ -1009,6 +1133,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>圣帕特里克竞技</td>
   <td class="hdcp-neg">-1</td>
   <td>邓多克</td>
+  <td class="score">1:1</td>
+  <td class="result">0</td>
   <td class="ah-desc">一球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:35%;background:#e65100">35%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:25%;background:#1565c0">25%</div></div></td>
@@ -1024,6 +1150,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>门多萨体操击剑</td>
   <td>0</td>
   <td>科尔多瓦中央</td>
+  <td class="score">1:0</td>
+  <td class="result">3</td>
   <td class="ah-desc">半球/一球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:37%;background:#e65100">37%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:50%;background:#c62828">50%</div></div></td>
@@ -1039,6 +1167,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>维京古</td>
   <td class="hdcp-neg">-2</td>
   <td>凯夫拉维克</td>
+  <td class="score">5:1</td>
+  <td class="result">3</td>
   <td class="ah-desc">球半/两球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:33%;background:#e65100">33%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:16%;background:#999">16%</div></div></td>
@@ -1054,6 +1184,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>萨斯菲尔德</td>
   <td>0</td>
   <td>科尔多瓦学院</td>
+  <td class="score">1:0</td>
+  <td class="result">3</td>
   <td class="ah-desc">平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:40%;background:#c62828">40%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:35%;background:#e65100">35%</div></div></td>
@@ -1069,6 +1201,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>竞技</td>
   <td>0</td>
   <td>拉普拉塔体操</td>
+  <td class="score">2:1</td>
+  <td class="result">3</td>
   <td class="ah-desc">半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:47%;background:#c62828">47%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:29%;background:#1565c0">29%</div></div></td>
@@ -1084,6 +1218,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>普拉滕斯</td>
   <td>0</td>
   <td>圣塔菲联</td>
+  <td class="score">2:2</td>
+  <td class="result">1</td>
   <td class="ah-desc">平手</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:35%;background:#e65100">35%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:29%;background:#1565c0">29%</div></div></td>
@@ -1099,6 +1235,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>飓风队</td>
   <td>0</td>
   <td>班菲尔德</td>
+  <td class="score">1:0</td>
+  <td class="result">3</td>
   <td class="ah-desc">半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:47%;background:#c62828">47%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:29%;background:#1565c0">29%</div></div></td>
@@ -1114,6 +1252,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>科洛科洛</td>
   <td class="hdcp-neg">-1</td>
   <td>利马切颜色</td>
+  <td class="score">3:1</td>
+  <td class="result">3</td>
   <td class="ah-desc">一球/球半</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:33%;background:#e65100">33%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:16%;background:#999">16%</div></div></td>
@@ -1129,6 +1269,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>亚特兰特</td>
   <td class="hdcp-pos">+1</td>
   <td>墨西哥美洲</td>
+  <td class="score">1:1</td>
+  <td class="result">3</td>
   <td class="ah-desc">受半球/一球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:100%;background:#c62828">100%</div></div></td>
@@ -1144,6 +1286,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>蒂华纳</td>
   <td>0</td>
   <td>莱昂</td>
+  <td class="score">1:0</td>
+  <td class="result">3</td>
   <td class="ah-desc">平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:40%;background:#c62828">40%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:28%;background:#1565c0">28%</div></div></td>
@@ -1159,6 +1303,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>浦项铁人</td>
   <td>0</td>
   <td>全北现代</td>
+  <td class="score">0:2</td>
+  <td class="result">0</td>
   <td class="ah-desc">受平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:29%;background:#1565c0">29%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:28%;background:#1565c0">28%</div></div></td>
@@ -1174,6 +1320,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>金泉尚武</td>
   <td>0</td>
   <td>大田市民</td>
+  <td class="score">3:2</td>
+  <td class="result">3</td>
   <td class="ah-desc">受平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:29%;background:#1565c0">29%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:28%;background:#1565c0">28%</div></div></td>
@@ -1189,6 +1337,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>釜山偶像</td>
   <td>0</td>
   <td>水原三星</td>
+  <td class="score">1:4</td>
+  <td class="result">0</td>
   <td class="ah-desc">受平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:29%;background:#1565c0">29%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:25%;background:#1565c0">25%</div></div></td>
@@ -1204,6 +1354,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>大邱FC</td>
   <td>0</td>
   <td>水原FC</td>
+  <td class="score">1:2</td>
+  <td class="result">0</td>
   <td class="ah-desc">半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:50%;background:#c62828">50%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:25%;background:#1565c0">25%</div></div></td>
@@ -1219,6 +1371,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>全南天龙</td>
   <td>0</td>
   <td>庆南FC</td>
+  <td class="score">1:1</td>
+  <td class="result">1</td>
   <td class="ah-desc">平手</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:44%;background:#c62828">44%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:14%;background:#999">14%</div></div></td>
@@ -1234,6 +1388,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>华城FC</td>
   <td>0</td>
   <td>忠南牙山</td>
+  <td class="score">3:2</td>
+  <td class="result">3</td>
   <td class="ah-desc">平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:41%;background:#c62828">41%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:27%;background:#1565c0">27%</div></div></td>
@@ -1249,6 +1405,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>哈维德夫</td>
   <td>0</td>
   <td>文德斯尔</td>
+  <td class="score">2:2</td>
+  <td class="result">1</td>
   <td class="ah-desc">半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:40%;background:#c62828">40%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:30%;background:#e65100">30%</div></div></td>
@@ -1264,6 +1422,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>哈卡</td>
   <td class="hdcp-neg">-1</td>
   <td>卡亚尼卡帕</td>
+  <td class="score">3:1</td>
+  <td class="result">3</td>
   <td class="ah-desc">一球/球半</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:48%;background:#c62828">48%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:19%;background:#999">19%</div></div></td>
@@ -1279,6 +1439,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>雅盖隆</td>
   <td>0</td>
   <td>凯尔采科罗纳</td>
+  <td class="score">1:0</td>
+  <td class="result">3</td>
   <td class="ah-desc">半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:45%;background:#c62828">45%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:24%;background:#1565c0">24%</div></div></td>
@@ -1294,6 +1456,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>代格福什</td>
   <td class="hdcp-pos">+1</td>
   <td>尤尔加登</td>
+  <td class="score">0:1</td>
+  <td class="result">1</td>
   <td class="ah-desc">受半球/一球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:46%;background:#c62828">46%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:28%;background:#1565c0">28%</div></div></td>
@@ -1313,6 +1477,7 @@ tr:nth-child(even) td { background:#fafafa; }
   <table>
     <thead><tr>
       <th>#</th><th>联赛</th><th>时间</th><th>主队</th><th>让球</th><th>客队</th>
+      <th>比分</th><th>赛果</th>
       <th>亚盘</th><th>主胜%<br><span class="sub-hdr">亚盘</span></th><th>平%<br><span class="sub-hdr">亚盘</span></th><th>客负%<br><span class="sub-hdr">亚盘</span></th>
       <th>胜/3<br><span class="sub-hdr">赛果</span></th><th>平/1<br><span class="sub-hdr">赛果</span></th><th>负/0<br><span class="sub-hdr">赛果</span></th>
     </tr></thead>
@@ -1323,6 +1488,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>林肯红魔</td>
   <td class="hdcp-pos">+1</td>
   <td>米亚尔比</td>
+  <td class="score">-</td>
+  <td class="result"></td>
   <td class="ah-desc">受一球/球半</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:27%;background:#1565c0">27%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:27%;background:#1565c0">27%</div></div></td>
@@ -1338,6 +1505,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>兰斯科罗纳</td>
   <td>0</td>
   <td>北雪平</td>
+  <td class="score">-</td>
+  <td class="result"></td>
   <td class="ah-desc">受平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
@@ -1353,6 +1522,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>赫尔辛堡</td>
   <td>0</td>
   <td>北欧联FC</td>
+  <td class="score">-</td>
+  <td class="result"></td>
   <td class="ah-desc">平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:100%;background:#c62828">100%</div></div></td>
@@ -1368,6 +1539,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>哈茨</td>
   <td>0</td>
   <td>格拉茨风暴</td>
+  <td class="score">-</td>
+  <td class="result"></td>
   <td class="ah-desc">半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:55%;background:#c62828">55%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:24%;background:#1565c0">24%</div></div></td>
@@ -1383,6 +1556,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>堤格雷</td>
   <td>0</td>
   <td>乌拉圭民族</td>
+  <td class="score">-</td>
+  <td class="result"></td>
   <td class="ah-desc">平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:30%;background:#e65100">30%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:38%;background:#e65100">38%</div></div></td>
@@ -1398,6 +1573,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>圣洛伦索</td>
   <td>0</td>
   <td>门多萨体操击剑</td>
+  <td class="score">-</td>
+  <td class="result"></td>
   <td class="ah-desc">半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:47%;background:#c62828">47%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:29%;background:#1565c0">29%</div></div></td>
@@ -1413,6 +1590,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>班菲尔德</td>
   <td>0</td>
   <td>萨米恩托</td>
+  <td class="score">-</td>
+  <td class="result"></td>
   <td class="ah-desc">半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:47%;background:#c62828">47%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:29%;background:#1565c0">29%</div></div></td>
@@ -1428,6 +1607,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>庞特普雷塔</td>
   <td>0</td>
   <td>巴西竞技</td>
+  <td class="score">-</td>
+  <td class="result"></td>
   <td class="ah-desc">受平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:37%;background:#e65100">37%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:23%;background:#1565c0">23%</div></div></td>
@@ -1443,6 +1624,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>尤文图德</td>
   <td class="hdcp-neg">-1</td>
   <td>阿瓦伊</td>
+  <td class="score">-</td>
+  <td class="result"></td>
   <td class="ah-desc">一球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:37%;background:#e65100">37%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:29%;background:#1565c0">29%</div></div></td>
@@ -1458,6 +1641,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>阿根廷青年人</td>
   <td class="hdcp-neg">-1</td>
   <td>里奥夸尔托学生队</td>
+  <td class="score">-</td>
+  <td class="result"></td>
   <td class="ah-desc">一球/球半</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:50%;background:#c62828">50%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:12%;background:#999">12%</div></div></td>
@@ -1473,6 +1658,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>罗萨里奥中央</td>
   <td>0</td>
   <td>竞技</td>
+  <td class="score">-</td>
+  <td class="result"></td>
   <td class="ah-desc">平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:40%;background:#c62828">40%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:35%;background:#e65100">35%</div></div></td>
@@ -1488,6 +1675,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>桑托斯</td>
   <td class="hdcp-neg">-2</td>
   <td>委内瑞拉中央大学</td>
+  <td class="score">-</td>
+  <td class="result"></td>
   <td class="ah-desc">球半/两球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:50%;background:#c62828">50%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
@@ -1503,6 +1692,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>福塔雷萨</td>
   <td class="hdcp-neg">-1</td>
   <td>博塔弗戈SP</td>
+  <td class="score">-</td>
+  <td class="result"></td>
   <td class="ah-desc">半球/一球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:28%;background:#1565c0">28%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:29%;background:#1565c0">29%</div></div></td>
@@ -1518,6 +1709,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>光州FC</td>
   <td>0</td>
   <td>天安城</td>
+  <td class="score">-</td>
+  <td class="result"></td>
   <td class="ah-desc">半球/一球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
@@ -1533,10 +1726,12 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>仁川联</td>
   <td class="hdcp-neg">-1</td>
   <td>金浦市民</td>
-  <td class="ah-desc"></td>
-  <td>-</td>
-  <td>-</td>
-  <td>-</td>
+  <td class="score">-</td>
+  <td class="result"></td>
+  <td class="ah-desc">受一球</td>
+  <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
+  <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
+  <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:20%;background:#1565c0">20%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:10%;background:#999">10%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:70%;background:#c62828">70%</div></div></td>
@@ -1548,6 +1743,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>金泉尚武</td>
   <td>0</td>
   <td>水原FC</td>
+  <td class="score">-</td>
+  <td class="result"></td>
   <td class="ah-desc">平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
@@ -1563,10 +1760,12 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>釜山偶像</td>
   <td class="hdcp-pos">+1</td>
   <td>FC首尔</td>
-  <td class="ah-desc"></td>
-  <td>-</td>
-  <td>-</td>
-  <td>-</td>
+  <td class="score">-</td>
+  <td class="result"></td>
+  <td class="ah-desc">受半球/一球</td>
+  <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
+  <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
+  <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:55%;background:#c62828">55%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:33%;background:#e65100">33%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:11%;background:#999">11%</div></div></td>
@@ -1578,6 +1777,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>富川FC</td>
   <td class="hdcp-neg">-1</td>
   <td>坡州前线</td>
+  <td class="score">-</td>
+  <td class="result"></td>
   <td class="ah-desc">一球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
@@ -1593,10 +1794,12 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>忠北清州</td>
   <td class="hdcp-pos">+1</td>
   <td>安养FC</td>
-  <td class="ah-desc"></td>
-  <td>-</td>
-  <td>-</td>
-  <td>-</td>
+  <td class="score">-</td>
+  <td class="result"></td>
+  <td class="ah-desc">受平手/半球</td>
+  <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
+  <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
+  <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:55%;background:#c62828">55%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:33%;background:#e65100">33%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:11%;background:#999">11%</div></div></td>
@@ -1608,10 +1811,12 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>济州SK FC</td>
   <td class="hdcp-neg">-1</td>
   <td>华城FC</td>
-  <td class="ah-desc"></td>
-  <td>-</td>
-  <td>-</td>
-  <td>-</td>
+  <td class="score">-</td>
+  <td class="result"></td>
+  <td class="ah-desc">半球/一球</td>
+  <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
+  <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
+  <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:20%;background:#1565c0">20%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:10%;background:#999">10%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:70%;background:#c62828">70%</div></div></td>
@@ -1623,10 +1828,12 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>金海</td>
   <td>0</td>
   <td>城南FC</td>
-  <td class="ah-desc"></td>
-  <td>-</td>
-  <td>-</td>
-  <td>-</td>
+  <td class="score">-</td>
+  <td class="result"></td>
+  <td class="ah-desc">受平手/半球</td>
+  <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
+  <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
+  <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:45%;background:#c62828">45%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:30%;background:#e65100">30%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:25%;background:#1565c0">25%</div></div></td>
@@ -1638,6 +1845,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>凯拉特</td>
   <td>0</td>
   <td>奥莫尼亚</td>
+  <td class="score">-</td>
+  <td class="result"></td>
   <td class="ah-desc">平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:39%;background:#e65100">39%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:30%;background:#e65100">30%</div></div></td>
@@ -1653,6 +1862,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>MP米克力</td>
   <td>0</td>
   <td>卡亚尼卡帕</td>
+  <td class="score">-</td>
+  <td class="result"></td>
   <td class="ah-desc">平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:36%;background:#e65100">36%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:26%;background:#1565c0">26%</div></div></td>
@@ -1668,6 +1879,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>波兹南莱赫</td>
   <td class="hdcp-neg">-1</td>
   <td>奥胡斯</td>
+  <td class="score">-</td>
+  <td class="result"></td>
   <td class="ah-desc">半球/一球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:37%;background:#e65100">37%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:21%;background:#1565c0">21%</div></div></td>
@@ -1683,6 +1896,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>巴拉卡斯中央</td>
   <td>0</td>
   <td>阿尔多斯维</td>
+  <td class="score">-</td>
+  <td class="result"></td>
   <td class="ah-desc">平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:40%;background:#c62828">40%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:35%;background:#e65100">35%</div></div></td>
@@ -1698,6 +1913,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>贝尔格莱德红星</td>
   <td class="hdcp-neg">-3</td>
   <td>拉恩</td>
+  <td class="score">-</td>
+  <td class="result"></td>
   <td class="ah-desc">两球半/三球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:55%;background:#c62828">55%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
@@ -1713,6 +1930,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>扎布热矿工</td>
   <td class="hdcp-pos">+1</td>
   <td>费内巴切</td>
+  <td class="score">-</td>
+  <td class="result"></td>
   <td class="ah-desc">受一球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:44%;background:#c62828">44%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:18%;background:#999">18%</div></div></td>
@@ -1728,6 +1947,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>国防与司法</td>
   <td>0</td>
   <td>利斯特雷</td>
+  <td class="score">-</td>
+  <td class="result"></td>
   <td class="ah-desc">平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:40%;background:#c62828">40%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:35%;background:#e65100">35%</div></div></td>
@@ -1743,6 +1964,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>瓦斯科达伽马</td>
   <td class="hdcp-neg">-1</td>
   <td>麦德林独立</td>
+  <td class="score">-</td>
+  <td class="result"></td>
   <td class="ah-desc">半球/一球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:32%;background:#e65100">32%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:28%;background:#1565c0">28%</div></div></td>
@@ -1758,6 +1981,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>拉普拉塔体操</td>
   <td>0</td>
   <td>河床</td>
+  <td class="score">-</td>
+  <td class="result"></td>
   <td class="ah-desc">受半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:24%;background:#1565c0">24%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:20%;background:#1565c0">20%</div></div></td>
@@ -1773,6 +1998,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>巴西国际</td>
   <td class="hdcp-pos">+1</td>
   <td>弗拉门戈</td>
+  <td class="score">-</td>
+  <td class="result"></td>
   <td class="ah-desc">受平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:75%;background:#c62828">75%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
@@ -1788,6 +2015,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>米拉索</td>
   <td class="hdcp-neg">-1</td>
   <td>雷莫</td>
+  <td class="score">-</td>
+  <td class="result"></td>
   <td class="ah-desc">半球/一球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:27%;background:#1565c0">27%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:30%;background:#e65100">30%</div></div></td>
@@ -1803,6 +2032,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>布拉干蒂诺RB</td>
   <td class="hdcp-neg">-1</td>
   <td>水晶竞技</td>
+  <td class="score">-</td>
+  <td class="result"></td>
   <td class="ah-desc">球半</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:50%;background:#c62828">50%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
@@ -1818,6 +2049,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>西恩夏诺</td>
   <td>0</td>
   <td>拉努斯</td>
+  <td class="score">-</td>
+  <td class="result"></td>
   <td class="ah-desc">半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:54%;background:#c62828">54%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:16%;background:#999">16%</div></div></td>
@@ -1833,6 +2066,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>弗鲁米嫩塞</td>
   <td class="hdcp-neg">-1</td>
   <td>巴伊亚</td>
+  <td class="score">-</td>
+  <td class="result"></td>
   <td class="ah-desc">半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:34%;background:#e65100">34%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:27%;background:#1565c0">27%</div></div></td>
@@ -1848,6 +2083,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>维多利亚</td>
   <td>0</td>
   <td>帕尔梅拉斯</td>
+  <td class="score">-</td>
+  <td class="result"></td>
   <td class="ah-desc">受平手/半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:30%;background:#e65100">30%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:28%;background:#1565c0">28%</div></div></td>
@@ -1863,6 +2100,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>科尔多瓦学院</td>
   <td>0</td>
   <td>普拉滕斯</td>
+  <td class="score">-</td>
+  <td class="result"></td>
   <td class="ah-desc">半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:47%;background:#c62828">47%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:29%;background:#1565c0">29%</div></div></td>
@@ -1878,6 +2117,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>基柏</td>
   <td class="hdcp-neg">-1</td>
   <td>查普斯</td>
+  <td class="score">-</td>
+  <td class="result"></td>
   <td class="ah-desc">一球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:44%;background:#c62828">44%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:12%;background:#999">12%</div></div></td>
@@ -1893,6 +2134,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>图尔库国际</td>
   <td class="hdcp-pos">+1</td>
   <td>巴萨克赛尔</td>
+  <td class="score">-</td>
+  <td class="result"></td>
   <td class="ah-desc">受半球/一球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
@@ -1908,6 +2151,8 @@ tr:nth-child(even) td { background:#fafafa; }
   <td>埃尔维斯</td>
   <td>0</td>
   <td>斯塔尔南</td>
+  <td class="score">-</td>
+  <td class="result"></td>
   <td class="ah-desc">半球</td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:100%;background:#c62828">100%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>

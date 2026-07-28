@@ -51,6 +51,7 @@ def parse_matches_p3(text):
         matches[num] = {
             "num": num, "league": vals[1], "time": vals[2],
             "home": vals[3], "handicap": vals[4], "away": vals[5],
+            "score": vals[6], "result": vals[7],
             "p3_h": int(probs[0]) if len(probs) > 0 else -1,
             "p3_d": int(probs[1]) if len(probs) > 1 else -1,
             "p3_a": int(probs[2]) if len(probs) > 2 else -1,
@@ -94,6 +95,7 @@ def merge_matches(m3, m0):
         merged.append({
             "num": b["num"], "league": b["league"], "time": b["time"],
             "home": b["home"], "handicap": b["handicap"], "away": b["away"],
+            "score": b.get("score", "-"), "result": b.get("result", ""),
             "ah_desc": o.get("ah_desc", ""),
             # 亚盘历史概率 (playid=0 胜负过关)
             "h_prob": o.get("h_prob", -1),
@@ -180,6 +182,8 @@ tr:nth-child(even) td {{ background:#fafafa; }}
 .prob-bar {{ display:inline-block; width:60px; height:14px; background:#eee; border-radius:7px; vertical-align:middle; position:relative; overflow:hidden; }}
 .prob-fill {{ height:100%; border-radius:7px; line-height:14px; font-size:9px; color:#fff; text-align:center; }}
 .ah-desc {{ color:#555; font-size:11px; }}
+.score {{ font-family:monospace; font-weight:600; color:#333; font-size:13px; }}
+.result {{ font-weight:600; color:#1565c0; }}
 .sub-hdr {{ font-weight:400; font-size:10px; color:#78909c; }}
 .footer {{ text-align:center; padding:20px; color:#999; font-size:12px; }}
 </style>
@@ -256,6 +260,8 @@ tr:nth-child(even) td {{ background:#fafafa; }}
   <td>{m['home']}</td>
   <td{hdcp_class}>{m['handicap']}</td>
   <td>{m['away']}</td>
+  <td class="score">{m['score']}</td>
+  <td class="result">{m['result']}</td>
   <td class="ah-desc">{m['ah_desc']}</td>
   <td>{bar_ah_h}</td>
   <td>{bar_ah_d}</td>
@@ -274,6 +280,7 @@ tr:nth-child(even) td {{ background:#fafafa; }}
   <table>
     <thead><tr>
       <th>#</th><th>联赛</th><th>时间</th><th>主队</th><th>让球</th><th>客队</th>
+      <th>比分</th><th>赛果</th>
       <th>亚盘</th><th>主胜%<br><span class="sub-hdr">亚盘</span></th><th>平%<br><span class="sub-hdr">亚盘</span></th><th>客负%<br><span class="sub-hdr">亚盘</span></th>
       <th>胜/3<br><span class="sub-hdr">赛果</span></th><th>平/1<br><span class="sub-hdr">赛果</span></th><th>负/0<br><span class="sub-hdr">赛果</span></th>
     </tr></thead>
