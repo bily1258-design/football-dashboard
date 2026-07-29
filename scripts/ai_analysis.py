@@ -1885,7 +1885,8 @@ def generate_frontend(results: List[Dict]):
         import team_similarity
         team_similarity.run()
     except Exception as e:
-        logger.warning("球队相似度匹配失败: %s", e)
+        import traceback
+        logger.warning("球队相似度匹配失败: %s\n%s", e, traceback.format_exc())
 
     # ─── index.html ──────────────────────────
     html = '''<!DOCTYPE html>
