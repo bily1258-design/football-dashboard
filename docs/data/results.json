@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-30 15:40:20",
+  "generated_at": "2026-07-30 16:15:08",
   "total_matches": 419,
   "date_range": "2026-06-26 ~ 2026-07-31",
   "hit_count": 266,
@@ -141600,10 +141600,10 @@
       "ah_open_handicap": -0.25,
       "ah_open_away": 0.85,
       "ah_open_handicap_text": "平手/半球",
-      "ah_home": 0.9,
-      "ah_handicap": -0.25,
-      "ah_away": 0.8,
-      "ah_handicap_text": "平手/半球",
+      "ah_home": 1.0,
+      "ah_handicap": -0.5,
+      "ah_away": 0.7,
+      "ah_handicap_text": "半球",
       "ah_company_id": "1",
       "stats": {
         "home_recent": [
@@ -141818,10 +141818,10 @@
           "prob": 0.18
         }
       ],
-      "ah_home_covers_prob": 0.4504,
-      "ah_push_prob": 0.1289,
+      "ah_home_covers_prob": 0.5794,
+      "ah_push_prob": 0.0,
       "ah_away_covers_prob": 0.4206,
-      "ah_pred_desc": "亚P:上45% 走13%"
+      "ah_pred_desc": "亚P:上58% 走0%"
     },
     {
       "fid": "3035516",
@@ -206634,9 +206634,9 @@
       "ah_open_handicap": 0.75,
       "ah_open_away": 1.09,
       "ah_open_handicap_text": "受让半球/一球",
-      "ah_home": 0.76,
+      "ah_home": 0.84,
       "ah_handicap": 0.5,
-      "ah_away": 0.94,
+      "ah_away": 0.86,
       "ah_handicap_text": "受让半球",
       "ah_company_id": "1",
       "stats": {
@@ -207134,10 +207134,10 @@
       "ah_open_handicap": 1.25,
       "ah_open_away": 0.92,
       "ah_open_handicap_text": "受让一球/球半",
-      "ah_home": 0.84,
-      "ah_handicap": 1.25,
-      "ah_away": 0.86,
-      "ah_handicap_text": "受让一球/球半",
+      "ah_home": 0.74,
+      "ah_handicap": 1.5,
+      "ah_away": 0.96,
+      "ah_handicap_text": "受让球半",
       "ah_company_id": "1",
       "stats": {
         "home_recent": [
@@ -207343,9 +207343,9 @@
         }
       ],
       "ah_home_covers_prob": 0.2071,
-      "ah_push_prob": 0.1023,
-      "ah_away_covers_prob": 0.6905,
-      "ah_pred_desc": "亚P:下69% 走10%"
+      "ah_push_prob": 0.0,
+      "ah_away_covers_prob": 0.7929,
+      "ah_pred_desc": "亚P:下79% 走0%"
     },
     {
       "fid": "3035583",
@@ -208726,35 +208726,35 @@
       "hit": "",
       "source": "hkjc",
       "odds_source": "pinnacle",
-      "odds_win": 3.42,
+      "odds_win": 3.43,
       "odds_draw": 3.98,
       "odds_loss": 1.82,
-      "margin": 0.0931,
-      "model_win": 0.3557,
-      "model_draw": 0.2724,
-      "model_loss": 0.3718,
-      "raw_model_win": 0.3068,
-      "raw_model_draw": 0.235,
-      "raw_model_loss": 0.4581,
+      "margin": 0.0923,
+      "model_win": 0.3553,
+      "model_draw": 0.2727,
+      "model_loss": 0.3721,
+      "raw_model_win": 0.3064,
+      "raw_model_draw": 0.2352,
+      "raw_model_loss": 0.4584,
       "open_win_pin": 4.05,
       "open_draw_pin": 3.84,
       "open_loss_pin": 1.65,
       "lgbm_prediction": "away",
       "lgbm_prediction_cn": "客胜",
-      "lgbm_prediction_prob": 0.3922,
+      "lgbm_prediction_prob": 0.3928,
       "prediction": "away",
       "prediction_cn": "客胜",
-      "prediction_prob": 0.3922,
+      "prediction_prob": 0.3928,
       "model_prediction": "home",
       "model_prediction_cn": "主胜",
-      "model_prediction_prob": 0.3557,
+      "model_prediction_prob": 0.3553,
       "draw_boosted": false,
       "draw_confidence": -5,
       "draw_signal": "none",
-      "diff_lgb_poisson": 0.0009,
-      "lgbm_win": 0.3344,
-      "lgbm_draw": 0.2734,
-      "lgbm_loss": 0.3922,
+      "diff_lgb_poisson": -0.0004,
+      "lgbm_win": 0.335,
+      "lgbm_draw": 0.2722,
+      "lgbm_loss": 0.3928,
       "comparison": {
         "open": [
           4.05,
@@ -208762,12 +208762,12 @@
           1.65
         ],
         "current": [
-          3.42,
+          3.43,
           3.98,
           1.82
         ],
         "div_pct": [
-          -15.6,
+          -15.3,
           3.6,
           9.3
         ],
@@ -208809,71 +208809,71 @@
       "ts_win": 0.521,
       "ts_draw": 0.2326,
       "ts_loss": 0.2464,
-      "lgbm_entropy": 1.088,
-      "lgbm_confidence": 0.3921860609654581,
+      "lgbm_entropy": 1.0876,
+      "lgbm_confidence": 0.3928242975276296,
       "raw_entropy": 1.0604,
-      "raw_confidence": 0.0347,
+      "raw_confidence": 0.0348,
       "cal_win": null,
       "cal_draw": null,
       "cal_loss": null,
       "value_bets": [
         {
           "outcome": "home",
-          "odds": 3.42,
-          "prob": 0.3344,
-          "ev": 0.1437,
-          "kelly": 0.0594,
+          "odds": 3.43,
+          "prob": 0.335,
+          "ev": 0.1489,
+          "kelly": 0.0613,
           "source": "pinnacle"
         },
         {
           "outcome": "home",
           "odds": 3.3,
-          "prob": 0.3344,
-          "ev": 0.1036,
-          "kelly": 0.045,
+          "prob": 0.335,
+          "ev": 0.1054,
+          "kelly": 0.0458,
           "source": "hkjc"
         },
         {
           "outcome": "draw",
           "odds": 3.98,
-          "prob": 0.2734,
-          "ev": 0.0881,
-          "kelly": 0.0296,
+          "prob": 0.2722,
+          "ev": 0.0834,
+          "kelly": 0.028,
           "source": "pinnacle"
         },
         {
           "outcome": "draw",
           "odds": 3.6,
-          "prob": 0.2734,
-          "ev": -0.0158,
+          "prob": 0.2722,
+          "ev": -0.02,
           "kelly": 0.0,
           "source": "hkjc"
         },
         {
           "outcome": "away",
           "odds": 1.82,
-          "prob": 0.3922,
-          "ev": -0.2862,
+          "prob": 0.3928,
+          "ev": -0.2851,
           "kelly": 0.0,
           "source": "pinnacle"
         },
         {
           "outcome": "away",
           "odds": 1.81,
-          "prob": 0.3922,
-          "ev": -0.2901,
+          "prob": 0.3928,
+          "ev": -0.289,
           "kelly": 0.0,
           "source": "hkjc"
         }
       ],
       "best_value": {
         "outcome": "home",
-        "ev": 0.1437,
-        "kelly": 0.0594,
-        "odds": 3.42,
-        "prob": 0.3344,
+        "ev": 0.1489,
+        "kelly": 0.0613,
+        "odds": 3.43,
+        "prob": 0.335,
         "source": "pinnacle",
-        "kelly_weighted": 0.0642
+        "kelly_weighted": 0.0662
       },
       "ah_open_home": 0.75,
       "ah_open_handicap": 0.75,
@@ -210740,34 +210740,34 @@
       "source": "hkjc",
       "odds_source": "pinnacle",
       "odds_win": 1.77,
-      "odds_draw": 3.72,
+      "odds_draw": 3.73,
       "odds_loss": 4.08,
-      "margin": 0.0789,
+      "margin": 0.0782,
       "model_win": 0.4,
-      "model_draw": 0.3337,
-      "model_loss": 0.2663,
-      "raw_model_win": 0.5053,
-      "raw_model_draw": 0.2506,
-      "raw_model_loss": 0.2441,
+      "model_draw": 0.3336,
+      "model_loss": 0.2664,
+      "raw_model_win": 0.5056,
+      "raw_model_draw": 0.2502,
+      "raw_model_loss": 0.2442,
       "open_win_pin": 2.14,
       "open_draw_pin": 3.19,
       "open_loss_pin": 3.15,
       "lgbm_prediction": "home",
       "lgbm_prediction_cn": "主胜",
-      "lgbm_prediction_prob": 0.4235,
+      "lgbm_prediction_prob": 0.4209,
       "prediction": "home",
       "prediction_cn": "主胜",
-      "prediction_prob": 0.4235,
+      "prediction_prob": 0.4209,
       "model_prediction": "draw",
       "model_prediction_cn": "平局",
-      "model_prediction_prob": 0.3337,
+      "model_prediction_prob": 0.3336,
       "draw_boosted": true,
       "draw_confidence": 5,
       "draw_signal": "none",
-      "diff_lgb_poisson": -0.0324,
-      "lgbm_win": 0.4235,
-      "lgbm_draw": 0.3013,
-      "lgbm_loss": 0.2752,
+      "diff_lgb_poisson": -0.031,
+      "lgbm_win": 0.4209,
+      "lgbm_draw": 0.3026,
+      "lgbm_loss": 0.2764,
       "comparison": {
         "open": [
           2.14,
@@ -210776,12 +210776,12 @@
         ],
         "current": [
           1.77,
-          3.72,
+          3.73,
           4.08
         ],
         "div_pct": [
           -17.3,
-          16.6,
+          16.9,
           22.8
         ],
         "source": "pinnacle"
@@ -210822,71 +210822,71 @@
       "ts_win": 0.3236,
       "ts_draw": 0.2371,
       "ts_loss": 0.4393,
-      "lgbm_entropy": 1.0804,
-      "lgbm_confidence": 0.423491667098538,
-      "raw_entropy": 1.0359,
-      "raw_confidence": 0.0571,
+      "lgbm_entropy": 1.0814,
+      "lgbm_confidence": 0.4209242769047742,
+      "raw_entropy": 1.0357,
+      "raw_confidence": 0.0572,
       "cal_win": null,
       "cal_draw": null,
       "cal_loss": null,
       "value_bets": [
         {
-          "outcome": "away",
-          "odds": 4.08,
-          "prob": 0.2752,
-          "ev": 0.1229,
-          "kelly": 0.0399,
+          "outcome": "draw",
+          "odds": 3.73,
+          "prob": 0.3026,
+          "ev": 0.1288,
+          "kelly": 0.0472,
           "source": "pinnacle"
         },
         {
-          "outcome": "draw",
-          "odds": 3.72,
-          "prob": 0.3013,
-          "ev": 0.1208,
-          "kelly": 0.0444,
+          "outcome": "away",
+          "odds": 4.08,
+          "prob": 0.2764,
+          "ev": 0.1279,
+          "kelly": 0.0415,
           "source": "pinnacle"
         },
         {
           "outcome": "away",
           "odds": 3.9,
-          "prob": 0.2752,
-          "ev": 0.0733,
-          "kelly": 0.0253,
+          "prob": 0.2764,
+          "ev": 0.0781,
+          "kelly": 0.0269,
           "source": "hkjc"
         },
         {
           "outcome": "draw",
           "odds": 3.45,
-          "prob": 0.3013,
-          "ev": 0.0395,
-          "kelly": 0.0161,
+          "prob": 0.3026,
+          "ev": 0.0441,
+          "kelly": 0.018,
           "source": "hkjc"
         },
         {
           "outcome": "home",
           "odds": 1.77,
-          "prob": 0.4235,
-          "ev": -0.2504,
+          "prob": 0.4209,
+          "ev": -0.255,
           "kelly": 0.0,
           "source": "pinnacle"
         },
         {
           "outcome": "home",
           "odds": 1.7,
-          "prob": 0.4235,
-          "ev": -0.2801,
+          "prob": 0.4209,
+          "ev": -0.2844,
           "kelly": 0.0,
           "source": "hkjc"
         }
       ],
       "best_value": {
-        "outcome": "away",
-        "ev": 0.1229,
-        "kelly": 0.0399,
-        "odds": 4.08,
-        "prob": 0.2752,
+        "outcome": "draw",
+        "ev": 0.1288,
+        "kelly": 0.0472,
+        "odds": 3.73,
+        "prob": 0.3026,
         "source": "pinnacle",
-        "kelly_weighted": 0.0431
+        "kelly_weighted": 0.051
       },
       "ah_open_home": 0.95,
       "ah_open_handicap": -0.75,
@@ -211101,6 +211101,475 @@
       "ah_push_prob": 0.1092,
       "ah_away_covers_prob": 0.3743,
       "ah_pred_desc": "亚P:上52% 走11%"
+    },
+    {
+      "fid": "3035578",
+      "date": "2026-07-31",
+      "match_time": "2026-07-31 06:00",
+      "event": "中北美U20",
+      "home_team": "哥斯達黎加U20(中)",
+      "away_team": "安提瓜及巴布達U20",
+      "score": "",
+      "hit": "",
+      "source": "hkjc",
+      "odds_source": "hkjc",
+      "odds_win": 1.09,
+      "odds_draw": 6.6,
+      "odds_loss": 14.5,
+      "margin": 0.1379,
+      "model_win": 0.4,
+      "model_draw": 0.2763,
+      "model_loss": 0.3237,
+      "raw_model_win": 0.6843,
+      "raw_model_draw": 0.1776,
+      "raw_model_loss": 0.1381,
+      "open_win_pin": 1.09,
+      "open_draw_pin": 6.6,
+      "open_loss_pin": 14.5,
+      "lgbm_prediction": "home",
+      "lgbm_prediction_cn": "主胜",
+      "lgbm_prediction_prob": 0.5509,
+      "prediction": "home",
+      "prediction_cn": "主胜",
+      "prediction_prob": 0.5509,
+      "model_prediction": "away",
+      "model_prediction_cn": "客胜",
+      "model_prediction_prob": 0.3237,
+      "draw_boosted": true,
+      "draw_confidence": -5,
+      "draw_signal": "none",
+      "diff_lgb_poisson": -0.0496,
+      "lgbm_win": 0.5509,
+      "lgbm_draw": 0.2267,
+      "lgbm_loss": 0.2224,
+      "comparison": {
+        "open": [
+          1.09,
+          6.6,
+          14.5
+        ],
+        "current": [
+          1.09,
+          6.6,
+          14.5
+        ],
+        "div_pct": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "source": "hkjc"
+      },
+      "pin_comparison": {},
+      "league_baseline": [
+        0.45,
+        0.24,
+        0.31
+      ],
+      "league": "",
+      "home_rank": "0",
+      "away_rank": "0",
+      "home_pts": 0,
+      "away_pts": 0,
+      "home_form_pts": 0.0,
+      "away_form_pts": 0.0,
+      "home_form_gd": 0.0,
+      "away_form_gd": 0.0,
+      "warning": "🚩",
+      "ts_win": 0.4048,
+      "ts_draw": 0.2414,
+      "ts_loss": 0.3538,
+      "lgbm_entropy": 0.9993,
+      "lgbm_confidence": 0.5508724686474412,
+      "raw_entropy": 0.84,
+      "raw_confidence": 0.2354,
+      "cal_win": null,
+      "cal_draw": null,
+      "cal_loss": null,
+      "value_bets": [
+        {
+          "outcome": "away",
+          "odds": 14.5,
+          "prob": 0.2224,
+          "ev": 2.2247,
+          "kelly": 0.1648,
+          "source": "hkjc"
+        },
+        {
+          "outcome": "draw",
+          "odds": 6.6,
+          "prob": 0.2267,
+          "ev": 0.4965,
+          "kelly": 0.0887,
+          "source": "hkjc"
+        },
+        {
+          "outcome": "home",
+          "odds": 1.09,
+          "prob": 0.5509,
+          "ev": -0.3995,
+          "kelly": 0.0,
+          "source": "hkjc"
+        }
+      ],
+      "best_value": {
+        "outcome": "away",
+        "ev": 2.2247,
+        "kelly": 0.1648,
+        "odds": 14.5,
+        "prob": 0.2224,
+        "source": "hkjc",
+        "kelly_weighted": 0.178
+      },
+      "ah_open_home": 0.81,
+      "ah_open_handicap": -2.5,
+      "ah_open_away": 0.89,
+      "ah_open_handicap_text": "两球半",
+      "ah_home": 1.0,
+      "ah_handicap": -2.5,
+      "ah_away": 0.7,
+      "ah_handicap_text": "两球半",
+      "ah_company_id": "1",
+      "stats": {
+        "home_recent": [
+          {
+            "result": "负",
+            "league": "美青盃",
+            "date": "26-07-28",
+            "home": "哥斯達黎加U20",
+            "away": "墨西哥U201",
+            "home_score": 0,
+            "away_score": 2
+          },
+          {
+            "result": "负",
+            "league": "美青盃",
+            "date": "26-07-25",
+            "home": "1危地馬拉U20(中)",
+            "away": "哥斯達黎加U20",
+            "home_score": 0,
+            "away_score": 1
+          },
+          {
+            "result": "胜",
+            "league": "國際友誼",
+            "date": "26-05-29",
+            "home": "哥倫比亞U20",
+            "away": "哥斯達黎加U20",
+            "home_score": 2,
+            "away_score": 1
+          },
+          {
+            "result": "胜",
+            "league": "國際友誼",
+            "date": "26-05-27",
+            "home": "哥倫比亞U20",
+            "away": "哥斯達黎加U20",
+            "home_score": 1,
+            "away_score": 0
+          },
+          {
+            "result": "胜",
+            "league": "國際友誼",
+            "date": "26-03-31",
+            "home": "墨西哥U20",
+            "away": "哥斯達黎加U20",
+            "home_score": 1,
+            "away_score": 0
+          },
+          {
+            "result": "胜",
+            "league": "國際友誼",
+            "date": "26-03-28",
+            "home": "墨西哥U20",
+            "away": "哥斯達黎加U20",
+            "home_score": 1,
+            "away_score": 0
+          },
+          {
+            "result": "胜",
+            "league": "美青盃",
+            "date": "26-03-05",
+            "home": "哥斯達黎加U20",
+            "away": "千里達U20",
+            "home_score": 3,
+            "away_score": 0
+          },
+          {
+            "result": "平",
+            "league": "美青盃",
+            "date": "26-03-03",
+            "home": "哥斯達黎加U20",
+            "away": "百慕達U20",
+            "home_score": 3,
+            "away_score": 3
+          },
+          {
+            "result": "胜",
+            "league": "美青盃",
+            "date": "26-03-01",
+            "home": "哥斯達黎加U20",
+            "away": "巴巴多斯U20",
+            "home_score": 3,
+            "away_score": 0
+          },
+          {
+            "result": "负",
+            "league": "美青盃",
+            "date": "26-02-27",
+            "home": "荷屬聖馬丁岛U20(中)",
+            "away": "哥斯達黎加U20",
+            "home_score": 0,
+            "away_score": 12
+          }
+        ],
+        "away_recent": [
+          {
+            "result": "胜",
+            "league": "美青盃",
+            "date": "26-07-25",
+            "home": "墨西哥U20",
+            "away": "安提瓜及巴布達U20",
+            "home_score": 3,
+            "away_score": 0
+          },
+          {
+            "result": "负",
+            "league": "美青盃",
+            "date": "26-03-04",
+            "home": "1多米尼加共和國U20(中)",
+            "away": "安提瓜及巴布達U20",
+            "home_score": 0,
+            "away_score": 1
+          },
+          {
+            "result": "负",
+            "league": "美青盃",
+            "date": "26-03-02",
+            "home": "多米尼克U20(中)",
+            "away": "安提瓜及巴布達U20",
+            "home_score": 0,
+            "away_score": 1
+          },
+          {
+            "result": "负",
+            "league": "美青盃",
+            "date": "24-03-03",
+            "home": "安提瓜及巴布達U20",
+            "away": "薩爾瓦多U20",
+            "home_score": 0,
+            "away_score": 1
+          },
+          {
+            "result": "胜",
+            "league": "美青盃",
+            "date": "24-02-28",
+            "home": "安提瓜及巴布達U20",
+            "away": "特克斯及凱科斯群島U20",
+            "home_score": 2,
+            "away_score": 1
+          },
+          {
+            "result": "负",
+            "league": "美青盃",
+            "date": "24-02-26",
+            "home": "安提瓜及巴布達U20",
+            "away": "蘇里南U201",
+            "home_score": 2,
+            "away_score": 3
+          },
+          {
+            "result": "胜",
+            "league": "美青盃",
+            "date": "24-02-24",
+            "home": "安提瓜及巴布達U20",
+            "away": "圭亞那U20",
+            "home_score": 4,
+            "away_score": 0
+          },
+          {
+            "result": "胜",
+            "league": "美青盃",
+            "date": "22-06-19",
+            "home": "洪都拉斯U20",
+            "away": "安提瓜及巴布達U20",
+            "home_score": 3,
+            "away_score": 0
+          },
+          {
+            "result": "胜",
+            "league": "美青盃",
+            "date": "18-11-10",
+            "home": "洪都拉斯U20(中)",
+            "away": "安提瓜及巴布達U20",
+            "home_score": 4,
+            "away_score": 3
+          },
+          {
+            "result": "胜",
+            "league": "美青盃",
+            "date": "18-11-08",
+            "home": "古巴U20(中)",
+            "away": "安提瓜及巴布達U20",
+            "home_score": 3,
+            "away_score": 0
+          }
+        ],
+        "h2h": [
+          {
+            "result": "负",
+            "league": "美青盃",
+            "date": "22-06-21",
+            "home": "安提瓜及巴布達U20(中)",
+            "away": "哥斯達黎加U20",
+            "home_score": 0,
+            "away_score": 3
+          }
+        ]
+      },
+      "importance_weight": 1.08,
+      "low_priority": false,
+      "total_goals_top3": [
+        {
+          "total_goals": 1,
+          "prob": 0.271
+        },
+        {
+          "total_goals": 2,
+          "prob": 0.271
+        },
+        {
+          "total_goals": 3,
+          "prob": 0.18
+        }
+      ],
+      "similar_matches": [
+        {
+          "home_team": "哥斯達黎加U20",
+          "away_team": "墨西哥U20",
+          "league": "中北美U20",
+          "date": "2026-07-28",
+          "score": "0-2",
+          "actual": "away (0-2)",
+          "sim_h": 1.0,
+          "sim_a": 0.875,
+          "similarity": 1.0,
+          "total_goals_top3": [
+            {
+              "total_goals": 2,
+              "prob": 0.271
+            },
+            {
+              "total_goals": 1,
+              "prob": 0.269
+            },
+            {
+              "total_goals": 3,
+              "prob": 0.181
+            }
+          ]
+        },
+        {
+          "home_team": "安提瓜及巴布達U20(中)",
+          "away_team": "瓜地馬拉U20",
+          "league": "中北美U20",
+          "date": "2026-07-28",
+          "score": "0-2",
+          "actual": "away (0-2)",
+          "sim_h": 0.875,
+          "sim_a": 1.0,
+          "similarity": 1.0,
+          "total_goals_top3": [
+            {
+              "total_goals": 2,
+              "prob": 0.271
+            },
+            {
+              "total_goals": 1,
+              "prob": 0.269
+            },
+            {
+              "total_goals": 3,
+              "prob": 0.181
+            }
+          ]
+        },
+        {
+          "home_team": "瓜地马拉U20(中)",
+          "away_team": "哥斯达黎加U20",
+          "league": "中北美U20",
+          "date": "2026-07-26",
+          "score": "0-1",
+          "actual": "away (0-1)",
+          "sim_h": 0.767,
+          "sim_a": 0.897,
+          "similarity": 0.995,
+          "total_goals_top3": [
+            {
+              "total_goals": 1,
+              "prob": 0.368
+            },
+            {
+              "total_goals": 0,
+              "prob": 0.364
+            },
+            {
+              "total_goals": 2,
+              "prob": 0.186
+            }
+          ]
+        },
+        {
+          "home_team": "安南竞技",
+          "away_team": "邓迪FC",
+          "league": "蘇超",
+          "date": "2026-07-16",
+          "score": "0-5",
+          "actual": "away (0-5)",
+          "sim_h": 0.753,
+          "sim_a": 0.851,
+          "similarity": 0.801,
+          "total_goals_top3": [
+            {
+              "total_goals": 5,
+              "prob": 0.175
+            },
+            {
+              "total_goals": 4,
+              "prob": 0.175
+            }
+          ]
+        },
+        {
+          "home_team": "奥克兰FC(中)",
+          "away_team": "托特纳姆热刺",
+          "league": "國際友誼賽",
+          "date": "2026-07-26",
+          "score": "0-2",
+          "actual": "away (0-2)",
+          "sim_h": 0.831,
+          "sim_a": 0.748,
+          "similarity": 0.788,
+          "total_goals_top3": [
+            {
+              "total_goals": 2,
+              "prob": 0.271
+            },
+            {
+              "total_goals": 1,
+              "prob": 0.269
+            },
+            {
+              "total_goals": 3,
+              "prob": 0.181
+            }
+          ]
+        }
+      ],
+      "ah_home_covers_prob": 0.8648,
+      "ah_push_prob": 0.0,
+      "ah_away_covers_prob": 0.1352,
+      "ah_pred_desc": "亚P:上86% 走0%"
     },
     {
       "fid": "3035579",
@@ -211599,475 +212068,6 @@
       "ah_pred_desc": "亚P:上85% 走0%"
     },
     {
-      "fid": "3035578",
-      "date": "2026-07-31",
-      "match_time": "2026-07-31 06:00",
-      "event": "中北美U20",
-      "home_team": "哥斯達黎加U20(中)",
-      "away_team": "安提瓜及巴布達U20",
-      "score": "",
-      "hit": "",
-      "source": "hkjc",
-      "odds_source": "hkjc",
-      "odds_win": 1.09,
-      "odds_draw": 6.6,
-      "odds_loss": 14.5,
-      "margin": 0.1379,
-      "model_win": 0.4,
-      "model_draw": 0.2763,
-      "model_loss": 0.3237,
-      "raw_model_win": 0.6843,
-      "raw_model_draw": 0.1776,
-      "raw_model_loss": 0.1381,
-      "open_win_pin": 1.09,
-      "open_draw_pin": 6.6,
-      "open_loss_pin": 14.5,
-      "lgbm_prediction": "home",
-      "lgbm_prediction_cn": "主胜",
-      "lgbm_prediction_prob": 0.5509,
-      "prediction": "home",
-      "prediction_cn": "主胜",
-      "prediction_prob": 0.5509,
-      "model_prediction": "away",
-      "model_prediction_cn": "客胜",
-      "model_prediction_prob": 0.3237,
-      "draw_boosted": true,
-      "draw_confidence": -5,
-      "draw_signal": "none",
-      "diff_lgb_poisson": -0.0496,
-      "lgbm_win": 0.5509,
-      "lgbm_draw": 0.2267,
-      "lgbm_loss": 0.2224,
-      "comparison": {
-        "open": [
-          1.09,
-          6.6,
-          14.5
-        ],
-        "current": [
-          1.09,
-          6.6,
-          14.5
-        ],
-        "div_pct": [
-          0.0,
-          0.0,
-          0.0
-        ],
-        "source": "hkjc"
-      },
-      "pin_comparison": {},
-      "league_baseline": [
-        0.45,
-        0.24,
-        0.31
-      ],
-      "league": "",
-      "home_rank": "0",
-      "away_rank": "0",
-      "home_pts": 0,
-      "away_pts": 0,
-      "home_form_pts": 0.0,
-      "away_form_pts": 0.0,
-      "home_form_gd": 0.0,
-      "away_form_gd": 0.0,
-      "warning": "🚩",
-      "ts_win": 0.4048,
-      "ts_draw": 0.2414,
-      "ts_loss": 0.3538,
-      "lgbm_entropy": 0.9993,
-      "lgbm_confidence": 0.5508724686474412,
-      "raw_entropy": 0.84,
-      "raw_confidence": 0.2354,
-      "cal_win": null,
-      "cal_draw": null,
-      "cal_loss": null,
-      "value_bets": [
-        {
-          "outcome": "away",
-          "odds": 14.5,
-          "prob": 0.2224,
-          "ev": 2.2247,
-          "kelly": 0.1648,
-          "source": "hkjc"
-        },
-        {
-          "outcome": "draw",
-          "odds": 6.6,
-          "prob": 0.2267,
-          "ev": 0.4965,
-          "kelly": 0.0887,
-          "source": "hkjc"
-        },
-        {
-          "outcome": "home",
-          "odds": 1.09,
-          "prob": 0.5509,
-          "ev": -0.3995,
-          "kelly": 0.0,
-          "source": "hkjc"
-        }
-      ],
-      "best_value": {
-        "outcome": "away",
-        "ev": 2.2247,
-        "kelly": 0.1648,
-        "odds": 14.5,
-        "prob": 0.2224,
-        "source": "hkjc",
-        "kelly_weighted": 0.178
-      },
-      "ah_open_home": 0.81,
-      "ah_open_handicap": -2.5,
-      "ah_open_away": 0.89,
-      "ah_open_handicap_text": "两球半",
-      "ah_home": 1.0,
-      "ah_handicap": -2.5,
-      "ah_away": 0.7,
-      "ah_handicap_text": "两球半",
-      "ah_company_id": "1",
-      "stats": {
-        "home_recent": [
-          {
-            "result": "负",
-            "league": "美青盃",
-            "date": "26-07-28",
-            "home": "哥斯達黎加U20",
-            "away": "墨西哥U201",
-            "home_score": 0,
-            "away_score": 2
-          },
-          {
-            "result": "负",
-            "league": "美青盃",
-            "date": "26-07-25",
-            "home": "1危地馬拉U20(中)",
-            "away": "哥斯達黎加U20",
-            "home_score": 0,
-            "away_score": 1
-          },
-          {
-            "result": "胜",
-            "league": "國際友誼",
-            "date": "26-05-29",
-            "home": "哥倫比亞U20",
-            "away": "哥斯達黎加U20",
-            "home_score": 2,
-            "away_score": 1
-          },
-          {
-            "result": "胜",
-            "league": "國際友誼",
-            "date": "26-05-27",
-            "home": "哥倫比亞U20",
-            "away": "哥斯達黎加U20",
-            "home_score": 1,
-            "away_score": 0
-          },
-          {
-            "result": "胜",
-            "league": "國際友誼",
-            "date": "26-03-31",
-            "home": "墨西哥U20",
-            "away": "哥斯達黎加U20",
-            "home_score": 1,
-            "away_score": 0
-          },
-          {
-            "result": "胜",
-            "league": "國際友誼",
-            "date": "26-03-28",
-            "home": "墨西哥U20",
-            "away": "哥斯達黎加U20",
-            "home_score": 1,
-            "away_score": 0
-          },
-          {
-            "result": "胜",
-            "league": "美青盃",
-            "date": "26-03-05",
-            "home": "哥斯達黎加U20",
-            "away": "千里達U20",
-            "home_score": 3,
-            "away_score": 0
-          },
-          {
-            "result": "平",
-            "league": "美青盃",
-            "date": "26-03-03",
-            "home": "哥斯達黎加U20",
-            "away": "百慕達U20",
-            "home_score": 3,
-            "away_score": 3
-          },
-          {
-            "result": "胜",
-            "league": "美青盃",
-            "date": "26-03-01",
-            "home": "哥斯達黎加U20",
-            "away": "巴巴多斯U20",
-            "home_score": 3,
-            "away_score": 0
-          },
-          {
-            "result": "负",
-            "league": "美青盃",
-            "date": "26-02-27",
-            "home": "荷屬聖馬丁岛U20(中)",
-            "away": "哥斯達黎加U20",
-            "home_score": 0,
-            "away_score": 12
-          }
-        ],
-        "away_recent": [
-          {
-            "result": "胜",
-            "league": "美青盃",
-            "date": "26-07-25",
-            "home": "墨西哥U20",
-            "away": "安提瓜及巴布達U20",
-            "home_score": 3,
-            "away_score": 0
-          },
-          {
-            "result": "负",
-            "league": "美青盃",
-            "date": "26-03-04",
-            "home": "1多米尼加共和國U20(中)",
-            "away": "安提瓜及巴布達U20",
-            "home_score": 0,
-            "away_score": 1
-          },
-          {
-            "result": "负",
-            "league": "美青盃",
-            "date": "26-03-02",
-            "home": "多米尼克U20(中)",
-            "away": "安提瓜及巴布達U20",
-            "home_score": 0,
-            "away_score": 1
-          },
-          {
-            "result": "负",
-            "league": "美青盃",
-            "date": "24-03-03",
-            "home": "安提瓜及巴布達U20",
-            "away": "薩爾瓦多U20",
-            "home_score": 0,
-            "away_score": 1
-          },
-          {
-            "result": "胜",
-            "league": "美青盃",
-            "date": "24-02-28",
-            "home": "安提瓜及巴布達U20",
-            "away": "特克斯及凱科斯群島U20",
-            "home_score": 2,
-            "away_score": 1
-          },
-          {
-            "result": "负",
-            "league": "美青盃",
-            "date": "24-02-26",
-            "home": "安提瓜及巴布達U20",
-            "away": "蘇里南U201",
-            "home_score": 2,
-            "away_score": 3
-          },
-          {
-            "result": "胜",
-            "league": "美青盃",
-            "date": "24-02-24",
-            "home": "安提瓜及巴布達U20",
-            "away": "圭亞那U20",
-            "home_score": 4,
-            "away_score": 0
-          },
-          {
-            "result": "胜",
-            "league": "美青盃",
-            "date": "22-06-19",
-            "home": "洪都拉斯U20",
-            "away": "安提瓜及巴布達U20",
-            "home_score": 3,
-            "away_score": 0
-          },
-          {
-            "result": "胜",
-            "league": "美青盃",
-            "date": "18-11-10",
-            "home": "洪都拉斯U20(中)",
-            "away": "安提瓜及巴布達U20",
-            "home_score": 4,
-            "away_score": 3
-          },
-          {
-            "result": "胜",
-            "league": "美青盃",
-            "date": "18-11-08",
-            "home": "古巴U20(中)",
-            "away": "安提瓜及巴布達U20",
-            "home_score": 3,
-            "away_score": 0
-          }
-        ],
-        "h2h": [
-          {
-            "result": "负",
-            "league": "美青盃",
-            "date": "22-06-21",
-            "home": "安提瓜及巴布達U20(中)",
-            "away": "哥斯達黎加U20",
-            "home_score": 0,
-            "away_score": 3
-          }
-        ]
-      },
-      "importance_weight": 1.08,
-      "low_priority": false,
-      "total_goals_top3": [
-        {
-          "total_goals": 1,
-          "prob": 0.271
-        },
-        {
-          "total_goals": 2,
-          "prob": 0.271
-        },
-        {
-          "total_goals": 3,
-          "prob": 0.18
-        }
-      ],
-      "similar_matches": [
-        {
-          "home_team": "哥斯達黎加U20",
-          "away_team": "墨西哥U20",
-          "league": "中北美U20",
-          "date": "2026-07-28",
-          "score": "0-2",
-          "actual": "away (0-2)",
-          "sim_h": 1.0,
-          "sim_a": 0.875,
-          "similarity": 1.0,
-          "total_goals_top3": [
-            {
-              "total_goals": 2,
-              "prob": 0.271
-            },
-            {
-              "total_goals": 1,
-              "prob": 0.269
-            },
-            {
-              "total_goals": 3,
-              "prob": 0.181
-            }
-          ]
-        },
-        {
-          "home_team": "安提瓜及巴布達U20(中)",
-          "away_team": "瓜地馬拉U20",
-          "league": "中北美U20",
-          "date": "2026-07-28",
-          "score": "0-2",
-          "actual": "away (0-2)",
-          "sim_h": 0.875,
-          "sim_a": 1.0,
-          "similarity": 1.0,
-          "total_goals_top3": [
-            {
-              "total_goals": 2,
-              "prob": 0.271
-            },
-            {
-              "total_goals": 1,
-              "prob": 0.269
-            },
-            {
-              "total_goals": 3,
-              "prob": 0.181
-            }
-          ]
-        },
-        {
-          "home_team": "瓜地马拉U20(中)",
-          "away_team": "哥斯达黎加U20",
-          "league": "中北美U20",
-          "date": "2026-07-26",
-          "score": "0-1",
-          "actual": "away (0-1)",
-          "sim_h": 0.767,
-          "sim_a": 0.897,
-          "similarity": 0.995,
-          "total_goals_top3": [
-            {
-              "total_goals": 1,
-              "prob": 0.368
-            },
-            {
-              "total_goals": 0,
-              "prob": 0.364
-            },
-            {
-              "total_goals": 2,
-              "prob": 0.186
-            }
-          ]
-        },
-        {
-          "home_team": "安南竞技",
-          "away_team": "邓迪FC",
-          "league": "蘇超",
-          "date": "2026-07-16",
-          "score": "0-5",
-          "actual": "away (0-5)",
-          "sim_h": 0.753,
-          "sim_a": 0.851,
-          "similarity": 0.801,
-          "total_goals_top3": [
-            {
-              "total_goals": 5,
-              "prob": 0.175
-            },
-            {
-              "total_goals": 4,
-              "prob": 0.175
-            }
-          ]
-        },
-        {
-          "home_team": "奥克兰FC(中)",
-          "away_team": "托特纳姆热刺",
-          "league": "國際友誼賽",
-          "date": "2026-07-26",
-          "score": "0-2",
-          "actual": "away (0-2)",
-          "sim_h": 0.831,
-          "sim_a": 0.748,
-          "similarity": 0.788,
-          "total_goals_top3": [
-            {
-              "total_goals": 2,
-              "prob": 0.271
-            },
-            {
-              "total_goals": 1,
-              "prob": 0.269
-            },
-            {
-              "total_goals": 3,
-              "prob": 0.181
-            }
-          ]
-        }
-      ],
-      "ah_home_covers_prob": 0.8648,
-      "ah_push_prob": 0.0,
-      "ah_away_covers_prob": 0.1352,
-      "ah_pred_desc": "亚P:上86% 走0%"
-    },
-    {
       "fid": "3036826",
       "date": "2026-07-31",
       "match_time": "2026-07-31 00:30",
@@ -212465,35 +212465,35 @@
       "hit": "",
       "source": "hkjc",
       "odds_source": "pinnacle",
-      "odds_win": 2.08,
-      "odds_draw": 3.09,
-      "odds_loss": 3.48,
-      "margin": 0.0918,
+      "odds_win": 2.06,
+      "odds_draw": 3.1,
+      "odds_loss": 3.51,
+      "margin": 0.0929,
       "model_win": 0.4,
-      "model_draw": 0.361,
-      "model_loss": 0.239,
-      "raw_model_win": 0.4436,
-      "raw_model_draw": 0.2862,
-      "raw_model_loss": 0.2702,
+      "model_draw": 0.3552,
+      "model_loss": 0.2448,
+      "raw_model_win": 0.4465,
+      "raw_model_draw": 0.2852,
+      "raw_model_loss": 0.2683,
       "open_win_pin": 1.87,
       "open_draw_pin": 3.19,
       "open_loss_pin": 3.79,
       "lgbm_prediction": "home",
       "lgbm_prediction_cn": "主胜",
-      "lgbm_prediction_prob": 0.3886,
+      "lgbm_prediction_prob": 0.3909,
       "prediction": "home",
       "prediction_cn": "主胜",
-      "prediction_prob": 0.3886,
+      "prediction_prob": 0.3909,
       "model_prediction": "draw",
       "model_prediction_cn": "平局",
-      "model_prediction_prob": 0.361,
+      "model_prediction_prob": 0.3552,
       "draw_boosted": true,
       "draw_confidence": 20,
       "draw_signal": "none",
-      "diff_lgb_poisson": -0.048,
-      "lgbm_win": 0.3886,
-      "lgbm_draw": 0.3131,
-      "lgbm_loss": 0.2983,
+      "diff_lgb_poisson": -0.0433,
+      "lgbm_win": 0.3909,
+      "lgbm_draw": 0.3119,
+      "lgbm_loss": 0.2972,
       "comparison": {
         "open": [
           1.87,
@@ -212501,14 +212501,14 @@
           3.79
         ],
         "current": [
-          2.08,
-          3.09,
-          3.48
+          2.06,
+          3.1,
+          3.51
         ],
         "div_pct": [
-          11.2,
-          -3.1,
-          -8.9
+          10.2,
+          -2.8,
+          -8.0
         ],
         "source": "pinnacle"
       },
@@ -212548,59 +212548,59 @@
       "ts_win": 0.4292,
       "ts_draw": 0.2254,
       "ts_loss": 0.3454,
-      "lgbm_entropy": 1.0917,
-      "lgbm_confidence": 0.38862558069113756,
-      "raw_entropy": 1.0722,
-      "raw_confidence": 0.024,
+      "lgbm_entropy": 1.0912,
+      "lgbm_confidence": 0.3908502796381198,
+      "raw_entropy": 1.0708,
+      "raw_confidence": 0.0253,
       "cal_win": null,
       "cal_draw": null,
       "cal_loss": null,
       "value_bets": [
         {
           "outcome": "away",
-          "odds": 3.48,
-          "prob": 0.2983,
-          "ev": 0.0381,
-          "kelly": 0.0154,
+          "odds": 3.51,
+          "prob": 0.2972,
+          "ev": 0.0433,
+          "kelly": 0.0173,
           "source": "pinnacle"
         },
         {
           "outcome": "draw",
           "odds": 3.2,
-          "prob": 0.3131,
-          "ev": 0.0018,
-          "kelly": 0.0008,
+          "prob": 0.3119,
+          "ev": -0.0019,
+          "kelly": 0.0,
           "source": "hkjc"
         },
         {
           "outcome": "away",
           "odds": 3.35,
-          "prob": 0.2983,
-          "ev": -0.0006,
+          "prob": 0.2972,
+          "ev": -0.0043,
           "kelly": 0.0,
           "source": "hkjc"
         },
         {
           "outcome": "draw",
-          "odds": 3.09,
-          "prob": 0.3131,
-          "ev": -0.0327,
+          "odds": 3.1,
+          "prob": 0.3119,
+          "ev": -0.0331,
           "kelly": 0.0,
           "source": "pinnacle"
         },
         {
           "outcome": "home",
-          "odds": 2.08,
-          "prob": 0.3886,
-          "ev": -0.1917,
+          "odds": 2.06,
+          "prob": 0.3909,
+          "ev": -0.1948,
           "kelly": 0.0,
           "source": "pinnacle"
         },
         {
           "outcome": "home",
           "odds": 1.91,
-          "prob": 0.3886,
-          "ev": -0.2577,
+          "prob": 0.3909,
+          "ev": -0.2535,
           "kelly": 0.0,
           "source": "hkjc"
         }
@@ -212845,15 +212845,15 @@
       "source": "hkjc",
       "odds_source": "pinnacle",
       "odds_win": 1.07,
-      "odds_draw": 10.04,
-      "odds_loss": 19.94,
-      "margin": 0.0843,
+      "odds_draw": 10.2,
+      "odds_loss": 20.2,
+      "margin": 0.0821,
       "model_win": 0.4,
       "model_draw": 0.21,
       "model_loss": 0.39,
-      "raw_model_win": 0.7139,
-      "raw_model_draw": 0.1531,
-      "raw_model_loss": 0.1329,
+      "raw_model_win": 0.7148,
+      "raw_model_draw": 0.1524,
+      "raw_model_loss": 0.1328,
       "open_win_pin": 1.15,
       "open_draw_pin": 6.63,
       "open_loss_pin": 10.55,
@@ -212881,13 +212881,13 @@
         ],
         "current": [
           1.07,
-          10.04,
-          19.94
+          10.2,
+          20.2
         ],
         "div_pct": [
           -7.0,
-          51.4,
-          47.1
+          53.8,
+          47.8
         ],
         "source": "pinnacle"
       },
@@ -212923,18 +212923,26 @@
       "away_form_pts": 0.5,
       "home_form_gd": 1.0,
       "away_form_gd": -1.0,
-      "warning": "🚩",
+      "warning": "",
       "ts_win": 0.4674,
       "ts_draw": 0.2349,
       "ts_loss": 0.2977,
       "lgbm_entropy": 1.013,
       "lgbm_confidence": 0.5347060993303232,
-      "raw_entropy": 0.7962,
-      "raw_confidence": 0.2753,
+      "raw_entropy": 0.7948,
+      "raw_confidence": 0.2766,
       "cal_win": null,
       "cal_draw": null,
       "cal_loss": null,
       "value_bets": [
+        {
+          "outcome": "away",
+          "odds": 20.2,
+          "prob": 0.2401,
+          "ev": 3.8504,
+          "kelly": 0.2005,
+          "source": "pinnacle"
+        },
         {
           "outcome": "away",
           "odds": 20.0,
@@ -212944,19 +212952,11 @@
           "source": "hkjc"
         },
         {
-          "outcome": "away",
-          "odds": 19.94,
-          "prob": 0.2401,
-          "ev": 3.788,
-          "kelly": 0.2,
-          "source": "pinnacle"
-        },
-        {
           "outcome": "draw",
-          "odds": 10.04,
+          "odds": 10.2,
           "prob": 0.2252,
-          "ev": 1.2607,
-          "kelly": 0.1395,
+          "ev": 1.2968,
+          "kelly": 0.141,
           "source": "pinnacle"
         },
         {
@@ -212986,12 +212986,12 @@
       ],
       "best_value": {
         "outcome": "away",
-        "ev": 3.8024,
-        "kelly": 0.2001,
-        "odds": 20.0,
+        "ev": 3.8504,
+        "kelly": 0.2005,
+        "odds": 20.2,
         "prob": 0.2401,
-        "source": "hkjc",
-        "kelly_weighted": 0.2161
+        "source": "pinnacle",
+        "kelly_weighted": 0.2165
       },
       "ah_open_home": 0.93,
       "ah_open_handicap": -2.5,
@@ -214246,35 +214246,35 @@
       "hit": "",
       "source": "hkjc",
       "odds_source": "pinnacle",
-      "odds_win": 2.82,
-      "odds_draw": 3.28,
-      "odds_loss": 2.15,
-      "margin": 0.1246,
-      "model_win": 0.2339,
-      "model_draw": 0.3661,
+      "odds_win": 2.77,
+      "odds_draw": 3.3,
+      "odds_loss": 2.17,
+      "margin": 0.1249,
+      "model_win": 0.3035,
+      "model_draw": 0.2965,
       "model_loss": 0.4,
-      "raw_model_win": 0.3437,
-      "raw_model_draw": 0.2655,
-      "raw_model_loss": 0.3908,
+      "raw_model_win": 0.3482,
+      "raw_model_draw": 0.2641,
+      "raw_model_loss": 0.3878,
       "open_win_pin": 2.44,
       "open_draw_pin": 3.08,
       "open_loss_pin": 2.44,
       "lgbm_prediction": "away",
       "lgbm_prediction_cn": "客胜",
-      "lgbm_prediction_prob": 0.3803,
+      "lgbm_prediction_prob": 0.3816,
       "prediction": "away",
       "prediction_cn": "客胜",
-      "prediction_prob": 0.3803,
-      "model_prediction": "draw",
-      "model_prediction_cn": "平局",
-      "model_prediction_prob": 0.3661,
+      "prediction_prob": 0.3816,
+      "model_prediction": "home",
+      "model_prediction_cn": "主胜",
+      "model_prediction_prob": 0.3035,
       "draw_boosted": true,
-      "draw_confidence": 20,
+      "draw_confidence": 13,
       "draw_signal": "none",
-      "diff_lgb_poisson": -0.0437,
-      "lgbm_win": 0.2972,
-      "lgbm_draw": 0.3225,
-      "lgbm_loss": 0.3803,
+      "diff_lgb_poisson": 0.0226,
+      "lgbm_win": 0.2993,
+      "lgbm_draw": 0.3191,
+      "lgbm_loss": 0.3816,
       "comparison": {
         "open": [
           2.44,
@@ -214282,14 +214282,14 @@
           2.44
         ],
         "current": [
-          2.82,
-          3.28,
-          2.15
+          2.77,
+          3.3,
+          2.17
         ],
         "div_pct": [
-          15.6,
-          6.5,
-          -13.5
+          13.5,
+          7.1,
+          -12.4
         ],
         "source": "pinnacle"
       },
@@ -214330,7 +214330,7 @@
       "ts_draw": 0.2374,
       "ts_loss": 0.3961,
       "lgbm_entropy": 1.0932,
-      "lgbm_confidence": 0.38030578844641055,
+      "lgbm_confidence": 0.38158087524978107,
       "raw_entropy": 1.0863,
       "raw_confidence": 0.0112,
       "cal_win": null,
@@ -214340,60 +214340,60 @@
         {
           "outcome": "draw",
           "odds": 3.4,
-          "prob": 0.3225,
-          "ev": 0.0964,
-          "kelly": 0.0402,
+          "prob": 0.3191,
+          "ev": 0.085,
+          "kelly": 0.0354,
           "source": "hkjc"
         },
         {
           "outcome": "draw",
-          "odds": 3.28,
-          "prob": 0.3225,
-          "ev": 0.0577,
-          "kelly": 0.0253,
+          "odds": 3.3,
+          "prob": 0.3191,
+          "ev": 0.0531,
+          "kelly": 0.0231,
           "source": "pinnacle"
         },
         {
           "outcome": "home",
           "odds": 2.88,
-          "prob": 0.2972,
-          "ev": -0.144,
+          "prob": 0.2993,
+          "ev": -0.138,
           "kelly": 0.0,
           "source": "hkjc"
         },
         {
           "outcome": "home",
-          "odds": 2.82,
-          "prob": 0.2972,
-          "ev": -0.1619,
+          "odds": 2.77,
+          "prob": 0.2993,
+          "ev": -0.171,
           "kelly": 0.0,
           "source": "pinnacle"
         },
         {
           "outcome": "away",
-          "odds": 2.15,
-          "prob": 0.3803,
-          "ev": -0.1823,
+          "odds": 2.17,
+          "prob": 0.3816,
+          "ev": -0.172,
           "kelly": 0.0,
           "source": "pinnacle"
         },
         {
           "outcome": "away",
           "odds": 2.02,
-          "prob": 0.3803,
-          "ev": -0.2318,
+          "prob": 0.3816,
+          "ev": -0.2292,
           "kelly": 0.0,
           "source": "hkjc"
         }
       ],
       "best_value": {
         "outcome": "draw",
-        "ev": 0.0964,
-        "kelly": 0.0402,
+        "ev": 0.085,
+        "kelly": 0.0354,
         "odds": 3.4,
-        "prob": 0.3225,
+        "prob": 0.3191,
         "source": "hkjc",
-        "kelly_weighted": 0.0434
+        "kelly_weighted": 0.0382
       },
       "ah_open_home": 1.12,
       "ah_open_handicap": -0.0,
