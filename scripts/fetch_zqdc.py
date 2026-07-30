@@ -120,21 +120,39 @@ def parse_time(fields):
 
 
 def _fix_month(match_time, date_str):
-    """bfdata_ut.js的f[12]月份有时错位(6月但实际是7月), 只修月份, 保留日和时间"""
+    """bfdata_ut.js的f[12]月份有时错位(6月但实际是7月), 只修月份, 保留日和时间
+    注意: 直接用strptime校验可能失败(如6月31日不存在), 改为解析整数组件比较"""
     if not match_time or not date_str or len(match_time) < 16:
         return match_time
     try:
-        src = datetime.strptime(match_time[:10], '%Y-%m-%d')
-        ref = datetime.strptime(date_str, '%Y-%m-%d')
-        # 源数据月份明显偏后(超过20天), 加1个月修正
-        if (ref - src).days > 20:
-            if src.month == 12:
-                fixed = src.replace(year=src.year+1, month=1)
-            else:
-                fixed = src.replace(month=src.month+1)
-            return fixed.strftime('%Y-%m-%d') + match_time[10:]
+        # 直接解析年/月/日整数组件, 避免strptime对不存在的日期(如6月31日)抛异常
+        src_parts = match_time[:10].split('-')
+        ref_parts = date_str.split('-')
+        if len(src_parts) != 3 or len(ref_parts) != 3:
+            return match_time
+        sy, sm, sd = int(src_parts[0]), int(src_parts[1]), int(src_parts[2])
+        ry, rm, rd = int(ref_parts[0]), int(ref_parts[1]), int(ref_parts[2])
+        # 年相同, 源月份比参考月份少1(如源6月参考7月), 且日期<=31(说明可能是7月31日)
+        if sy == ry and sm == rm - 1 and sd <= 31:
+            # 将月份+1; 如果加完后日期不合法(如6月31日→7月31日合法, 4月31日→5月31日也合法)
+            import calendar
+            if sd <= calendar.monthrange(sy, sm + 1)[1]:
+                fixed = f'{sy}-{sm+1:02d}-{sd:02d}'
+                return fixed + match_time[10:]
+        # 原有逻辑: strptime对比天数差(仅对合法日期)
+        try:
+            src_dt = datetime.strptime(match_time[:10], '%Y-%m-%d')
+            ref_dt = datetime.strptime(date_str, '%Y-%m-%d')
+            if (ref_dt - src_dt).days > 20:
+                if src_dt.month == 12:
+                    fixed = src_dt.replace(year=src_dt.year+1, month=1)
+                else:
+                    fixed = src_dt.replace(month=src_dt.month+1)
+                return fixed.strftime('%Y-%m-%d') + match_time[10:]
+        except ValueError:
+            pass
         return match_time
-    except ValueError:
+    except (ValueError, IndexError):
         return match_time
 
 
