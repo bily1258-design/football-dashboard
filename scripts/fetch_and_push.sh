@@ -9,15 +9,13 @@ cd "$(dirname "$0")/.." || exit 1
 DATE="${1:-$(date +%Y-%m-%d)}"
 FILE="data/matches_${DATE//-/}.json"
 
-echo "[$(date '+%H:%M:%S')] 抓取 $DATE ..."
-# 按单日抓取
+echo "[$(date '+%H:%M:%S')] 抓取 $DATE (24h窗口: 12:00~次日11:59)..."
+# 北单: fetch_all_matches 已自动包含今天+明天
 python3 scripts/fetch_zqdc.py --date "$DATE"
+# 额外抓明天文件, 覆盖旧数据(让load_raw_matches拿到正确日期)
 TOMORROW=$(date -d "$DATE +1 day" '+%Y-%m-%d')
-TOMORROW_FILE="data/matches_${TOMORROW//-/}.json"
-if [ ! -f "$TOMORROW_FILE" ]; then
-    echo "[$(date '+%H:%M:%S')] 抓取 $TOMORROW (凌晨场)..."
-    python3 scripts/fetch_zqdc.py --date "$TOMORROW"
-fi
+echo "[$(date '+%H:%M:%S')] 抓取 $TOMORROW (凌晨场/次日午前)..."
+python3 scripts/fetch_zqdc.py --date "$TOMORROW"
 
 if [ ! -f "$FILE" ]; then
     echo "[$(date '+%H:%M:%S')] 无比赛数据，跳过"

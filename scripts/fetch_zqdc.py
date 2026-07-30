@@ -172,8 +172,10 @@ def fetch_all_matches(date_str, max_matches=0):
     print(f'[INFO] bfdata_ut.js → 总{len(all_matches)}场, '
           f'北单{len(beidan)}场, 竞足{len(jingzu)}场')
 
-    # 过滤非当天比赛
+    # 过滤24小时窗口(12:00~次日11:59): 匹配今天和明天的比赛
     date_compact = date_str.replace('-', '')
+    tomorrow = (datetime.strptime(date_str, '%Y-%m-%d') + timedelta(days=1)).strftime('%Y-%m-%d')
+    date_compact_tomorrow = tomorrow.replace('-', '')
     filtered = []
     for m in beidan:
         t = m.get('time', '')  # yyyy,mm,dd,hh,mm,ss
@@ -181,12 +183,12 @@ def fetch_all_matches(date_str, max_matches=0):
             t_parts = t.split(',')
             if len(t_parts) >= 3:
                 md = f'{t_parts[0]}{int(t_parts[1]):02d}{int(t_parts[2]):02d}'
-                if md == date_compact:
+                if md == date_compact or md == date_compact_tomorrow:
                     filtered.append(m)
 
-    # 如果当天没有匹配的（7/19凌晨的比赛是7/18晚的），放宽到所有北单
+    # 如果两天都没有匹配的, 放宽到所有北单
     if not filtered and beidan:
-        print(f'[INFO] 当天({date_compact})无匹配北单, 取全部{len(beidan)}场')
+        print(f'[INFO] {date_compact}/{date_compact_tomorrow} 均无匹配北单, 取全部{len(beidan)}场')
         filtered = beidan
 
     # 构建sid→是否为竞彩的映射
