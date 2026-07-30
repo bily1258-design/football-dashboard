@@ -197,14 +197,16 @@ def fetch_all_matches(date_str, max_matches=0):
             src = 'beidan_jingcai'
         else:
             src = 'beidan'
+        parsed_time = _fix_month(parse_time(f), date_str)
+        actual_date = parsed_time[:10] if parsed_time and len(parsed_time) >= 10 else date_str
         result.append({
             'sid': m['sid'],
             'league': m['league'],
             'home_team': m['hometeam'],
             'away_team': m['awayteam'],
             'display_time': m['display_time'],
-            'match_time': _fix_month(parse_time(f), date_str),
-            'date': date_str,
+            'match_time': parsed_time,
+            'date': actual_date,
             'score': score,
             'source': src,
         })
@@ -226,14 +228,16 @@ def fetch_all_matches(date_str, max_matches=0):
                         score = f"{hs}-{aas}"
                 except (ValueError, IndexError):
                     pass
+            parsed_time = _fix_month(parse_time(f), date_str)
+            actual_date = parsed_time[:10] if parsed_time and len(parsed_time) >= 10 else date_str
             result.append({
                 'sid': m['sid'],
                 'league': m['league'],
                 'home_team': m['hometeam'],
                 'away_team': m['awayteam'],
                 'display_time': m['display_time'],
-                'match_time': _fix_month(parse_time(f), date_str),
-                'date': date_str,
+                'match_time': parsed_time,
+                'date': actual_date,
                 'score': score,
                 'source': 'jingcai',
             })
