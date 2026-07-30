@@ -3,13 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>北单看板 26077-26079期</title>
+<title>北单看板</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 body { font-family:-apple-system,'Microsoft YaHei',sans-serif; background:#f5f7fa; color:#333; }
 .header { background:linear-gradient(135deg,#1a237e,#283593); color:white; padding:24px 20px; text-align:center; }
 .header h1 { font-size:22px; margin-bottom:4px; }
 .header p { font-size:13px; opacity:.8; }
+.header select { margin-top:10px; padding:8px 16px; border-radius:6px; border:none; font-size:14px; background:#3949ab; color:#fff; cursor:pointer; outline:none; }
+.header select option { background:#283593; color:#fff; }
 .container { max-width:1400px; margin:0 auto; padding:16px; }
 .summary-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:12px; margin-bottom:20px; }
 .card { background:white; border-radius:10px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,.08); }
@@ -40,19 +42,28 @@ tr:nth-child(even) td { background:#fafafa; }
 .result { font-weight:600; color:#1565c0; }
 .sub-hdr { font-weight:400; font-size:10px; color:#78909c; }
 .footer { text-align:center; padding:20px; color:#999; font-size:12px; }
+.period-group { display:none; }
+.period-group.active { display:block; }
+.match-count { padding:10px; text-align:center; color:#999; font-size:13px; }
 </style>
 </head>
 <body>
 <div class="header">
   <h1>⚽ 北京单场看板</h1>
-  <p>第26077期 ～ 第26079期 · 数据更新：2026-07-29 15:50</p>
+  <p id="updateInfo">数据更新：2026-07-29 15:50</p>
   <p style="margin-top:6px;font-size:12px;opacity:.7">数据来源：500.com 皇冠公司历史相同亚盘</p>
+  <div style="margin-top:10px">
+    <select id="periodSelect" onchange="switchPeriod()">
+      <option value="all">📋 全部期数</option>
+      <option value="26077">第26077期 (7/21~7/24)</option>
+      <option value="26079" selected>第26079期 (7/29~7/31)</option>
+    </select>
+  </div>
 </div>
 <div class="container">
 
-<div class="summary-cards">
-
-<div class="card">
+<div class="summary-cards" id="summaryCards">
+<div class="card period-group active" data-period="26077">
   <h2>第26077期 <span style="font-size:13px;color:#999;font-weight:400">(7/21 ～ 7/24)</span></h2>
   <div class="stat"><span class="label">比赛场次</span><span class="value">75</span></div>
   <div class="stat"><span class="label">联赛分布</span><span class="value" style="font-size:13px">8个联赛</span></div>
@@ -61,7 +72,7 @@ tr:nth-child(even) td { background:#fafafa; }
     <a href="https://github.com/bily1258-design/football-odds-api/raw/main/beidan_26077_dashboard.xlsx" style="display:inline-block;background:#283593;color:white;text-decoration:none;padding:6px 20px;border-radius:6px;font-size:13px">📥 下载Excel</a>
   </div>
 </div>
-<div class="card">
+<div class="card period-group" data-period="26078">
   <h2>第26078期 <span style="font-size:13px;color:#999;font-weight:400">(7/24 ～ 7/27)</span></h2>
   <div class="stat"><span class="label">比赛场次</span><span class="value">0</span></div>
   <div class="stat"><span class="label">联赛分布</span><span class="value" style="font-size:13px">0个联赛</span></div>
@@ -70,7 +81,7 @@ tr:nth-child(even) td { background:#fafafa; }
     <a href="https://github.com/bily1258-design/football-odds-api/raw/main/beidan_26078_dashboard.xlsx" style="display:inline-block;background:#283593;color:white;text-decoration:none;padding:6px 20px;border-radius:6px;font-size:13px">📥 下载Excel</a>
   </div>
 </div>
-<div class="card">
+<div class="card period-group active" data-period="26079">
   <h2>第26079期 <span style="font-size:13px;color:#999;font-weight:400">(7/29 ～ 7/31)</span></h2>
   <div class="stat"><span class="label">比赛场次</span><span class="value">61</span></div>
   <div class="stat"><span class="label">联赛分布</span><span class="value" style="font-size:13px">8个联赛</span></div>
@@ -81,7 +92,7 @@ tr:nth-child(even) td { background:#fafafa; }
 </div>
 </div>
 
-<div class="table-wrap">
+<div class="table-wrap period-group active" data-period="26077">
   <h3>第26077期 比赛列表 (75场) · 皇冠历史相同亚盘概率 + 赛果出现概率</h3>
   <div style="overflow-x:auto">
   <table>
@@ -516,267 +527,13 @@ tr:nth-child(even) td { background:#fafafa; }
   <td><div class="prob-bar"><div class="prob-fill" style="width:23%;background:#1565c0">23%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:53%;background:#c62828">53%</div></div></td>
 </tr>
-<tr>
-  <td>26</td>
-  <td class="league">挪超</td>
-  <td class="time">07-23 01:00</td>
-  <td>利勒斯特罗姆</td>
-  <td>0</td>
-  <td>维京</td>
-  <td class="score">1:2</td>
-  <td class="result">负</td>
-  <td class="ah-desc">受平手/半球</td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:32%;background:#e65100">32%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:26%;background:#1565c0">26%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:41%;background:#c62828">41%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:40%;background:#c62828">40%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:26%;background:#1565c0">26%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:32%;background:#c62828">32%</div></div></td>
-</tr>
-<tr>
-  <td>27</td>
-  <td class="league">欧协资格</td>
-  <td class="time">07-23 01:45</td>
-  <td>巴萨克赛尔</td>
-  <td class="hdcp-neg">-2</td>
-  <td>图尔库国际</td>
-  <td class="score">1:1</td>
-  <td class="result">负</td>
-  <td class="ah-desc">球半/两球</td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:100%;background:#c62828">100%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
-</tr>
-<tr>
-  <td>28</td>
-  <td class="league">南俱杯</td>
-  <td class="time">07-23 06:00</td>
-  <td>麦德林独立</td>
-  <td>0</td>
-  <td>瓦斯科达伽马</td>
-  <td class="score">2:2</td>
-  <td class="result">平</td>
-  <td class="ah-desc">平手/半球</td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:30%;background:#e65100">30%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:38%;background:#e65100">38%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:30%;background:#c62828">30%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:38%;background:#e65100">38%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:31%;background:#e65100">31%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:30%;background:#c62828">30%</div></div></td>
-</tr>
-<tr>
-  <td>29</td>
-  <td class="league">巴西乙</td>
-  <td class="time">07-23 06:30</td>
-  <td>铁路工人</td>
-  <td class="hdcp-neg">-1</td>
-  <td>庞特普雷塔</td>
-  <td class="score">3:2</td>
-  <td class="result">平</td>
-  <td class="ah-desc">一球/球半</td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:35%;background:#e65100">35%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:29%;background:#1565c0">29%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:35%;background:#c62828">35%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:29%;background:#1565c0">29%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:29%;background:#1565c0">29%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:40%;background:#c62828">40%</div></div></td>
-</tr>
-<tr>
-  <td>30</td>
-  <td class="league">巴西乙</td>
-  <td class="time">07-23 06:30</td>
-  <td>塞阿拉</td>
-  <td>0</td>
-  <td>雷加塔斯巴西</td>
-  <td class="score">0:1</td>
-  <td class="result">负</td>
-  <td class="ah-desc">平手/半球</td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:44%;background:#c62828">44%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:29%;background:#1565c0">29%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:25%;background:#1565c0">25%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:44%;background:#c62828">44%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:26%;background:#1565c0">26%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:28%;background:#1565c0">28%</div></div></td>
-</tr>
-<tr>
-  <td>31</td>
-  <td class="league">美职</td>
-  <td class="time">07-23 07:40</td>
-  <td>辛辛那提FC</td>
-  <td>0</td>
-  <td>温哥华白浪</td>
-  <td class="score">4:3</td>
-  <td class="result">胜</td>
-  <td class="ah-desc">受半球/一球</td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:45%;background:#c62828">45%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:27%;background:#1565c0">27%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:27%;background:#1565c0">27%</div></div></td>
-</tr>
-<tr>
-  <td>32</td>
-  <td class="league">美职</td>
-  <td class="time">07-23 07:40</td>
-  <td>哥伦布机员</td>
-  <td>0</td>
-  <td>纽约城</td>
-  <td class="score">1:2</td>
-  <td class="result">负</td>
-  <td class="ah-desc">半球</td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:49%;background:#c62828">49%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:28%;background:#1565c0">28%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:21%;background:#1565c0">21%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:45%;background:#c62828">45%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:27%;background:#1565c0">27%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:27%;background:#1565c0">27%</div></div></td>
-</tr>
-<tr>
-  <td>33</td>
-  <td class="league">美职</td>
-  <td class="time">07-23 07:40</td>
-  <td>迈阿密国际</td>
-  <td>0</td>
-  <td>芝加哥火焰</td>
-  <td class="score">3:2</td>
-  <td class="result">胜</td>
-  <td class="ah-desc">半球</td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:49%;background:#c62828">49%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:28%;background:#1565c0">28%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:21%;background:#1565c0">21%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:45%;background:#c62828">45%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:27%;background:#1565c0">27%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:27%;background:#1565c0">27%</div></div></td>
-</tr>
-<tr>
-  <td>34</td>
-  <td class="league">美职</td>
-  <td class="time">07-23 07:40</td>
-  <td>新英格兰革命</td>
-  <td class="hdcp-neg">-1</td>
-  <td>多伦多FC</td>
-  <td class="score">0:0</td>
-  <td class="result">负</td>
-  <td class="ah-desc">半球</td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:29%;background:#1565c0">29%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:27%;background:#1565c0">27%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:43%;background:#c62828">43%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:30%;background:#e65100">30%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:27%;background:#1565c0">27%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:41%;background:#c62828">41%</div></div></td>
-</tr>
-<tr>
-  <td>35</td>
-  <td class="league">美职</td>
-  <td class="time">07-23 07:40</td>
-  <td>费城联合</td>
-  <td class="hdcp-neg">-1</td>
-  <td>纽约红牛</td>
-  <td class="score">3:1</td>
-  <td class="result">胜</td>
-  <td class="ah-desc">半球/一球</td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:26%;background:#1565c0">26%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:28%;background:#1565c0">28%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:44%;background:#c62828">44%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:30%;background:#e65100">30%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:27%;background:#1565c0">27%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:41%;background:#c62828">41%</div></div></td>
-</tr>
-<tr>
-  <td>36</td>
-  <td class="league">巴西乙</td>
-  <td class="time">07-23 07:30</td>
-  <td>戈亚斯</td>
-  <td>0</td>
-  <td>累西腓体育</td>
-  <td class="score">1:1</td>
-  <td class="result">平</td>
-  <td class="ah-desc">平手/半球</td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:44%;background:#c62828">44%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:29%;background:#1565c0">29%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:25%;background:#1565c0">25%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:44%;background:#c62828">44%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:26%;background:#1565c0">26%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:28%;background:#1565c0">28%</div></div></td>
-</tr>
-<tr>
-  <td>37</td>
-  <td class="league">美职</td>
-  <td class="time">07-23 08:20</td>
-  <td>夏洛特FC</td>
-  <td class="hdcp-neg">-1</td>
-  <td>亚特兰大联</td>
-  <td class="score">2:2</td>
-  <td class="result">负</td>
-  <td class="ah-desc">半球/一球</td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:26%;background:#1565c0">26%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:28%;background:#1565c0">28%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:44%;background:#c62828">44%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:30%;background:#e65100">30%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:27%;background:#1565c0">27%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:41%;background:#c62828">41%</div></div></td>
-</tr>
-<tr>
-  <td>38</td>
-  <td class="league">南俱杯</td>
-  <td class="time">07-23 08:30</td>
-  <td>水晶竞技</td>
-  <td>0</td>
-  <td>布拉干蒂诺RB</td>
-  <td class="score">0:0</td>
-  <td class="result">平</td>
-  <td class="ah-desc">受平手/半球</td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:18%;background:#999">18%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:31%;background:#e65100">31%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:50%;background:#c62828">50%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:38%;background:#e65100">38%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:31%;background:#e65100">31%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:30%;background:#c62828">30%</div></div></td>
-</tr>
-<tr>
-  <td>39</td>
-  <td class="league">南俱杯</td>
-  <td class="time">07-23 08:30</td>
-  <td>拉努斯</td>
-  <td class="hdcp-neg">-1</td>
-  <td>西恩夏诺</td>
-  <td class="score">2:0</td>
-  <td class="result">胜</td>
-  <td class="ah-desc">一球/球半</td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:33%;background:#e65100">33%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:12%;background:#999">12%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:54%;background:#c62828">54%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:33%;background:#e65100">33%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:25%;background:#1565c0">25%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:41%;background:#c62828">41%</div></div></td>
-</tr>
-<tr>
-  <td>40</td>
-  <td class="league">巴西甲</td>
-  <td class="time">07-23 08:30</td>
-  <td>沙佩科恩斯</td>
-  <td class="hdcp-pos">+1</td>
-  <td>弗拉门戈</td>
-  <td class="score">0:4</td>
-  <td class="result">负</td>
-  <td class="ah-desc">受一球</td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:100%;background:#c62828">100%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:51%;background:#c62828">51%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:17%;background:#999">17%</div></div></td>
-  <td><div class="prob-bar"><div class="prob-fill" style="width:30%;background:#c62828">30%</div></div></td>
-</tr>
 </tbody>
   </table>
   </div>
-  <p style="padding:10px;text-align:center;color:#999;font-size:13px">仅显示前40场，完整75场请下载Excel</p>
+  <p class="match-count">共75场，页面展示前25场，完整数据请<a href="https://github.com/bily1258-design/football-odds-api/raw/main/beidan_26077_dashboard.xlsx" style="color:#283593">下载Excel</a></p>
 </div>
-<div class="table-wrap">
+
+<div class="table-wrap period-group active" data-period="26079">
   <h3>第26079期 比赛列表 (61场) · 皇冠历史相同亚盘概率 + 赛果出现概率</h3>
   <div style="overflow-x:auto">
   <table>
@@ -989,9 +746,7 @@ tr:nth-child(even) td { background:#fafafa; }
   <td><div class="prob-bar"><div class="prob-fill" style="width:30%;background:#e65100">30%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:27%;background:#1565c0">27%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:42%;background:#c62828">42%</div></div></td>
-</tr>
-<tr>
-  <td>13</td>
+</tr>  <td>13</td>
   <td class="league">巴西乙</td>
   <td class="time">07-29 08:35</td>
   <td>福塔雷萨</td>
@@ -1466,14 +1221,35 @@ tr:nth-child(even) td { background:#fafafa; }
   <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
   <td><div class="prob-bar"><div class="prob-fill" style="width:0%;background:#999">0%</div></div></td>
 </tr>
+
+
 </tbody>
   </table>
   </div>
-  <p style="padding:10px;text-align:center;color:#999;font-size:13px">仅显示前40场，完整61场请下载Excel</p>
+  <p class="match-count">共61场，页面展示前40场，完整数据请<a href="https://github.com/bily1258-design/football-odds-api/raw/main/beidan_26079_dashboard.xlsx" style="color:#283593">下载Excel</a></p>
+</div>
+
 </div>
 <div class="footer">
   <p>⚡ 自动生成 · 概率数据来自500.com 皇冠历史相同亚盘</p>
 </div>
-</div>
+
+<script>
+function switchPeriod() {
+  var val = document.getElementById('periodSelect').value;
+  var groups = document.querySelectorAll('.period-group');
+  groups.forEach(function(el) {
+    if (val === 'all') {
+      el.classList.add('active');
+    } else {
+      if (el.getAttribute('data-period') === val) {
+        el.classList.add('active');
+      } else {
+        el.classList.remove('active');
+      }
+    }
+  });
+}
+</script>
 </body>
 </html>
