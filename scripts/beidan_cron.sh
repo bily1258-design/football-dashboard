@@ -10,6 +10,9 @@ echo "=== 北单看板生成: $(date) ==="
 OUTPUT=$(python3 scripts/gen_500_dashboard.py 2>&1)
 echo "$OUTPUT"
 
+# 重新生成 index.html（含所有期数 + 全部赛事 + 下拉选择）
+python3 scripts/gen_beidan_html.py 2>&1
+
 # 提取 xlsx 路径
 XLSX_PATH=$(echo "$OUTPUT" | grep -oP '/data/.*?\.xlsx' | tail -1)
 if [ -z "$XLSX_PATH" ]; then
