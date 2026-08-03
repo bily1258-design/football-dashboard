@@ -45,6 +45,14 @@ def parse_xlsx(path):
             except (TypeError, ValueError):
                 return 0.0
 
+        # 新布局(≥12列): 6比分 7赛果 8亚盘 9/10/11概率; 旧布局(10列): 6亚盘 7/8/9概率
+        if len(r) >= 12:
+            score, result = str(r[6] or ''), str(r[7] or '')
+            ah, pw, pd, pa = str(r[8] or ''), _pct(r[9]), _pct(r[10]), _pct(r[11])
+        else:
+            score, result = '', ''
+            ah, pw, pd, pa = str(r[6] or ''), _pct(r[7]), _pct(r[8]), _pct(r[9])
+
         matches.append({
             'no': no,
             'league': str(r[1] or ''),
@@ -52,10 +60,12 @@ def parse_xlsx(path):
             'home': str(r[3] or ''),
             'hdcp': str(r[4] or ''),
             'away': str(r[5] or ''),
-            'ah': str(r[6] or ''),
-            'pw': _pct(r[7]),
-            'pd': _pct(r[8]),
-            'pa': _pct(r[9]),
+            'score': score,
+            'result': result,
+            'ah': ah,
+            'pw': pw,
+            'pd': pd,
+            'pa': pa,
         })
     return matches
 
@@ -94,6 +104,8 @@ def gen_row(m):
   <td>{m['home']}</td>
   <td class="hdcp {hdcp_class(m['hdcp'])}">{m['hdcp']}</td>
   <td>{m['away']}</td>
+  <td class="score">{m['score'] or '-'}</td>
+  <td class="result">{m['result']}</td>
   <td class="ah-desc">{m['ah']}</td>
   <td>{bar(m['pw'])}</td>
   <td>{bar(m['pd'])}</td>
@@ -159,7 +171,7 @@ def main():
   <table>
     <thead><tr>
       <th>#</th><th>联赛</th><th>时间</th><th>主队</th><th>让球</th><th>客队</th>
-      <th>亚盘</th><th>主胜%<br><span class="sub-hdr">亚盘</span></th><th>平%<br><span class="sub-hdr">亚盘</span></th><th>客负%<br><span class="sub-hdr">亚盘</span></th>
+      <th>比分</th><th>赛果</th><th>亚盘</th><th>主胜%<br><span class="sub-hdr">亚盘</span></th><th>平%<br><span class="sub-hdr">亚盘</span></th><th>客负%<br><span class="sub-hdr">亚盘</span></th>
     </tr></thead>
     <tbody>{rows}
 </tbody>
@@ -205,6 +217,8 @@ tr:nth-child(even) td {{ background:#fafafa; }}
 .prob-bar {{ display:inline-block; width:60px; height:14px; background:#eee; border-radius:7px; vertical-align:middle; position:relative; overflow:hidden; }}
 .prob-fill {{ height:100%; border-radius:7px; line-height:14px; font-size:9px; color:#fff; text-align:center; }}
 .ah-desc {{ color:#555; font-size:11px; }}
+.score {{ font-family:monospace; font-weight:600; color:#333; font-size:13px; }}
+.result {{ font-weight:600; color:#1565c0; }}
 .sub-hdr {{ font-weight:400; font-size:10px; color:#78909c; }}
 .footer {{ text-align:center; padding:20px; color:#999; font-size:12px; }}
 .period-group {{ display:none; }}

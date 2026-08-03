@@ -34,6 +34,9 @@ YELLOW_FILL = PatternFill("solid", fgColor="FFEB9C")
 HOME_FAV_FILL = PatternFill("solid", fgColor="E2EFDA")
 AWAY_FAV_FILL = PatternFill("solid", fgColor="FCE4D6")
 
+# 500.com 赛果列: 3=胜 1=平 0=负 *=无效场次
+RESULT_MAP = {"3": "胜", "1": "平", "0": "负", "*": "＊"}
+
 
 def fetch(url):
     req = Request(url, headers={
@@ -94,7 +97,7 @@ def parse_matches(text, playid):
                 matches[num] = {
                     "num": num, "league": vals[1], "time": vals[2],
                     "home": vals[3], "handicap": vals[4], "away": vals[5],
-                    "score": vals[6], "result": "",
+                    "score": vals[6], "result": vals[7],
                     "h_prob": int(probs[0]) if len(probs) > 0 else -1,
                     "d_prob": int(probs[1]) if len(probs) > 1 else -1,
                     "a_prob": int(probs[2]) if len(probs) > 2 else -1,
@@ -106,7 +109,7 @@ def parse_matches(text, playid):
                 matches[num] = {
                     "num": num, "league": vals[1], "time": vals[2],
                     "home": vals[3], "handicap": vals[4], "away": vals[5],
-                    "score": vals[6], "result": "",
+                    "score": vals[6], "result": vals[7],
                     "ah_desc": vals[8],
                     "h_prob": int(probs[0]) if len(probs) > 0 else -1,
                     "d_prob": int(probs[1]) if len(probs) > 1 else -1,
@@ -181,6 +184,7 @@ def main():
 
     headers = [
         "序号", "联赛", "开赛时间", "主队", "让球(胜平负)", "客队",
+        "比分", "赛果",
         "亚盘(胜负过关)", "皇冠历史概率% (主胜)", "皇冠历史概率% (平)", "皇冠历史概率% (客胜)"
     ]
     max_col = len(headers)
@@ -230,10 +234,14 @@ def main():
             pass
 
         ws.cell(row=row, column=6, value=away)
-        ws.cell(row=row, column=7, value=d0.get("ah_desc", ""))
-        prob_cell(ws, row, 8, h_prob)
-        prob_cell(ws, row, 9, d_prob)
-        prob_cell(ws, row, 10, a_prob)
+        score = d3.get("score") or d0.get("score") or ""
+        result = RESULT_MAP.get(d3.get("result") or d0.get("result") or "", "")
+        ws.cell(row=row, column=7, value=score)
+        ws.cell(row=row, column=8, value=result)
+        ws.cell(row=row, column=9, value=d0.get("ah_desc", ""))
+        prob_cell(ws, row, 10, h_prob)
+        prob_cell(ws, row, 11, d_prob)
+        prob_cell(ws, row, 12, a_prob)
 
         row += 1
 
@@ -276,7 +284,9 @@ def main():
         hp = d0.get("h_prob", d3.get("h_prob", -1))
         dp = d0.get("d_prob", d3.get("d_prob", -1))
         ap = d0.get("a_prob", d3.get("a_prob", -1))
-        print(f"   {num}. {l} {t} {h}({hc}){a} [{ah}] 胜{hp}%平{dp}%负{ap}%")
+        sc = d3.get("score") or d0.get("score") or "-"
+        rs = RESULT_MAP.get(d3.get("result") or d0.get("result") or "", "")
+        print(f"   {num}. {l} {t} {h}({hc}){a} [{ah}] 胜{hp}%平{dp}%负{ap}% 比分{sc} {rs}")
 
     return OUTPUT_FILE
 
