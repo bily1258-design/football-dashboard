@@ -48,7 +48,7 @@ def main():
     ws = wb.active
     ws.title = '双模型一致TS反向'
 
-    headers = ['方向', '比赛时间', '主队', '客队', '跟单方向', '模型(主/平/客)', 'LGBM(主/平/客)', 'TS(主/平/客)', '欧赔(主/平/客)', '亚盘']
+    headers = ['方向', '比赛时间', '主队', '客队', '跟单方向', '比分', '模型(主/平/客)', 'LGBM(主/平/客)', 'TS(主/平/客)', '欧赔(主/平/客)', '亚盘']
     ws.append(headers)
 
     # 表头样式
@@ -69,6 +69,7 @@ def main():
         follow = '客胜' if comb == '客客主' else '主胜'
         pct = lambda w, d, l: f'{w:.0%}/{d:.0%}/{l:.0%}'
         row = [comb, m.get('match_time', '')[11:16], m['home_team'], m['away_team'], follow,
+               m.get('score') or '-',
                pct(m.get('model_win', 0), m.get('model_draw', 0), m.get('model_loss', 0)),
                pct(m.get('lgbm_win', 0), m.get('lgbm_draw', 0), m.get('lgbm_loss', 0)),
                pct(m.get('ts_win', 0), m.get('ts_draw', 0), m.get('ts_loss', 0)),
@@ -82,7 +83,7 @@ def main():
             c.alignment = Alignment(horizontal='center', vertical='center', wrap_text=True)
             c.fill = fill
 
-    widths = [8, 10, 22, 22, 10, 20, 20, 20, 22, 14]
+    widths = [8, 10, 22, 22, 10, 10, 20, 20, 20, 22, 14]
     for i, w in enumerate(widths, start=1):
         ws.column_dimensions[chr(64 + i)].width = w
     ws.freeze_panes = 'A2'
