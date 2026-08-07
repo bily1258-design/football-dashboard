@@ -669,10 +669,11 @@ def find_similar_matches(
                 roll_sim = sqrt(roll_sim_h * roll_sim_a)
                 combined = combined * 0.7 + roll_sim * 0.3
 
-        # 同联赛加成（46维特征已含联赛/实力信息，温和提权即可）
-        if hm['league'] and league and \
-           (hm['league'] == league or league in hm['league'] or hm['league'] in league):
-            combined = min(combined * 1.2, 1.0)
+        # 同联赛加成（2026-08-07: 1.2→1.8，跨联赛实力相近误配率高，须显著提权）
+        same_league = bool(hm['league'] and league and \
+           (hm['league'] == league or league in hm['league'] or hm['league'] in league))
+        if same_league:
+            combined = min(combined * 1.8, 1.0)
 
         # 时间衰减：近期比赛权重高
         if hm['date']:
@@ -696,6 +697,7 @@ def find_similar_matches(
             'sim_h': round(sim_h, 3),
             'sim_a': round(sim_a, 3),
             'similarity': round(combined, 3),
+            'same_league': same_league,
             'total_goals_top3': _compute_total_goals_top3(
                 hm.get('home_lambda', 0), hm.get('away_lambda', 0)),
         })
@@ -709,7 +711,13 @@ def find_similar_matches(
         if pair not in seen_pairs:
             seen_pairs.add(pair)
             deduped.append(s)
-    return deduped[:top_k]
+    # 同联赛优先：先取同联赛场次，不足3场时用跨联赛补足
+    same_lg = [s for s in deduped if s.get('same_league')]
+    cross_lg = [s for s in deduped if not s.get('same_league')]
+    result = same_lg[:3] + cross_lg[:max(0, top_k - 3)]
+    if len(result) < top_k:  # 同联赛少于3场时，用跨联赛补足
+        result = same_lg + cross_lg[:top_k - len(same_lg)]
+    return result[:top_k]
 
 
 def run(results_path: str = RESULTS_PATH, db_path: str = DB_PATH,
