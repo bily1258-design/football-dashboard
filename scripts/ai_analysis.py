@@ -1291,21 +1291,21 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             probs = [model_w, model_d, model_l]
             divs = [div_w, div_d, div_l]
             for i in range(3):
-                # Rule 1: 7倍以上 → 升降都很难开出，直接85%不信任
+                # Rule 1: 7倍以上 → 升降都很难开出，直接70%不信任
                 if cur_odds[i] >= 7.0:
-                    distrust = 0.85
+                    distrust = 0.70
                 else:
                     d = max(-1, min(1, divs[i]))
                     if d > 0.15:                     # 大幅回升 >15%
-                        distrust = 0.60               # 高度不信任
+                        distrust = 0.40               # 高度不信任（2026-08-07调低: 0.60→0.40）
                     elif d > 0.08:                   # 中幅回升 8~15%
-                        distrust = 0.30               # 中度不信任
+                        distrust = 0.22               # 中度不信任（调低: 0.30→0.22）
                     elif d > 0.04:                   # 小幅回升 4~8%
-                        distrust = 0.10               # 轻度不信任
+                        distrust = 0.08               # 轻度不信任（调低: 0.10→0.08）
                     elif d < -0.10:                  # 大幅降水 ≥10% → 市场真方向，不惩罚
                         distrust = 0
                     elif d < 0:                      # 小幅降水 0~-10%
-                        distrust = abs(d) / 0.10 * 0.50  # 最大50%惩罚
+                        distrust = abs(d) / 0.10 * 0.35  # 最大35%惩罚（调低: 0.50→0.35）
                     else:                            # 无变化
                         distrust = 0
                 # 分歧惩罚：LGBM主推≠模型最大值方向，额外+20%
