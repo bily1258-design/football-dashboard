@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-08 02:46:56",
+  "generated_at": "2026-08-08 03:37:27",
   "total_matches": 899,
   "date_range": "2026-06-26 ~ 2026-08-08",
   "hit_count": 621,
@@ -145294,15 +145294,119 @@
       ],
       "similar_matches": [
         {
-          "home_team": "富川FC",
-          "away_team": "FC安養",
-          "league": "韓K聯",
-          "date": "2026-07-24",
-          "score": "2-3",
-          "actual": "away (2-3)",
-          "sim_h": 0.599,
-          "sim_a": 0.278,
-          "similarity": 0.526,
+          "home_team": "洪都拉斯U20(中)",
+          "away_team": "牙买加U20",
+          "league": "中北美U20",
+          "date": "2026-07-27",
+          "score": "1-2",
+          "actual": "away (1-2)",
+          "sim_h": 0.745,
+          "sim_a": 0.549,
+          "similarity": 0.639,
+          "same_league": false,
+          "total_goals_top3": [
+            {
+              "total_goals": 2,
+              "prob": 0.25
+            },
+            {
+              "total_goals": 3,
+              "prob": 0.218
+            },
+            {
+              "total_goals": 1,
+              "prob": 0.191
+            }
+          ]
+        },
+        {
+          "home_team": "阿蒂斯布爾諾",
+          "away_team": "博雷斯拉夫",
+          "league": "捷甲",
+          "date": "2026-07-28",
+          "score": "2-4",
+          "actual": "away (2-4)",
+          "sim_h": 0.476,
+          "sim_a": 0.561,
+          "similarity": 0.517,
+          "same_league": false,
+          "total_goals_top3": [
+            {
+              "total_goals": 4,
+              "prob": 0.19
+            },
+            {
+              "total_goals": 5,
+              "prob": 0.171
+            },
+            {
+              "total_goals": 3,
+              "prob": 0.168
+            }
+          ]
+        },
+        {
+          "home_team": "哥本哈根",
+          "away_team": "利恩比",
+          "league": "丹麥超",
+          "date": "2026-06-26",
+          "score": "1-2",
+          "actual": "away (1-2)",
+          "sim_h": 0.509,
+          "sim_a": 0.516,
+          "similarity": 0.513,
+          "same_league": false,
+          "total_goals_top3": [
+            {
+              "total_goals": 3,
+              "prob": 0.212
+            },
+            {
+              "total_goals": 4,
+              "prob": 0.191
+            },
+            {
+              "total_goals": 2,
+              "prob": 0.177
+            }
+          ]
+        },
+        {
+          "home_team": "洛杉磯銀河",
+          "away_team": "聖路易斯城",
+          "league": "美職業",
+          "date": "2026-07-23",
+          "score": "1-3",
+          "actual": "away (1-3)",
+          "sim_h": 0.597,
+          "sim_a": 0.41,
+          "similarity": 0.495,
+          "same_league": false,
+          "total_goals_top3": [
+            {
+              "total_goals": 3,
+              "prob": 0.224
+            },
+            {
+              "total_goals": 2,
+              "prob": 0.216
+            },
+            {
+              "total_goals": 4,
+              "prob": 0.174
+            }
+          ]
+        },
+        {
+          "home_team": "弗拉姆",
+          "away_team": "哈夫纳夫约杜尔",
+          "league": "冰島超",
+          "date": "2026-06-28",
+          "score": "0-0",
+          "actual": "draw (0-0)",
+          "sim_h": 0.586,
+          "sim_a": 0.365,
+          "similarity": 0.462,
           "same_league": false,
           "total_goals_top3": [
             {
@@ -145311,115 +145415,11 @@
             },
             {
               "total_goals": 2,
-              "prob": 0.199
+              "prob": 0.198
             },
             {
               "total_goals": 4,
               "prob": 0.183
-            }
-          ]
-        },
-        {
-          "home_team": "新英格蘭革命",
-          "away_team": "多倫多FC",
-          "league": "美職聯",
-          "date": "2026-07-23",
-          "score": "1-2",
-          "actual": "away (1-2)",
-          "sim_h": 0.417,
-          "sim_a": 0.468,
-          "similarity": 0.411,
-          "same_league": false,
-          "total_goals_top3": [
-            {
-              "total_goals": 3,
-              "prob": 0.223
-            },
-            {
-              "total_goals": 2,
-              "prob": 0.213
-            },
-            {
-              "total_goals": 4,
-              "prob": 0.175
-            }
-          ]
-        },
-        {
-          "home_team": "米內羅競技",
-          "away_team": "巴伊亞",
-          "league": "巴西甲",
-          "date": "2026-07-21",
-          "score": "1 - 1",
-          "actual": "draw (1 - 1)",
-          "sim_h": 0.388,
-          "sim_a": 0.139,
-          "similarity": 0.399,
-          "same_league": false,
-          "total_goals_top3": [
-            {
-              "total_goals": 2,
-              "prob": 0.258
-            },
-            {
-              "total_goals": 3,
-              "prob": 0.212
-            },
-            {
-              "total_goals": 1,
-              "prob": 0.209
-            }
-          ]
-        },
-        {
-          "home_team": "奧斯達",
-          "away_team": "瓦爾貝里",
-          "league": "瑞典甲",
-          "date": "2026-07-28",
-          "score": "3-0",
-          "actual": "home (3-0)",
-          "sim_h": 0.112,
-          "sim_a": 0.373,
-          "similarity": 0.382,
-          "same_league": false,
-          "total_goals_top3": [
-            {
-              "total_goals": 3,
-              "prob": 0.206
-            },
-            {
-              "total_goals": 4,
-              "prob": 0.194
-            },
-            {
-              "total_goals": 2,
-              "prob": 0.164
-            }
-          ]
-        },
-        {
-          "home_team": "博塔弗戈",
-          "away_team": "桑托斯",
-          "league": "巴西甲",
-          "date": "2026-07-18",
-          "score": "2-1",
-          "actual": "home (2-1)",
-          "sim_h": 0.311,
-          "sim_a": 0.054,
-          "similarity": 0.363,
-          "same_league": false,
-          "total_goals_top3": [
-            {
-              "total_goals": 3,
-              "prob": 0.208
-            },
-            {
-              "total_goals": 4,
-              "prob": 0.193
-            },
-            {
-              "total_goals": 2,
-              "prob": 0.168
             }
           ]
         }
@@ -273926,15 +273926,15 @@
         "source": "hkjc",
         "kelly_weighted": 0.0888
       },
-      "ah_open_home": 0.77,
-      "ah_open_handicap": -0.75,
-      "ah_open_away": 1.01,
-      "ah_open_handicap_text": "半球/一球",
-      "ah_home": 0.9,
-      "ah_handicap": -0.75,
-      "ah_away": 0.86,
-      "ah_handicap_text": "半球/一球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -274137,11 +274137,7 @@
           "total_goals": 3,
           "prob": 0.18
         }
-      ],
-      "ah_home_covers_prob": 0.4612,
-      "ah_push_prob": 0.1196,
-      "ah_away_covers_prob": 0.4192,
-      "ah_pred_desc": "亚P:上46% 走12%"
+      ]
     },
     {
       "fid": "2924615",
@@ -275398,15 +275394,15 @@
         "source": "hkjc",
         "kelly_weighted": 0.0939
       },
-      "ah_open_home": 0.88,
-      "ah_open_handicap": -0.75,
-      "ah_open_away": 0.82,
-      "ah_open_handicap_text": "半球/一球",
-      "ah_home": 1.06,
-      "ah_handicap": -1.0,
-      "ah_away": 0.64,
-      "ah_handicap_text": "一球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -275745,11 +275741,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.5598,
-      "ah_push_prob": 0.2342,
-      "ah_away_covers_prob": 0.206,
-      "ah_pred_desc": "亚P:上56% 走23%"
+      ]
     },
     {
       "fid": "2924616",
@@ -275870,15 +275862,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.1024
       },
-      "ah_open_home": 0.94,
-      "ah_open_handicap": 0.75,
-      "ah_open_away": 0.76,
-      "ah_open_handicap_text": "受让半球/一球",
-      "ah_home": 0.72,
-      "ah_handicap": 0.75,
-      "ah_away": 0.98,
-      "ah_handicap_text": "受让半球/一球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -276316,11 +276308,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.2294,
-      "ah_push_prob": 0.0841,
-      "ah_away_covers_prob": 0.6864,
-      "ah_pred_desc": "亚P:下69% 走8%"
+      ]
     },
     {
       "fid": "2962521",
@@ -276482,15 +276470,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0394
       },
-      "ah_open_home": 0.76,
-      "ah_open_handicap": -0.25,
-      "ah_open_away": 1.02,
-      "ah_open_handicap_text": "平手/半球",
-      "ah_home": 0.82,
-      "ah_handicap": -0.5,
-      "ah_away": 0.96,
-      "ah_handicap_text": "半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -276920,11 +276908,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.5752,
-      "ah_push_prob": 0.0,
-      "ah_away_covers_prob": 0.4248,
-      "ah_pred_desc": "亚P:上58% 走0%"
+      ]
     },
     {
       "fid": "2991121",
@@ -277086,15 +277070,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0396
       },
-      "ah_open_home": 1.0,
-      "ah_open_handicap": -0.5,
-      "ah_open_away": 0.78,
-      "ah_open_handicap_text": "半球",
-      "ah_home": 1.0,
-      "ah_handicap": -0.5,
-      "ah_away": 0.78,
-      "ah_handicap_text": "半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -277487,11 +277471,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.7264,
-      "ah_push_prob": 0.0,
-      "ah_away_covers_prob": 0.2736,
-      "ah_pred_desc": "亚P:上73% 走0%"
+      ]
     },
     {
       "fid": "2962531",
@@ -280467,15 +280447,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0645
       },
-      "ah_open_home": 0.82,
-      "ah_open_handicap": 0.25,
-      "ah_open_away": 0.88,
-      "ah_open_handicap_text": "受让平手/半球",
-      "ah_home": 0.82,
-      "ah_handicap": -0.0,
-      "ah_away": 0.86,
-      "ah_handicap_text": "平手",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -280814,11 +280794,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.2297,
-      "ah_push_prob": 0.2072,
-      "ah_away_covers_prob": 0.5631,
-      "ah_pred_desc": "亚P:下56% 走21%"
+      ]
     },
     {
       "fid": "3049754",
@@ -280980,15 +280956,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0333
       },
-      "ah_open_home": 0.72,
-      "ah_open_handicap": -0.0,
-      "ah_open_away": 0.98,
-      "ah_open_handicap_text": "平手",
-      "ah_home": 0.7,
-      "ah_handicap": -0.25,
-      "ah_away": 1.0,
-      "ah_handicap_text": "平手/半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -281331,11 +281307,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.3768,
-      "ah_push_prob": 0.1234,
-      "ah_away_covers_prob": 0.4998,
-      "ah_pred_desc": "亚P:下50% 走12%"
+      ]
     },
     {
       "fid": "3049763",
@@ -281456,15 +281428,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0765
       },
-      "ah_open_home": 0.75,
-      "ah_open_handicap": -0.75,
-      "ah_open_away": 0.95,
-      "ah_open_handicap_text": "半球/一球",
-      "ah_home": 0.9,
-      "ah_handicap": -0.75,
-      "ah_away": 0.8,
-      "ah_handicap_text": "半球/一球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -281799,11 +281771,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.6696,
-      "ah_push_prob": 0.0804,
-      "ah_away_covers_prob": 0.25,
-      "ah_pred_desc": "亚P:上67% 走8%"
+      ]
     },
     {
       "fid": "3049768",
@@ -281965,15 +281933,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0485
       },
-      "ah_open_home": 0.96,
-      "ah_open_handicap": -0.0,
-      "ah_open_away": 0.74,
-      "ah_open_handicap_text": "平手",
-      "ah_home": 1.04,
-      "ah_handicap": -0.25,
-      "ah_away": 0.66,
-      "ah_handicap_text": "平手/半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -282312,11 +282280,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.4444,
-      "ah_push_prob": 0.1119,
-      "ah_away_covers_prob": 0.4436,
-      "ah_pred_desc": "亚P:上44% 走11%"
+      ]
     },
     {
       "fid": "3049743",
@@ -282478,15 +282442,15 @@
         "source": "hkjc",
         "kelly_weighted": 0.1993
       },
-      "ah_open_home": 0.76,
-      "ah_open_handicap": -2.0,
-      "ah_open_away": 0.94,
-      "ah_open_handicap_text": "两球",
-      "ah_home": 0.76,
-      "ah_handicap": -2.0,
-      "ah_away": 0.94,
-      "ah_handicap_text": "两球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -282829,11 +282793,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.8902,
-      "ah_push_prob": 0.0761,
-      "ah_away_covers_prob": 0.0337,
-      "ah_pred_desc": "亚P:上89% 走8%"
+      ]
     },
     {
       "fid": "3049744",
@@ -282995,15 +282955,15 @@
         "source": "hkjc",
         "kelly_weighted": 0.2024
       },
-      "ah_open_home": 0.72,
-      "ah_open_handicap": 1.25,
-      "ah_open_away": 0.98,
-      "ah_open_handicap_text": "受让一球/球半",
-      "ah_home": 0.74,
-      "ah_handicap": 1.25,
-      "ah_away": 0.96,
-      "ah_handicap_text": "受让一球/球半",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -283346,11 +283306,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.0871,
-      "ah_push_prob": 0.071,
-      "ah_away_covers_prob": 0.8419,
-      "ah_pred_desc": "亚P:下84% 走7%"
+      ]
     },
     {
       "fid": "3049815",
@@ -283512,15 +283468,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.092
       },
-      "ah_open_home": 0.77,
-      "ah_open_handicap": 0.5,
-      "ah_open_away": 0.93,
-      "ah_open_handicap_text": "受让半球",
-      "ah_home": 1.0,
-      "ah_handicap": 0.5,
-      "ah_away": 0.7,
-      "ah_handicap_text": "受让半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -283859,11 +283815,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.4405,
-      "ah_push_prob": 0.0,
-      "ah_away_covers_prob": 0.5595,
-      "ah_pred_desc": "亚P:下56% 走0%"
+      ]
     },
     {
       "fid": "3049774",
@@ -284017,15 +283969,15 @@
         }
       ],
       "best_value": null,
-      "ah_open_home": 0.96,
-      "ah_open_handicap": -0.5,
-      "ah_open_away": 0.74,
-      "ah_open_handicap_text": "半球",
-      "ah_home": 1.0,
-      "ah_handicap": -0.25,
-      "ah_away": 0.7,
-      "ah_handicap_text": "平手/半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -284368,11 +284320,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.4809,
-      "ah_push_prob": 0.1251,
-      "ah_away_covers_prob": 0.394,
-      "ah_pred_desc": "亚P:上48% 走13%"
+      ]
     },
     {
       "fid": "3049816",
@@ -284534,15 +284482,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.17
       },
-      "ah_open_home": 0.8,
-      "ah_open_handicap": -0.75,
-      "ah_open_away": 0.9,
-      "ah_open_handicap_text": "半球/一球",
-      "ah_home": 0.66,
-      "ah_handicap": -1.0,
-      "ah_away": 1.04,
-      "ah_handicap_text": "一球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -284885,11 +284833,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.6691,
-      "ah_push_prob": 0.1799,
-      "ah_away_covers_prob": 0.1511,
-      "ah_pred_desc": "亚P:上67% 走18%"
+      ]
     },
     {
       "fid": "3049776",
@@ -285002,15 +284946,15 @@
         }
       ],
       "best_value": null,
-      "ah_open_home": 0.8,
-      "ah_open_handicap": 0.5,
-      "ah_open_away": 0.9,
-      "ah_open_handicap_text": "受让半球",
-      "ah_home": 0.88,
-      "ah_handicap": 0.5,
-      "ah_away": 0.82,
-      "ah_handicap_text": "受让半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -285345,11 +285289,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.2428,
-      "ah_push_prob": 0.0,
-      "ah_away_covers_prob": 0.7572,
-      "ah_pred_desc": "亚P:下76% 走0%"
+      ]
     },
     {
       "fid": "3049782",
@@ -285511,15 +285451,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0595
       },
-      "ah_open_home": 0.75,
-      "ah_open_handicap": 0.25,
-      "ah_open_away": 0.95,
-      "ah_open_handicap_text": "受让平手/半球",
-      "ah_home": 0.84,
-      "ah_handicap": 0.25,
-      "ah_away": 0.86,
-      "ah_handicap_text": "受让平手/半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -285862,11 +285802,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.2972,
-      "ah_push_prob": 0.1161,
-      "ah_away_covers_prob": 0.5867,
-      "ah_pred_desc": "亚P:下59% 走12%"
+      ]
     },
     {
       "fid": "3049817",
@@ -286028,15 +285964,15 @@
         "source": "hkjc",
         "kelly_weighted": 0.1219
       },
-      "ah_open_home": 0.93,
-      "ah_open_handicap": -0.75,
-      "ah_open_away": 0.77,
-      "ah_open_handicap_text": "半球/一球",
-      "ah_home": 0.74,
-      "ah_handicap": -0.75,
-      "ah_away": 0.96,
-      "ah_handicap_text": "半球/一球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -286390,11 +286326,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.6754,
-      "ah_push_prob": 0.0927,
-      "ah_away_covers_prob": 0.232,
-      "ah_pred_desc": "亚P:上68% 走9%"
+      ]
     },
     {
       "fid": "3049745",
@@ -286556,15 +286488,15 @@
         "source": "hkjc",
         "kelly_weighted": 0.1513
       },
-      "ah_open_home": 0.71,
-      "ah_open_handicap": -1.25,
-      "ah_open_away": 0.99,
-      "ah_open_handicap_text": "一球/球半",
-      "ah_home": 1.0,
-      "ah_handicap": -1.0,
-      "ah_away": 0.7,
-      "ah_handicap_text": "一球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -286907,11 +286839,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.7715,
-      "ah_push_prob": 0.1309,
-      "ah_away_covers_prob": 0.0976,
-      "ah_pred_desc": "亚P:上77% 走13%"
+      ]
     },
     {
       "fid": "3049762",
@@ -287073,15 +287001,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.2606
       },
-      "ah_open_home": 0.76,
-      "ah_open_handicap": -2.0,
-      "ah_open_away": 0.94,
-      "ah_open_handicap_text": "两球",
-      "ah_home": 0.7,
-      "ah_handicap": -2.75,
-      "ah_away": 1.0,
-      "ah_handicap_text": "两球半/三球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -287420,11 +287348,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.8818,
-      "ah_push_prob": 0.0356,
-      "ah_away_covers_prob": 0.0826,
-      "ah_pred_desc": "亚P:上88% 走4%"
+      ]
     },
     {
       "fid": "3049772",
@@ -287586,15 +287510,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.1907
       },
-      "ah_open_home": 0.82,
-      "ah_open_handicap": 1.5,
-      "ah_open_away": 0.88,
-      "ah_open_handicap_text": "受让球半",
-      "ah_home": 0.94,
-      "ah_handicap": 1.75,
-      "ah_away": 0.76,
-      "ah_handicap_text": "受让球半/两球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -287933,11 +287857,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.0299,
-      "ah_push_prob": 0.017,
-      "ah_away_covers_prob": 0.9532,
-      "ah_pred_desc": "亚P:下95% 走2%"
+      ]
     },
     {
       "fid": "3049781",
@@ -288099,15 +288019,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.2385
       },
-      "ah_open_home": 0.83,
-      "ah_open_handicap": -2.25,
-      "ah_open_away": 0.87,
-      "ah_open_handicap_text": "两球/两球半",
-      "ah_home": 0.86,
-      "ah_handicap": -2.0,
-      "ah_away": 0.84,
-      "ah_handicap_text": "两球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -288450,11 +288370,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.6373,
-      "ah_push_prob": 0.1738,
-      "ah_away_covers_prob": 0.1889,
-      "ah_pred_desc": "亚P:上64% 走17%"
+      ]
     },
     {
       "fid": "3049761",
@@ -288616,15 +288532,15 @@
         "source": "hkjc",
         "kelly_weighted": 0.1921
       },
-      "ah_open_home": 0.88,
-      "ah_open_handicap": -2.0,
-      "ah_open_away": 0.82,
-      "ah_open_handicap_text": "两球",
-      "ah_home": 1.0,
-      "ah_handicap": -1.75,
-      "ah_away": 0.7,
-      "ah_handicap_text": "球半/两球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -288959,11 +288875,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.4519,
-      "ah_push_prob": 0.1004,
-      "ah_away_covers_prob": 0.4477,
-      "ah_pred_desc": "亚P:上45% 走10%"
+      ]
     },
     {
       "fid": "3009569",
@@ -289125,15 +289037,15 @@
         "source": "hkjc",
         "kelly_weighted": 0.1745
       },
-      "ah_open_home": 0.77,
-      "ah_open_handicap": -1.25,
-      "ah_open_away": 0.93,
-      "ah_open_handicap_text": "一球/球半",
-      "ah_home": 0.76,
-      "ah_handicap": -1.25,
-      "ah_away": 0.94,
-      "ah_handicap_text": "一球/球半",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -289554,11 +289466,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.9358,
-      "ah_push_prob": 0.0308,
-      "ah_away_covers_prob": 0.0334,
-      "ah_pred_desc": "亚P:上94% 走3%"
+      ]
     },
     {
       "fid": "3049775",
@@ -289720,15 +289628,15 @@
         "source": "hkjc",
         "kelly_weighted": 0.2039
       },
-      "ah_open_home": 0.81,
-      "ah_open_handicap": 1.5,
-      "ah_open_away": 0.89,
-      "ah_open_handicap_text": "受让球半",
-      "ah_home": 0.76,
-      "ah_handicap": 1.25,
-      "ah_away": 0.94,
-      "ah_handicap_text": "受让一球/球半",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -290067,11 +289975,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.1533,
-      "ah_push_prob": 0.081,
-      "ah_away_covers_prob": 0.7657,
-      "ah_pred_desc": "亚P:下77% 走8%"
+      ]
     },
     {
       "fid": "3049765",
@@ -290233,15 +290137,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.1599
       },
-      "ah_open_home": 0.84,
-      "ah_open_handicap": -1.25,
-      "ah_open_away": 0.86,
-      "ah_open_handicap_text": "一球/球半",
-      "ah_home": 1.08,
-      "ah_handicap": -1.5,
-      "ah_away": 0.6,
-      "ah_handicap_text": "球半",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -290580,11 +290484,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.7971,
-      "ah_push_prob": 0.0,
-      "ah_away_covers_prob": 0.2029,
-      "ah_pred_desc": "亚P:上80% 走0%"
+      ]
     },
     {
       "fid": "3049819",
@@ -290746,15 +290646,15 @@
         "source": "hkjc",
         "kelly_weighted": 0.2169
       },
-      "ah_open_home": 0.8,
-      "ah_open_handicap": -2.0,
-      "ah_open_away": 0.9,
-      "ah_open_handicap_text": "两球",
-      "ah_home": 0.7,
-      "ah_handicap": -2.5,
-      "ah_away": 1.0,
-      "ah_handicap_text": "两球半",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -291093,11 +290993,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.9551,
-      "ah_push_prob": 0.0,
-      "ah_away_covers_prob": 0.0449,
-      "ah_pred_desc": "亚P:上96% 走0%"
+      ]
     },
     {
       "fid": "2962532",
@@ -291259,15 +291155,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0463
       },
-      "ah_open_home": 0.93,
-      "ah_open_handicap": -0.25,
-      "ah_open_away": 0.85,
-      "ah_open_handicap_text": "平手/半球",
-      "ah_home": 0.7,
-      "ah_handicap": -0.0,
-      "ah_away": 1.08,
-      "ah_handicap_text": "平手",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -291693,11 +291589,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.2285,
-      "ah_push_prob": 0.2446,
-      "ah_away_covers_prob": 0.5269,
-      "ah_pred_desc": "亚P:下53% 走24%"
+      ]
     },
     {
       "fid": "2991120",
@@ -292459,15 +292351,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0245
       },
-      "ah_open_home": 0.86,
-      "ah_open_handicap": 0.5,
-      "ah_open_away": 0.98,
-      "ah_open_handicap_text": "受让半球",
-      "ah_home": 0.86,
-      "ah_handicap": 0.25,
-      "ah_away": 0.98,
-      "ah_handicap_text": "受让平手/半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -292893,11 +292785,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.4881,
-      "ah_push_prob": 0.1158,
-      "ah_away_covers_prob": 0.3961,
-      "ah_pred_desc": "亚P:上49% 走12%"
+      ]
     },
     {
       "fid": "3000394",
@@ -293059,15 +292947,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0233
       },
-      "ah_open_home": 1.02,
-      "ah_open_handicap": -0.25,
-      "ah_open_away": 0.82,
-      "ah_open_handicap_text": "平手/半球",
-      "ah_home": 1.0,
-      "ah_handicap": -0.25,
-      "ah_away": 0.82,
-      "ah_handicap_text": "平手/半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -293501,11 +293389,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.7007,
-      "ah_push_prob": 0.0999,
-      "ah_away_covers_prob": 0.1994,
-      "ah_pred_desc": "亚P:上70% 走10%"
+      ]
     },
     {
       "fid": "2925494",
@@ -293667,15 +293551,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.1119
       },
-      "ah_open_home": 0.85,
-      "ah_open_handicap": -1.0,
-      "ah_open_away": 0.85,
-      "ah_open_handicap_text": "一球",
-      "ah_home": 0.7,
-      "ah_handicap": -1.0,
-      "ah_away": 1.0,
-      "ah_handicap_text": "一球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -294109,11 +293993,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.7315,
-      "ah_push_prob": 0.157,
-      "ah_away_covers_prob": 0.1115,
-      "ah_pred_desc": "亚P:上73% 走16%"
+      ]
     },
     {
       "fid": "2925498",
@@ -294275,15 +294155,15 @@
         "source": "hkjc",
         "kelly_weighted": 0.1409
       },
-      "ah_open_home": 0.81,
-      "ah_open_handicap": -1.5,
-      "ah_open_away": 0.89,
-      "ah_open_handicap_text": "球半",
-      "ah_home": 0.81,
-      "ah_handicap": -1.5,
-      "ah_away": 0.89,
-      "ah_handicap_text": "球半",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -294632,11 +294512,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.7391,
-      "ah_push_prob": 0.0,
-      "ah_away_covers_prob": 0.2609,
-      "ah_pred_desc": "亚P:上74% 走0%"
+      ]
     },
     {
       "fid": "2925496",
@@ -294798,15 +294674,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0735
       },
-      "ah_open_home": 0.92,
-      "ah_open_handicap": 0.5,
-      "ah_open_away": 0.78,
-      "ah_open_handicap_text": "受让半球",
-      "ah_home": 0.8,
-      "ah_handicap": 0.5,
-      "ah_away": 0.9,
-      "ah_handicap_text": "受让半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -295232,11 +295108,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.7181,
-      "ah_push_prob": 0.0,
-      "ah_away_covers_prob": 0.2819,
-      "ah_pred_desc": "亚P:上72% 走0%"
+      ]
     },
     {
       "fid": "2925497",
@@ -295398,15 +295270,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0346
       },
-      "ah_open_home": 0.74,
-      "ah_open_handicap": 0.25,
-      "ah_open_away": 0.96,
-      "ah_open_handicap_text": "受让平手/半球",
-      "ah_home": 0.8,
-      "ah_handicap": 0.25,
-      "ah_away": 0.9,
-      "ah_handicap_text": "受让平手/半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -295791,11 +295663,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.5709,
-      "ah_push_prob": 0.1054,
-      "ah_away_covers_prob": 0.3236,
-      "ah_pred_desc": "亚P:上57% 走11%"
+      ]
     },
     {
       "fid": "2925499",
@@ -295957,15 +295825,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0624
       },
-      "ah_open_home": 0.79,
-      "ah_open_handicap": 0.5,
-      "ah_open_away": 0.91,
-      "ah_open_handicap_text": "受让半球",
-      "ah_home": 0.79,
-      "ah_handicap": 0.5,
-      "ah_away": 0.91,
-      "ah_handicap_text": "受让半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -296314,11 +296182,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.6551,
-      "ah_push_prob": 0.0,
-      "ah_away_covers_prob": 0.3449,
-      "ah_pred_desc": "亚P:上66% 走0%"
+      ]
     },
     {
       "fid": "2925495",
@@ -296480,15 +296344,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0979
       },
-      "ah_open_home": 0.96,
-      "ah_open_handicap": -0.75,
-      "ah_open_away": 0.74,
-      "ah_open_handicap_text": "半球/一球",
-      "ah_home": 0.96,
-      "ah_handicap": -0.75,
-      "ah_away": 0.74,
-      "ah_handicap_text": "半球/一球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -296918,11 +296782,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.5283,
-      "ah_push_prob": 0.1154,
-      "ah_away_covers_prob": 0.3563,
-      "ah_pred_desc": "亚P:上53% 走12%"
+      ]
     },
     {
       "fid": "2921907",
@@ -297043,15 +296903,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0359
       },
-      "ah_open_home": 0.84,
-      "ah_open_handicap": -0.25,
-      "ah_open_away": 0.86,
-      "ah_open_handicap_text": "平手/半球",
-      "ah_home": 0.66,
-      "ah_handicap": -0.25,
-      "ah_away": 1.04,
-      "ah_handicap_text": "平手/半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -297468,11 +297328,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.4429,
-      "ah_push_prob": 0.1249,
-      "ah_away_covers_prob": 0.4322,
-      "ah_pred_desc": "亚P:上44% 走12%"
+      ]
     },
     {
       "fid": "2921908",
@@ -297593,15 +297449,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0313
       },
-      "ah_open_home": 0.82,
-      "ah_open_handicap": -0.25,
-      "ah_open_away": 0.88,
-      "ah_open_handicap_text": "平手/半球",
-      "ah_home": 0.78,
-      "ah_handicap": -0.25,
-      "ah_away": 0.92,
-      "ah_handicap_text": "平手/半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -298027,11 +297883,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.4162,
-      "ah_push_prob": 0.1174,
-      "ah_away_covers_prob": 0.4664,
-      "ah_pred_desc": "亚P:下47% 走12%"
+      ]
     },
     {
       "fid": "2913682",
@@ -298193,15 +298045,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0721
       },
-      "ah_open_home": 0.88,
-      "ah_open_handicap": -0.25,
-      "ah_open_away": 0.9,
-      "ah_open_handicap_text": "平手/半球",
-      "ah_home": 1.02,
-      "ah_handicap": -0.5,
-      "ah_away": 0.76,
-      "ah_handicap_text": "半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -298613,11 +298465,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.5669,
-      "ah_push_prob": 0.0,
-      "ah_away_covers_prob": 0.4331,
-      "ah_pred_desc": "亚P:上57% 走0%"
+      ]
     },
     {
       "fid": "3017869",
@@ -298738,15 +298586,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.041
       },
-      "ah_open_home": 0.95,
-      "ah_open_handicap": -0.5,
-      "ah_open_away": 0.87,
-      "ah_open_handicap_text": "半球",
-      "ah_home": 1.0,
-      "ah_handicap": -0.5,
-      "ah_away": 0.88,
-      "ah_handicap_text": "半球",
-      "ah_company_id": "3",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -299113,11 +298961,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.8016,
-      "ah_push_prob": 0.0,
-      "ah_away_covers_prob": 0.1984,
-      "ah_pred_desc": "亚P:上80% 走0%"
+      ]
     },
     {
       "fid": "3017871",
@@ -299238,15 +299082,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0723
       },
-      "ah_open_home": 0.96,
-      "ah_open_handicap": -1.25,
-      "ah_open_away": 0.86,
-      "ah_open_handicap_text": "一球/球半",
-      "ah_home": 0.82,
-      "ah_handicap": -1.0,
-      "ah_away": 1.06,
-      "ah_handicap_text": "一球",
-      "ah_company_id": "3",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -299672,11 +299516,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.5278,
-      "ah_push_prob": 0.209,
-      "ah_away_covers_prob": 0.2631,
-      "ah_pred_desc": "亚P:上53% 走21%"
+      ]
     },
     {
       "fid": "2912862",
@@ -299838,15 +299678,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0614
       },
-      "ah_open_home": 0.79,
-      "ah_open_handicap": -0.25,
-      "ah_open_away": 0.99,
-      "ah_open_handicap_text": "平手/半球",
-      "ah_home": 0.88,
-      "ah_handicap": -0.25,
-      "ah_away": 0.9,
-      "ah_handicap_text": "平手/半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -300276,11 +300116,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.7085,
-      "ah_push_prob": 0.1046,
-      "ah_away_covers_prob": 0.1869,
-      "ah_pred_desc": "亚P:上71% 走10%"
+      ]
     },
     {
       "fid": "2914653",
@@ -300401,15 +300237,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.1512
       },
-      "ah_open_home": 0.74,
-      "ah_open_handicap": -1.0,
-      "ah_open_away": 0.96,
-      "ah_open_handicap_text": "一球",
-      "ah_home": 0.88,
-      "ah_handicap": -1.25,
-      "ah_away": 0.82,
-      "ah_handicap_text": "一球/球半",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -300839,11 +300675,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.8234,
-      "ah_push_prob": 0.0753,
-      "ah_away_covers_prob": 0.1013,
-      "ah_pred_desc": "亚P:上82% 走8%"
+      ]
     },
     {
       "fid": "3039842",
@@ -300956,15 +300788,15 @@
         }
       ],
       "best_value": null,
-      "ah_open_home": 0.85,
-      "ah_open_handicap": -0.0,
-      "ah_open_away": 0.97,
-      "ah_open_handicap_text": "平手",
-      "ah_home": 0.95,
-      "ah_handicap": -0.0,
-      "ah_away": 0.93,
-      "ah_handicap_text": "平手",
-      "ah_company_id": "3",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -301390,11 +301222,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.5963,
-      "ah_push_prob": 0.2078,
-      "ah_away_covers_prob": 0.1959,
-      "ah_pred_desc": "亚P:上60% 走21%"
+      ]
     },
     {
       "fid": "2998212",
@@ -301556,15 +301384,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.1266
       },
-      "ah_open_home": 0.87,
-      "ah_open_handicap": 0.25,
-      "ah_open_away": 0.91,
-      "ah_open_handicap_text": "受让平手/半球",
-      "ah_home": 0.86,
-      "ah_handicap": 0.75,
-      "ah_away": 0.92,
-      "ah_handicap_text": "受让半球/一球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -301990,11 +301818,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.1791,
-      "ah_push_prob": 0.0693,
-      "ah_away_covers_prob": 0.7516,
-      "ah_pred_desc": "亚P:下75% 走7%"
+      ]
     },
     {
       "fid": "3010606",
@@ -302156,15 +301980,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.1002
       },
-      "ah_open_home": 0.81,
-      "ah_open_handicap": -0.25,
-      "ah_open_away": 0.97,
-      "ah_open_handicap_text": "平手/半球",
-      "ah_home": 0.7,
-      "ah_handicap": -0.5,
-      "ah_away": 1.08,
-      "ah_handicap_text": "半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -302594,11 +302418,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.7704,
-      "ah_push_prob": 0.0,
-      "ah_away_covers_prob": 0.2296,
-      "ah_pred_desc": "亚P:上77% 走0%"
+      ]
     },
     {
       "fid": "3000916",
@@ -302719,15 +302539,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.1346
       },
-      "ah_open_home": 0.95,
-      "ah_open_handicap": -1.25,
-      "ah_open_away": 0.87,
-      "ah_open_handicap_text": "一球/球半",
-      "ah_home": 0.97,
-      "ah_handicap": -1.0,
-      "ah_away": 0.91,
-      "ah_handicap_text": "一球",
-      "ah_company_id": "3",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -303108,11 +302928,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.5755,
-      "ah_push_prob": 0.201,
-      "ah_away_covers_prob": 0.2235,
-      "ah_pred_desc": "亚P:上58% 走20%"
+      ]
     },
     {
       "fid": "3000915",
@@ -303233,15 +303049,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0333
       },
-      "ah_open_home": 0.96,
-      "ah_open_handicap": 0.5,
-      "ah_open_away": 0.86,
-      "ah_open_handicap_text": "受让半球",
-      "ah_home": 0.85,
-      "ah_handicap": 0.25,
-      "ah_away": 1.03,
-      "ah_handicap_text": "受让平手/半球",
-      "ah_company_id": "3",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -303675,11 +303491,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.1592,
-      "ah_push_prob": 0.091,
-      "ah_away_covers_prob": 0.7498,
-      "ah_pred_desc": "亚P:下75% 走9%"
+      ]
     },
     {
       "fid": "3000917",
@@ -303800,15 +303612,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0652
       },
-      "ah_open_home": 0.86,
-      "ah_open_handicap": -0.5,
-      "ah_open_away": 0.96,
-      "ah_open_handicap_text": "半球",
-      "ah_home": 0.99,
-      "ah_handicap": -0.5,
-      "ah_away": 0.89,
-      "ah_handicap_text": "半球",
-      "ah_company_id": "3",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -304234,11 +304046,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.6193,
-      "ah_push_prob": 0.0,
-      "ah_away_covers_prob": 0.3807,
-      "ah_pred_desc": "亚P:上62% 走0%"
+      ]
     },
     {
       "fid": "3010385",
@@ -304359,15 +304167,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0635
       },
-      "ah_open_home": 0.75,
-      "ah_open_handicap": -0.0,
-      "ah_open_away": 1.07,
-      "ah_open_handicap_text": "平手",
-      "ah_home": 0.86,
-      "ah_handicap": -0.0,
-      "ah_away": 1.02,
-      "ah_handicap_text": "平手",
-      "ah_company_id": "3",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -304809,11 +304617,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.3702,
-      "ah_push_prob": 0.2541,
-      "ah_away_covers_prob": 0.3757,
-      "ah_pred_desc": "亚P:下38% 走25%"
+      ]
     },
     {
       "fid": "2996098",
@@ -304975,15 +304779,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0498
       },
-      "ah_open_home": 0.86,
-      "ah_open_handicap": -0.0,
-      "ah_open_away": 0.92,
-      "ah_open_handicap_text": "平手",
-      "ah_home": 0.98,
-      "ah_handicap": -0.0,
-      "ah_away": 0.8,
-      "ah_handicap_text": "平手",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -305277,11 +305081,7 @@
           "total_goals": 3,
           "prob": 0.18
         }
-      ],
-      "ah_home_covers_prob": 0.4497,
-      "ah_push_prob": 0.2368,
-      "ah_away_covers_prob": 0.3135,
-      "ah_pred_desc": "亚P:上45% 走24%"
+      ]
     },
     {
       "fid": "2996404",
@@ -305443,15 +305243,15 @@
         "source": "hkjc",
         "kelly_weighted": 0.1374
       },
-      "ah_open_home": 0.95,
-      "ah_open_handicap": -1.25,
-      "ah_open_away": 0.83,
-      "ah_open_handicap_text": "一球/球半",
-      "ah_home": 1.18,
-      "ah_handicap": -1.0,
-      "ah_away": 0.6,
-      "ah_handicap_text": "一球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -305745,11 +305545,7 @@
           "total_goals": 3,
           "prob": 0.18
         }
-      ],
-      "ah_home_covers_prob": 0.6949,
-      "ah_push_prob": 0.1707,
-      "ah_away_covers_prob": 0.1343,
-      "ah_pred_desc": "亚P:上69% 走17%"
+      ]
     },
     {
       "fid": "2996406",
@@ -305911,15 +305707,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.1
       },
-      "ah_open_home": 0.94,
-      "ah_open_handicap": 0.75,
-      "ah_open_away": 0.84,
-      "ah_open_handicap_text": "受让半球/一球",
-      "ah_home": 1.14,
-      "ah_handicap": 0.75,
-      "ah_away": 0.64,
-      "ah_handicap_text": "受让半球/一球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -306213,11 +306009,7 @@
           "total_goals": 3,
           "prob": 0.18
         }
-      ],
-      "ah_home_covers_prob": 0.3515,
-      "ah_push_prob": 0.1077,
-      "ah_away_covers_prob": 0.5408,
-      "ah_pred_desc": "亚P:下54% 走11%"
+      ]
     },
     {
       "fid": "2996405",
@@ -306379,15 +306171,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0585
       },
-      "ah_open_home": 1.0,
-      "ah_open_handicap": -0.25,
-      "ah_open_away": 0.78,
-      "ah_open_handicap_text": "平手/半球",
-      "ah_home": 1.0,
-      "ah_handicap": -0.0,
-      "ah_away": 0.78,
-      "ah_handicap_text": "平手",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -306681,11 +306473,7 @@
           "total_goals": 4,
           "prob": 0.169
         }
-      ],
-      "ah_home_covers_prob": 0.4959,
-      "ah_push_prob": 0.2084,
-      "ah_away_covers_prob": 0.2956,
-      "ah_pred_desc": "亚P:上50% 走21%"
+      ]
     },
     {
       "fid": "2996407",
@@ -306839,15 +306627,15 @@
         }
       ],
       "best_value": null,
-      "ah_open_home": 0.82,
-      "ah_open_handicap": 0.25,
-      "ah_open_away": 0.96,
-      "ah_open_handicap_text": "受让平手/半球",
-      "ah_home": 0.7,
-      "ah_handicap": 0.5,
-      "ah_away": 1.08,
-      "ah_handicap_text": "受让半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -307141,11 +306929,7 @@
           "total_goals": 4,
           "prob": 0.168
         }
-      ],
-      "ah_home_covers_prob": 0.5038,
-      "ah_push_prob": 0.0,
-      "ah_away_covers_prob": 0.4962,
-      "ah_pred_desc": "亚P:上50% 走0%"
+      ]
     },
     {
       "fid": "3000919",
@@ -307266,15 +307050,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0623
       },
-      "ah_open_home": 0.94,
-      "ah_open_handicap": -0.0,
-      "ah_open_away": 0.88,
-      "ah_open_handicap_text": "平手",
-      "ah_home": 1.06,
-      "ah_handicap": -0.0,
-      "ah_away": 0.82,
-      "ah_handicap_text": "平手",
-      "ah_company_id": "3",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -307695,11 +307479,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.38,
-      "ah_push_prob": 0.203,
-      "ah_away_covers_prob": 0.417,
-      "ah_pred_desc": "亚P:下42% 走20%"
+      ]
     },
     {
       "fid": "3000918",
@@ -307820,15 +307600,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.1581
       },
-      "ah_open_home": 0.85,
-      "ah_open_handicap": -1.25,
-      "ah_open_away": 0.97,
-      "ah_open_handicap_text": "一球/球半",
-      "ah_home": 0.93,
-      "ah_handicap": -1.5,
-      "ah_away": 0.95,
-      "ah_handicap_text": "球半",
-      "ah_company_id": "3",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -308258,11 +308038,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.8607,
-      "ah_push_prob": 0.0,
-      "ah_away_covers_prob": 0.1393,
-      "ah_pred_desc": "亚P:上86% 走0%"
+      ]
     },
     {
       "fid": "3019092",
@@ -308424,15 +308200,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0563
       },
-      "ah_open_home": 0.97,
-      "ah_open_handicap": -0.25,
-      "ah_open_away": 0.81,
-      "ah_open_handicap_text": "平手/半球",
-      "ah_home": 0.97,
-      "ah_handicap": -0.25,
-      "ah_away": 0.81,
-      "ah_handicap_text": "平手/半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -308730,11 +308506,7 @@
           "total_goals": 4,
           "prob": 0.158
         }
-      ],
-      "ah_home_covers_prob": 0.7285,
-      "ah_push_prob": 0.0948,
-      "ah_away_covers_prob": 0.1767,
-      "ah_pred_desc": "亚P:上73% 走9%"
+      ]
     },
     {
       "fid": "3002237",
@@ -308847,15 +308619,15 @@
         }
       ],
       "best_value": null,
-      "ah_open_home": 1.03,
-      "ah_open_handicap": -0.25,
-      "ah_open_away": 0.73,
-      "ah_open_handicap_text": "平手/半球",
-      "ah_home": 1.04,
-      "ah_handicap": -0.25,
-      "ah_away": 0.78,
-      "ah_handicap_text": "平手/半球",
-      "ah_company_id": "3",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -309285,11 +309057,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.6574,
-      "ah_push_prob": 0.1015,
-      "ah_away_covers_prob": 0.2411,
-      "ah_pred_desc": "亚P:上66% 走10%"
+      ]
     },
     {
       "fid": "3017868",
@@ -309410,15 +309178,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0532
       },
-      "ah_open_home": 1.0,
-      "ah_open_handicap": -1.0,
-      "ah_open_away": 0.82,
-      "ah_open_handicap_text": "一球",
-      "ah_home": 1.0,
-      "ah_handicap": -1.0,
-      "ah_away": 0.88,
-      "ah_handicap_text": "一球",
-      "ah_company_id": "3",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -309852,11 +309620,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.4058,
-      "ah_push_prob": 0.2247,
-      "ah_away_covers_prob": 0.3695,
-      "ah_pred_desc": "亚P:上41% 走22%"
+      ]
     },
     {
       "fid": "3003106",
@@ -309977,15 +309741,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0999
       },
-      "ah_open_home": 0.75,
-      "ah_open_handicap": -0.5,
-      "ah_open_away": 0.95,
-      "ah_open_handicap_text": "半球",
-      "ah_home": 0.75,
-      "ah_handicap": -0.5,
-      "ah_away": 0.95,
-      "ah_handicap_text": "半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -310415,11 +310179,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.4665,
-      "ah_push_prob": 0.0,
-      "ah_away_covers_prob": 0.5335,
-      "ah_pred_desc": "亚P:下53% 走0%"
+      ]
     },
     {
       "fid": "3003521",
@@ -310581,15 +310341,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.2208
       },
-      "ah_open_home": 0.85,
-      "ah_open_handicap": -1.75,
-      "ah_open_away": 0.93,
-      "ah_open_handicap_text": "球半/两球",
-      "ah_home": 0.9,
-      "ah_handicap": -2.0,
-      "ah_away": 0.88,
-      "ah_handicap_text": "两球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -310887,11 +310647,7 @@
           "total_goals": 4,
           "prob": 0.158
         }
-      ],
-      "ah_home_covers_prob": 0.8418,
-      "ah_push_prob": 0.0996,
-      "ah_away_covers_prob": 0.0586,
-      "ah_pred_desc": "亚P:上84% 走10%"
+      ]
     },
     {
       "fid": "3009599",
@@ -311045,15 +310801,15 @@
         }
       ],
       "best_value": null,
-      "ah_open_home": 0.93,
-      "ah_open_handicap": -0.25,
-      "ah_open_away": 0.77,
-      "ah_open_handicap_text": "平手/半球",
-      "ah_home": 0.85,
-      "ah_handicap": -0.25,
-      "ah_away": 0.85,
-      "ah_handicap_text": "平手/半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -311347,11 +311103,7 @@
           "total_goals": 3,
           "prob": 0.18
         }
-      ],
-      "ah_home_covers_prob": 0.5408,
-      "ah_push_prob": 0.1196,
-      "ah_away_covers_prob": 0.3395,
-      "ah_pred_desc": "亚P:上54% 走12%"
+      ]
     },
     {
       "fid": "3009598",
@@ -311513,15 +311265,15 @@
         "source": "hkjc",
         "kelly_weighted": 0.1955
       },
-      "ah_open_home": 0.87,
-      "ah_open_handicap": -1.5,
-      "ah_open_away": 0.83,
-      "ah_open_handicap_text": "球半",
-      "ah_home": 0.6,
-      "ah_handicap": -1.5,
-      "ah_away": 1.1,
-      "ah_handicap_text": "球半",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -311770,11 +311522,7 @@
           "total_goals": 3,
           "prob": 0.167
         }
-      ],
-      "ah_home_covers_prob": 0.8757,
-      "ah_push_prob": 0.0,
-      "ah_away_covers_prob": 0.1243,
-      "ah_pred_desc": "亚P:上88% 走0%"
+      ]
     },
     {
       "fid": "2914381",
@@ -311895,15 +311643,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.1617
       },
-      "ah_open_home": 1.03,
-      "ah_open_handicap": -1.25,
-      "ah_open_away": 0.85,
-      "ah_open_handicap_text": "一球/球半",
-      "ah_home": 1.02,
-      "ah_handicap": -1.5,
-      "ah_away": 0.86,
-      "ah_handicap_text": "球半",
-      "ah_company_id": "3",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -312329,11 +312077,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.844,
-      "ah_push_prob": 0.0,
-      "ah_away_covers_prob": 0.156,
-      "ah_pred_desc": "亚P:上84% 走0%"
+      ]
     },
     {
       "fid": "2939028",
@@ -312454,15 +312198,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0266
       },
-      "ah_open_home": 1.04,
-      "ah_open_handicap": -0.25,
-      "ah_open_away": 0.78,
-      "ah_open_handicap_text": "平手/半球",
-      "ah_home": 1.04,
-      "ah_handicap": -0.25,
-      "ah_away": 0.84,
-      "ah_handicap_text": "平手/半球",
-      "ah_company_id": "3",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -312888,11 +312632,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.5317,
-      "ah_push_prob": 0.1081,
-      "ah_away_covers_prob": 0.3602,
-      "ah_pred_desc": "亚P:上53% 走11%"
+      ]
     },
     {
       "fid": "2914382",
@@ -313013,15 +312753,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0396
       },
-      "ah_open_home": 1.05,
-      "ah_open_handicap": -0.5,
-      "ah_open_away": 0.83,
-      "ah_open_handicap_text": "半球",
-      "ah_home": 1.07,
-      "ah_handicap": -0.5,
-      "ah_away": 0.81,
-      "ah_handicap_text": "半球",
-      "ah_company_id": "3",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -313447,11 +313187,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.4546,
-      "ah_push_prob": 0.0,
-      "ah_away_covers_prob": 0.5454,
-      "ah_pred_desc": "亚P:下55% 走0%"
+      ]
     },
     {
       "fid": "2939029",
@@ -313572,15 +313308,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.121
       },
-      "ah_open_home": 0.82,
-      "ah_open_handicap": -1.5,
-      "ah_open_away": 1.0,
-      "ah_open_handicap_text": "球半",
-      "ah_home": 0.8,
-      "ah_handicap": -1.75,
-      "ah_away": 1.08,
-      "ah_handicap_text": "球半/两球",
-      "ah_company_id": "3",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -314006,11 +313742,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.8307,
-      "ah_push_prob": 0.0513,
-      "ah_away_covers_prob": 0.1181,
-      "ah_pred_desc": "亚P:上83% 走5%"
+      ]
     },
     {
       "fid": "2939031",
@@ -314131,15 +313863,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.2186
       },
-      "ah_open_home": 1.02,
-      "ah_open_handicap": -1.5,
-      "ah_open_away": 0.8,
-      "ah_open_handicap_text": "球半",
-      "ah_home": 0.9,
-      "ah_handicap": -1.25,
-      "ah_away": 0.98,
-      "ah_handicap_text": "一球/球半",
-      "ah_company_id": "3",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -314556,11 +314288,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.7364,
-      "ah_push_prob": 0.0838,
-      "ah_away_covers_prob": 0.1799,
-      "ah_pred_desc": "亚P:上74% 走8%"
+      ]
     },
     {
       "fid": "2939030",
@@ -314673,15 +314401,15 @@
         }
       ],
       "best_value": null,
-      "ah_open_home": 0.86,
-      "ah_open_handicap": -0.25,
-      "ah_open_away": 0.96,
-      "ah_open_handicap_text": "平手/半球",
-      "ah_home": 0.81,
-      "ah_handicap": -0.0,
-      "ah_away": 1.07,
-      "ah_handicap_text": "平手",
-      "ah_company_id": "3",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -315111,11 +314839,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.4609,
-      "ah_push_prob": 0.2234,
-      "ah_away_covers_prob": 0.3158,
-      "ah_pred_desc": "亚P:上46% 走22%"
+      ]
     },
     {
       "fid": "2939032",
@@ -315236,15 +314960,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0308
       },
-      "ah_open_home": 0.79,
-      "ah_open_handicap": -0.25,
-      "ah_open_away": 1.03,
-      "ah_open_handicap_text": "平手/半球",
-      "ah_home": 1.04,
-      "ah_handicap": -0.5,
-      "ah_away": 0.84,
-      "ah_handicap_text": "半球",
-      "ah_company_id": "3",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -315670,11 +315394,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.6314,
-      "ah_push_prob": 0.0,
-      "ah_away_covers_prob": 0.3686,
-      "ah_pred_desc": "亚P:上63% 走0%"
+      ]
     },
     {
       "fid": "3009586",
@@ -315836,15 +315556,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.092
       },
-      "ah_open_home": 0.75,
-      "ah_open_handicap": -0.5,
-      "ah_open_away": 0.95,
-      "ah_open_handicap_text": "半球",
-      "ah_home": 0.82,
-      "ah_handicap": -0.75,
-      "ah_away": 0.88,
-      "ah_handicap_text": "半球/一球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -316066,11 +315786,7 @@
           "total_goals": 3,
           "prob": 0.18
         }
-      ],
-      "ah_home_covers_prob": 0.5927,
-      "ah_push_prob": 0.0952,
-      "ah_away_covers_prob": 0.3122,
-      "ah_pred_desc": "亚P:上59% 走10%"
+      ]
     },
     {
       "fid": "2914385",
@@ -316191,15 +315907,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.1028
       },
-      "ah_open_home": 0.88,
-      "ah_open_handicap": -0.75,
-      "ah_open_away": 1.0,
-      "ah_open_handicap_text": "半球/一球",
-      "ah_home": 1.0,
-      "ah_handicap": -0.5,
-      "ah_away": 0.89,
-      "ah_handicap_text": "半球",
-      "ah_company_id": "3",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -316621,11 +316337,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.6796,
-      "ah_push_prob": 0.0,
-      "ah_away_covers_prob": 0.3204,
-      "ah_pred_desc": "亚P:上68% 走0%"
+      ]
     },
     {
       "fid": "3023432",
@@ -316787,15 +316499,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.058
       },
-      "ah_open_home": 0.78,
-      "ah_open_handicap": 0.25,
-      "ah_open_away": 1.0,
-      "ah_open_handicap_text": "受让平手/半球",
-      "ah_home": 0.98,
-      "ah_handicap": -0.0,
-      "ah_away": 0.8,
-      "ah_handicap_text": "平手",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -317089,11 +316801,7 @@
           "total_goals": 3,
           "prob": 0.18
         }
-      ],
-      "ah_home_covers_prob": 0.4784,
-      "ah_push_prob": 0.2331,
-      "ah_away_covers_prob": 0.2884,
-      "ah_pred_desc": "亚P:上48% 走23%"
+      ]
     },
     {
       "fid": "2940113",
@@ -317255,15 +316963,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0571
       },
-      "ah_open_home": 0.86,
-      "ah_open_handicap": -0.5,
-      "ah_open_away": 0.84,
-      "ah_open_handicap_text": "半球",
-      "ah_home": 0.86,
-      "ah_handicap": -0.5,
-      "ah_away": 0.84,
-      "ah_handicap_text": "半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -317503,11 +317211,7 @@
           "total_goals": 1,
           "prob": 0.183
         }
-      ],
-      "ah_home_covers_prob": 0.6791,
-      "ah_push_prob": 0.0,
-      "ah_away_covers_prob": 0.3209,
-      "ah_pred_desc": "亚P:上68% 走0%"
+      ]
     },
     {
       "fid": "2962558",
@@ -317669,15 +317373,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.1792
       },
-      "ah_open_home": 0.96,
-      "ah_open_handicap": -1.0,
-      "ah_open_away": 0.82,
-      "ah_open_handicap_text": "一球",
-      "ah_home": 0.86,
-      "ah_handicap": -1.0,
-      "ah_away": 0.92,
-      "ah_handicap_text": "一球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -318107,11 +317811,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.6817,
-      "ah_push_prob": 0.1783,
-      "ah_away_covers_prob": 0.1399,
-      "ah_pred_desc": "亚P:上68% 走18%"
+      ]
     },
     {
       "fid": "2940108",
@@ -318273,15 +317973,15 @@
         "source": "hkjc",
         "kelly_weighted": 0.1882
       },
-      "ah_open_home": 0.84,
-      "ah_open_handicap": -1.25,
-      "ah_open_away": 0.86,
-      "ah_open_handicap_text": "一球/球半",
-      "ah_home": 0.84,
-      "ah_handicap": -1.25,
-      "ah_away": 0.86,
-      "ah_handicap_text": "一球/球半",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -318711,11 +318411,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.918,
-      "ah_push_prob": 0.0431,
-      "ah_away_covers_prob": 0.0389,
-      "ah_pred_desc": "亚P:上92% 走4%"
+      ]
     },
     {
       "fid": "2921207",
@@ -318877,15 +318573,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.1787
       },
-      "ah_open_home": 0.86,
-      "ah_open_handicap": -1.5,
-      "ah_open_away": 0.92,
-      "ah_open_handicap_text": "球半",
-      "ah_home": 0.85,
-      "ah_handicap": -1.5,
-      "ah_away": 0.93,
-      "ah_handicap_text": "球半",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -319311,11 +319007,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.8524,
-      "ah_push_prob": 0.0,
-      "ah_away_covers_prob": 0.1476,
-      "ah_pred_desc": "亚P:上85% 走0%"
+      ]
     },
     {
       "fid": "2962556",
@@ -319477,15 +319169,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.1703
       },
-      "ah_open_home": 0.93,
-      "ah_open_handicap": -1.0,
-      "ah_open_away": 0.85,
-      "ah_open_handicap_text": "一球",
-      "ah_home": 0.8,
-      "ah_handicap": -1.0,
-      "ah_away": 0.98,
-      "ah_handicap_text": "一球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -319865,11 +319557,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.8594,
-      "ah_push_prob": 0.0934,
-      "ah_away_covers_prob": 0.0472,
-      "ah_pred_desc": "亚P:上86% 走9%"
+      ]
     },
     {
       "fid": "1414849",
@@ -463202,15 +462890,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.143
       },
-      "ah_open_home": 0.78,
-      "ah_open_handicap": -1.25,
-      "ah_open_away": 1.0,
-      "ah_open_handicap_text": "一球/球半",
-      "ah_home": 1.0,
-      "ah_handicap": -1.5,
-      "ah_away": 0.78,
-      "ah_handicap_text": "球半",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -463640,11 +463328,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.9267,
-      "ah_push_prob": 0.0,
-      "ah_away_covers_prob": 0.0733,
-      "ah_pred_desc": "亚P:上93% 走0%"
+      ]
     },
     {
       "fid": "3009668",
@@ -463806,15 +463490,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0518
       },
-      "ah_open_home": 1.02,
-      "ah_open_handicap": -1.0,
-      "ah_open_away": 0.76,
-      "ah_open_handicap_text": "一球",
-      "ah_home": 0.74,
-      "ah_handicap": -1.0,
-      "ah_away": 1.04,
-      "ah_handicap_text": "一球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -464153,11 +463837,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.4653,
-      "ah_push_prob": 0.2266,
-      "ah_away_covers_prob": 0.3081,
-      "ah_pred_desc": "亚P:上47% 走23%"
+      ]
     },
     {
       "fid": "3013020",
@@ -465501,15 +465181,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0798
       },
-      "ah_open_home": 1.01,
-      "ah_open_handicap": -1.0,
-      "ah_open_away": 0.77,
-      "ah_open_handicap_text": "一球",
-      "ah_home": 0.84,
-      "ah_handicap": -0.5,
-      "ah_away": 0.94,
-      "ah_handicap_text": "半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -465939,11 +465619,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.785,
-      "ah_push_prob": 0.0,
-      "ah_away_covers_prob": 0.215,
-      "ah_pred_desc": "亚P:上79% 走0%"
+      ]
     },
     {
       "fid": "3013033",
@@ -466105,15 +465781,15 @@
         "source": "hkjc",
         "kelly_weighted": 0.1545
       },
-      "ah_open_home": 0.92,
-      "ah_open_handicap": -1.25,
-      "ah_open_away": 0.86,
-      "ah_open_handicap_text": "一球/球半",
-      "ah_home": 1.0,
-      "ah_handicap": -1.5,
-      "ah_away": 0.76,
-      "ah_handicap_text": "球半",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -466543,11 +466219,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.9766,
-      "ah_push_prob": 0.0,
-      "ah_away_covers_prob": 0.0234,
-      "ah_pred_desc": "亚P:上98% 走0%"
+      ]
     },
     {
       "fid": "3022199",
@@ -467846,15 +467518,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0541
       },
-      "ah_open_home": 0.78,
-      "ah_open_handicap": 0.5,
-      "ah_open_away": 0.92,
-      "ah_open_handicap_text": "受让半球",
-      "ah_home": 1.1,
-      "ah_handicap": 1.0,
-      "ah_away": 0.6,
-      "ah_handicap_text": "受让一球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -468284,11 +467956,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.1008,
-      "ah_push_prob": 0.1477,
-      "ah_away_covers_prob": 0.7515,
-      "ah_pred_desc": "亚P:下75% 走15%"
+      ]
     },
     {
       "fid": "3022205",
@@ -468450,15 +468118,15 @@
         "source": "hkjc",
         "kelly_weighted": 0.1375
       },
-      "ah_open_home": 0.74,
-      "ah_open_handicap": 1.25,
-      "ah_open_away": 0.96,
-      "ah_open_handicap_text": "受让一球/球半",
-      "ah_home": 0.8,
-      "ah_handicap": 1.25,
-      "ah_away": 0.9,
-      "ah_handicap_text": "受让一球/球半",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -468888,11 +468556,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.2576,
-      "ah_push_prob": 0.1094,
-      "ah_away_covers_prob": 0.6329,
-      "ah_pred_desc": "亚P:下63% 走11%"
+      ]
     },
     {
       "fid": "3035410",
@@ -469481,15 +469145,15 @@
         "source": "hkjc",
         "kelly_weighted": 0.0573
       },
-      "ah_open_home": 0.82,
-      "ah_open_handicap": -0.5,
-      "ah_open_away": 0.88,
-      "ah_open_handicap_text": "半球",
-      "ah_home": 0.94,
-      "ah_handicap": -0.0,
-      "ah_away": 0.76,
-      "ah_handicap_text": "平手",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -469832,11 +469496,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.2789,
-      "ah_push_prob": 0.2167,
-      "ah_away_covers_prob": 0.5044,
-      "ah_pred_desc": "亚P:下50% 走22%"
+      ]
     },
     {
       "fid": "3035425",
@@ -469949,15 +469609,15 @@
         }
       ],
       "best_value": null,
-      "ah_open_home": 0.84,
-      "ah_open_handicap": -0.0,
-      "ah_open_away": 0.86,
-      "ah_open_handicap_text": "平手",
-      "ah_home": 0.82,
-      "ah_handicap": -0.5,
-      "ah_away": 0.88,
-      "ah_handicap_text": "半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -470315,11 +469975,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.7344,
-      "ah_push_prob": 0.0,
-      "ah_away_covers_prob": 0.2656,
-      "ah_pred_desc": "亚P:上73% 走0%"
+      ]
     },
     {
       "fid": "3037090",
@@ -470481,15 +470137,15 @@
         "source": "hkjc",
         "kelly_weighted": 0.169
       },
-      "ah_open_home": 0.85,
-      "ah_open_handicap": 3.0,
-      "ah_open_away": 0.85,
-      "ah_open_handicap_text": "受让三球",
-      "ah_home": 0.9,
-      "ah_handicap": 3.25,
-      "ah_away": 0.8,
-      "ah_handicap_text": "受让三球/三球半",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -470824,11 +470480,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.0281,
-      "ah_push_prob": 0.028,
-      "ah_away_covers_prob": 0.9439,
-      "ah_pred_desc": "亚P:下94% 走3%"
+      ]
     },
     {
       "fid": "3035426",
@@ -471446,15 +471098,15 @@
         }
       ],
       "best_value": null,
-      "ah_open_home": 0.85,
-      "ah_open_handicap": 0.25,
-      "ah_open_away": 0.85,
-      "ah_open_handicap_text": "受让平手/半球",
-      "ah_home": 1.0,
-      "ah_handicap": 0.25,
-      "ah_away": 0.7,
-      "ah_handicap_text": "受让平手/半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -471880,11 +471532,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.4025,
-      "ah_push_prob": 0.1201,
-      "ah_away_covers_prob": 0.4774,
-      "ah_pred_desc": "亚P:下48% 走12%"
+      ]
     },
     {
       "fid": "3049759",
@@ -472046,15 +471694,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0937
       },
-      "ah_open_home": 0.77,
-      "ah_open_handicap": -0.75,
-      "ah_open_away": 0.93,
-      "ah_open_handicap_text": "半球/一球",
-      "ah_home": 1.05,
-      "ah_handicap": -1.0,
-      "ah_away": 0.65,
-      "ah_handicap_text": "一球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -472393,11 +472041,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.532,
-      "ah_push_prob": 0.2217,
-      "ah_away_covers_prob": 0.2463,
-      "ah_pred_desc": "亚P:上53% 走22%"
+      ]
     },
     {
       "fid": "3049771",
@@ -472559,15 +472203,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.1567
       },
-      "ah_open_home": 0.76,
-      "ah_open_handicap": -1.5,
-      "ah_open_away": 0.94,
-      "ah_open_handicap_text": "球半",
-      "ah_home": 0.94,
-      "ah_handicap": -1.75,
-      "ah_away": 0.76,
-      "ah_handicap_text": "球半/两球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -472916,11 +472560,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.9198,
-      "ah_push_prob": 0.0288,
-      "ah_away_covers_prob": 0.0514,
-      "ah_pred_desc": "亚P:上92% 走3%"
+      ]
     },
     {
       "fid": "3049994",
@@ -474742,15 +474382,15 @@
         "source": "hkjc",
         "kelly_weighted": 0.0349
       },
-      "ah_open_home": 0.83,
-      "ah_open_handicap": -0.75,
-      "ah_open_away": 0.87,
-      "ah_open_handicap_text": "半球/一球",
-      "ah_home": 1.04,
-      "ah_handicap": -0.75,
-      "ah_away": 0.66,
-      "ah_handicap_text": "半球/一球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -475103,11 +474743,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.7505,
-      "ah_push_prob": 0.0723,
-      "ah_away_covers_prob": 0.1772,
-      "ah_pred_desc": "亚P:上75% 走7%"
+      ]
     },
     {
       "fid": "3055641",
@@ -476391,15 +476027,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0488
       },
-      "ah_open_home": 0.88,
-      "ah_open_handicap": -0.25,
-      "ah_open_away": 0.9,
-      "ah_open_handicap_text": "平手/半球",
-      "ah_home": 0.9,
-      "ah_handicap": -0.0,
-      "ah_away": 0.88,
-      "ah_handicap_text": "平手",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -476738,11 +476374,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.5794,
-      "ah_push_prob": 0.2259,
-      "ah_away_covers_prob": 0.1947,
-      "ah_pred_desc": "亚P:上58% 走23%"
+      ]
     },
     {
       "fid": "2961729",
@@ -476904,15 +476536,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.1089
       },
-      "ah_open_home": 0.78,
-      "ah_open_handicap": -0.75,
-      "ah_open_away": 1.0,
-      "ah_open_handicap_text": "半球/一球",
-      "ah_home": 0.84,
-      "ah_handicap": -1.0,
-      "ah_away": 0.92,
-      "ah_handicap_text": "一球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -477261,11 +476893,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.7535,
-      "ah_push_prob": 0.146,
-      "ah_away_covers_prob": 0.1005,
-      "ah_pred_desc": "亚P:上75% 走15%"
+      ]
     },
     {
       "fid": "2961732",
@@ -477427,15 +477055,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0783
       },
-      "ah_open_home": 0.94,
-      "ah_open_handicap": -0.75,
-      "ah_open_away": 0.84,
-      "ah_open_handicap_text": "半球/一球",
-      "ah_home": 0.98,
-      "ah_handicap": -1.25,
-      "ah_away": 0.8,
-      "ah_handicap_text": "一球/球半",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -477770,11 +477398,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.7617,
-      "ah_push_prob": 0.0882,
-      "ah_away_covers_prob": 0.1502,
-      "ah_pred_desc": "亚P:上76% 走9%"
+      ]
     },
     {
       "fid": "2991124",
@@ -477928,15 +477552,15 @@
         }
       ],
       "best_value": null,
-      "ah_open_home": 0.74,
-      "ah_open_handicap": -0.0,
-      "ah_open_away": 1.04,
-      "ah_open_handicap_text": "平手",
-      "ah_home": 0.94,
-      "ah_handicap": -0.25,
-      "ah_away": 0.84,
-      "ah_handicap_text": "平手/半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -478366,11 +477990,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.4984,
-      "ah_push_prob": 0.1265,
-      "ah_away_covers_prob": 0.3751,
-      "ah_pred_desc": "亚P:上50% 走13%"
+      ]
     },
     {
       "fid": "2961730",
@@ -478524,15 +478144,15 @@
         }
       ],
       "best_value": null,
-      "ah_open_home": 0.84,
-      "ah_open_handicap": -0.0,
-      "ah_open_away": 0.94,
-      "ah_open_handicap_text": "平手",
-      "ah_home": 0.92,
-      "ah_handicap": -0.25,
-      "ah_away": 0.84,
-      "ah_handicap_text": "平手/半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -478877,11 +478497,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.4784,
-      "ah_push_prob": 0.1195,
-      "ah_away_covers_prob": 0.4021,
-      "ah_pred_desc": "亚P:上48% 走12%"
+      ]
     },
     {
       "fid": "2961731",
@@ -479043,15 +478659,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.1012
       },
-      "ah_open_home": 0.91,
-      "ah_open_handicap": -1.0,
-      "ah_open_away": 0.87,
-      "ah_open_handicap_text": "一球",
-      "ah_home": 0.88,
-      "ah_handicap": -0.75,
-      "ah_away": 0.88,
-      "ah_handicap_text": "半球/一球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -479390,11 +479006,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.8523,
-      "ah_push_prob": 0.0463,
-      "ah_away_covers_prob": 0.1014,
-      "ah_pred_desc": "亚P:上85% 走5%"
+      ]
     },
     {
       "fid": "3024406",
@@ -479556,15 +479168,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0615
       },
-      "ah_open_home": 0.86,
-      "ah_open_handicap": 0.25,
-      "ah_open_away": 0.92,
-      "ah_open_handicap_text": "受让平手/半球",
-      "ah_home": 0.94,
-      "ah_handicap": 0.5,
-      "ah_away": 0.84,
-      "ah_handicap_text": "受让半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -479998,11 +479610,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.5433,
-      "ah_push_prob": 0.0,
-      "ah_away_covers_prob": 0.4567,
-      "ah_pred_desc": "亚P:上54% 走0%"
+      ]
     },
     {
       "fid": "3024402",
@@ -480164,15 +479772,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.1702
       },
-      "ah_open_home": 1.04,
-      "ah_open_handicap": -1.0,
-      "ah_open_away": 0.74,
-      "ah_open_handicap_text": "一球",
-      "ah_home": 0.88,
-      "ah_handicap": -1.0,
-      "ah_away": 0.9,
-      "ah_handicap_text": "一球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -480598,11 +480206,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.7181,
-      "ah_push_prob": 0.1626,
-      "ah_away_covers_prob": 0.1194,
-      "ah_pred_desc": "亚P:上72% 走16%"
+      ]
     },
     {
       "fid": "3037096",
@@ -480764,15 +480368,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.1521
       },
-      "ah_open_home": 0.88,
-      "ah_open_handicap": 1.25,
-      "ah_open_away": 0.82,
-      "ah_open_handicap_text": "受让一球/球半",
-      "ah_home": 0.74,
-      "ah_handicap": 1.0,
-      "ah_away": 0.96,
-      "ah_handicap_text": "受让一球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -481107,11 +480711,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.2072,
-      "ah_push_prob": 0.2047,
-      "ah_away_covers_prob": 0.5882,
-      "ah_pred_desc": "亚P:下59% 走20%"
+      ]
     },
     {
       "fid": "3029328",
@@ -481273,15 +480873,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.1038
       },
-      "ah_open_home": 0.9,
-      "ah_open_handicap": -1.0,
-      "ah_open_away": 0.88,
-      "ah_open_handicap_text": "一球",
-      "ah_home": 0.94,
-      "ah_handicap": -1.5,
-      "ah_away": 0.84,
-      "ah_handicap_text": "球半",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -481620,11 +481220,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.9019,
-      "ah_push_prob": 0.0,
-      "ah_away_covers_prob": 0.0981,
-      "ah_pred_desc": "亚P:上90% 走0%"
+      ]
     },
     {
       "fid": "3037097",
@@ -481786,15 +481382,15 @@
         "source": "hkjc",
         "kelly_weighted": 0.0998
       },
-      "ah_open_home": 0.93,
-      "ah_open_handicap": 0.75,
-      "ah_open_away": 0.77,
-      "ah_open_handicap_text": "受让半球/一球",
-      "ah_home": 0.86,
-      "ah_handicap": 0.75,
-      "ah_away": 0.84,
-      "ah_handicap_text": "受让半球/一球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -482188,11 +481784,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.3014,
-      "ah_push_prob": 0.1011,
-      "ah_away_covers_prob": 0.5975,
-      "ah_pred_desc": "亚P:下60% 走10%"
+      ]
     },
     {
       "fid": "3049769",
@@ -482346,15 +481938,15 @@
         }
       ],
       "best_value": null,
-      "ah_open_home": 0.78,
-      "ah_open_handicap": -0.25,
-      "ah_open_away": 0.92,
-      "ah_open_handicap_text": "平手/半球",
-      "ah_home": 0.8,
-      "ah_handicap": -0.25,
-      "ah_away": 0.9,
-      "ah_handicap_text": "平手/半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -482697,11 +482289,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.3657,
-      "ah_push_prob": 0.114,
-      "ah_away_covers_prob": 0.5203,
-      "ah_pred_desc": "亚P:下52% 走11%"
+      ]
     },
     {
       "fid": "3049770",
@@ -482863,15 +482451,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0559
       },
-      "ah_open_home": 0.94,
-      "ah_open_handicap": -0.5,
-      "ah_open_away": 0.76,
-      "ah_open_handicap_text": "半球",
-      "ah_home": 0.9,
-      "ah_handicap": -0.5,
-      "ah_away": 0.8,
-      "ah_handicap_text": "半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -483214,11 +482802,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.4312,
-      "ah_push_prob": 0.0,
-      "ah_away_covers_prob": 0.5688,
-      "ah_pred_desc": "亚P:下57% 走0%"
+      ]
     },
     {
       "fid": "2905412",
@@ -483380,15 +482964,15 @@
         "source": "hkjc",
         "kelly_weighted": 0.1097
       },
-      "ah_open_home": 0.75,
-      "ah_open_handicap": -2.0,
-      "ah_open_away": 0.95,
-      "ah_open_handicap_text": "两球",
-      "ah_home": 1.1,
-      "ah_handicap": -2.0,
-      "ah_away": 0.6,
-      "ah_handicap_text": "两球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -483818,11 +483402,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.8917,
-      "ah_push_prob": 0.0742,
-      "ah_away_covers_prob": 0.0341,
-      "ah_pred_desc": "亚P:上89% 走7%"
+      ]
     },
     {
       "fid": "2911334",
@@ -483984,15 +483564,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.08
       },
-      "ah_open_home": 0.85,
-      "ah_open_handicap": 0.5,
-      "ah_open_away": 0.85,
-      "ah_open_handicap_text": "受让半球",
-      "ah_home": 0.85,
-      "ah_handicap": 0.5,
-      "ah_away": 0.85,
-      "ah_handicap_text": "受让半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -484426,11 +484006,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.4212,
-      "ah_push_prob": 0.0,
-      "ah_away_covers_prob": 0.5788,
-      "ah_pred_desc": "亚P:下58% 走0%"
+      ]
     },
     {
       "fid": "2911329",
@@ -484592,15 +484168,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0646
       },
-      "ah_open_home": 0.9,
-      "ah_open_handicap": -0.75,
-      "ah_open_away": 0.8,
-      "ah_open_handicap_text": "半球/一球",
-      "ah_home": 0.9,
-      "ah_handicap": -0.75,
-      "ah_away": 0.8,
-      "ah_handicap_text": "半球/一球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -485034,11 +484610,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.4236,
-      "ah_push_prob": 0.1122,
-      "ah_away_covers_prob": 0.4642,
-      "ah_pred_desc": "亚P:下46% 走11%"
+      ]
     },
     {
       "fid": "2960354",
@@ -485192,15 +484764,15 @@
         }
       ],
       "best_value": null,
-      "ah_open_home": 1.04,
-      "ah_open_handicap": -0.25,
-      "ah_open_away": 0.74,
-      "ah_open_handicap_text": "平手/半球",
-      "ah_home": 0.72,
-      "ah_handicap": -0.25,
-      "ah_away": 1.06,
-      "ah_handicap_text": "平手/半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -485626,11 +485198,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.5043,
-      "ah_push_prob": 0.1203,
-      "ah_away_covers_prob": 0.3754,
-      "ah_pred_desc": "亚P:上50% 走12%"
+      ]
     },
     {
       "fid": "2960353",
@@ -485751,15 +485319,15 @@
         "source": "hkjc",
         "kelly_weighted": 0.0839
       },
-      "ah_open_home": 0.88,
-      "ah_open_handicap": -0.75,
-      "ah_open_away": 0.9,
-      "ah_open_handicap_text": "半球/一球",
-      "ah_home": 0.7,
-      "ah_handicap": -0.75,
-      "ah_away": 1.08,
-      "ah_handicap_text": "半球/一球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -486185,11 +485753,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.6516,
-      "ah_push_prob": 0.093,
-      "ah_away_covers_prob": 0.2554,
-      "ah_pred_desc": "亚P:上65% 走9%"
+      ]
     },
     {
       "fid": "2956997",
@@ -486351,15 +485915,15 @@
         "source": "hkjc",
         "kelly_weighted": 0.0638
       },
-      "ah_open_home": 0.81,
-      "ah_open_handicap": -0.25,
-      "ah_open_away": 0.89,
-      "ah_open_handicap_text": "平手/半球",
-      "ah_home": 0.81,
-      "ah_handicap": -0.25,
-      "ah_away": 0.89,
-      "ah_handicap_text": "平手/半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -486793,11 +486357,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.6188,
-      "ah_push_prob": 0.116,
-      "ah_away_covers_prob": 0.2652,
-      "ah_pred_desc": "亚P:上62% 走12%"
+      ]
     },
     {
       "fid": "2957000",
@@ -486959,15 +486519,15 @@
         "source": "hkjc",
         "kelly_weighted": 0.1487
       },
-      "ah_open_home": 0.82,
-      "ah_open_handicap": -0.75,
-      "ah_open_away": 0.88,
-      "ah_open_handicap_text": "半球/一球",
-      "ah_home": 0.82,
-      "ah_handicap": -0.75,
-      "ah_away": 0.88,
-      "ah_handicap_text": "半球/一球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -487393,11 +486953,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.6865,
-      "ah_push_prob": 0.0869,
-      "ah_away_covers_prob": 0.2266,
-      "ah_pred_desc": "亚P:上69% 走9%"
+      ]
     },
     {
       "fid": "2961735",
@@ -487559,15 +487115,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0659
       },
-      "ah_open_home": 0.87,
-      "ah_open_handicap": -0.25,
-      "ah_open_away": 0.91,
-      "ah_open_handicap_text": "平手/半球",
-      "ah_home": 0.94,
-      "ah_handicap": -0.5,
-      "ah_away": 0.84,
-      "ah_handicap_text": "半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -487910,11 +487466,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.5155,
-      "ah_push_prob": 0.0,
-      "ah_away_covers_prob": 0.4845,
-      "ah_pred_desc": "亚P:上52% 走0%"
+      ]
     },
     {
       "fid": "2961734",
@@ -488076,15 +487628,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0458
       },
-      "ah_open_home": 0.97,
-      "ah_open_handicap": -0.25,
-      "ah_open_away": 0.81,
-      "ah_open_handicap_text": "平手/半球",
-      "ah_home": 0.84,
-      "ah_handicap": -0.25,
-      "ah_away": 0.94,
-      "ah_handicap_text": "平手/半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -488433,11 +487985,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.5641,
-      "ah_push_prob": 0.1243,
-      "ah_away_covers_prob": 0.3116,
-      "ah_pred_desc": "亚P:上56% 走12%"
+      ]
     },
     {
       "fid": "2961733",
@@ -488599,15 +488147,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0515
       },
-      "ah_open_home": 0.78,
-      "ah_open_handicap": -0.25,
-      "ah_open_away": 1.0,
-      "ah_open_handicap_text": "平手/半球",
-      "ah_home": 1.02,
-      "ah_handicap": -0.5,
-      "ah_away": 0.76,
-      "ah_handicap_text": "半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -488946,11 +488494,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.5915,
-      "ah_push_prob": 0.0,
-      "ah_away_covers_prob": 0.4085,
-      "ah_pred_desc": "亚P:上59% 走0%"
+      ]
     },
     {
       "fid": "2961736",
@@ -489104,15 +488648,15 @@
         }
       ],
       "best_value": null,
-      "ah_open_home": 0.95,
-      "ah_open_handicap": -0.25,
-      "ah_open_away": 0.83,
-      "ah_open_handicap_text": "平手/半球",
-      "ah_home": 0.95,
-      "ah_handicap": -0.25,
-      "ah_away": 0.83,
-      "ah_handicap_text": "平手/半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -489447,11 +488991,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.5961,
-      "ah_push_prob": 0.1162,
-      "ah_away_covers_prob": 0.2876,
-      "ah_pred_desc": "亚P:上60% 走12%"
+      ]
     },
     {
       "fid": "2961737",
@@ -489613,15 +489153,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.1419
       },
-      "ah_open_home": 0.97,
-      "ah_open_handicap": -1.25,
-      "ah_open_away": 0.81,
-      "ah_open_handicap_text": "一球/球半",
-      "ah_home": 0.94,
-      "ah_handicap": -1.5,
-      "ah_away": 0.84,
-      "ah_handicap_text": "球半",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -489960,11 +489500,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.9282,
-      "ah_push_prob": 0.0,
-      "ah_away_covers_prob": 0.0718,
-      "ah_pred_desc": "亚P:上93% 走0%"
+      ]
     },
     {
       "fid": "2991084",
@@ -490126,15 +489662,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0623
       },
-      "ah_open_home": 0.7,
-      "ah_open_handicap": 0.75,
-      "ah_open_away": 1.0,
-      "ah_open_handicap_text": "受让半球/一球",
-      "ah_home": 0.86,
-      "ah_handicap": 0.75,
-      "ah_away": 0.84,
-      "ah_handicap_text": "受让半球/一球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -490564,11 +490100,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.2936,
-      "ah_push_prob": 0.0958,
-      "ah_away_covers_prob": 0.6106,
-      "ah_pred_desc": "亚P:下61% 走10%"
+      ]
     },
     {
       "fid": "2996408",
@@ -490730,15 +490262,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0837
       },
-      "ah_open_home": 1.02,
-      "ah_open_handicap": -0.25,
-      "ah_open_away": 0.76,
-      "ah_open_handicap_text": "平手/半球",
-      "ah_home": 1.02,
-      "ah_handicap": -0.25,
-      "ah_away": 0.76,
-      "ah_handicap_text": "平手/半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -491036,11 +490568,7 @@
           "total_goals": 4,
           "prob": 0.158
         }
-      ],
-      "ah_home_covers_prob": 0.6093,
-      "ah_push_prob": 0.1133,
-      "ah_away_covers_prob": 0.2774,
-      "ah_pred_desc": "亚P:上61% 走11%"
+      ]
     },
     {
       "fid": "3024404",
@@ -491202,15 +490730,15 @@
         "source": "hkjc",
         "kelly_weighted": 0.052
       },
-      "ah_open_home": 0.93,
-      "ah_open_handicap": -0.25,
-      "ah_open_away": 0.85,
-      "ah_open_handicap_text": "平手/半球",
-      "ah_home": 0.9,
-      "ah_handicap": -0.25,
-      "ah_away": 0.88,
-      "ah_handicap_text": "平手/半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -491481,11 +491009,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.7039,
-      "ah_push_prob": 0.1119,
-      "ah_away_covers_prob": 0.1842,
-      "ah_pred_desc": "亚P:上70% 走11%"
+      ]
     },
     {
       "fid": "3024409",
@@ -491647,15 +491171,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0665
       },
-      "ah_open_home": 0.98,
-      "ah_open_handicap": -0.75,
-      "ah_open_away": 0.8,
-      "ah_open_handicap_text": "半球/一球",
-      "ah_home": 1.08,
-      "ah_handicap": -0.5,
-      "ah_away": 0.7,
-      "ah_handicap_text": "半球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -492067,11 +491591,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.7456,
-      "ah_push_prob": 0.0,
-      "ah_away_covers_prob": 0.2544,
-      "ah_pred_desc": "亚P:上75% 走0%"
+      ]
     },
     {
       "fid": "3057050",
@@ -492697,15 +492217,15 @@
         "source": "hkjc",
         "kelly_weighted": 0.1725
       },
-      "ah_open_home": 0.85,
-      "ah_open_handicap": -2.0,
-      "ah_open_away": 0.85,
-      "ah_open_handicap_text": "两球",
-      "ah_home": 0.7,
-      "ah_handicap": -2.0,
-      "ah_away": 1.0,
-      "ah_handicap_text": "两球",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -493044,11 +492564,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.8632,
-      "ah_push_prob": 0.0884,
-      "ah_away_covers_prob": 0.0484,
-      "ah_pred_desc": "亚P:上86% 走9%"
+      ]
     },
     {
       "fid": "3057076",
@@ -493169,15 +492685,15 @@
         "source": "hkjc",
         "kelly_weighted": 0.2053
       },
-      "ah_open_home": 0.9,
-      "ah_open_handicap": 1.5,
-      "ah_open_away": 0.8,
-      "ah_open_handicap_text": "受让球半",
-      "ah_home": 0.9,
-      "ah_handicap": 1.5,
-      "ah_away": 0.8,
-      "ah_handicap_text": "受让球半",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -493584,11 +493100,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.2287,
-      "ah_push_prob": 0.0,
-      "ah_away_covers_prob": 0.7713,
-      "ah_pred_desc": "亚P:下77% 走0%"
+      ]
     },
     {
       "fid": "3057083",
@@ -493750,15 +493262,15 @@
         "source": "pinnacle",
         "kelly_weighted": 0.0393
       },
-      "ah_open_home": 0.86,
-      "ah_open_handicap": -0.0,
-      "ah_open_away": 0.84,
-      "ah_open_handicap_text": "平手",
-      "ah_home": 0.96,
-      "ah_handicap": -0.0,
-      "ah_away": 0.74,
-      "ah_handicap_text": "平手",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -494188,11 +493700,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.3211,
-      "ah_push_prob": 0.237,
-      "ah_away_covers_prob": 0.4418,
-      "ah_pred_desc": "亚P:下44% 走24%"
+      ]
     },
     {
       "fid": "3057423",
@@ -494313,15 +493821,15 @@
         "source": "hkjc",
         "kelly_weighted": 0.1048
       },
-      "ah_open_home": 0.81,
-      "ah_open_handicap": 1.25,
-      "ah_open_away": 0.89,
-      "ah_open_handicap_text": "受让一球/球半",
-      "ah_home": 0.81,
-      "ah_handicap": 1.25,
-      "ah_away": 0.89,
-      "ah_handicap_text": "受让一球/球半",
-      "ah_company_id": "1",
+      "ah_open_home": null,
+      "ah_open_handicap": null,
+      "ah_open_away": null,
+      "ah_open_handicap_text": null,
+      "ah_home": null,
+      "ah_handicap": null,
+      "ah_away": null,
+      "ah_handicap_text": null,
+      "ah_company_id": null,
       "stats": {
         "home_recent": [
           {
@@ -494715,11 +494223,7 @@
             }
           ]
         }
-      ],
-      "ah_home_covers_prob": 0.2556,
-      "ah_push_prob": 0.1092,
-      "ah_away_covers_prob": 0.6352,
-      "ah_pred_desc": "亚P:下64% 走11%"
+      ]
     }
   ]
 }
