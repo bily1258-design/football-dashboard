@@ -52,6 +52,10 @@ echo "[$(date '+%H:%M:%S')] 补抓亚盘..."
 python3 scripts/backfill_ah.py
 python3 scripts/backfill_ah_probs.py
 
+# 生成看板精简版 JSON (剔除 stats 等无用大字段, 12.7MB→1.6MB, 加速页面加载)
+echo "[$(date '+%H:%M:%S')] 生成看板精简数据 (results_light.json)..."
+python3 scripts/gen_light_results.py
+
 # ========== 同步 results.json → poisson_predictions（让xG/历史相似/总进球覆盖当日） ==========
 echo "[$(date '+%H:%M:%S')] 同步AI分析结果到数据库..."
 python3 scripts/sync_results_to_db.py
