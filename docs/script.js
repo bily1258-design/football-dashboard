@@ -237,7 +237,10 @@ function applyFilters(){
 function renderTable(matches){
   var tbody = document.getElementById('matchBody');
   tbody.innerHTML = '';
-  matches.forEach(function(m){
+  // 分批渲染: 每帧最多 CHUNK 行, 避免一次性插入千行 DOM 阻塞主线程
+  var CHUNK = 150;
+  var idx = 0;
+  function renderRow(m){
     var tr = document.createElement('tr');
     if(m.low_priority) tr.className = 'lp-row';
     var hc=m.hit&&m.hit.indexOf('✓')>-1?'hit-yes':m.hit==='✘'?'hit-no':'';
@@ -269,9 +272,9 @@ function renderTable(matches){
       '<td class="odds-cell" style="font-size:12px"><div>模型: <span class="odds-val odds-w">'+fmtPct(m.model_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.model_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.model_loss)+'</span></div>'+
         '<div style="margin-top:3px">'+confDot(m.lgbm_confidence)+'LGBM: <span class="odds-val odds-w">'+fmtPct(m.lgbm_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.lgbm_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.lgbm_loss)+'</span>'+
           '<div style="margin-top:2px"><span class="oc-label" style="margin-right:3px">分</span>'+
-            '<span class="'+((m.model_win-m.lgbm_win)<-0.003?'oc-pct-down':(m.model_win-m.lgbm_win)>0.003?'oc-pct-up':'oc-pct-flat')+'\">'+fmtPctSign((m.model_win-m.lgbm_win)*100)+'</span> '+
-            '<span class="'+((m.model_draw-m.lgbm_draw)<-0.003?'oc-pct-down':(m.model_draw-m.lgbm_draw)>0.003?'oc-pct-up':'oc-pct-flat')+'\">'+fmtPctSign((m.model_draw-m.lgbm_draw)*100)+'</span> '+
-            '<span class="'+((m.model_loss-m.lgbm_loss)<-0.003?'oc-pct-down':(m.model_loss-m.lgbm_loss)>0.003?'oc-pct-up':'oc-pct-flat')+'\">'+fmtPctSign((m.model_loss-m.lgbm_loss)*100)+'</span>'+
+            '<span class="'+((m.model_win-m.lgbm_win)<-0.003?'oc-pct-down':(m.model_win-m.lgbm_win)>0.003?'oc-pct-up':'oc-pct-flat')+'">'+fmtPctSign((m.model_win-m.lgbm_win)*100)+'</span> '+
+            '<span class="'+((m.model_draw-m.lgbm_draw)<-0.003?'oc-pct-down':(m.model_draw-m.lgbm_draw)>0.003?'oc-pct-up':'oc-pct-flat')+'">'+fmtPctSign((m.model_draw-m.lgbm_draw)*100)+'</span> '+
+            '<span class="'+((m.model_loss-m.lgbm_loss)<-0.003?'oc-pct-down':(m.model_loss-m.lgbm_loss)>0.003?'oc-pct-up':'oc-pct-flat')+'">'+fmtPctSign((m.model_loss-m.lgbm_loss)*100)+'</span>'+
           '</div>'+
         tsRow+
         '</div></td>'
@@ -284,8 +287,14 @@ function renderTable(matches){
       })(m);
     }
     tbody.appendChild(tr);
-  });
-  document.getElementById('matchCount').textContent = matches.length+' 场';
+  }
+  function nextChunk(){
+    var end = Math.min(idx+CHUNK, matches.length);
+    for(; idx<end; idx++) renderRow(matches[idx]);
+    if(idx < matches.length) requestAnimationFrame(nextChunk);
+    else document.getElementById('matchCount').textContent = matches.length+' 场';
+  }
+  nextChunk();
 }
 
 function renderStats(data){
@@ -300,8 +309,8 @@ function renderStats(data){
   });
 }
 
-// 加载
-fetch('data/results.json?v='+Date.now())
+// 加载 (results_light.json: 精简版, 12.7MB→1.6MB; cache:'no-cache' 走 ETag 条件请求, 数据未变 304 秒回)
+fetch('data/results_light.json', {cache:'no-cache'})
   .then(function(r){return r.json()})
   .then(function(data){
     allData = data;
@@ -318,9 +327,10 @@ fetch('data/results.json?v='+Date.now())
     document.getElementById('hitRate').textContent = '🎯 '+data.hit_count+'/'+data.total_scored+' ('+fmtPct(data.hit_rate)+')';
     document.getElementById('valueStats').textContent = '💰 价值: '+valueCount+' 场';
 
-    // 填充日期过滤
+    // 填充日期过滤 — 只列最近 14 天, 减少下拉选项与误选全量
     var sel = document.getElementById('dateFilter');
-    (data.daily_stats||[]).forEach(function(ds){
+    var recent = (data.daily_stats||[]).slice(0,14);
+    recent.forEach(function(ds){
       var opt = document.createElement('option');
       opt.value = ds.date; opt.textContent = ds.date+' ('+ds.count+')';
       sel.appendChild(opt);
@@ -328,6 +338,9 @@ fetch('data/results.json?v='+Date.now())
     var today = new Date().toISOString().slice(0,10);
     if (sel.querySelector('option[value="'+today+'"]')) {
       sel.value = today;
+    } else if (recent.length>0) {
+      // 今天无比赛: 默认选最近有数据的日期 (而非 all 全量渲染)
+      sel.value = recent[0].date;
     }
     renderStats(data);
     renderBetSummary();
