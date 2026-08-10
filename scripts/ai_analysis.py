@@ -1317,8 +1317,10 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             model_w, model_d, model_l = probs[0]/t, probs[1]/t, probs[2]/t
 
         # ─── 硬编码概率封顶分配 ──────────────────────────
-        # 统计结论: 将模型最大值封顶40%，按LGB平局区间比例分给剩余两方
-        # 分配比例基于DB历史数据的实际赛果统计
+        # 2026-08-10 验证后移除: 封顶40%对未开赛清单无影响(概率均<阈值),
+        # 历史场次命中率略升(50.1→50.8%), 客客客/★规则命中完全不变,
+        # 方向翻转仅24/1229且全部为 平→主/客 (封顶把主客方向拉平成平)。
+        # 保留代码便于追溯, 条件恒为 False 即永不执行。
         draw_boosted = False
         prob_list = [model_w, model_d, model_l]  # [H=0, D=1, A=2]
         max_val = max(prob_list)
@@ -1326,7 +1328,7 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
         max_side = ['home', 'draw', 'away'][max_idx]
         excess = max_val - 0.40
 
-        if excess > 0 and lgbm_d >= 0.05:
+        if False and os.environ.get('NO_CAP') != '1' and excess > 0 and lgbm_d >= 0.05:
             draw_boosted = True
             prob_list[max_idx] = 0.40  # 封顶
 
