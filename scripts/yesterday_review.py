@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """昨日客胜价值清单复盘生成器
-输出: 昨日(前一天)符合条件场次的命中复盘表 + 平博/HKJC初即盘明细
+输出: 昨日窗口(昨天12:00 → 今天11:59)符合条件场次的命中复盘表 + 平博/HKJC初即盘明细
 规则与 away_value_picks.py 一致: best_value.outcome==away 且 EV>0.5 且 HKJC客胜赔率 3-6
 用法: python3 scripts/yesterday_review.py
 """
@@ -15,11 +15,30 @@ def fmt3(arr):
         return '-'
     return f"{arr[0]}/{arr[1]}/{arr[2]}"
 
+def parse_dt(s):
+    """'2026-08-11 01:00' -> datetime; 只有日期则视为当天12:00"""
+    s = (s or '').strip()
+    if not s:
+        return None
+    try:
+        return datetime.datetime.strptime(s, '%Y-%m-%d %H:%M')
+    except ValueError:
+        pass
+    try:
+        return datetime.datetime.strptime(s, '%Y-%m-%d') + datetime.timedelta(hours=12)
+    except ValueError:
+        return None
+
 def main():
-    yesterday = (datetime.date.today() - datetime.timedelta(days=1)).isoformat()
+    now = datetime.datetime.now()
+    # 昨日窗口: 昨天12:00 → 今天11:59
+    win_end = now.replace(hour=11, minute=59, second=0, microsecond=0)
+    win_start = win_end - datetime.timedelta(days=1)
+    win_label = f"{win_start.strftime('%m-%d %H:%M')}~{win_end.strftime('%m-%d %H:%M')}"
     rows = []
     for m in MS:
-        if m.get('date') != yesterday:
+        mt = parse_dt(m.get('match_time') or m.get('date'))
+        if not mt or not (win_start <= mt <= win_end):
             continue
         bv = m.get('best_value') or {}
         pc = (m.get('pin_comparison') or {})
@@ -48,11 +67,11 @@ def main():
     rows.sort(key=lambda x: -x['ev'])
 
     if not rows:
-        print(f"昨日({yesterday})无符合条件场次")
+        print(f"昨日窗口({win_label})无符合条件场次")
         return
 
     wins = sum(1 for r in rows if r['hit'] == '✅客胜')
-    print(f"📋 昨日({yesterday})客胜价值清单复盘 — {len(rows)}场 | 命中 {wins}/{len(rows)} ({wins/len(rows)*100:.0f}%)")
+    print(f"📋 昨日窗口({win_label})客胜价值清单复盘 — {len(rows)}场 | 命中 {wins}/{len(rows)} ({wins/len(rows)*100:.0f}%)")
     print("=" * 92)
     print(f"{'联赛':<10}{'对阵':<26}{'比分':<8}{'结果':<8}{'HKJC客胜':<9}{'EV':<6}")
     print("-" * 92)
