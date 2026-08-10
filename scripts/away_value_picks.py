@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """客胜价值投注清单生成器
 规则(经HKJC真实赔率回测验证): best_value.outcome==away 且 EV>0.5 且 HKJC客胜赔率 3-6
-只输出未开赛(可投注)的场次, 按日期排序
+默认只输出未来未开赛(可投注)的场次(含明日, 今日无则自动落到后续日期), 按日期排序
 附注: 平博(Pinnacle)与HKJC的初盘/即时赔率(主/平/客三元组, 参考用)
-用法: python3 scripts/away_value_picks.py [--all]  # --all 输出全部, 默认只输出未开赛
+用法: python3 scripts/away_value_picks.py [--all]  # --all 输出全部, 默认只输出未来未开赛
 """
 import json
 import sys
@@ -32,6 +32,8 @@ def main():
             continue
         if not show_all and m.get('score'):
             continue  # 已开赛, 跳过
+        if not show_all and m.get('date', '') < today:
+            continue  # 默认只列今天及以后(未来未开赛)
         comp = m.get('comparison') or {}  # 平博 Pinnacle
         rows.append({
             'date': m.get('date', ''), 'league': m.get('event', ''),
@@ -43,14 +45,17 @@ def main():
         })
     rows.sort(key=lambda x: (x['date'], -x['ev']))
 
-    print(f"客胜价值投注清单 ({'全部' if show_all else '未开赛可投'} {len(rows)}场) 规则: 客胜+EV>0.5+赔率3-6")
+    print(f"客胜价值投注清单 ({'全部' if show_all else '未来未开赛可投'} {len(rows)}场) 规则: 客胜+EV>0.5+赔率3-6")
     print("=" * 92)
     for r in rows:
         print(f"{r['date']} [{r['league']}] {r['home']} vs {r['away']}")
         print(f"   HKJC客胜 {r['odds']} | 模型概率 {r['prob']*100:.0f}% | EV {r['ev']:.2f}")
         print(f"   平博 初/即: {r['pin_open']} → {r['pin_cur']} | HKJC 初/即: {r['hkjc_open']} → {r['hkjc_cur']}")
     if not rows:
-        print("(今日无符合条件场次)")
+        if show_all:
+            print("(全部场次无符合条件者)")
+        else:
+            print(f"(今日{datetime.date.today().isoformat()}及未来无未开赛可投场次)")
 
     # 今日汇总(含已开赛, 供复盘)
     todays = [r for r in rows if r['date'] == today]
