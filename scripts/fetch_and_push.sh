@@ -56,6 +56,10 @@ python3 scripts/backfill_ah_probs.py
 echo "[$(date '+%H:%M:%S')] 生成看板精简数据 (results_light.json)..."
 python3 scripts/gen_light_results.py
 
+# 客胜价值投注清单 (回测验证: 客胜+EV>0.5+HKJC赔率3-6 唯一正期望; 供每日推送)
+echo "[$(date '+%H:%M:%S')] 生成客胜价值投注清单..."
+python3 scripts/away_value_picks.py
+
 # ========== 同步 results.json → poisson_predictions（让xG/历史相似/总进球覆盖当日） ==========
 echo "[$(date '+%H:%M:%S')] 同步AI分析结果到数据库..."
 python3 scripts/sync_results_to_db.py
