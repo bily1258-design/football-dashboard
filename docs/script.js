@@ -35,6 +35,17 @@ function renderWarning(w){
   if(w.indexOf('⚠️')>-1) h+='<span class="warn-uncert" title="模型犹豫或LGBM低置信">⚠️</span>';
   return h+'</span>';
 }
+// ⚡高权重避雷: ⚡>=1.14 且 模型==TS 同向 → 历史命中率低(35%) 警告
+// 依据: 全量验证 同向+⚡>=1.14 命中 35.3% vs 同向基准 59% (2026-08-11, 样本17场, 待追踪验证)
+function renderHighWeight(m){
+  if(!m.importance_weight || m.importance_weight<1.14) return'';
+  var ts=[m.ts_win||0,m.ts_draw||0,m.ts_loss||0];
+  var tsi=ts.indexOf(Math.max.apply(null,ts));
+  var dirs=['home','draw','away'];
+  var sameDir=(m.model_prediction===dirs[tsi]);
+  if(!sameDir) return'';
+  return'<span class="hw-warn" title="⚡'+m.importance_weight.toFixed(2)+' 且 模型与TS同向: 历史命中率仅35% (样本17场, 追踪中)">⚠️⚡避雷</span>';
+}
 function renderForm(s){
   if(!s||!s.home_recent||s.home_recent.length===0)return'';
   var hf=s.home_recent, af=s.away_recent;
@@ -265,7 +276,7 @@ function renderTable(matches){
       '<td class="score-cell"><span>'+(m.score||(m.postponed?'推迟':'-'))+'</span></td>'+
       '<td class="team-name">'+m.away_team+'</td>'+
       '<td class="sim-cell">'+renderSimilarMatches(m)+'</td>'+
-      '<td><span class="'+dirClass(m.lgbm_prediction)+'">'+dirText(m.lgbm_prediction)+'</span> <span style="font-size:11px;color:#999">'+dirText(m.model_prediction)+(m.ah_home_covers_prob!=null?' <span class="ah-pred-inline">('+(m.ah_home_covers_prob>m.ah_away_covers_prob?(m.ah_home_covers_prob>m.ah_push_prob?'上':'走'):(m.ah_away_covers_prob>m.ah_push_prob?'下':'走'))+')</span>':'')+'</span><span class="weight-badge" title="权重 '+m.importance_weight.toFixed(2)+'">⚡'+m.importance_weight.toFixed(2)+'</span>'+renderWarning(m.warning)+'<br>'+vbHtml+'</td>'+
+      '<td><span class="'+dirClass(m.lgbm_prediction)+'">'+dirText(m.lgbm_prediction)+'</span> <span style="font-size:11px;color:#999">'+dirText(m.model_prediction)+(m.ah_home_covers_prob!=null?' <span class="ah-pred-inline">('+(m.ah_home_covers_prob>m.ah_away_covers_prob?(m.ah_home_covers_prob>m.ah_push_prob?'上':'走'):(m.ah_away_covers_prob>m.ah_push_prob?'下':'走'))+')</span>':'')+'</span><span class="weight-badge" title="权重 '+m.importance_weight.toFixed(2)+'">⚡'+m.importance_weight.toFixed(2)+'</span>'+renderHighWeight(m)+renderWarning(m.warning)+'<br>'+vbHtml+'</td>'+
 
       '<td class="'+hc+'">'+(m.hit||'')+(ahDir(m)?' <span class="ah-hit-dir">'+ahDir(m)+'</span>':'')+'</td>'+
       '<td class="odds-cell">'+renderOdds(m.comparison, m.pin_comparison, m)+'</td>'+
