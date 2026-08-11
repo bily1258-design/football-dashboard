@@ -1778,7 +1778,9 @@ def generate_frontend(results: List[Dict]):
             base_date = mt[:10]
             # 凌晨比赛(00:00-12:00): 仅当match_time日期<今天时才推下一天
             # 即源站将21日凌晨归到20号页面(20<21)才推，已正确标注21号的不动
-            if len(mt) >= 16 and base_date < today_str:
+            # 已完赛(score非空)场次绝不推后 — 开球时间已定，推后会误入复盘窗口
+            sc = (r.get('score') or '').strip()
+            if len(mt) >= 16 and base_date < today_str and not sc:
                 try:
                     h = int(mt[11:13])
                     if h < 7:
