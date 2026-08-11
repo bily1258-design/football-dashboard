@@ -60,6 +60,10 @@ python3 scripts/gen_light_results.py
 echo "[$(date '+%H:%M:%S')] 生成客胜价值投注清单..."
 python3 scripts/away_value_picks.py
 
+# ⚡高权重场次追踪 (⚡>=1.14 临场窗口记录, 验证顶级1.2 vs 次级1.14 开出规律; 逐轮攒样本)
+echo "[$(date '+%H:%M:%S')] 追踪⚡高权重场次..."
+python3 scripts/high_weight_tracker.py
+
 # ========== 同步 results.json → poisson_predictions（让xG/历史相似/总进球覆盖当日） ==========
 echo "[$(date '+%H:%M:%S')] 同步AI分析结果到数据库..."
 python3 scripts/sync_results_to_db.py
