@@ -760,14 +760,15 @@ def prediction_entropy(probs: list, normalize: bool = True) -> Tuple[float, floa
 # ======================================================
 
 def _compute_value_bets(probs: list, comparison: dict = None, pin_comparison: dict = None) -> list:
-    """计算三向价值投注（EV + Kelly）
+    """计算三向价值投注（EV + Kelly + Edge）
 
     Args:
         probs: [主胜, 平局, 客胜] 概率
         comparison: 主赔率源字典 {source, current: [h,d,a]}
         pin_comparison: 备查赔率源字典
 
-    Returns: [{outcome, odds, prob, ev, kelly, source}]
+    Returns: [{outcome, odds, prob, ev, edge, kelly, source}]
+        edge = 模型概率 - 赔率隐含概率（2026-08-12 新增，双门槛过滤用）
     """
     LABELS = ['home', 'draw', 'away']
     results = []
@@ -788,6 +789,8 @@ def _compute_value_bets(probs: list, comparison: dict = None, pin_comparison: di
             if odds <= 1 or prob <= 0:
                 continue
             ev = round(prob * odds - 1, 4)
+            # Edge = 模型概率 - 赔率隐含概率（过滤低概率高赔的虚假价值）
+            edge = round(prob - 1 / odds, 4)
             kelly_raw = ev / (odds - 1) if ev > 0 else 0.0
             # Kelly上限25%（全Kelly太激进，用1/4 Kelly安全线）
             kelly = round(min(kelly_raw, 0.25), 4)
@@ -796,6 +799,7 @@ def _compute_value_bets(probs: list, comparison: dict = None, pin_comparison: di
                 'odds': round(odds, 2),
                 'prob': round(prob, 4),
                 'ev': ev,
+                'edge': edge,
                 'kelly': kelly,
                 'source': src_name,
             })
@@ -808,14 +812,16 @@ def _compute_value_bets(probs: list, comparison: dict = None, pin_comparison: di
 def _get_best_value(probs: list, comparison: dict = None, pin_comparison: dict = None) -> dict:
     """返回最佳价值投注摘要（供前端展示）
 
-    Returns: {outcome, ev, kelly, odds, prob, source} or None
+    Returns: {outcome, ev, edge, kelly, odds, prob, source} or None
     """
     vbs = _compute_value_bets(probs, comparison, pin_comparison)
     for vb in vbs:
-        if vb['ev'] > 0.05:  # EV>5%才算有价值
+        # 双门槛: EV>5% 且 Edge>2%（edge过滤低概率高赔的虚假价值, 2026-08-12）
+        if vb['ev'] > 0.05 and vb['edge'] > 0.02:
             return {
                 'outcome': vb['outcome'],
                 'ev': vb['ev'],
+                'edge': vb['edge'],
                 'kelly': vb['kelly'],
                 'odds': vb['odds'],
                 'prob': vb['prob'],
