@@ -41,7 +41,9 @@ def main():
     track = []
     if os.path.exists(TRACK):
         with open(TRACK, encoding='utf-8') as f:
-            track = json.load(f)
+            raw = json.load(f)
+        # 兼容两种存储格式: 旧版为list, 新版为 {'tracked': [...]}
+        track = raw.get('tracked', []) if isinstance(raw, dict) else raw
     by_fid = {t['fid']: t for t in track}
 
     now = datetime.now()
