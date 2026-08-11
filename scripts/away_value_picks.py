@@ -33,6 +33,15 @@ def hkjc_cur(m):
         return None
     return cur
 
+def is_hw_avoid(m):
+    """⚡高权重避雷: ⚡>=1.14 且 模型==TS 同向 (历史命中率仅35%, 2026-08-11验证, 追踪中)"""
+    w = m.get('importance_weight', 0) or 0
+    if w < 1.14:
+        return False
+    md = argmax3(m.get('model_win', 0), m.get('model_draw', 0), m.get('model_loss', 0))
+    tsd = argmax3(m.get('ts_win', 0), m.get('ts_draw', 0), m.get('ts_loss', 0))
+    return md == tsd
+
 def parse_dt(s):
     """'2026-08-11 01:00' -> datetime; 只有日期则视为当天12:00(窗口边界用)"""
     s = (s or '').strip()
@@ -86,6 +95,7 @@ def main():
             # 参考赔率: 平博开/即, HKJC开/即 (均为 主/平/客 三元组)
             'pin_open': fmt3(comp.get('open')), 'pin_cur': fmt3(comp.get('current')),
             'hkjc_open': fmt3((m.get('pin_comparison') or {}).get('open')), 'hkjc_cur': fmt3(cur),
+            'avoid': is_hw_avoid(m),  # ⚡高权重避雷
         })
     rows.sort(key=lambda x: (x['mt'] or datetime.datetime.max, -x['ev']))
 
@@ -93,7 +103,8 @@ def main():
     print("=" * 92)
     for r in rows:
         t = r['mt'].strftime('%m-%d %H:%M') if r['mt'] else r['date']
-        print(f"{t} [{r['league']}] {r['home']} vs {r['away']}")
+        av = ' ⚠️⚡避雷' if r.get('avoid') else ''
+        print(f"{t} [{r['league']}] {r['home']} vs {r['away']}{av}")
         print(f"   HKJC客胜 {r['odds']} | 模型概率 {r['prob']*100:.0f}% | EV {r['ev']:.2f}")
         print(f"   平博 初/即: {r['pin_open']} → {r['pin_cur']} | HKJC 初/即: {r['hkjc_open']} → {r['hkjc_cur']}")
     if not rows:
@@ -133,6 +144,7 @@ def main():
             'lgbm_prob': max(m.get('lgbm_win', 0), m.get('lgbm_draw', 0), m.get('lgbm_loss', 0)),
             'pin_open': fmt3(comp.get('open')), 'pin_cur': fmt3(comp.get('current')),
             'hkjc_open': fmt3((m.get('pin_comparison') or {}).get('open')), 'hkjc_cur': fmt3(cur),
+            'avoid': is_hw_avoid(m),  # ⚡高权重避雷
         })
     # 高置信优先, 再按时间
     rows_b.sort(key=lambda x: (not x['star'], x['mt'] or datetime.datetime.max))
@@ -144,7 +156,8 @@ def main():
     for r in rows_b:
         t = r['mt'].strftime('%m-%d %H:%M') if r['mt'] else r['date']
         star = " ★" if r['star'] else ""
-        print(f"{t} [{r['league']}] {r['home']} vs {r['away']}{star}")
+        av = ' ⚠️⚡避雷' if r.get('avoid') else ''
+        print(f"{t} [{r['league']}] {r['home']} vs {r['away']}{star}{av}")
         print(f"   HKJC客胜 {r['odds']} | LGBM客概率 {r['lgbm_prob']*100:.0f}% | TS平 {r['ts_draw']*100:.0f}%")
         print(f"   平博 初/即: {r['pin_open']} → {r['pin_cur']} | HKJC 初/即: {r['hkjc_open']} → {r['hkjc_cur']}")
     if not rows_b:
@@ -152,6 +165,16 @@ def main():
             print("(全部场次无符合条件者)")
         else:
             print(f"(今日窗口 {win_label} 内及未来无未开赛三方一致客场次)")
+
+    # ⚡高权重避雷汇总
+    av_total = [r for r in rows if r.get('avoid')] + [r for r in rows_b if r.get('avoid')]
+    if av_total:
+        print()
+        print("=" * 92)
+        print(f"⚠️⚡ 高权重避雷 (⚡≥1.14 且 模型==TS同向, 历史命中仅35%): 共{len(av_total)}场, 慎跟")
+        for r in av_total:
+            t = r['mt'].strftime('%m-%d %H:%M') if r.get('mt') else r.get('date', '')
+            print(f"   {t} [{r.get('league','')}] {r.get('home','')} vs {r.get('away','')} ⚡{r.get('avoid') and '≥1.14' or ''}")
 
 if __name__ == '__main__':
     main()
