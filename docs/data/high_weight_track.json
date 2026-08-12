@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-12 08:24:18",
+  "generated_at": "2026-08-12 12:54:24",
   "threshold": 1.14,
   "note": "⚡=importance_weight(联赛等级×紧迫). 历史场次紧迫系数跌至0.90, 仅临场窗口权重>=1.14. 逐轮记录攒样本.",
   "tracked": [
@@ -389,10 +389,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "3-1",
+      "score": "3 - 1",
       "hit": true,
       "recorded_at": "2026-08-11 12:55:15",
-      "updated_at": "2026-08-12 08:24:18"
+      "updated_at": "2026-08-12 12:54:24"
     },
     {
       "fid": "2991822",
@@ -405,10 +405,10 @@
       "model_dir": "主",
       "ts_dir": "客",
       "same_dir": false,
-      "score": "0-0",
+      "score": "0 - 0",
       "hit": false,
       "recorded_at": "2026-08-11 12:55:15",
-      "updated_at": "2026-08-12 08:24:18"
+      "updated_at": "2026-08-12 12:54:24"
     },
     {
       "fid": "2962560",
@@ -421,9 +421,10 @@
       "model_dir": "主",
       "ts_dir": "客",
       "same_dir": false,
-      "score": "",
+      "score": "0 - 3",
       "hit": false,
-      "recorded_at": "2026-08-11 12:55:15"
+      "recorded_at": "2026-08-11 12:55:15",
+      "updated_at": "2026-08-12 12:54:24"
     },
     {
       "fid": "2991820",
@@ -436,9 +437,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
+      "score": "1 - 1",
       "hit": false,
-      "recorded_at": "2026-08-11 12:55:15"
+      "recorded_at": "2026-08-11 12:55:15",
+      "updated_at": "2026-08-12 12:54:24"
     },
     {
       "fid": "3049621",
@@ -451,9 +453,85 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
+      "score": "1 - 1",
+      "hit": false,
+      "recorded_at": "2026-08-11 12:55:15",
+      "updated_at": "2026-08-12 12:54:24"
+    },
+    {
+      "fid": "2991818",
+      "date": "2026-08-13",
+      "match_time": "2026-08-13 06:00",
+      "event": "解放者杯",
+      "home_team": "帕爾梅拉斯",
+      "away_team": "波特諾山丘",
+      "weight": 1.14,
+      "model_dir": "主",
+      "ts_dir": "主",
+      "same_dir": true,
       "score": "",
       "hit": false,
-      "recorded_at": "2026-08-11 12:55:15"
+      "recorded_at": "2026-08-12 12:54:24"
+    },
+    {
+      "fid": "2991821",
+      "date": "2026-08-13",
+      "match_time": "2026-08-13 06:00",
+      "event": "解放者杯",
+      "home_team": "普拉騰斯",
+      "away_team": "科金博",
+      "weight": 1.14,
+      "model_dir": "主",
+      "ts_dir": "主",
+      "same_dir": true,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-08-12 12:54:24"
+    },
+    {
+      "fid": "3049508",
+      "date": "2026-08-13",
+      "match_time": "2026-08-13 06:00",
+      "event": "南美杯",
+      "home_team": "泰格雷",
+      "away_team": "圖爾克",
+      "weight": 1.14,
+      "model_dir": "主",
+      "ts_dir": "主",
+      "same_dir": true,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-08-12 12:54:24"
+    },
+    {
+      "fid": "3049620",
+      "date": "2026-08-13",
+      "match_time": "2026-08-13 06:00",
+      "event": "南美杯",
+      "home_team": "布拉幹蒂諾RB",
+      "away_team": "米內羅競技",
+      "weight": 1.14,
+      "model_dir": "主",
+      "ts_dir": "主",
+      "same_dir": true,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-08-12 12:54:24"
+    },
+    {
+      "fid": "3049622",
+      "date": "2026-08-13",
+      "match_time": "2026-08-13 08:30",
+      "event": "南美杯",
+      "home_team": "聖塔菲",
+      "away_team": "河牀",
+      "weight": 1.14,
+      "model_dir": "客",
+      "ts_dir": "客",
+      "same_dir": true,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-08-12 12:54:24"
     }
   ]
 }
