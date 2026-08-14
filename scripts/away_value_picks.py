@@ -42,6 +42,38 @@ def is_hw_avoid(m):
     tsd = argmax3(m.get('ts_win', 0), m.get('ts_draw', 0), m.get('ts_loss', 0))
     return md == tsd
 
+# ===== 2026-08-14 投注簿挖掘 (1840场已结算): 甜点区/避雷规则 =====
+# 甜点区: 客胜 2.5-4 赔率 + EV<0.5 + edge<10% → 历史胜率 27-43%, +38单位
+# 避雷: edge>=15% 败率90.6% | kelly>=15% 败率89.8% 利润负 | EV>=2.0 败率93%
+def is_sweet(m):
+    """🎯甜点区: 客胜 + HKJC客赔 2.5-4 + 0<EV<0.5 + edge<0.10 (低EV中赔率温和低估)"""
+    bv = m.get('best_value') or {}
+    if bv.get('outcome') != 'away':
+        return False
+    ev = bv.get('ev', 0)
+    if not (0 < ev < 0.5):
+        return False
+    if (bv.get('edge') or 0) >= 0.10:
+        return False
+    cur = hkjc_cur(m)
+    if not cur or not (2.5 <= cur[2] < 4):
+        return False
+    return True
+
+def avoid_reasons(m, bv=None):
+    """返回避雷原因列表(可多个); 空=不避雷"""
+    reasons = []
+    if is_hw_avoid(m):
+        reasons.append('⚡高权重')
+    bv = bv or (m.get('best_value') or {})
+    if (bv.get('edge') or 0) >= 0.15:
+        reasons.append('edge≥15%')
+    if (bv.get('kelly') or 0) >= 0.15:
+        reasons.append('kelly≥15%')
+    if (bv.get('ev') or 0) >= 2.0:
+        reasons.append('EV≥2')
+    return reasons
+
 def parse_dt(s):
     """'2026-08-11 01:00' -> datetime; 只有日期则视为当天12:00(窗口边界用)"""
     s = (s or '').strip()
@@ -96,15 +128,58 @@ def main():
             'pin_open': fmt3(comp.get('open')), 'pin_cur': fmt3(comp.get('current')),
             'hkjc_open': fmt3((m.get('pin_comparison') or {}).get('open')), 'hkjc_cur': fmt3(cur),
             'avoid': is_hw_avoid(m),  # ⚡高权重避雷
+            'av_reasons': avoid_reasons(m, bv),  # 扩展避雷原因
         })
     rows.sort(key=lambda x: (x['mt'] or datetime.datetime.max, -x['ev']))
 
-    print(f"①客胜价值投注清单 ({'全部' if show_all else '今日窗口(' + win_label + ')内及未来未开赛可投'} {len(rows)}场) 规则: 客胜+EV>0.5+赔率3-6")
+    # ========== 规则C: 🎯甜点区 (2026-08-14 投注簿挖掘, 历史胜率27-43%/+38单位) ==========
+    # 注意: 甜点区 EV<0.5, 与规则A(EV>0.5)互补, 必须独立扫描全量场次
+    sweet_rows = []
+    for m in MS:
+        if not in_window(m):
+            continue
+        bv = m.get('best_value') or {}
+        if bv.get('outcome') != 'away' or not (0 < bv.get('ev', 0) < 0.5):
+            continue
+        if (bv.get('edge') or 0) >= 0.10:
+            continue
+        cur = hkjc_cur(m)
+        if not cur or not (2.5 <= cur[2] < 4):
+            continue
+        mt = parse_dt(m.get('match_time') or m.get('date'))
+        comp = m.get('comparison') or {}
+        sweet_rows.append({
+            'date': m.get('date', ''), 'mt': mt, 'league': m.get('event', ''),
+            'home': m.get('home_team', ''), 'away': m.get('away_team', ''),
+            'odds': cur[2], 'prob': bv.get('prob', 0), 'ev': bv.get('ev', 0),
+            'pin_open': fmt3(comp.get('open')), 'pin_cur': fmt3(comp.get('current')),
+            'hkjc_open': fmt3((m.get('pin_comparison') or {}).get('open')), 'hkjc_cur': fmt3(cur),
+            'av_reasons': avoid_reasons(m, bv),
+        })
+    sweet_rows.sort(key=lambda x: (x['mt'] or datetime.datetime.max, -x['ev']))
+    print(f"①🎯甜点区客胜 ({len(sweet_rows)}场) 规则: 客胜+HKJC客赔2.5-4+0<EV<0.5+edge<10% | 历史回测: 43.2%胜率(44场+16.2) / 32.7%(101场+10.4)")
+    print("=" * 92)
+    for r in sweet_rows:
+        t = r['mt'].strftime('%m-%d %H:%M') if r['mt'] else r['date']
+        print(f"{t} [{r['league']}] {r['home']} vs {r['away']} 🎯")
+        print(f"   HKJC客胜 {r['odds']} | 模型概率 {r['prob']*100:.0f}% | EV {r['ev']:.2f}")
+        print(f"   平博 初/即: {r['pin_open']} → {r['pin_cur']} | HKJC 初/即: {r['hkjc_open']} → {r['hkjc_cur']}")
+    if not sweet_rows:
+        print("(今日窗口内及未来无甜点区场次)")
+
+    print()
+    print(f"②客胜价值投注清单 ({'全部' if show_all else '今日窗口(' + win_label + ')内及未来未开赛可投'} {len(rows)}场) 规则: 客胜+EV>0.5+赔率3-6 (含🎯甜点区, 2026-08-14起)")
     print("=" * 92)
     for r in rows:
         t = r['mt'].strftime('%m-%d %H:%M') if r['mt'] else r['date']
-        av = ' ⚠️⚡避雷' if r.get('avoid') else ''
-        print(f"{t} [{r['league']}] {r['home']} vs {r['away']}{av}")
+        tag = ''
+        if r.get('sweet'):
+            tag = ' 🎯甜点'
+        elif r.get('av_reasons'):
+            tag = ' 🚫避雷(' + ','.join(r['av_reasons']) + ')'
+        elif r.get('avoid'):
+            tag = ' ⚠️⚡避雷'
+        print(f"{t} [{r['league']}] {r['home']} vs {r['away']}{tag}")
         print(f"   HKJC客胜 {r['odds']} | 模型概率 {r['prob']*100:.0f}% | EV {r['ev']:.2f}")
         print(f"   平博 初/即: {r['pin_open']} → {r['pin_cur']} | HKJC 初/即: {r['hkjc_open']} → {r['hkjc_cur']}")
     if not rows:
@@ -151,7 +226,7 @@ def main():
 
     print()
     print("=" * 92)
-    print(f"②三方一致·客客客 ({'全部' if show_all else '今日窗口内及未来未开赛可投'} {len(rows_b)}场) 规则: model=LGBM=TS均指客 | ★=客赔<2.0且TS平<25%")
+    print(f"③三方一致·客客客 ({'全部' if show_all else '今日窗口内及未来未开赛可投'} {len(rows_b)}场) 规则: model=LGBM=TS均指客 | ★=客赔<2.0且TS平<25%")
     print("=" * 92)
     for r in rows_b:
         t = r['mt'].strftime('%m-%d %H:%M') if r['mt'] else r['date']
@@ -166,15 +241,16 @@ def main():
         else:
             print(f"(今日窗口 {win_label} 内及未来无未开赛三方一致客场次)")
 
-    # ⚡高权重避雷汇总
-    av_total = [r for r in rows if r.get('avoid')] + [r for r in rows_b if r.get('avoid')]
+    # 避雷汇总 (⚡高权重 + 扩展避雷)
+    av_total = [r for r in rows if r.get('av_reasons')] + [r for r in rows_b if r.get('avoid')]
     if av_total:
         print()
         print("=" * 92)
-        print(f"⚠️⚡ 高权重避雷 (⚡≥1.14 且 模型==TS同向, 历史命中仅35%): 共{len(av_total)}场, 慎跟")
+        print(f"⚠️🚫 避雷汇总 (⚡高权重/edge≥15%/kelly≥15%/EV≥2, 历史败率87-93%): 共{len(av_total)}场, 慎跟")
         for r in av_total:
             t = r['mt'].strftime('%m-%d %H:%M') if r.get('mt') else r.get('date', '')
-            print(f"   {t} [{r.get('league','')}] {r.get('home','')} vs {r.get('away','')} ⚡{r.get('avoid') and '≥1.14' or ''}")
+            why = ','.join(r.get('av_reasons') or ['⚡高权重'])
+            print(f"   {t} [{r.get('league','')}] {r.get('home','')} vs {r.get('away','')} 🚫{why}")
 
 if __name__ == '__main__':
     main()
