@@ -1467,8 +1467,8 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
 
         # 4. LGBM 推荐方向（主推，取最大值）
         lgbm_dir_cn, lgbm_dir_en, lgbm_dir_prob = max_direction(lgbm_w, lgbm_d, lgbm_l)
-        # 模型概率方向（中间值，备选）
-        model_dir_cn, model_dir_en, model_dir_prob = middle_direction(model_w, model_d, model_l)
+        # 模型概率方向（取最大值，2026-08-15 从中间值改为最大值）
+        model_dir_cn, model_dir_en, model_dir_prob = max_direction(model_w, model_d, model_l)
 
         # 4. 最大概率值
         max_prob_val = max(model_w, model_d, model_l)
@@ -1627,7 +1627,7 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             'prediction': lgbm_dir_en,           # 兼容别名（同lgbm_prediction）
             'prediction_cn': lgbm_dir_cn,
             'prediction_prob': round(lgbm_dir_prob, 4),
-            'model_prediction': model_dir_en,    # 模型中值方向（备选）
+            'model_prediction': model_dir_en,    # 模型最大概率方向（2026-08-15 从中间值改最大）
             'model_prediction_cn': model_dir_cn,
             'model_prediction_prob': round(model_dir_prob, 4),
             'draw_boosted': draw_boosted,
