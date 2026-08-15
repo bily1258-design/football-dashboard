@@ -410,11 +410,34 @@ def do_backfill(fpath, date_str):
     if unscored:
         scores = get_scores_from_over_page(date_str)
 
-        # 如果主Over页无数据，尝试从比赛match_time提取日期（因源数据中时间可能跨月）
-        if not scores and unscored:
+        # 匹配key: 与 get_scores_from_over_page 相同的清理(去[]与()标记, 简转繁)
+        def _clean(name):
+            name = re.sub(r'\s*\[[^\]]*\]', '', name).strip()
+            name = re.sub(r'\([^)]*\)', '', name).strip()
+            return _s2t.convert(name)
+
+        def _try_match(scores_map, remaining):
+            """用 scores_map 匹配 remaining, 返回(已匹配列表, 仍未匹配列表)"""
+            done, left = [], []
+            for fid, m in remaining:
+                key = (_clean(m.get('home_team', '')), _clean(m.get('away_team', '')))
+                if key in scores_map:
+                    m['score'] = scores_map[key]
+                    done.append((fid, m))
+                elif (key[1], key[0]) in scores_map:
+                    m['score'] = scores_map[(key[1], key[0])]
+                    done.append((fid, m))
+                else:
+                    left.append((fid, m))
+            return done, left
+
+        matched, unmatched = _try_match(scores, unscored)
+
+        # 主日期匹配后仍有未匹配 → 从比赛match_time提取日期再试(源数据时间可能跨月)
+        if unmatched:
             alt_dates = sorted(set(
                 m['match_time'][:10].replace('-', '')
-                for _, m in unscored
+                for _, m in unmatched
                 if m.get('match_time', '').startswith('20')
             ))
             for alt_date in alt_dates:
@@ -423,24 +446,15 @@ def do_backfill(fpath, date_str):
                     continue  # 已尝试过
                 alt_scores = get_scores_from_over_page(alt_date)
                 if alt_scores:
-                    scores = alt_scores
-                    print(f'[BACKFILL] 从备选日期 {alt_date} 获取 {len(scores)} 场比分')
+                    more, unmatched = _try_match(alt_scores, unmatched)
+                    matched.extend(more)
+                    print(f'[BACKFILL] 从备选日期 {alt_date} 补匹配 {len(more)} 场')
+                if not unmatched:
                     break
 
-        if scores:
-            over_ok = 0
-            for fid, m in unscored:
-                home = m.get('home_team', '').strip()
-                away = m.get('away_team', '').strip()
-                key = (home, away)
-                if key in scores:
-                    m['score'] = scores[key]
-                    over_ok += 1
-                    updated += 1
-                elif (away, home) in scores:
-                    m['score'] = scores[(away, home)]
-                    over_ok += 1
-                    updated += 1
+        if matched:
+            over_ok = len(matched)
+            updated += over_ok
             print(f'[BACKFILL] titan007 Over页 → {over_ok}/{len(unscored)} 场')
         else:
             print(f'[BACKFILL] titan007 Over页 → 页面无完场数据')
