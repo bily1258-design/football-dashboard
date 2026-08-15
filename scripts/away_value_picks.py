@@ -277,6 +277,8 @@ def main():
 
     if md_file:
         sys.stdout.write("```\n")
+        sys.stdout.flush()
+        sys.stdout = sys.__stdout__  # 先恢复, 避免解释器退出时flush已关闭文件
         md_file.close()
 
 if __name__ == '__main__':

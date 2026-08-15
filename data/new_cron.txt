@@ -1,0 +1,3 @@
+# 足球数据抓取/推送由 Hermes cron 调度 (8:10/12:30/16:10 抓取 + 16:30 xlsx + 17:00 升水 + 9:30 签到)
+# v2 时代残留的 cron_score_only/cron_odds_only 已于 2026-08-15 清除(脚本已删, 死链)
+@reboot termux-wake-lock && nohup hermes gateway run > ~/.hermes/logs/gateway.log 2>&1

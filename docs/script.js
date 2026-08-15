@@ -231,15 +231,10 @@ function toggleImportantFilter(){
 function applyFilters(){
   var dateVal = document.getElementById('dateFilter').value;
   var srcVal = document.getElementById('sourceFilter').value;
-  var dirVal = document.getElementById('dirFilter').value;
   var sortVal = document.getElementById('sortBy').value;
   var filtered = allMatches.filter(function(m){
     if(dateVal!=='all' && m.date!==dateVal) return false;
     if(srcVal!=='all' && m.source.indexOf(srcVal)===-1) return false;
-    if(dirVal!=='all'){
-      var comb = (m.model_prediction||'')+'-'+(m.lgbm_prediction||'');
-      if(comb!==dirVal) return false;
-    }
     if(showWarnedOnly && !m.warning) return false;
     if(showValueOnly && (!m.best_value||m.best_value.ev<=0.05)) return false;
     if(showImportantOnly && m.low_priority) return false;

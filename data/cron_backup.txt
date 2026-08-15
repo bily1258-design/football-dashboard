@@ -1,0 +1,6 @@
+# 北京08:30 (UTC 00:30) — 仅比分回填（不接触赔率/预测）
+30 8 * * * cd /data/data/com.termux/files/home/football-dashboard && bash scripts/cron_score_only.sh >> data/cron_run.log 2>&1
+
+# 北京15:30 (UTC 07:30) — 赔率/预测/构建/推送（含merge_and_build修复版）
+30 15 * * * cd /data/data/com.termux/files/home/football-dashboard && bash scripts/cron_odds_only.sh >> data/cron_run.log 2>&1
+@reboot termux-wake-lock && nohup hermes gateway run > ~/.hermes/logs/gateway.log 2>&1
