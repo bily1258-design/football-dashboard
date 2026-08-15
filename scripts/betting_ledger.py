@@ -33,6 +33,7 @@ EV_MIN = 0.05          # 价值投注 EV 门槛
 EDGE_MIN = 0.02        # edge 门槛 (2026-08-12 双门槛)
 AWAY_EV_MIN = 0.5      # 规则A: 客胜 EV>0.5
 WEIGHT_MIN = 1.14      # ⚡高权重门槛
+TOP_N_PER_DAY = 3      # 每日限额: 每天只记 EV 最高的 N 场 (2026-08-15 新增; 回测 top1 +4.94 / top3 -0.45, 取3均衡样本量)
 
 LABELS = {'home': '主胜', 'draw': '平局', 'away': '客胜'}
 
@@ -63,20 +64,23 @@ def score_to_outcome(score_tuple, outcome):
     return None
 
 
-def collect_signals(matches):
-    """从 results.json 每场提取所有信号"""
-    signals = []
+def collect_signals(matches, top_n=TOP_N_PER_DAY):
+    """从 results.json 每场提取所有信号; 按天限额: 每天只取 EV 最高的 top_n 场投注信号
+    (weight 避雷信号不受限额, 始终全量记录)"""
+    raw = []  # (day, fid, ev, signals_of_match)
     for m in matches:
         fid = m.get('fid', '')
         teams = f"{m.get('home_team', '')} vs {m.get('away_team', '')}"
         mt = m.get('match_time') or m.get('date', '')
         score = m.get('score', '')
-        score_t = parse_score(score)
+        day = str(mt)[:10]
+
+        match_signals = []
 
         # ── 信号1: 价值投注 (双门槛) ──
         bv = m.get('best_value') or {}
         if bv.get('outcome') and bv.get('ev', 0) > EV_MIN and bv.get('edge', 0) > EDGE_MIN:
-            signals.append({
+            match_signals.append({
                 'fid': fid, 'teams': teams, 'match_time': mt, 'score': score,
                 'signal': 'value', 'signal_cn': '价值投注',
                 'outcome': bv['outcome'], 'odds': bv.get('odds', 0),
@@ -86,7 +90,7 @@ def collect_signals(matches):
 
         # ── 信号2: 客胜规则A ──
         if bv.get('outcome') == 'away' and bv.get('ev', 0) > AWAY_EV_MIN:
-            signals.append({
+            match_signals.append({
                 'fid': fid, 'teams': teams, 'match_time': mt, 'score': score,
                 'signal': 'ruleA', 'signal_cn': '客胜规则A',
                 'outcome': 'away', 'odds': bv.get('odds', 0),
@@ -94,7 +98,7 @@ def collect_signals(matches):
                 'kelly': bv.get('kelly', 0),
             })
 
-        # ── 信号3: ⚡高权重 (避雷) ──
+        # ── 信号3: ⚡高权重 (避雷, 不受限额) ──
         w = m.get('importance_weight', 0) or 0
         if w >= WEIGHT_MIN:
             # 避雷方向: 模型==TS 同向
@@ -103,11 +107,13 @@ def collect_signals(matches):
                 return 0 if mx == w_ else (1 if mx == dr_ else 2)
             md = argmax3(m.get('model_win', 0), m.get('model_draw', 0), m.get('model_loss', 0))
             tsd = argmax3(m.get('ts_win', 0), m.get('ts_draw', 0), m.get('ts_loss', 0))
-            signals.append({
+            # 避雷方向赔率 (2026-08-15 修复: 之前 odds=0 导致胜也记 -1)
+            w_dir = ['home', 'draw', 'away'][md]
+            w_odds = {'home': m.get('odds_win', 0), 'draw': m.get('odds_draw', 0), 'away': m.get('odds_loss', 0)}.get(w_dir, 0) or 0
+            match_signals.append({
                 'fid': fid, 'teams': teams, 'match_time': mt, 'score': score,
                 'signal': 'weight', 'signal_cn': '⚡高权重',
-                'outcome': ['home', 'draw', 'away'][md],
-                'odds': 0, 'ev': 0, 'edge': 0, 'kelly': 0,
+                'outcome': w_dir, 'odds': w_odds, 'ev': 0, 'edge': 0, 'kelly': 0,
                 'weight': w, 'same_dir': (md == tsd),
             })
 
@@ -116,6 +122,26 @@ def collect_signals(matches):
         # 口径验证(中间概率→最大概率): 命中率24.9%→51.9%, 平局癌63.8%→3.5%
         # 结论: 方向准≠下注赚钱, 该信号是负资产, 与升水信号同批弃用
 
+        if match_signals:
+            ev = max((s.get('ev', 0) or 0) for s in match_signals)
+            raw.append((day, fid, ev, match_signals))
+
+    # 按天分组 → 每天按 EV 排序 → 只取 top_n 场 (weight 全量保留)
+    from collections import defaultdict
+    by_day = defaultdict(list)
+    for day, fid, ev, sigs in raw:
+        by_day[day].append((ev, sigs))
+
+    signals = []
+    for day, items in sorted(by_day.items()):
+        items.sort(key=lambda x: -x[0])  # EV 降序
+        for ev, sigs in items[:top_n]:
+            signals.extend(sigs)
+        # weight 信号不受限额: 从所有场次里补上
+        for ev, sigs in items[top_n:]:
+            for s in sigs:
+                if s['signal'] == 'weight':
+                    signals.append(s)
     return signals
 
 
@@ -137,6 +163,12 @@ def save_ledger(entries):
 def main():
     stats_only = '--stats' in sys.argv
     breakdown = '--breakdown' in sys.argv
+    top_n = TOP_N_PER_DAY
+    if '--top' in sys.argv:
+        try:
+            top_n = int(sys.argv[sys.argv.index('--top') + 1])
+        except (ValueError, IndexError):
+            pass
 
     with open(RESULTS, 'r', encoding='utf-8') as f:
         matches = json.load(f)['matches']
@@ -147,7 +179,7 @@ def main():
 
     new_count = 0
     settled = 0
-    for sig in collect_signals(matches):
+    for sig in collect_signals(matches, top_n):
         key = (sig['fid'], sig['signal'])
         if key in seen:
             continue
