@@ -9,7 +9,7 @@
   1. 价值投注: best_value.ev > 0.05 且 edge > 0.02 (双门槛, 2026-08-12 起)
   2. 客胜规则A: best_value.outcome==away 且 ev>0.5 (经HKJC回测)
   3. ⚡高权重: importance_weight >= 1.14 (避雷信号追踪)
-  4. 升水信号: 平博初盘最小赔率 → 即时升水 >= 0.05 (来自 pin_min_odds_rise)
+  (升水信号已于 2026-08-12 砍掉: 胜率44.9%却亏36.99单位, 低赔率陷阱)
 
 结算: score 非空 → 解析胜平负 → win/loss → profit (1单位本金)
 输出: docs/data/betting_ledger.json + 控制台统计
@@ -32,7 +32,6 @@ EV_MIN = 0.05          # 价值投注 EV 门槛
 EDGE_MIN = 0.02        # edge 门槛 (2026-08-12 双门槛)
 AWAY_EV_MIN = 0.5      # 规则A: 客胜 EV>0.5
 WEIGHT_MIN = 1.14      # ⚡高权重门槛
-RISE_MIN = 0.05        # 升水门槛
 
 LABELS = {'home': '主胜', 'draw': '平局', 'away': '客胜'}
 
@@ -110,31 +109,6 @@ def collect_signals(matches):
                 'odds': 0, 'ev': 0, 'edge': 0, 'kelly': 0,
                 'weight': w, 'same_dir': (md == tsd),
             })
-
-        # ── 信号4: 升水信号 (平博初盘最小→即时升水) ──
-        # 用 comparison(平博即时) vs open_*_pin(初盘)
-        try:
-            comp = m.get('comparison') or {}
-            cur = comp.get('current') or []
-            open_pin = [m.get('open_win_pin'), m.get('open_draw_pin'), m.get('open_loss_pin')]
-            if cur and len(cur) >= 3 and any(open_pin):
-                # 初盘最小赔率方向
-                open_ok = [float(x) for x in open_pin if x]
-                if open_ok:
-                    min_i = open_pin.index(min(open_pin, key=lambda x: float(x) if x else 999))
-                    open_min = float(open_pin[min_i])
-                    cur_min = float(cur[min_i])
-                    rise = cur_min - open_min
-                    if rise >= RISE_MIN:
-                        signals.append({
-                            'fid': fid, 'teams': teams, 'match_time': mt, 'score': score,
-                            'signal': 'rise', 'signal_cn': '升水信号',
-                            'outcome': LABELS and ['home', 'draw', 'away'][min_i],
-                            'odds': cur_min, 'ev': 0, 'edge': 0, 'kelly': 0,
-                            'rise': round(rise, 2),
-                        })
-        except Exception:
-            pass
 
     return signals
 
@@ -265,12 +239,7 @@ def main():
         for e in completed:
             s = e.get('signal_cn', e.get('signal', '?'))
             out = LABELS.get(e.get('outcome'), e.get('outcome', '?'))
-            rise = e.get('rise')
-            if s == '升水信号' and rise is not None:
-                bucket = f"升水{rise:.1f}+" if rise >= 0.4 else f"升水<0.4"
-                key = (s, bucket)
-            else:
-                key = (s, out)
+            key = (s, out)
             by_sig_dir.setdefault(key, {'n': 0, 'w': 0, 'profit': 0.0})
             by_sig_dir[key]['n'] += 1
             by_sig_dir[key]['w'] += 1 if e['result'] == 'win' else 0
