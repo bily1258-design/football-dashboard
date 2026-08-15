@@ -77,8 +77,14 @@ def daily_report(matches, min_rise=0.10):
     win_end = (now + datetime.timedelta(days=1)).replace(hour=11, minute=59, second=59, microsecond=0)
     hits = collect_hits(matches, 0.01)
 
+    def in_range(r):
+        """只保留 0.01~0.19 区间升幅 (2026-08-15 用户要求)"""
+        return 0.01 <= round(r, 2) <= 0.19
+
     today = []
     for h in hits:
+        if not in_range(h[2]):
+            continue
         t = parse_dt(h[0].get('match_time'))
         if t and win_start <= t <= win_end and not h[0].get('score'):
             today.append(h)
@@ -87,12 +93,12 @@ def daily_report(matches, min_rise=0.10):
     ref = []
     for h in hits:
         t = parse_dt(h[0].get('match_time'))
-        if t and t >= now - datetime.timedelta(days=3) and h[0].get('score') and h[2] >= 0.01:
+        if t and t >= now - datetime.timedelta(days=3) and h[0].get('score') and in_range(h[2]):
             ref.append(h)
     ref.sort(key=lambda h: -h[2])
 
     lines = []
-    lines.append("📊 平博初盘最小赔率→即时升水")
+    lines.append("📊 平博初盘最小赔率→即时升水 (仅0.01~0.19)")
     lines.append(f"🕐 窗口: {win_start.strftime('%m-%d %H:%M')} ~ {win_end.strftime('%m-%d %H:%M')} (今日可投)")
     lines.append("")
     lines.append(f"🔴 今日窗口内可投 ({len(today)}场)")
@@ -115,7 +121,7 @@ def daily_report(matches, min_rise=0.10):
             s = (s or '').strip().replace(' ', '')
             mm = _re.match(r'^(\d+)[-:](\d+)$', s)
             return (int(mm.group(1)), int(mm.group(2))) if mm else None
-        bins = [(0.01, 0.10), (0.10, 0.20), (0.20, 0.30), (0.30, 0.40), (0.40, 0.60), (0.60, 99)]
+        bins = [(0.01, 0.10), (0.10, 0.20)]
         stats = []
         for lo, hi in bins:
             sel = []
