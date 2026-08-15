@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-14 16:20:12",
+  "generated_at": "2026-08-15 09:04:44",
   "threshold": 1.14,
   "note": "⚡=importance_weight(联赛等级×紧迫). 历史场次紧迫系数跌至0.90, 仅临场窗口权重>=1.14. 逐轮记录攒样本.",
   "tracked": [
@@ -659,9 +659,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
+      "score": "0-1",
       "hit": false,
-      "recorded_at": "2026-08-14 12:42:11"
+      "recorded_at": "2026-08-14 12:42:11",
+      "updated_at": "2026-08-15 09:04:44"
     },
     {
       "fid": "3019106",
@@ -674,9 +675,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
+      "score": "2-2",
       "hit": false,
-      "recorded_at": "2026-08-14 12:42:11"
+      "recorded_at": "2026-08-14 12:42:11",
+      "updated_at": "2026-08-15 09:04:44"
     },
     {
       "fid": "2912872",
@@ -689,9 +691,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-08-14 12:42:11"
+      "score": "2-1",
+      "hit": true,
+      "recorded_at": "2026-08-14 12:42:11",
+      "updated_at": "2026-08-15 09:04:44"
     },
     {
       "fid": "2912238",
@@ -704,9 +707,10 @@
       "model_dir": "主",
       "ts_dir": "客",
       "same_dir": false,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-08-14 12:42:11"
+      "score": "3-0",
+      "hit": true,
+      "recorded_at": "2026-08-14 12:42:11",
+      "updated_at": "2026-08-15 09:04:44"
     },
     {
       "fid": "2996107",
@@ -719,9 +723,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
+      "score": "1-3",
       "hit": false,
-      "recorded_at": "2026-08-14 12:42:11"
+      "recorded_at": "2026-08-14 12:42:11",
+      "updated_at": "2026-08-15 09:04:44"
     },
     {
       "fid": "2996414",
@@ -734,9 +739,10 @@
       "model_dir": "主",
       "ts_dir": "客",
       "same_dir": false,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-08-14 12:42:11"
+      "score": "3-1",
+      "hit": true,
+      "recorded_at": "2026-08-14 12:42:11",
+      "updated_at": "2026-08-15 09:04:44"
     },
     {
       "fid": "2996416",
@@ -749,9 +755,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-08-14 12:42:11"
+      "score": "3-2",
+      "hit": true,
+      "recorded_at": "2026-08-14 12:42:11",
+      "updated_at": "2026-08-15 09:04:44"
     },
     {
       "fid": "2996417",
@@ -764,9 +771,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
+      "score": "0-2",
       "hit": false,
-      "recorded_at": "2026-08-14 12:42:11"
+      "recorded_at": "2026-08-14 12:42:11",
+      "updated_at": "2026-08-15 09:04:44"
     },
     {
       "fid": "2996415",
@@ -779,9 +787,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
+      "score": "2-3",
       "hit": false,
-      "recorded_at": "2026-08-14 12:42:11"
+      "recorded_at": "2026-08-14 12:42:11",
+      "updated_at": "2026-08-15 09:04:44"
     },
     {
       "fid": "2996419",
@@ -794,9 +803,10 @@
       "model_dir": "主",
       "ts_dir": "客",
       "same_dir": false,
-      "score": "",
+      "score": "2-2",
       "hit": false,
-      "recorded_at": "2026-08-14 12:42:11"
+      "recorded_at": "2026-08-14 12:42:11",
+      "updated_at": "2026-08-15 09:04:44"
     },
     {
       "fid": "2996418",
@@ -809,9 +819,10 @@
       "model_dir": "主",
       "ts_dir": "客",
       "same_dir": false,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-08-14 12:42:11"
+      "score": "2-1",
+      "hit": true,
+      "recorded_at": "2026-08-14 12:42:11",
+      "updated_at": "2026-08-15 09:04:44"
     },
     {
       "fid": "3014030",
@@ -824,9 +835,10 @@
       "model_dir": "客",
       "ts_dir": "主",
       "same_dir": false,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-08-14 12:42:11"
+      "score": "0-1",
+      "hit": true,
+      "recorded_at": "2026-08-14 12:42:11",
+      "updated_at": "2026-08-15 09:04:44"
     },
     {
       "fid": "3003530",
@@ -839,9 +851,10 @@
       "model_dir": "客",
       "ts_dir": "主",
       "same_dir": false,
-      "score": "",
+      "score": "3-3",
       "hit": false,
-      "recorded_at": "2026-08-14 12:42:11"
+      "recorded_at": "2026-08-14 12:42:11",
+      "updated_at": "2026-08-15 09:04:44"
     },
     {
       "fid": "2997681",
@@ -854,9 +867,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-08-14 12:42:11"
+      "score": "2-0",
+      "hit": true,
+      "recorded_at": "2026-08-14 12:42:11",
+      "updated_at": "2026-08-15 09:04:44"
     },
     {
       "fid": "2997682",
@@ -869,9 +883,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
+      "score": "0-1",
       "hit": false,
-      "recorded_at": "2026-08-14 12:42:11"
+      "recorded_at": "2026-08-14 12:42:11",
+      "updated_at": "2026-08-15 09:04:44"
     },
     {
       "fid": "2997683",
@@ -884,9 +899,10 @@
       "model_dir": "客",
       "ts_dir": "主",
       "same_dir": false,
-      "score": "",
+      "score": "0-0",
       "hit": false,
-      "recorded_at": "2026-08-14 12:42:11"
+      "recorded_at": "2026-08-14 12:42:11",
+      "updated_at": "2026-08-15 09:04:44"
     },
     {
       "fid": "2997684",
@@ -899,9 +915,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-08-14 12:42:11"
+      "score": "1-0",
+      "hit": true,
+      "recorded_at": "2026-08-14 12:42:11",
+      "updated_at": "2026-08-15 09:04:44"
     },
     {
       "fid": "2997687",
@@ -914,9 +931,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
+      "score": "0-0",
       "hit": false,
-      "recorded_at": "2026-08-14 12:42:11"
+      "recorded_at": "2026-08-14 12:42:11",
+      "updated_at": "2026-08-15 09:04:44"
     },
     {
       "fid": "2997685",
@@ -929,9 +947,10 @@
       "model_dir": "客",
       "ts_dir": "主",
       "same_dir": false,
-      "score": "",
+      "score": "2-1",
       "hit": false,
-      "recorded_at": "2026-08-14 12:42:11"
+      "recorded_at": "2026-08-14 12:42:11",
+      "updated_at": "2026-08-15 09:04:44"
     },
     {
       "fid": "2997688",
@@ -944,9 +963,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
+      "score": "3-3",
       "hit": false,
-      "recorded_at": "2026-08-14 12:42:11"
+      "recorded_at": "2026-08-14 12:42:11",
+      "updated_at": "2026-08-15 09:04:44"
     },
     {
       "fid": "2997686",
@@ -959,9 +979,10 @@
       "model_dir": "主",
       "ts_dir": "客",
       "same_dir": false,
-      "score": "",
+      "score": "0-1",
       "hit": false,
-      "recorded_at": "2026-08-14 12:42:11"
+      "recorded_at": "2026-08-14 12:42:11",
+      "updated_at": "2026-08-15 09:04:44"
     },
     {
       "fid": "2997689",
@@ -974,9 +995,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-08-14 12:42:11"
+      "score": "3-1",
+      "hit": true,
+      "recorded_at": "2026-08-14 12:42:11",
+      "updated_at": "2026-08-15 09:04:44"
     },
     {
       "fid": "3008152",
@@ -989,9 +1011,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
+      "score": "2-2",
       "hit": false,
-      "recorded_at": "2026-08-14 12:42:11"
+      "recorded_at": "2026-08-14 12:42:11",
+      "updated_at": "2026-08-15 09:04:44"
     },
     {
       "fid": "3023448",
@@ -1004,9 +1027,10 @@
       "model_dir": "主",
       "ts_dir": "客",
       "same_dir": false,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-08-14 12:42:11"
+      "score": "3-2",
+      "hit": true,
+      "recorded_at": "2026-08-14 12:42:11",
+      "updated_at": "2026-08-15 09:04:44"
     },
     {
       "fid": "2962573",
@@ -1019,9 +1043,10 @@
       "model_dir": "主",
       "ts_dir": "客",
       "same_dir": false,
-      "score": "",
+      "score": "0-1",
       "hit": false,
-      "recorded_at": "2026-08-14 12:42:11"
+      "recorded_at": "2026-08-14 12:42:11",
+      "updated_at": "2026-08-15 09:04:44"
     },
     {
       "fid": "3024415",
