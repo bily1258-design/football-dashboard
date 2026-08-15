@@ -1183,8 +1183,6 @@ def fetch_asian_odds(fid, preferred_cids=None):
     try:
         req = urllib.request.Request(url, headers=AH_HEADERS)
         ctx = ssl.create_default_context()
-        ctx.check_hostname = False
-        ctx.verify_mode = ssl.CERT_NONE
         resp = urllib.request.urlopen(req, timeout=15, context=ctx)
         raw = resp.read()
     except Exception as e:
