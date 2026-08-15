@@ -90,6 +90,29 @@ def parse_dt(s):
 
 def main():
     show_all = '--all' in sys.argv
+    # --md <path>: 完整清单同时写入 markdown (GitHub Pages 渲染), 微信只推摘要+链接
+    md_path = None
+    if '--md' in sys.argv:
+        i = sys.argv.index('--md')
+        if i + 1 < len(sys.argv):
+            md_path = sys.argv[i + 1]
+    md_file = None
+    if md_path:
+        import os
+        os.makedirs(os.path.dirname(os.path.abspath(md_path)), exist_ok=True)
+        md_file = open(md_path, 'w', encoding='utf-8')
+        md_file.write(f"# 📋 今日客胜价值投注清单\n\n> 生成时间: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M')} | 完整明细\n\n```text\n")
+        class _Tee:
+            def __init__(self, *streams):
+                self.streams = streams
+            def write(self, s):
+                for st in self.streams:
+                    st.write(s)
+            def flush(self):
+                for st in self.streams:
+                    st.flush()
+        sys.stdout = _Tee(sys.__stdout__, md_file)
+
     now = datetime.datetime.now()
     # 今日窗口: 今天12:00 → 明天11:59
     win_start = now.replace(hour=12, minute=0, second=0, microsecond=0)
@@ -251,6 +274,10 @@ def main():
             t = r['mt'].strftime('%m-%d %H:%M') if r.get('mt') else r.get('date', '')
             why = ','.join(r.get('av_reasons') or ['⚡高权重'])
             print(f"   {t} [{r.get('league','')}] {r.get('home','')} vs {r.get('away','')} 🚫{why}")
+
+    if md_file:
+        sys.stdout.write("```\n")
+        md_file.close()
 
 if __name__ == '__main__':
     main()

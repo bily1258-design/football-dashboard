@@ -57,8 +57,9 @@ echo "[$(date '+%H:%M:%S')] 生成看板精简数据 (results_light.json)..."
 python3 scripts/gen_light_results.py
 
 # 客胜价值投注清单 (回测验证: 客胜+EV>0.5+HKJC赔率3-6 唯一正期望; 供每日推送)
-echo "[$(date '+%H:%M:%S')] 生成客胜价值投注清单..."
-python3 scripts/away_value_picks.py
+# --md: 完整清单写入 docs/today_picks.md, GitHub Pages 渲染成网页, 微信只推摘要+链接(省限流)
+echo "[$(date '+%H:%M:%S')] 生成客胜价值投注清单(+今日推荐文档)..."
+python3 scripts/away_value_picks.py --md docs/today_picks.md
 
 # ⚡高权重场次追踪 (⚡>=1.14 临场窗口记录, 验证顶级1.2 vs 次级1.14 开出规律; 逐轮攒样本)
 echo "[$(date '+%H:%M:%S')] 追踪⚡高权重场次..."
