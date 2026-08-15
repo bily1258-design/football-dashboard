@@ -23,3 +23,6 @@ SECRET.md
 # docs/由GA生成，但results.json和前端文件需要提交才能触发GA
 # （本地生成后需要git add -f 或取消ignore）
 *.html.strip=test
+
+# 爬虫缓存(可能含cookie), 禁止提交
+/data/cache/
