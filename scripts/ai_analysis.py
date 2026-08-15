@@ -1890,6 +1890,32 @@ def generate_frontend(results: List[Dict]):
     with open(os.path.join(DOCS_DIR, 'data', 'results.json'), 'w', encoding='utf-8') as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
 
+    # 回写 poisson_predictions (poisson_win/draw/loss) — 校准器数据源
+    # 修复: 之前从不回写导致 cal_probs 永远 None, EV 一直用 LGBM 原始概率
+    try:
+        import sqlite3 as _sq
+        _conn = _sq.connect(DB_PATH)
+        _n = 0
+        for _m in results:
+            _fid = _m.get('fid')
+            _mw = _m.get('model_win')
+            _md = _m.get('model_draw')
+            _ml = _m.get('model_loss')
+            if _fid is None or not all(isinstance(x, (int, float)) for x in (_mw, _md, _ml)):
+                continue
+            _cur = _conn.execute(
+                'UPDATE poisson_predictions SET poisson_win=?, poisson_draw=?, poisson_loss=? '
+                'WHERE match_id=? AND poisson_win IS NULL',
+                (round(float(_mw), 6), round(float(_md), 6), round(float(_ml), 6), str(_fid)),
+            )
+            _n += _cur.rowcount
+        _conn.commit()
+        _conn.close()
+        if _n:
+            logger.info(f"校准数据回写: 新增 {_n} 场 model 概率 → poisson_predictions")
+    except Exception as _e:
+        logger.warning(f"校准数据回写失败: {_e}")
+
     # 4. 球队相似度匹配 (Week 2) — 在最终写回后跑，不被覆盖
     try:
         import team_similarity
