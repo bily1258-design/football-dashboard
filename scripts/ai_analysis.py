@@ -1956,6 +1956,18 @@ def generate_frontend(results: List[Dict]):
         <option value="jingcai">竞彩</option>
         <option value="beidan">北单</option>
       </select>
+      <select id="dirFilter" onchange="applyFilters()">
+        <option value="all">全部方向组合</option>
+        <option value="home-home">主主</option>
+        <option value="home-draw">主和</option>
+        <option value="home-away">主客</option>
+        <option value="draw-home">和主</option>
+        <option value="draw-draw">和和</option>
+        <option value="draw-away">和客</option>
+        <option value="away-home">客主</option>
+        <option value="away-draw">客和</option>
+        <option value="away-away">客客</option>
+      </select>
       <select id="sortBy" onchange="applyFilters()">
         <option value="time">按时间</option>
         <option value="odds">按赔率</option>
