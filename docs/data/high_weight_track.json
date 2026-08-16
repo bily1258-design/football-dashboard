@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-16 12:54:28",
+  "generated_at": "2026-08-16 16:22:18",
   "threshold": 1.14,
   "note": "⚡=importance_weight(联赛等级×紧迫). 历史场次紧迫系数跌至0.90, 仅临场窗口权重>=1.14. 逐轮记录攒样本.",
   "tracked": [
@@ -1693,10 +1693,10 @@
       "model_dir": "客",
       "ts_dir": "主",
       "same_dir": false,
-      "score": "",
-      "hit": false,
+      "score": "0-2",
+      "hit": true,
       "recorded_at": "2026-08-15 22:28:33",
-      "updated_at": "2026-08-16 12:54:28"
+      "updated_at": "2026-08-16 16:22:18"
     },
     {
       "fid": "2910851",
@@ -2066,6 +2066,21 @@
       "score": "",
       "hit": false,
       "recorded_at": "2026-08-16 12:54:28"
+    },
+    {
+      "fid": "3012263",
+      "date": "2026-08-16",
+      "match_time": "2026-08-16 22:00",
+      "event": "俄超",
+      "home_team": "蘇維埃之翼",
+      "away_team": "馬哈奇卡拉",
+      "weight": 1.14,
+      "model_dir": "主",
+      "ts_dir": "客",
+      "same_dir": false,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-08-16 16:22:18"
     },
     {
       "fid": "3023446",
