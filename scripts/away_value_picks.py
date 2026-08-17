@@ -101,7 +101,7 @@ def main():
         import os
         os.makedirs(os.path.dirname(os.path.abspath(md_path)), exist_ok=True)
         md_file = open(md_path, 'w', encoding='utf-8')
-        md_file.write(f"# 📋 今日客胜价值投注清单\n\n> 生成时间: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M')} | 完整明细\n\n```text\n")
+        md_file.write(f"# 📋 今日高置信方向投注清单\n\n> 生成时间: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M')} | 完整明细\n\n```text\n")
         class _Tee:
             def __init__(self, *streams):
                 self.streams = streams
