@@ -130,26 +130,39 @@ def main():
             return False  # 窗口开始前的已过场次, 跳过
         return True
 
-    # ========== 规则A: 客胜价值投注 ==========
+    # ========== 规则A: 高置信方向投注 ==========
+    # 2026-08-17 新规格: M模型(model)与LGBM方向一致(主/平/客任一) 且 对应方向一方概率>44.9%
     rows = []
     for m in MS:
-        bv = m.get('best_value')
-        if not bv or bv.get('outcome') != 'away' or bv.get('ev', 0) <= 0.5:
-            continue
-        cur = hkjc_cur(m)
-        if not cur or not (3 <= cur[2] <= 6):
-            continue
         if not in_window(m):
             continue
+        md = argmax3(m.get('model_win', 0), m.get('model_draw', 0), m.get('model_loss', 0))
+        ld = argmax3(m.get('lgbm_win', 0), m.get('lgbm_draw', 0), m.get('lgbm_loss', 0))
+        if md != ld:
+            continue  # M模型与LGBM方向一致(同指主/平/客)
+        if md == '主':
+            mv, lv = m.get('model_win', 0), m.get('lgbm_win', 0)
+        elif md == '平':
+            mv, lv = m.get('model_draw', 0), m.get('lgbm_draw', 0)
+        else:
+            mv, lv = m.get('model_loss', 0), m.get('lgbm_loss', 0)
+        if not (mv > 0.449 or lv > 0.449):
+            continue  # 其中一方概率>44.9%
+        cur = hkjc_cur(m)
         mt = parse_dt(m.get('match_time') or m.get('date'))
         comp = m.get('comparison') or {}  # 平博 Pinnacle
+        tsd = argmax3(m.get('ts_win', 0), m.get('ts_draw', 0), m.get('ts_loss', 0))
+        tsp = max(m.get('ts_win', 0), m.get('ts_draw', 0), m.get('ts_loss', 0))
+        bv = m.get('best_value') or {}
         rows.append({
             'date': m.get('date', ''), 'mt': mt, 'league': m.get('event', ''),
             'home': m.get('home_team', ''), 'away': m.get('away_team', ''),
-            'odds': cur[2], 'prob': bv.get('prob', 0), 'ev': bv.get('ev', 0),
+            'odds': cur[2] if cur else None,
+            'dir': md, 'model_prob': mv, 'lgbm_prob': lv, 'ev': bv.get('ev', 0),
             # 参考赔率: 平博开/即, HKJC开/即 (均为 主/平/客 三元组)
             'pin_open': fmt3(comp.get('open')), 'pin_cur': fmt3(comp.get('current')),
             'hkjc_open': fmt3((m.get('pin_comparison') or {}).get('open')), 'hkjc_cur': fmt3(cur),
+            'ts_dir': tsd, 'ts_prob': tsp,  # TS最大概率及方向
             'avoid': is_hw_avoid(m),  # ⚡高权重避雷
             'av_reasons': avoid_reasons(m, bv),  # 扩展避雷原因
         })
@@ -191,7 +204,7 @@ def main():
         print("(今日窗口内及未来无甜点区场次)")
 
     print()
-    print(f"②客胜价值投注清单 ({'全部' if show_all else '今日窗口(' + win_label + ')内及未来未开赛可投'} {len(rows)}场) 规则: 客胜+EV>0.5+赔率3-6 (含🎯甜点区, 2026-08-14起)")
+    print(f"②高置信方向投注 ({'全部' if show_all else '今日窗口(' + win_label + ')内及未来未开赛可投'} {len(rows)}场) 规则: model=LGBM方向一致(主/平/客) 且 一方概率>44.9% (2026-08-17新规格)")
     print("=" * 92)
     for r in rows:
         t = r['mt'].strftime('%m-%d %H:%M') if r['mt'] else r['date']
@@ -202,8 +215,8 @@ def main():
             tag = ' 🚫避雷(' + ','.join(r['av_reasons']) + ')'
         elif r.get('avoid'):
             tag = ' ⚠️⚡避雷'
-        print(f"{t} [{r['league']}] {r['home']} vs {r['away']}{tag}")
-        print(f"   HKJC客胜 {r['odds']} | 模型概率 {r['prob']*100:.0f}% | EV {r['ev']:.2f}")
+        print(f"{t} [{r['league']}] {r['home']} vs {r['away']} →{r['dir']}{tag}")
+        print(f"   {r['dir']}概率: model {r['model_prob']*100:.0f}% | LGBM {r['lgbm_prob']*100:.0f}% | EV {r['ev']:.2f} | TS {r['ts_dir']}{r['ts_prob']*100:.0f}%")
         print(f"   平博 初/即: {r['pin_open']} → {r['pin_cur']} | HKJC 初/即: {r['hkjc_open']} → {r['hkjc_cur']}")
     if not rows:
         if show_all:
