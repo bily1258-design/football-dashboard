@@ -3,7 +3,7 @@
 """生成「投注簿」xlsx → 手机共享 Documents，供 WPS 打开存云文档。
 
 用法: python3 gen_ledger_xlsx.py
-输出: ~/storage/shared/Documents/投注簿_YYYYMMDD.xlsx
+输出: ~/storage/shared/Documents/投注簿.xlsx (固定文件名, 每日覆盖更新)
 内容:
   Sheet1 总览: 状态汇总 + 按信号盈亏 + 按日盈亏 + 未结算大单
   Sheet2 明细: 全部255条(或按 --days N 过滤最近N天), 已结算/未结算着色
@@ -198,7 +198,8 @@ def main():
     ws2.auto_filter.ref = f'A1:L{ws2.max_row}'
 
     os.makedirs(OUT_DIR, exist_ok=True)
-    out_path = os.path.join(OUT_DIR, f'投注簿_{datetime.now().strftime("%Y%m%d")}.xlsx')
+    # 固定文件名, 每日覆盖更新 (不再按日期生成新文件)
+    out_path = os.path.join(OUT_DIR, '投注簿.xlsx')
     wb.save(out_path)
     print(f'✅ 已生成: {out_path}')
     print(f'   明细 {len(recs)} 条 (结算 {len(settled)} / 未结算 {len(open_r)})')
