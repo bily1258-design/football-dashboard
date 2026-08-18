@@ -11,10 +11,11 @@ import numpy as np
 from collections import defaultdict
 from itertools import product
 import time
+from datetime import datetime
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from train_lgbm import extract_features, get_result_label, NumpyEncoder, SimpleLGBM, _safe_float, _implied
+from train_lgbm import extract_features, get_result_label, NumpyEncoder, SimpleLGBM, _safe_float, _implied, FEATURE_NAMES
 
 DB_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'football.db')
 CACHE_DIR = os.path.join(os.path.dirname(__file__), '..', 'data', 'cache')
@@ -38,7 +39,7 @@ def load_data():
         label = get_result_label(r.get('reference_score', ''))
         if label is None:
             continue
-        feats = extract_features(r, stats=None)[:35]  # 仅35维基础特征
+        feats = extract_features(r, stats=None)  # 全39维（含xG 8维，与train_lgbm一致）
         X_list.append(feats)
         y_list.append(label)
     
@@ -178,9 +179,9 @@ def main():
     final_model.fit(X_train, y_train)
     
     model_dict = final_model.to_dict()
-    model_dict['feature_names'] = ['35_base_features']
-    model_dict['version'] = 4
-    model_dict['train_date'] = '2026-07-17'
+    model_dict['feature_names'] = FEATURE_NAMES  # 39维，与train_lgbm一致
+    model_dict['version'] = 11
+    model_dict['train_date'] = datetime.now().strftime('%Y-%m-%d')
     model_dict['train_samples'] = len(X_train)
     model_dict['test_accuracy'] = round(best['test'], 4)
     model_dict['baseline_accuracy'] = round(baseline, 4)
