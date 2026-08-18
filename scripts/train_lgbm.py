@@ -12,6 +12,8 @@ from collections import defaultdict
 from datetime import datetime
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from calibrate_odds import implied as _cal_implied, fit_platt, Calibrator
 
 FORM_WINDOW = 5  # 近几场算近期战绩
 
@@ -207,9 +209,12 @@ FEATURE_NAMES = [
     'home_conceded_3','away_conceded_3',
     'xg_home_3','xg_away_3',
     'xg_home_10','xg_away_10',
+    # ─── 偏移特征 (v13, +4维: 调水信号 + 赔率空间偏移) ──
+    'pin_delta_odds_w','pin_delta_odds_d','pin_delta_odds_l',
+    'pin_margin_delta',
 ]
 
-def extract_features(row, stats=None, form_data=None, conn=None):
+def extract_features(row, stats=None, form_data=None, conn=None, calibrator=None):
     pw = _safe_float(row.get('poisson_win'))
     pd_ = _safe_float(row.get('poisson_draw'))
     pl = _safe_float(row.get('poisson_loss'))
@@ -294,6 +299,21 @@ def extract_features(row, stats=None, form_data=None, conn=None):
             xg_h3 = _safe_float(r[4]); xg_a3 = _safe_float(r[5])
             xg_h10 = _safe_float(r[6]); xg_a10 = _safe_float(r[7])
     
+    # ─── 偏移特征 (v13, +4维: 调水信号 + 赔率空间偏移) ──
+    # 校准后概率偏移与已有 pin_diff_* 共线(校准器b≈1)，剔除；
+    # HKJC open 覆盖仅16.5%，84%零值纯噪声，剔除。
+    # Pinnacle 赔率空间偏移 Δodds = close - open
+    if has_open and has_close:
+        pin_delta_odds_w = pin_cw - pin_ow
+        pin_delta_odds_d = pin_cd - pin_od
+        pin_delta_odds_l = pin_cl - pin_ol
+        pin_margin_open = (1.0/pin_ow + 1.0/pin_od + 1.0/pin_ol) - 1.0
+        pin_margin_close = (1.0/pin_cw + 1.0/pin_cd + 1.0/pin_cl) - 1.0
+        pin_margin_delta = pin_margin_close - pin_margin_open
+    else:
+        pin_delta_odds_w = pin_delta_odds_d = pin_delta_odds_l = 0.0
+        pin_margin_delta = 0.0
+
     return [
         pw, pd_, pl,
         fw, fd_, fl,
@@ -309,6 +329,9 @@ def extract_features(row, stats=None, form_data=None, conn=None):
         # xG特征 8维
         h_g3, a_g3, h_c3, a_c3,
         xg_h3, xg_a3, xg_h10, xg_a10,
+        # 偏移特征 4维
+        pin_delta_odds_w, pin_delta_odds_d, pin_delta_odds_l,
+        pin_margin_delta,
     ]
 
 
@@ -375,6 +398,7 @@ def get_team_form(timeline, team, date, window=FORM_WINDOW):
 # ─── 主流程 ──────────────────────────────────────
 
 def main():
+    np.random.seed(42)  # 固定种子，可复现
     print("=" * 60)
     print("LGBM 模型训练")
     print("=" * 60)
@@ -409,6 +433,24 @@ def main():
     rows = cur.fetchall()
     
     print(f"\n总记录: {len(rows)}")
+
+    # ─── 拟合 Platt 校准器（用训练集 Pinnacle close 概率 + 赛果）───
+    cal_probs, cal_labels = [], []
+    for row in rows:
+        r = dict(row)
+        label = get_result_label(r.get('reference_score', ''))
+        cw = _safe_float(r.get('pinnacle_close_w'))
+        cd = _safe_float(r.get('pinnacle_close_d'))
+        cl = _safe_float(r.get('pinnacle_close_l'))
+        if label is None or cw <= 1.01 or cd <= 1.01 or cl <= 1.01:
+            continue
+        p = _cal_implied(cw, cd, cl)
+        if p[0] > 0:
+            cal_probs.append(p[:3])
+            cal_labels.append(label)
+    calibrator = fit_platt(np.array(cal_probs), np.array(cal_labels))
+    print(f"Platt 校准器拟合完成 ({len(cal_probs)} 场)")
+    print(f"  参数 (a,b): {[ (round(a,3), round(b,3)) for a, b in calibrator.params ]}")
     
     # 提取特征 + 标签
     X_list = []
@@ -429,7 +471,7 @@ def main():
             home_team: get_team_form(form_timeline, home_team, date),
             away_team: get_team_form(form_timeline, away_team, date),
         }
-        feats = extract_features(r, form_data=form_data, conn=conn)
+        feats = extract_features(r, form_data=form_data, conn=conn, calibrator=calibrator)
         X_list.append(feats)
         y_list.append(label)
     conn.close()
@@ -504,12 +546,15 @@ def main():
     os.makedirs(CACHE_DIR, exist_ok=True)
     model_dict = model.to_dict()
     model_dict['feature_names'] = FEATURE_NAMES
-    model_dict['version'] = 10
+    model_dict['version'] = 13
     model_dict['train_date'] = datetime.now().strftime('%Y-%m-%d')
     model_dict['train_samples'] = len(X_train)
     model_dict['test_accuracy'] = round(test_acc, 4)
     model_dict['baseline_accuracy'] = round(baseline_acc, 4)
     model_dict['n_trees'] = n_trees
+    model_dict['calibrator'] = {
+        'params': [[float(a), float(b)] for a, b in calibrator.params],
+    }
     
     with open(MODEL_PATH, 'w') as f:
         json.dump(model_dict, f, cls=NumpyEncoder)
