@@ -911,10 +911,10 @@ def fit_calibrator(db_path: str = DB_PATH) -> Optional[Dict]:
     try:
         conn = sqlite3.connect(db_path)
         rows = conn.execute("""
-            SELECT poisson_win, poisson_draw, poisson_loss, reference_score
+            SELECT lgbm_win, lgbm_draw, lgbm_loss, reference_score
             FROM poisson_predictions
             WHERE reference_score IS NOT NULL AND reference_score != ''
-              AND poisson_win > 0.01 AND poisson_loss > 0.01
+              AND lgbm_win > 0.01 AND lgbm_loss > 0.01
         """).fetchall()
         conn.close()
         if len(rows) < 100:
@@ -1925,8 +1925,8 @@ def generate_frontend(results: List[Dict]):
     with open(os.path.join(DOCS_DIR, 'data', 'results.json'), 'w', encoding='utf-8') as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
 
-    # 回写 poisson_predictions (poisson_win/draw/loss) — 校准器数据源
-    # 修复: 之前从不回写导致 cal_probs 永远 None, EV 一直用 LGBM 原始概率
+    # 回写 lgbm_win/draw/loss（模型概率独立列，2026-08-19 与 poisson_* 语义分离）
+    # poisson_* 列保留给真正的泊松模型输出；LGBM 模型概率写入 lgbm_*，避免列名误导
     try:
         import sqlite3 as _sq
         _conn = _sq.connect(DB_PATH)
@@ -1939,15 +1939,15 @@ def generate_frontend(results: List[Dict]):
             if _fid is None or not all(isinstance(x, (int, float)) for x in (_mw, _md, _ml)):
                 continue
             _cur = _conn.execute(
-                'UPDATE poisson_predictions SET poisson_win=?, poisson_draw=?, poisson_loss=? '
-                'WHERE match_id=? AND poisson_win IS NULL',
+                'UPDATE poisson_predictions SET lgbm_win=?, lgbm_draw=?, lgbm_loss=? '
+                'WHERE match_id=? AND lgbm_win IS NULL',
                 (round(float(_mw), 6), round(float(_md), 6), round(float(_ml), 6), str(_fid)),
             )
             _n += _cur.rowcount
         _conn.commit()
         _conn.close()
         if _n:
-            logger.info(f"校准数据回写: 新增 {_n} 场 model 概率 → poisson_predictions")
+            logger.info(f"校准数据回写: 新增 {_n} 场 model 概率 → lgbm_win/draw/loss")
     except Exception as _e:
         logger.warning(f"校准数据回写失败: {_e}")
 
