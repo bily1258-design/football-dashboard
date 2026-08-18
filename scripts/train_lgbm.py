@@ -505,7 +505,7 @@ def main():
     model_dict = model.to_dict()
     model_dict['feature_names'] = FEATURE_NAMES
     model_dict['version'] = 10
-    model_dict['train_date'] = '2026-07-27'
+    model_dict['train_date'] = datetime.now().strftime('%Y-%m-%d')
     model_dict['train_samples'] = len(X_train)
     model_dict['test_accuracy'] = round(test_acc, 4)
     model_dict['baseline_accuracy'] = round(baseline_acc, 4)
