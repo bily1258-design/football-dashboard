@@ -11,7 +11,9 @@ import numpy as np
 from collections import defaultdict
 from datetime import datetime
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+# 同目录 import ai_analysis（共享特征提取/模型概率计算，保证训练与推理同源）
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import ai_analysis
 
 FORM_WINDOW = 5  # 近几场算近期战绩
 
@@ -190,90 +192,47 @@ def _implied(odds_w, odds_d, odds_l):
     t = sum(inv)
     return (inv[0]/t, inv[1]/t, inv[2]/t, t-1.0)
 
-FEATURE_NAMES = [
-    'poisson_w','poisson_d','poisson_l',
-    'final_w','final_d','final_l',
-    'implied_w','implied_d','implied_l',
-    'pin_open_w','pin_open_d','pin_open_l',
-    'pin_close_w','pin_close_d','pin_close_l',
-    'pin_diff_w','pin_diff_d','pin_diff_l',
-    'pin_margin',
-    'poisson_market_margin','poisson_market_draw_diff',
-    'odds_level','draw_premium',
-    'home_rank','away_rank','home_pts','away_pts',
-    'home_form_pts','away_form_pts','home_form_gd','away_form_gd',
-    # xG特征 (v10, 8维 - 历史趋势表, 全量覆盖)
-    'home_goals_3','away_goals_3',
-    'home_conceded_3','away_conceded_3',
-    'xg_home_3','xg_away_3',
-    'xg_home_10','xg_away_10',
-]
+# 特征名与 ai_analysis 共享（避免双份定义漂移）
+FEATURE_NAMES = ai_analysis.FEATURE_NAMES
 
-def extract_features(row, stats=None, form_data=None, conn=None):
-    pw = _safe_float(row.get('poisson_win'))
-    pd_ = _safe_float(row.get('poisson_draw'))
-    pl = _safe_float(row.get('poisson_loss'))
-    
-    fw = _safe_float(row.get('fusion_win'))
-    fd_ = _safe_float(row.get('fusion_draw'))
-    fl = _safe_float(row.get('fusion_loss'))
-    
-    imp_w = _safe_float(row.get('implied_prob_w'))
-    imp_d_ = _safe_float(row.get('implied_prob_d'))
-    imp_l = _safe_float(row.get('implied_prob_l'))
-    
+def extract_features(row, stats=None, form_data=None, conn=None,
+                     league_priors=None, lambda_=None):
+    """从DB行提取39维LGBM特征。
+
+    与 ai_analysis.extract_lgbm_features / calc_model_probs 同源：
+    - 赔率源: pinnacle_close 优先（推理端 ow 同源），fallback odds_win
+    - final_* 特征 = calc_model_probs（推理端同款平滑+联赛混合）
+    - poisson_* 恒0（推理端JSON无poisson字段，保持两侧一致）
+    """
+    if lambda_ is None:
+        lambda_ = ai_analysis.LEAGUE_PRIOR_LAMBDA
+
+    # 赔率源
+    ow = _safe_float(row.get('pinnacle_close_w'))
+    od = _safe_float(row.get('pinnacle_close_d'))
+    ol = _safe_float(row.get('pinnacle_close_l'))
+    if not (ow > 1.01 and od > 1.01 and ol > 1.01):
+        ow = _safe_float(row.get('odds_win'))
+        od = _safe_float(row.get('odds_draw'))
+        ol = _safe_float(row.get('odds_loss'))
+
+    # final_* 特征（与推理端 analyze_matches 同款逻辑）
+    league = row.get('league', '') or ''
+    mw, md, ml, _ = ai_analysis.calc_model_probs(ow, od, ol, league_priors, lambda_, league)
+
+    # 开盘价（缺失传 None → 特征0，与推理端一致）
     pin_ow = _safe_float(row.get('pinnacle_open_w'))
     pin_od = _safe_float(row.get('pinnacle_open_d'))
     pin_ol = _safe_float(row.get('pinnacle_open_l'))
-    has_open = pin_ow > 1.01 and pin_od > 1.01 and pin_ol > 1.01
-    if has_open:
-        open_w, open_d, open_l, _ = _implied(pin_ow, pin_od, pin_ol)
-    else:
-        open_w = open_d = open_l = 0.0
-    
-    pin_cw = _safe_float(row.get('pinnacle_close_w'))
-    pin_cd = _safe_float(row.get('pinnacle_close_d'))
-    pin_cl = _safe_float(row.get('pinnacle_close_l'))
-    has_close = pin_cw > 1.01 and pin_cd > 1.01 and pin_cl > 1.01
-    if has_close:
-        close_w, close_d, close_l, _ = _implied(pin_cw, pin_cd, pin_cl)
-    else:
-        close_w = close_d = close_l = 0.0
-    
-    diff_w = (close_w - open_w) if has_open and has_close else 0.0
-    diff_d = (close_d - open_d) if has_open and has_close else 0.0
-    diff_l = (close_l - open_l) if has_open and has_close else 0.0
-    
-    pin_margin = _safe_float(row.get('pinnacle_margin'))
-    
-    poisson_market_margin = (pw - pl) - (imp_w - imp_l) if imp_w > 0 else 0.0
-    poisson_market_draw_diff = pd_ - imp_d_ if imp_d_ > 0 else 0.0
-    
-    odds_w = _safe_float(row.get('odds_win'))
-    odds_d = _safe_float(row.get('odds_draw'))
-    odds_l = _safe_float(row.get('odds_loss'))
-    odds_level = 1.0 / max(odds_w, 1.01) if odds_w > 1.01 else 0.0
-    draw_premium = ((odds_d - (odds_w + odds_l)/2) / max((odds_w + odds_l)/2, 0.01)
-                    if odds_w > 1.01 and odds_l > 1.01 else 0.0)
-    
-    # 新增积分特征
-    hr = _safe_float(row.get('home_ranking'))
-    ar = _safe_float(row.get('away_ranking'))
-    hp = _safe_float(row.get('home_points'))
-    ap = _safe_float(row.get('away_points'))
-    
-    # 近期战绩特征
-    if form_data:
-        ft_home = form_data.get(row.get('home_team', ''), {})
-        ft_away = form_data.get(row.get('away_team', ''), {})
-        hfp = _safe_float(ft_home.get('form_pts'))
-        afp = _safe_float(ft_away.get('form_pts'))
-        hfg = _safe_float(ft_home.get('form_gd'))
-        afg = _safe_float(ft_away.get('form_gd'))
-    else:
-        hfp = afp = hfg = afg = 0.0
-    
-    # ─── 新增xG特征 (v10) ────────────────────────────
+    open_w = pin_ow if pin_ow > 1.01 else None
+    open_d = pin_od if pin_od > 1.01 else None
+    open_l = pin_ol if pin_ol > 1.01 else None
+
+    # 近期战绩
+    ft_home = form_data.get(row.get('home_team', ''), {}) if form_data else {}
+    ft_away = form_data.get(row.get('away_team', ''), {}) if form_data else {}
+
+    # xG特征 (xg_features 表)
     h_g3 = a_g3 = h_c3 = a_c3 = 0.0
     xg_h3 = xg_a3 = xg_h10 = xg_a10 = 0.0
     sid_raw = row.get('sid') or row.get('match_id') or 0
@@ -293,23 +252,23 @@ def extract_features(row, stats=None, form_data=None, conn=None):
             h_c3 = _safe_float(r[2]); a_c3 = _safe_float(r[3])
             xg_h3 = _safe_float(r[4]); xg_a3 = _safe_float(r[5])
             xg_h10 = _safe_float(r[6]); xg_a10 = _safe_float(r[7])
-    
-    return [
-        pw, pd_, pl,
-        fw, fd_, fl,
-        imp_w, imp_d_, imp_l,
-        open_w, open_d, open_l,
-        close_w, close_d, close_l,
-        diff_w, diff_d, diff_l,
-        pin_margin,
-        poisson_market_margin, poisson_market_draw_diff,
-        odds_level, draw_premium,
-        hr, ar, hp, ap,
-        hfp, afp, hfg, afg,
-        # xG特征 8维
-        h_g3, a_g3, h_c3, a_c3,
-        xg_h3, xg_a3, xg_h10, xg_a10,
-    ]
+
+    return ai_analysis.extract_lgbm_features(
+        ow, od, ol, mw, md, ml, 0.0,
+        open_w=open_w, open_d=open_d, open_l=open_l,
+        # poisson_*: 推理端JSON无此字段→恒0，训练端同源（DB有值也不喂，避免skew）
+        poisson_w=None, poisson_d=None, poisson_l=None,
+        # 排名（DB home_ranking 列，纯数字字符串）
+        home_rank=row.get('home_ranking'), away_rank=row.get('away_ranking'),
+        # 积分: DB无points列，推理端JSON也无 → 恒0 两侧一致
+        home_pts=None, away_pts=None,
+        home_form_pts=ft_home.get('form_pts'), away_form_pts=ft_away.get('form_pts'),
+        home_form_gd=ft_home.get('form_gd'), away_form_gd=ft_away.get('form_gd'),
+        home_goals_3=h_g3 or None, away_goals_3=a_g3 or None,
+        home_conceded_3=h_c3 or None, away_conceded_3=a_c3 or None,
+        xg_home_3=xg_h3 or None, xg_away_3=xg_a3 or None,
+        xg_home_10=xg_h10 or None, xg_away_10=xg_a10 or None,
+    )
 
 
 def get_result_label(reference_score):
@@ -385,6 +344,10 @@ def main():
     
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
+
+    # 联赛基准率（与 ai_analysis 推理端同源，用于 calc_model_probs）
+    league_priors = ai_analysis.load_league_priors(DB_PATH)
+    print(f"联赛基准率: {len(league_priors)} 个联赛")
     
     # 加载数据（全部带比分，用于构建近期战绩时间线）
     cur = conn.execute("""
@@ -429,7 +392,7 @@ def main():
             home_team: get_team_form(form_timeline, home_team, date),
             away_team: get_team_form(form_timeline, away_team, date),
         }
-        feats = extract_features(r, form_data=form_data, conn=conn)
+        feats = extract_features(r, form_data=form_data, conn=conn, league_priors=league_priors)
         X_list.append(feats)
         y_list.append(label)
     conn.close()
@@ -456,9 +419,10 @@ def main():
     
     # 训练
     # 允许命令行指定树数
-    n_trees = int(sys.argv[1]) if len(sys.argv) > 1 and sys.argv[1].isdigit() else 60
-    print(f"\n训练 SimpleLGBM ({n_trees}棵树, 深度4)...")
-    model = SimpleLGBM(n_estimators=n_trees, max_depth=4, learning_rate=0.1)
+    n_trees = int(sys.argv[1]) if len(sys.argv) > 1 and sys.argv[1].isdigit() else 120
+    print(f"\n训练 SimpleLGBM ({n_trees}棵树, 深度5, lr0.05)...")
+    np.random.seed(42)  # 固定随机种子，保证可复现（2026-08-19 修复）
+    model = SimpleLGBM(n_estimators=n_trees, max_depth=5, learning_rate=0.05)
     model.min_samples = 10
     model.fit(X_train, y_train)
     
@@ -504,7 +468,9 @@ def main():
     os.makedirs(CACHE_DIR, exist_ok=True)
     model_dict = model.to_dict()
     model_dict['feature_names'] = FEATURE_NAMES
-    model_dict['version'] = 10
+    model_dict['version'] = 11
+    model_dict['feature_sync'] = 'shared extract_lgbm_features + calc_model_probs (2026-08-19)'
+    model_dict['seed'] = 42
     model_dict['train_date'] = datetime.now().strftime('%Y-%m-%d')
     model_dict['train_samples'] = len(X_train)
     model_dict['test_accuracy'] = round(test_acc, 4)

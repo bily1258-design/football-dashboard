@@ -328,6 +328,42 @@ def implied_from_odds(odds_w: float, odds_d: float, odds_l: float) -> Tuple[Opti
     margin = total - 1.0
     return iw / total, id_ / total, il / total, margin
 
+def calc_model_probs(ow: float, od: float, ol: float,
+                     league_priors: Dict = None,
+                     lambda_: float = LEAGUE_PRIOR_LAMBDA,
+                     league: str = '') -> Tuple[float, float, float, Optional[Tuple[float, float, float]]]:
+    """模型概率：隐含 → 方差自适应平滑+主场修正 → 联赛基准率混合
+
+    训练端(train_lgbm)与推理端(analyze_matches)共用，保证 LGBM final_* 特征同源。
+    返回 (model_w, model_d, model_l, league_baseline_or_None)
+    """
+    if ow <= 0 or od <= 0 or ol <= 0:
+        return 1/3, 1/3, 1/3, None
+    imp_w, imp_d, imp_l, _ = implied_from_odds(ow, od, ol)
+    if imp_w is None:
+        return 1/3, 1/3, 1/3, None
+    # 2a. 方差自适应贝叶斯平滑 + 主场修正
+    skew = max(imp_w, imp_d, imp_l) - 1/3
+    alpha = min(SMOOTH_ALPHA_BASE + skew * SMOOTH_ALPHA_SKEW, 0.40)
+    sw = imp_w * (1 - alpha) + alpha / 3 + HOME_ADJ
+    sd = imp_d * (1 - alpha) + alpha / 3 - HOME_ADJ * 0.3
+    sl = imp_l * (1 - alpha) + alpha / 3 - HOME_ADJ * 0.3
+    st = sw + sd + sl
+    model_w, model_d, model_l = sw/st, sd/st, sl/st
+    # 2b. 联赛基准率混合（贝叶斯先验校正）
+    league_baseline = None
+    if lambda_ > 0 and league:
+        priors = league_priors or {}
+        prior = priors.get(league, GLOBAL_PRIOR)
+        pw, pd_, pl = prior
+        fw = model_w * (1 - lambda_) + pw * lambda_
+        fd = model_d * (1 - lambda_) + pd_ * lambda_
+        fl = model_l * (1 - lambda_) + pl * lambda_
+        ft = fw + fd + fl
+        model_w, model_d, model_l = ft and (fw/ft, fd/ft, fl/ft) or (1/3, 1/3, 1/3)
+        league_baseline = prior
+    return model_w, model_d, model_l, league_baseline
+
 def middle_direction(mw: float, md: float, ml: float) -> Tuple[str, str, float]:
     """取中间概率方向"""
     items = [('主胜', mw, 'home'), ('平局', md, 'draw'), ('客胜', ml, 'away')]
@@ -519,19 +555,33 @@ LGBM_MODEL_PATH = os.path.join(DATA_DIR, 'cache', 'lgbm_model.json')
 _lgbm_model = None  # 全局缓存
 
 FEATURE_NAMES = [
+    # 0-2  poisson模型概率（DB poisson_* 列；训练端覆盖率低，重训后逐步启用）
     'poisson_w','poisson_d','poisson_l',
+    # 3-5  平滑+联赛混合最终概率（train/serve 同源，主特征）
     'final_w','final_d','final_l',
+    # 6-8  市场隐含概率
     'implied_w','implied_d','implied_l',
+    # 9-11 开盘隐含概率
     'pin_open_w','pin_open_d','pin_open_l',
+    # 12-14 收盘隐含概率
     'pin_close_w','pin_close_d','pin_close_l',
-    'pin_move_w','pin_move_d','pin_move_l',
+    # 15-17 收盘-开盘概率差
     'pin_diff_w','pin_diff_d','pin_diff_l',
+    # 18   收盘去水margin
     'pin_margin',
-    'disagree_w','disagree_d','disagree_l',
+    # 19-20 模型vs市场分歧
     'poisson_market_margin','poisson_market_draw_diff',
+    # 21-22 赔率级别/平局溢价
     'odds_level','draw_premium',
-    'lambda_h','lambda_a',
+    # 23-26 排名/积分
+    'home_rank','away_rank','home_pts','away_pts',
+    # 27-30 近期战绩（场均积分/净胜球）
+    'home_form_pts','away_form_pts','home_form_gd','away_form_gd',
+    # 31-38 xG特征（v11新增）
+    'home_goals_3','away_goals_3','home_conceded_3','away_conceded_3',
+    'xg_home_3','xg_away_3','xg_home_10','xg_away_10',
 ]
+assert len(FEATURE_NAMES) == 39, f"FEATURE_NAMES长度{len(FEATURE_NAMES)}≠39"
 
 def _implied_from_odds(ow, od, ol):
     """赔率 → 去水隐含概率"""
@@ -687,7 +737,10 @@ def predict_lgbm_batch(model_dict, features_list):
     x_batch = np.nan_to_num(x_batch, nan=0.0, posinf=0.0, neginf=0.0)
     n = len(x_batch)
 
-    raw = np.full((n, 3), float(init_pred[0]))
+    # ⚠️ 修复(2026-08-19): 原为 np.full((n,3), init_pred[0])，三列共用主胜初始值，
+    # 导致 draw/away 的 raw 初始值错误抬高（init_pred 实际 [0.433, 0.243, 0.324]），
+    # 实测前200场27.5%方向翻转。逐列使用各自初始值。
+    raw = np.tile(np.array([float(init_pred[0]), float(init_pred[1]), float(init_pred[2])]), (n, 1))
     for cls in range(3):
         if cls >= len(trees):
             continue
@@ -1197,29 +1250,11 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             continue
 
         # 2. 方差自适应贝叶斯平滑 + 主场修正
-        #    偏离均衡（1/3）越多，平滑越强，极端赔率自然减弱
-        skew = max(imp_w, imp_d, imp_l) - 1/3
-        alpha = min(SMOOTH_ALPHA_BASE + skew * SMOOTH_ALPHA_SKEW, 0.40)
-        sw = imp_w * (1 - alpha) + alpha / 3 + HOME_ADJ
-        sd = imp_d * (1 - alpha) + alpha / 3 - HOME_ADJ * 0.3
-        sl = imp_l * (1 - alpha) + alpha / 3 - HOME_ADJ * 0.3
-        st = sw + sd + sl
-        model_w, model_d, model_l = sw/st, sd/st, sl/st
-
-        # 2b. 联赛基准率混合（贝叶斯先验校正）
-        #     联赛历史结果分布与市场概率按权重混合
+        # 2. 方差自适应贝叶斯平滑 + 主场修正 + 联赛基准混合
+        #    (与 train_lgbm 共用 calc_model_probs，保证 LGBM final_* 特征同源)
         league = m.get('event', '') or m.get('league', '')
-        league_baseline = None
-        if lambda_ > 0 and league:
-            prior = league_priors.get(league, GLOBAL_PRIOR)
-            pw, pd, pl = prior
-            # 混合：最终 = (1-λ) × 平滑模型 + λ × 联赛基准
-            fw = model_w * (1 - lambda_) + pw * lambda_
-            fd = model_d * (1 - lambda_) + pd * lambda_
-            fl = model_l * (1 - lambda_) + pl * lambda_
-            ft = fw + fd + fl
-            model_w, model_d, model_l = ft and (fw/ft, fd/ft, fl/ft) or (1/3, 1/3, 1/3)
-            league_baseline = prior
+        model_w, model_d, model_l, league_baseline = calc_model_probs(
+            ow, od, ol, league_priors, lambda_, league)
 
         # 2c. 初盘→即时变化直接调整
         #     ⚠️ 存一份调整前的概率给LGBM用（LGBM训练时没吃过调整特征）
