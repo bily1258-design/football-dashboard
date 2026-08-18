@@ -33,8 +33,9 @@ cd "$ODDS_REPO"
 git init
 git checkout -b main
 cp "$XLSX_PATH" "beidan_${EXPECT}_dashboard.xlsx"
-git add "beidan_${EXPECT}_dashboard.xlsx"
-git commit -m "update: 北单${EXPECT}期看板 $(date +%Y-%m-%d)"
+cp /data/data/com.termux/files/home/football-dashboard/docs/beidan_dashboard.html "$ODDS_REPO/index.html"
+git add -A
+git commit -m "update: 北单${EXPECT}期看板 $(date +%Y-%m-%d) (index.html+xlsx)"
 git remote add origin git@github.com:bily1258-design/football-odds-api.git
 git push origin +main 2>&1
 echo "✅ 推送完成: football-odds-api beidan_${EXPECT}_dashboard.xlsx"
