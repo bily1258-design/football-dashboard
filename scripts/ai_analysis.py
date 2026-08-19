@@ -436,6 +436,13 @@ def load_raw_matches() -> List[Dict]:
                 if new_score and not old_score:
                     existing['score'] = new_score
                     logger.debug(f"  合并比分 fid={key}: {old_score} → {new_score}")
+            elif len(m) < len(existing):
+                # 新记录字段少(如hkjc侧)但可能带比分: 补比分, 保留字段多的原记录
+                new_score = (m.get('score') or '').strip()
+                old_score = (existing.get('score') or '').strip()
+                if new_score and not old_score:
+                    existing['score'] = new_score
+                    logger.debug(f"  补比分 fid={key}: {old_score} → {new_score}")
     logger.info(f"原始数据 {len(all_ms)} 场 → 去重后 {len(deduped)} 场")
 
     # 第二道去重: 按(主队,客队)去重 — 同一场比赛在不同日期文件里出现(不同fid)
