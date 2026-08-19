@@ -26,3 +26,6 @@ SECRET.md
 
 # 爬虫缓存(可能含cookie), 禁止提交
 /data/cache/
+
+# DB备份过大不入库
+/data/football.db.bak*

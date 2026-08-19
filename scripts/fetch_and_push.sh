@@ -37,6 +37,10 @@ for i in 0 1 2 3; do
     fi
 done
 
+# ========== 同步 results.json → poisson_predictions（含比分补写，必须在 λ 重算之前） ==========
+echo "[$(date '+%H:%M:%S')] 同步AI分析结果到数据库..."
+python3 scripts/sync_results_to_db.py
+
 # ========== 同步比分到 reference_score，重算 λ（在分析之前） ==========
 echo "[$(date '+%H:%M:%S')] 同步比分到 reference_score，重算 λ..."
 python3 scripts/sync_scores_and_lambdas.py
@@ -65,11 +69,7 @@ python3 scripts/away_value_picks.py --md docs/today_picks.md
 echo "[$(date '+%H:%M:%S')] 追踪⚡高权重场次..."
 python3 scripts/high_weight_tracker.py
 
-# ========== 同步 results.json → poisson_predictions（让xG/历史相似/总进球覆盖当日） ==========
-echo "[$(date '+%H:%M:%S')] 同步AI分析结果到数据库..."
-python3 scripts/sync_results_to_db.py
-
-echo "[$(date '+%H:%M:%S')] 抓取xG特征数据（历史趋势表）..."
+# ========== 抓取xG特征数据（历史趋势表） ==========
 python3 scripts/fetch_daily_xg.py
 
 echo "[$(date '+%H:%M:%S')] 推送至GitHub..."

@@ -53,17 +53,13 @@ def main():
     
     now = datetime.now().isoformat()
     inserted = 0
+    updated = 0
     skipped = 0
     errors = 0
     
     for m in matches:
         fid = str(m.get('fid', ''))
         if not fid:
-            skipped += 1
-            continue
-        
-        # 已存在则跳过
-        if fid in existing:
             skipped += 1
             continue
         
@@ -80,6 +76,20 @@ def main():
         hg, ag = parse_score(score_str)
         ref_score = f"{hg}-{ag}" if hg is not None else ''
         actual = score_to_actual_outcome(home_team, away_team, hg, ag) if hg is not None else ''
+        
+        # 已存在 → 只补比分空值（不覆盖已有 actual_outcome，防止 JSON 过期比分覆盖真实结果）
+        if fid in existing:
+            if actual:
+                row = cur.execute(
+                    'SELECT actual_outcome FROM poisson_predictions WHERE match_id=?', (fid,)
+                ).fetchone()
+                if row and not row[0]:
+                    cur.execute(
+                        'UPDATE poisson_predictions SET actual_outcome=?, reference_score=? WHERE match_id=?',
+                        (actual, ref_score, fid))
+                    updated += 1
+            skipped += 1
+            continue
         
         # 赔率 - 优先用直接字段
         odds_win = m.get('odds_win', 0) or 0
@@ -147,7 +157,7 @@ def main():
     conn.commit()
     conn.close()
     
-    print(f"✅ 同步完成: 插入 {inserted} 场, 跳过 {skipped} 场, 错误 {errors} 场")
+    print(f"✅ 同步完成: 插入 {inserted} 场, 更新比分 {updated} 场, 跳过 {skipped} 场, 错误 {errors} 场")
 
 if __name__ == '__main__':
     main()
