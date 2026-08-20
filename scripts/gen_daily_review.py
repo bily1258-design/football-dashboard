@@ -115,13 +115,14 @@ def main():
         else:
             out_lines.append(line)
 
+    pct = f"{hit / total * 100:.0f}%" if total else "0%"
     header = (f"# 📋 推荐清单 · 赛果回填复盘（{args.date}）\n\n"
               f"> 清单: {args.picks} ｜ 完赛 {total}/{total + sum(1 for l in out_lines if '⏳' in l)}"
-              f" · 命中 {hit}（{hit / total * 100:.0f}% 完赛场次）"
+              f" · 命中 {hit}（{pct} 完赛场次）"
               f" ｜ 净盈亏 {pnl:+.2f}（{has_pnl} 场有赔率）\n\n```text\n")
     content = header + '\n'.join(out_lines) + '\n```\n'
     open(args.out, 'w', encoding='utf-8').write(content)
-    print(f"已生成: {args.out}\n完赛 {total} / 命中 {hit} ({hit / total * 100:.0f}%) / 净盈亏 {pnl:+.2f} / 回填行 {changed}")
+    print(f"已生成: {args.out}\n完赛 {total} / 命中 {hit} ({pct}) / 净盈亏 {pnl:+.2f} / 回填行 {changed}")
 
 if __name__ == '__main__':
     main()
