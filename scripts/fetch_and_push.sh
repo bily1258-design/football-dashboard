@@ -22,6 +22,16 @@ if [ ! -f "$FILE" ]; then
     exit 0
 fi
 
+# ========== 昨日清单存档 + 赛果回填复盘（每日12:30/16:10任务自动执行） ==========
+# 存档: today_picks.md 在 fetch 前仍是「昨日清单」→ 存 picks_YYYYMMDD.md 留底
+# 复盘: 用存档清单 + 已回填的 results.json 生成「推荐清单·赛果回填复盘.md」(固定名, Pages可看)
+YDAY=$(date -d "$DATE -1 day" '+%Y-%m-%d')
+YDAY_C=${YDAY//-/}
+if [ -f "docs/today_picks.md" ] && [ ! -f "docs/picks_${YDAY_C}.md" ]; then
+    echo "[$(date '+%H:%M:%S')] 存档昨日清单 → docs/picks_${YDAY_C}.md"
+    cp docs/today_picks.md "docs/picks_${YDAY_C}.md"
+fi
+
 # ========== 比分回填：重新抓取今天+前3天，更新已完赛比分 ==========
 for i in 0 1 2 3; do
     BACK_DATE=$(date -d "$DATE -$i day" '+%Y-%m-%d')
@@ -64,6 +74,12 @@ python3 scripts/gen_light_results.py
 # --md: 完整清单写入 docs/today_picks.md, GitHub Pages 渲染成网页, 微信只推摘要+链接(省限流)
 echo "[$(date '+%H:%M:%S')] 生成客胜价值投注清单(+今日推荐文档)..."
 python3 scripts/away_value_picks.py --md docs/today_picks.md
+
+# ========== 昨日清单赛果回填复盘（固定文件名, Pages 可看） ==========
+if [ -f "docs/picks_${YDAY_C}.md" ]; then
+    echo "[$(date '+%H:%M:%S')] 生成昨日清单赛果回填复盘..."
+    python3 scripts/gen_daily_review.py --date "$YDAY" --picks "docs/picks_${YDAY_C}.md"
+fi
 
 # ⚡高权重场次追踪 (⚡>=1.14 临场窗口记录, 验证顶级1.2 vs 次级1.14 开出规律; 逐轮攒样本)
 echo "[$(date '+%H:%M:%S')] 追踪⚡高权重场次..."

@@ -168,43 +168,13 @@ def main():
         })
     rows.sort(key=lambda x: (x['mt'] or datetime.datetime.max, -x['ev']))
 
-    # ========== 规则C: 🎯甜点区 (2026-08-14 投注簿挖掘, 历史胜率27-43%/+38单位) ==========
-    # 注意: 甜点区 EV<0.5, 与规则A(EV>0.5)互补, 必须独立扫描全量场次
+    # ========== 规则C: 🎯甜点区 — 2026-08-20 用户拍板取消(不参考), 清单不再输出 ==========
+    # 历史: 2026-08-14 投注簿挖掘 27-43%/+38单位; 8/19 实际 3/10 30% -1.27; 大样本基准
+    # (results.json 1830场): 客+赔率>=2.5 整体69.2%但美洲场仅47.6%, 用户决定整段移除
     sweet_rows = []
-    for m in MS:
-        if not in_window(m):
-            continue
-        bv = m.get('best_value') or {}
-        if bv.get('outcome') != 'away' or not (0 < bv.get('ev', 0) < 0.5):
-            continue
-        if (bv.get('edge') or 0) >= 0.10:
-            continue
-        cur = hkjc_cur(m)
-        if not cur or not (2.5 <= cur[2] < 4):
-            continue
-        mt = parse_dt(m.get('match_time') or m.get('date'))
-        comp = m.get('comparison') or {}
-        sweet_rows.append({
-            'date': m.get('date', ''), 'mt': mt, 'league': m.get('event', ''),
-            'home': m.get('home_team', ''), 'away': m.get('away_team', ''),
-            'odds': cur[2], 'prob': bv.get('prob', 0), 'ev': bv.get('ev', 0),
-            'pin_open': fmt3(comp.get('open')), 'pin_cur': fmt3(comp.get('current')),
-            'hkjc_open': fmt3((m.get('pin_comparison') or {}).get('open')), 'hkjc_cur': fmt3(cur),
-            'av_reasons': avoid_reasons(m, bv),
-        })
-    sweet_rows.sort(key=lambda x: (x['mt'] or datetime.datetime.max, -x['ev']))
-    print(f"①🎯甜点区客胜 ({len(sweet_rows)}场) 规则: 客胜+HKJC客赔2.5-4+0<EV<0.5+edge<10% | 历史回测: 43.2%胜率(44场+16.2) / 32.7%(101场+10.4)")
-    print("=" * 92)
-    for r in sweet_rows:
-        t = r['mt'].strftime('%m-%d %H:%M') if r['mt'] else r['date']
-        print(f"{t} [{r['league']}] {r['home']} vs {r['away']} 🎯")
-        print(f"   HKJC客胜 {r['odds']} | 模型概率 {r['prob']*100:.0f}% | EV {r['ev']:.2f}")
-        print(f"   平博 初/即: {r['pin_open']} → {r['pin_cur']} | HKJC 初/即: {r['hkjc_open']} → {r['hkjc_cur']}")
-    if not sweet_rows:
-        print("(今日窗口内及未来无甜点区场次)")
 
     print()
-    print(f"②高置信方向投注 ({'全部' if show_all else '今日窗口(' + win_label + ')内及未来未开赛可投'} {len(rows)}场) 规则: model=LGBM方向一致(主/平/客) 且 一方概率>44.9% (2026-08-17新规格)")
+    print(f"①高置信方向投注 ({'全部' if show_all else '今日窗口(' + win_label + ')内及未来未开赛可投'} {len(rows)}场) 规则: model=LGBM方向一致(主/平/客) 且 一方概率>44.9% (2026-08-17新规格)")
     print("=" * 92)
     for r in rows:
         t = r['mt'].strftime('%m-%d %H:%M') if r['mt'] else r['date']
@@ -262,7 +232,7 @@ def main():
 
     print()
     print("=" * 92)
-    print(f"③三方一致·客客客 ({'全部' if show_all else '今日窗口内及未来未开赛可投'} {len(rows_b)}场) 规则: model=LGBM=TS均指客 | ★=客赔<2.0且TS平<25%")
+    print(f"②三方一致·客客客 ({'全部' if show_all else '今日窗口内及未来未开赛可投'} {len(rows_b)}场) 规则: model=LGBM=TS均指客 | ★=客赔<2.0且TS平<25%")
     print("=" * 92)
     for r in rows_b:
         t = r['mt'].strftime('%m-%d %H:%M') if r['mt'] else r['date']
