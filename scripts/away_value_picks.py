@@ -45,8 +45,19 @@ def is_hw_avoid(m):
 # ===== 高命中率联赛 (results.json 1877场回测, n>=20 且方向命中率>=60%, 2026-08-21) =====
 # 芬甲70% 國際友誼賽67.3% 日職聯65% 智利甲64.3% 歐冠杯63.9% 挪甲63.3%
 # 挪超62.5% 丹麥超61.9% 歐羅巴杯61.9% 英聯杯61.1% — 清单中这些联赛加 🟢 标记
-HIGH_HIT_LEAGUES = {'芬甲', '國際友誼賽', '日職聯', '智利甲', '歐冠杯',
-                    '挪甲', '挪超', '丹麥超', '歐羅巴杯', '英聯杯'}
+# 2026-08-21: 清单直接显示简体(取消繁转), 联赛集合随队名一起转简体
+HIGH_HIT_LEAGUES = {'芬甲', '国际友谊赛', '日职联', '智利甲', '欧冠杯',
+                    '挪甲', '挪超', '丹麦超', '欧罗巴杯', '英联杯'}
+
+def _mk_t2s():
+    try:
+        from opencc import OpenCC
+        cc = OpenCC('t2s')
+        return lambda s: cc.convert(s) if s else s
+    except Exception:
+        return lambda s: s
+
+t2s = _mk_t2s()  # 繁体 → 简体 (看板直接显示简体, 2026-08-21)
 
 def lg_tag(league):
     return f"{league}🟢" if league in HIGH_HIT_LEAGUES else league
@@ -164,8 +175,8 @@ def main():
         tsp = max(m.get('ts_win', 0), m.get('ts_draw', 0), m.get('ts_loss', 0))
         bv = m.get('best_value') or {}
         rows.append({
-            'date': m.get('date', ''), 'mt': mt, 'league': m.get('event', ''),
-            'home': m.get('home_team', ''), 'away': m.get('away_team', ''),
+            'date': m.get('date', ''), 'mt': mt, 'league': t2s(m.get('event', '')),
+            'home': t2s(m.get('home_team', '')), 'away': t2s(m.get('away_team', '')),
             'odds': cur[2] if cur else None,
             'dir': md, 'model_prob': mv, 'lgbm_prob': lv, 'ev': bv.get('ev', 0),
             # 参考赔率: 平博开/即, HKJC开/即 (均为 主/平/客 三元组)
@@ -228,8 +239,8 @@ def main():
         star = (cur[2] < 2.0 and ts_draw < 0.25 and not is_fill)
         comp = m.get('comparison') or {}
         rows_b.append({
-            'date': m.get('date', ''), 'mt': mt, 'league': m.get('event', ''),
-            'home': m.get('home_team', ''), 'away': m.get('away_team', ''),
+            'date': m.get('date', ''), 'mt': mt, 'league': t2s(m.get('event', '')),
+            'home': t2s(m.get('home_team', '')), 'away': t2s(m.get('away_team', '')),
             'odds': cur[2], 'ts_draw': ts_draw, 'star': star,
             'lgbm_prob': max(m.get('lgbm_win', 0), m.get('lgbm_draw', 0), m.get('lgbm_loss', 0)),
             'pin_open': fmt3(comp.get('open')), 'pin_cur': fmt3(comp.get('current')),
