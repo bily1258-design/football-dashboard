@@ -19,6 +19,12 @@ PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MD_PATH = os.path.join(PROJECT_DIR, 'docs', 'today_picks.md')
 OUT_DIR = os.path.expanduser('~/storage/shared/Documents')
 
+# 高命中率联赛 (results.json 1877场回测, n>=20 且方向命中率>=60%, 2026-08-21)
+# 芬甲70% 國際友誼賽67.3% 日職聯65% 智利甲64.3% 歐冠杯63.9% 挪甲63.3%
+# 挪超62.5% 丹麥超61.9% 歐羅巴杯61.9% 英聯杯61.1% — 联赛列绿字加粗
+HIGH_HIT_LEAGUES = {'芬甲', '國際友誼賽', '日職聯', '智利甲', '歐冠杯',
+                    '挪甲', '挪超', '丹麥超', '歐羅巴杯', '英聯杯'}
+
 # 样式
 HEADER_FONT = Font(bold=True, color='FFFFFF', size=11)
 HEADER_FILL = PatternFill('solid', fgColor='2F5597')
@@ -26,6 +32,7 @@ SWEET_FILL = PatternFill('solid', fgColor='C6EFCE')   # 甜点区 绿
 CONF_FILL = PatternFill('solid', fgColor='DDEBF7')    # 高置信 蓝
 KKK_FILL = PatternFill('solid', fgColor='FFF2CC')     # 客客客 黄
 AVOID_FILL = PatternFill('solid', fgColor='FFC7CE')   # 避雷 红
+HIGH_HIT_FONT = Font(color='008000', bold=True)        # 高命中率联赛 绿字加粗
 TITLE_FONT = Font(bold=True, size=14, color='2F5597')
 SECTION_FONT = Font(bold=True, size=12, color='404040')
 THIN = Side(style='thin', color='BFBFBF')
@@ -137,7 +144,7 @@ def build_rows(sections):
                             pass
             rows.append({
                 'sec': idx, 'date': mt['date'], 'time': mt['time'],
-                'league': mt['league'], 'teams': mt['teams'],
+                'league': mt['league'].replace('🟢', ''), 'teams': mt['teams'],
                 'dir': f"→{d}{'★' if star else ''}",
                 'mdl': int(mdl) if mdl else '',
                 'lgbm': int(lgbm) if lgbm else '',
@@ -201,6 +208,8 @@ def main():
                 cell.border = BORDER
                 if fill and not r['avoid']:
                     cell.fill = fill
+                if ci == 4 and r['league'] in HIGH_HIT_LEAGUES:   # 高命中率联赛 绿字加粗
+                    cell.font = HIGH_HIT_FONT
                 if ci in (1, 2, 3, 6, 7, 8, 9, 10, 11):
                     cell.alignment = Alignment(horizontal='center')
             row += 1

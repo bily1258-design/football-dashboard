@@ -42,6 +42,15 @@ def is_hw_avoid(m):
     tsd = argmax3(m.get('ts_win', 0), m.get('ts_draw', 0), m.get('ts_loss', 0))
     return md == tsd
 
+# ===== 高命中率联赛 (results.json 1877场回测, n>=20 且方向命中率>=60%, 2026-08-21) =====
+# 芬甲70% 國際友誼賽67.3% 日職聯65% 智利甲64.3% 歐冠杯63.9% 挪甲63.3%
+# 挪超62.5% 丹麥超61.9% 歐羅巴杯61.9% 英聯杯61.1% — 清单中这些联赛加 🟢 标记
+HIGH_HIT_LEAGUES = {'芬甲', '國際友誼賽', '日職聯', '智利甲', '歐冠杯',
+                    '挪甲', '挪超', '丹麥超', '歐羅巴杯', '英聯杯'}
+
+def lg_tag(league):
+    return f"{league}🟢" if league in HIGH_HIT_LEAGUES else league
+
 # ===== 2026-08-14 投注簿挖掘 (1840场已结算): 甜点区/避雷规则 =====
 # 甜点区: 客胜 2.5-4 赔率 + EV<0.5 + edge<10% → 历史胜率 27-43%, +38单位
 # 避雷: edge>=15% 败率90.6% | kelly>=15% 败率89.8% 利润负 | EV>=2.0 败率93%
@@ -185,7 +194,7 @@ def main():
             tag = ' 🚫避雷(' + ','.join(r['av_reasons']) + ')'
         elif r.get('avoid'):
             tag = ' ⚠️⚡避雷'
-        print(f"{t} [{r['league']}] {r['home']} vs {r['away']} →{r['dir']}{tag}")
+        print(f"{t} [{lg_tag(r['league'])}] {r['home']} vs {r['away']} →{r['dir']}{tag}")
         print(f"   {r['dir']}概率: model {r['model_prob']*100:.0f}% | LGBM {r['lgbm_prob']*100:.0f}% | EV {r['ev']:.2f} | TS {r['ts_dir']}{r['ts_prob']*100:.0f}%")
         print(f"   平博 初/即: {r['pin_open']} → {r['pin_cur']} | HKJC 初/即: {r['hkjc_open']} → {r['hkjc_cur']}")
     if not rows:
@@ -238,7 +247,7 @@ def main():
         t = r['mt'].strftime('%m-%d %H:%M') if r['mt'] else r['date']
         star = " ★" if r['star'] else ""
         av = ' ⚠️⚡避雷' if r.get('avoid') else ''
-        print(f"{t} [{r['league']}] {r['home']} vs {r['away']}{star}{av}")
+        print(f"{t} [{lg_tag(r['league'])}] {r['home']} vs {r['away']}{star}{av}")
         print(f"   HKJC客胜 {r['odds']} | LGBM客概率 {r['lgbm_prob']*100:.0f}% | TS平 {r['ts_draw']*100:.0f}%")
         print(f"   平博 初/即: {r['pin_open']} → {r['pin_cur']} | HKJC 初/即: {r['hkjc_open']} → {r['hkjc_cur']}")
     if not rows_b:
@@ -256,7 +265,7 @@ def main():
         for r in av_total:
             t = r['mt'].strftime('%m-%d %H:%M') if r.get('mt') else r.get('date', '')
             why = ','.join(r.get('av_reasons') or ['⚡高权重'])
-            print(f"   {t} [{r.get('league','')}] {r.get('home','')} vs {r.get('away','')} 🚫{why}")
+            print(f"   {t} [{lg_tag(r.get('league',''))}] {r.get('home','')} vs {r.get('away','')} 🚫{why}")
 
     if md_file:
         sys.stdout.write("```\n")
