@@ -79,6 +79,9 @@ python3 scripts/away_value_picks.py --md docs/today_picks.md
 if [ -f "docs/picks_${YDAY_C}.md" ]; then
     echo "[$(date '+%H:%M:%S')] 生成昨日清单赛果回填复盘..."
     python3 scripts/gen_daily_review.py --date "$YDAY" --picks "docs/picks_${YDAY_C}.md"
+    # Excel 版复盘 (复盘.xlsx, ~/storage/shared/Documents/, 每日覆盖)
+    echo "[$(date '+%H:%M:%S')] 生成 Excel 版复盘 (复盘.xlsx)..."
+    python3 scripts/gen_review_xlsx.py
 fi
 
 # ⚡高权重场次追踪 (⚡>=1.14 临场窗口记录, 验证顶级1.2 vs 次级1.14 开出规律; 逐轮攒样本)
