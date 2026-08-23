@@ -113,7 +113,7 @@ def build_rows(sections):
     for idx, title, matches in sections:
         if idx == '⚠️':
             continue
-        default_dir = '客' if idx in ('①', '③') else ''
+        default_dir = '客' if idx == '①' else ('主' if idx == '③' else '')
         for mt in matches:
             d = mt['dir'] or default_dir
             star = mt['star'] == '★'
@@ -179,7 +179,7 @@ def main():
     headers = ['档位', '日期', '时间', '联赛', '对阵', '方向', 'Model%', 'LGBM%', 'EV',
                'TS', 'HKJC赔率', '平博 初→即', 'HKJC 初→即', '避雷']
     widths = [7, 8, 8, 13, 30, 8, 7, 7, 7, 11, 9, 26, 26, 22]
-    SEC_FILL = {'①': SWEET_FILL, '②': CONF_FILL, '③': KKK_FILL}
+    SEC_FILL = {'①': CONF_FILL, '②': KKK_FILL, '③': KKK_FILL}
     n_secs = 0
     for idx, title, matches in sections:
         if idx == '⚠️':

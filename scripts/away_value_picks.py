@@ -4,6 +4,8 @@
 规则B(2026-08-10 HKJC口径回测, 唯一正ROI方向): model==lgbm==ts 三方一致指客(客客客)
    ★高置信标注: 客赔<2.0 且 TS平局概率<25%(剔除填充值0.241)
    客客客全组合 HKJC口径 98场 66.3% ROI+11.1%; 客客客+客赔<2.0+TS平<25% 53场 77.4% ROI+13.0%
+规则D(2026-08-23 新增, 客客客镜像): model==lgbm==ts 三方一致指主(胜胜胜)
+   ★高置信标注: 主赔<2.0 且 TS平局概率<25%(剔除填充值0.241)
 「今日窗口」= 今天12:00 → 明天11:59(跨自然日); 默认只输出窗口内及未来未开赛(可投注)场次
 附注: 平博(Pinnacle)与HKJC的初盘/即时赔率(主/平/客三元组, 参考用)
 用法: python3 scripts/away_value_picks.py [--all]  # --all 输出全部, 默认只输出窗口内及未来未开赛
@@ -266,6 +268,53 @@ def main():
             print("(全部场次无符合条件者)")
         else:
             print(f"(今日窗口 {win_label} 内及未来无未开赛三方一致客场次)")
+
+    # ========== 规则D: 三方一致·胜胜胜 (客客客镜像, 主胜方向) ==========
+    rows_d = []
+    for m in MS:
+        if not in_window(m):
+            continue
+        md = argmax3(m.get('model_win', 0), m.get('model_draw', 0), m.get('model_loss', 0))
+        ld = argmax3(m.get('lgbm_win', 0), m.get('lgbm_draw', 0), m.get('lgbm_loss', 0))
+        tsd = argmax3(m.get('ts_win', 0), m.get('ts_draw', 0), m.get('ts_loss', 0))
+        if not (md == ld == tsd == '主'):
+            continue  # 三方一致且指主(胜)
+        cur = hkjc_cur(m)
+        if not cur:
+            continue
+        mt = parse_dt(m.get('match_time') or m.get('date'))
+        ts_draw = m.get('ts_draw', 0)
+        is_fill = abs(ts_draw - 0.241) < 0.001  # TS填充值污染剔除
+        star = (cur[0] < 2.0 and ts_draw < 0.25 and not is_fill)  # 主赔<2.0
+        comp = m.get('comparison') or {}
+        rows_d.append({
+            'date': m.get('date', ''), 'mt': mt, 'league': t2s(m.get('event', '')),
+            'home': t2s(m.get('home_team', '')), 'away': t2s(m.get('away_team', '')),
+            'odds': cur[0], 'ts_draw': ts_draw, 'star': star,
+            'lgbm_prob': max(m.get('lgbm_win', 0), m.get('lgbm_draw', 0), m.get('lgbm_loss', 0)),
+            'pin_open': fmt3(comp.get('open')), 'pin_cur': fmt3(comp.get('current')),
+            'hkjc_open': fmt3((m.get('pin_comparison') or {}).get('open')), 'hkjc_cur': fmt3(cur),
+            'avoid': is_hw_avoid(m),  # ⚡高权重避雷
+        })
+    # 高置信优先, 再按时间
+    rows_d.sort(key=lambda x: (not x['star'], x['mt'] or datetime.datetime.max))
+
+    print()
+    print("=" * 92)
+    print(f"③三方一致·胜胜胜 ({'全部' if show_all else '今日窗口内及未来未开赛可投'} {len(rows_d)}场) 规则: model=LGBM=TS均指主 | ★=主赔<2.0且TS平<25%")
+    print("=" * 92)
+    for r in rows_d:
+        t = r['mt'].strftime('%m-%d %H:%M') if r['mt'] else r['date']
+        star = " ★" if r['star'] else ""
+        av = ' ⚠️⚡避雷' if r.get('avoid') else ''
+        print(f"{t} [{lg_tag(r['league'])}] {r['home']} vs {r['away']}{star}{av}")
+        print(f"   HKJC主胜 {r['odds']} | LGBM主概率 {r['lgbm_prob']*100:.0f}% | TS平 {r['ts_draw']*100:.0f}%")
+        print(f"   平博 初/即: {r['pin_open']} → {r['pin_cur']} | HKJC 初/即: {r['hkjc_open']} → {r['hkjc_cur']}")
+    if not rows_d:
+        if show_all:
+            print("(全部场次无符合条件者)")
+        else:
+            print(f"(今日窗口 {win_label} 内及未来无未开赛三方一致主场次)")
 
     # 避雷汇总 (⚡高权重 + 扩展避雷)
     av_total = [r for r in rows if r.get('av_reasons')] + [r for r in rows_b if r.get('avoid')]
