@@ -138,9 +138,11 @@ def build_rows(sections):
                 m = ODDS_RE.search(mt['odds_line'])
                 if m:
                     p0, p1, h0, h1 = m.group(1), m.group(2), m.group(3), m.group(4)
-                    if not hk_odds:                       # 高置信档无HKJC行, 取即盘客胜
+                    if not hk_odds:                       # 高置信档无HKJC行, 取即盘对应推荐方向赔率(主→主胜/客→客胜/平→平赔)
                         try:
-                            hk_odds = h1.split('/')[2]
+                            parts = h1.split('/')
+                            if len(parts) == 3:
+                                hk_odds = parts[0] if d == '主' else parts[2] if d == '客' else parts[1]
                         except (IndexError, AttributeError):
                             pass
             rows.append({
