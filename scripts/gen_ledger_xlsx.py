@@ -45,7 +45,7 @@ MATCH_RE = re.compile(
 AVOID_ITEM_RE = re.compile(
     r'^\s*(\d{2}-\d{2})\s+(\d{2}:\d{2})\s+\[([^\]]+)\]\s+(.+?)\s+🚫(.+)$')
 PROB_RE = re.compile(
-    r'^(主|客|平)概率:\s*model\s*(\d+)%\s*\|\s*LGBM\s*(\d+)%\s*(?:\|\s*EV\s*([\d.]+))?(?:\|\s*TS\s*(主|客|平)\s*(\d+)%)?')
+    r'^(主|客|平)概率:\s*model\s*(\d+)%\s*\|\s*LGBM\s*(\d+)%\s*(?:\|\s*EV\s*([\d.]+))?\s*(?:\|\s*TS\s*(主|客|平)\s*(\d+)%)?')
 HKJC_RE = re.compile(
     r'^HKJC(客|主|平)胜\s*([\d.]+)\s*\|\s*(?:模型概率\s*(\d+)%|LGBM(客|主|平)概率\s*(\d+)%)\s*(?:\|\s*EV\s*([\d.]+))?(?:\|\s*TS(平|主|客)\s*(\d+)%)?')
 ODDS_RE = re.compile(
@@ -118,15 +118,17 @@ def build_rows(sections):
             d = mt['dir'] or default_dir
             star = mt['star'] == '★'
             hk_odds, mdl, lgbm, ev = '', '', '', ''
+            tsd = tsp = ''
             if mt['hkjc_line']:
                 m = HKJC_RE.search(mt['hkjc_line'])
                 if m:
                     hk_odds = m.group(2)
                     if m.group(3):                       # 甜点区: 模型概率
                         mdl, ev = m.group(3), m.group(6) or ''
-                    else:                                # 客客客: LGBM概率
+                    else:                                # 客客客/胜胜胜: LGBM概率
                         lgbm, ev = m.group(5), m.group(6) or ''
-            tsd = tsp = ''
+                    if m.group(7):                       # TS平/主/客 在HKJC行(②③档)
+                        tsd, tsp = m.group(7), m.group(8)
             if mt['prob_line']:
                 m = PROB_RE.search(mt['prob_line'])
                 if m:
