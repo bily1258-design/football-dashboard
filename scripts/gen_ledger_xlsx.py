@@ -47,7 +47,9 @@ AVOID_ITEM_RE = re.compile(
 PROB_RE = re.compile(
     r'^(主|客|平)概率:\s*model\s*(\d+)%\s*\|\s*LGBM\s*(\d+)%\s*(?:\|\s*EV\s*([\d.]+))?\s*(?:\|\s*TS\s*(主|客|平)\s*(\d+)%)?')
 HKJC_RE = re.compile(
-    r'^HKJC(客|主|平)胜\s*([\d.]+)\s*\|\s*(?:模型概率\s*(\d+)%|LGBM(客|主|平)概率\s*(\d+)%)\s*(?:\|\s*EV\s*([\d.]+))?(?:\|\s*TS(平|主|客)\s*(\d+)%)?')
+    r'^HKJC(客|主|平)胜\s*([\d.]+)\s*\|\s*'
+    r'(?:(?:模型概率\s*(\d+)%\s*\|\s*)?LGBM(客|主|平)概率\s*(\d+)%|\s*模型概率\s*(\d+)%)'
+    r'\s*(?:\|\s*EV\s*([\d.]+))?\s*(?:\|\s*TS(平|主|客)\s*(\d+)%)?')
 ODDS_RE = re.compile(
     r'^平博\s+初/即:\s*([\d./\-]+)\s*→\s*([\d./\-]+)\s*\|\s*HKJC\s+初/即:\s*([\d./\-]+)\s*→\s*([\d./\-]+)')
 
@@ -123,12 +125,11 @@ def build_rows(sections):
                 m = HKJC_RE.search(mt['hkjc_line'])
                 if m:
                     hk_odds = m.group(2)
-                    if m.group(3):                       # 甜点区: 模型概率
-                        mdl, ev = m.group(3), m.group(6) or ''
-                    else:                                # 客客客/胜胜胜: LGBM概率
-                        lgbm, ev = m.group(5), m.group(6) or ''
-                    if m.group(7):                       # TS平/主/客 在HKJC行(②③档)
-                        tsd, tsp = m.group(7), m.group(8)
+                    mdl = m.group(3) or m.group(6) or ''   # 模型概率(共存或单独)
+                    lgbm = m.group(5) or ''                # LGBM概率
+                    ev = m.group(7) or ''
+                    if m.group(8):                         # TS平/主/客 在HKJC行(②③档)
+                        tsd, tsp = m.group(8), m.group(9)
             if mt['prob_line']:
                 m = PROB_RE.search(mt['prob_line'])
                 if m:

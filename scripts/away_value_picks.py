@@ -244,6 +244,8 @@ def main():
             'date': m.get('date', ''), 'mt': mt, 'league': t2s(m.get('event', '')),
             'home': t2s(m.get('home_team', '')), 'away': t2s(m.get('away_team', '')),
             'odds': cur[2], 'ts_draw': ts_draw, 'star': star,
+            'model_prob': m.get('model_loss', 0),  # 客客客: 模型指客概率
+            'ev': (m.get('best_value') or {}).get('ev', 0),
             'lgbm_prob': max(m.get('lgbm_win', 0), m.get('lgbm_draw', 0), m.get('lgbm_loss', 0)),
             'pin_open': fmt3(comp.get('open')), 'pin_cur': fmt3(comp.get('current')),
             'hkjc_open': fmt3((m.get('pin_comparison') or {}).get('open')), 'hkjc_cur': fmt3(cur),
@@ -261,7 +263,7 @@ def main():
         star = " ★" if r['star'] else ""
         av = ' ⚠️⚡避雷' if r.get('avoid') else ''
         print(f"{t} [{lg_tag(r['league'])}] {r['home']} vs {r['away']}{star}{av}")
-        print(f"   HKJC客胜 {r['odds']} | LGBM客概率 {r['lgbm_prob']*100:.0f}% | TS平 {r['ts_draw']*100:.0f}%")
+        print(f"   HKJC客胜 {r['odds']} | 模型概率 {r['model_prob']*100:.0f}% | LGBM客概率 {r['lgbm_prob']*100:.0f}% | EV {r['ev']:.2f} | TS平 {r['ts_draw']*100:.0f}%")
         print(f"   平博 初/即: {r['pin_open']} → {r['pin_cur']} | HKJC 初/即: {r['hkjc_open']} → {r['hkjc_cur']}")
     if not rows_b:
         if show_all:
@@ -291,6 +293,8 @@ def main():
             'date': m.get('date', ''), 'mt': mt, 'league': t2s(m.get('event', '')),
             'home': t2s(m.get('home_team', '')), 'away': t2s(m.get('away_team', '')),
             'odds': cur[0], 'ts_draw': ts_draw, 'star': star,
+            'model_prob': m.get('model_win', 0),  # 胜胜胜: 模型指主概率
+            'ev': (m.get('best_value') or {}).get('ev', 0),
             'lgbm_prob': max(m.get('lgbm_win', 0), m.get('lgbm_draw', 0), m.get('lgbm_loss', 0)),
             'pin_open': fmt3(comp.get('open')), 'pin_cur': fmt3(comp.get('current')),
             'hkjc_open': fmt3((m.get('pin_comparison') or {}).get('open')), 'hkjc_cur': fmt3(cur),
@@ -308,7 +312,7 @@ def main():
         star = " ★" if r['star'] else ""
         av = ' ⚠️⚡避雷' if r.get('avoid') else ''
         print(f"{t} [{lg_tag(r['league'])}] {r['home']} vs {r['away']}{star}{av}")
-        print(f"   HKJC主胜 {r['odds']} | LGBM主概率 {r['lgbm_prob']*100:.0f}% | TS平 {r['ts_draw']*100:.0f}%")
+        print(f"   HKJC主胜 {r['odds']} | 模型概率 {r['model_prob']*100:.0f}% | LGBM主概率 {r['lgbm_prob']*100:.0f}% | EV {r['ev']:.2f} | TS平 {r['ts_draw']*100:.0f}%")
         print(f"   平博 初/即: {r['pin_open']} → {r['pin_cur']} | HKJC 初/即: {r['hkjc_open']} → {r['hkjc_cur']}")
     if not rows_d:
         if show_all:
