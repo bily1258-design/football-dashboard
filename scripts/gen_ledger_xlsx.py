@@ -113,7 +113,7 @@ def build_rows(sections):
     for idx, title, matches in sections:
         if idx == '⚠️':
             continue
-        default_dir = '客' if idx == '①' else ('主' if idx == '③' else '')
+        default_dir = '客' if idx in ('①', '②') else ('主' if idx == '③' else '')
         for mt in matches:
             d = mt['dir'] or default_dir
             star = mt['star'] == '★'
