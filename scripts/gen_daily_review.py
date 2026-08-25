@@ -71,11 +71,14 @@ def main():
     has_pnl = 0
     changed = 0
     lines = body.split('\n')
+    sec = None  # 当前档位段: ②客客客无箭头隐含客, ③胜胜胜无箭头隐含主
     for i, line in enumerate(lines):
+        if re.match(r'^[①②③]', line):
+            sec = line[0]
         mm = LINE_RE.match(line)
         if mm:
             tstr, league, home, away = mm.group(1), mm.group(2), mm.group(3), mm.group(4)
-            side = mm.group(5) or '客'  # 客客客段无箭头, 隐含客
+            side = mm.group(5) or ('主' if sec == '③' else '客')  # 无箭头行按段取隐含方向
             key = (norm(home), norm(away))
             m = by_key.get(key)
             if m and m.get('score'):
