@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-25 16:41:36",
+  "generated_at": "2026-08-26 15:21:50",
   "threshold": 1.14,
   "note": "⚡=importance_weight(联赛等级×紧迫). 历史场次紧迫系数跌至0.90, 仅临场窗口权重>=1.14. 逐轮记录攒样本.",
   "tracked": [
@@ -5552,9 +5552,10 @@
       "model_dir": "平",
       "ts_dir": "主",
       "same_dir": false,
-      "score": "",
+      "score": "0 - 1",
       "hit": false,
-      "recorded_at": "2026-08-25 12:52:47"
+      "recorded_at": "2026-08-25 12:52:47",
+      "updated_at": "2026-08-26 15:21:50"
     },
     {
       "fid": "3063448",
@@ -5567,9 +5568,40 @@
       "model_dir": "平",
       "ts_dir": "客",
       "same_dir": false,
+      "score": "3 - 1",
+      "hit": true,
+      "recorded_at": "2026-08-25 12:52:47",
+      "updated_at": "2026-08-26 15:21:50"
+    },
+    {
+      "fid": "3013649",
+      "date": "2026-08-27",
+      "match_time": "2026-08-27 03:00",
+      "event": "西甲",
+      "home_team": "皇家馬德里",
+      "away_team": "皇家社會",
+      "weight": 1.2,
+      "model_dir": "主",
+      "ts_dir": "主",
+      "same_dir": true,
       "score": "",
       "hit": false,
-      "recorded_at": "2026-08-25 12:52:47"
+      "recorded_at": "2026-08-26 15:21:50"
+    },
+    {
+      "fid": "3049627",
+      "date": "2026-08-27",
+      "match_time": "2026-08-27 08:30",
+      "event": "南美杯",
+      "home_team": "河牀",
+      "away_team": "聖塔菲",
+      "weight": 1.14,
+      "model_dir": "主",
+      "ts_dir": "客",
+      "same_dir": false,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-08-26 15:21:50"
     }
   ]
 }
