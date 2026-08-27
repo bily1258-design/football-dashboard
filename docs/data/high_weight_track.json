@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-26 16:31:05",
+  "generated_at": "2026-08-27 12:41:44",
   "threshold": 1.14,
   "note": "⚡=importance_weight(联赛等级×紧迫). 历史场次紧迫系数跌至0.90, 仅临场窗口权重>=1.14. 逐轮记录攒样本.",
   "tracked": [
@@ -5584,9 +5584,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-08-26 15:21:50"
+      "score": "4 - 1",
+      "hit": true,
+      "recorded_at": "2026-08-26 15:21:50",
+      "updated_at": "2026-08-27 12:41:44"
     },
     {
       "fid": "3049627",
@@ -5599,9 +5600,70 @@
       "model_dir": "主",
       "ts_dir": "客",
       "same_dir": false,
+      "score": "1 - 1",
+      "hit": false,
+      "recorded_at": "2026-08-26 15:21:50",
+      "updated_at": "2026-08-27 12:41:44"
+    },
+    {
+      "fid": "3013645",
+      "date": "2026-08-28",
+      "match_time": "2026-08-28 02:30",
+      "event": "西甲",
+      "home_team": "塞爾塔",
+      "away_team": "奧薩蘇納",
+      "weight": 1.2,
+      "model_dir": "主",
+      "ts_dir": "主",
+      "same_dir": true,
       "score": "",
       "hit": false,
-      "recorded_at": "2026-08-26 15:21:50"
+      "recorded_at": "2026-08-27 12:41:44"
+    },
+    {
+      "fid": "3013644",
+      "date": "2026-08-28",
+      "match_time": "2026-08-28 03:00",
+      "event": "西甲",
+      "home_team": "巴塞羅那",
+      "away_team": "畢爾巴鄂競技",
+      "weight": 1.2,
+      "model_dir": "主",
+      "ts_dir": "主",
+      "same_dir": true,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-08-27 12:41:44"
+    },
+    {
+      "fid": "3024428",
+      "date": "2026-08-28",
+      "match_time": "2026-08-28 09:00",
+      "event": "墨西乙",
+      "home_team": "瓦哈卡",
+      "away_team": "塔巴蒂奧",
+      "weight": 1.14,
+      "model_dir": "主",
+      "ts_dir": "客",
+      "same_dir": false,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-08-27 12:41:44"
+    },
+    {
+      "fid": "3024429",
+      "date": "2026-08-28",
+      "match_time": "2026-08-28 09:00",
+      "event": "墨西乙",
+      "home_team": "坎昆",
+      "away_team": "拉巴斯競技",
+      "weight": 1.14,
+      "model_dir": "主",
+      "ts_dir": "客",
+      "same_dir": false,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-08-27 12:41:44"
     }
   ]
 }
