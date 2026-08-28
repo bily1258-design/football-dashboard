@@ -34,6 +34,8 @@ CONF_FILL = PatternFill('solid', fgColor='DDEBF7')    # 高置信 蓝
 KKK_FILL = PatternFill('solid', fgColor='FFF2CC')     # 客客客 黄
 AVOID_FILL = PatternFill('solid', fgColor='FFC7CE')   # 避雷 红
 HIGH_HIT_FONT = Font(color='008000', bold=True)        # 高命中率联赛 绿字加粗
+RED_FONT = Font(color='FF0000', bold=True)              # 红线 红字加粗
+STAR_FONT = Font(color='E67E22', bold=True)             # 星级 橙字加粗
 TITLE_FONT = Font(bold=True, size=14, color='2F5597')
 SECTION_FONT = Font(bold=True, size=12, color='404040')
 THIN = Side(style='thin', color='BFBFBF')
@@ -41,7 +43,7 @@ BORDER = Border(left=THIN, right=THIN, top=THIN, bottom=THIN)
 
 SEC_RE = re.compile(r'^(①|②|③|⚠️)')
 MATCH_RE = re.compile(
-    r'^(\d{2}-\d{2})\s+(\d{2}:\d{2})\s+\[([^\]]+)\]\s+(.+?)\s*(→(主|平|客))?\s*(🎯|★)?\s*(🚫.*)?$')
+    r'^(\d{2}-\d{2})\s+(\d{2}:\d{2})\s+\[([^\]]+)\]\s+(.+?)\s*(→(主|平|客))?\s*(🎯|★)?\s*((?:🚫|⚠️⚡).*)?$')
 AVOID_ITEM_RE = re.compile(
     r'^\s*(\d{2}-\d{2})\s+(\d{2}:\d{2})\s+\[([^\]]+)\]\s+(.+?)\s+🚫(.+)$')
 PROB_RE = re.compile(
@@ -52,6 +54,51 @@ HKJC_RE = re.compile(
     r'\s*(?:\|\s*EV\s*([\d.]+))?\s*(?:\|\s*TS(平|主|客)\s*(\d+)%)?')
 ODDS_RE = re.compile(
     r'^平博\s+初/即:\s*([\d./\-]+)\s*→\s*([\d./\-]+)\s*\|\s*HKJC\s+初/即:\s*([\d./\-]+)\s*→\s*([\d./\-]+)')
+
+# ===== 2026-08-28 星级评估 (★★★★) =====
+# ① 平博升水 + HKJC(掉水或不变) → 直接★★
+# ② 有★赛事(md行尾★, 赔率<2.0且TS平<25%) → 加1★
+# ③ HKJC升水 → 不碰 (红线 7.9%, 命中率红线)
+# ④ 平博掉水 → 不作红线 (误杀, 17.1%与基准持平)
+# ⑤ 高命中联赛🟢 → 再加1★
+DIR_IDX = {'主': 0, '平': 1, '客': 2}
+
+
+def parse_triple(s):
+    """'1.93/3.62/3.51' → [1.93, 3.62, 3.51]; '-'/非法 → None"""
+    try:
+        parts = [float(x) for x in s.split('/')]
+        if len(parts) == 3:
+            return parts
+    except (ValueError, AttributeError):
+        pass
+    return None
+
+
+def calc_stars(d, p0, p1, h0, h1, has_star, league):
+    """返回 (星级字符串, 红线标记)
+    d=推荐方向(主/平/客); p0/p1=平博初/即三元组; h0/h1=HKJC初/即三元组
+    """
+    idx = DIR_IDX.get(d)
+    if idx is None:
+        return '', ''
+    stars = 0
+    red = ''
+    pt0, pt1 = parse_triple(p0), parse_triple(p1)
+    ht0, ht1 = parse_triple(h0), parse_triple(h1)
+    pin_up = pt0 and pt1 and pt1[idx] > pt0[idx]          # 平博升水
+    hk_up = ht0 and ht1 and ht1[idx] > ht0[idx]           # HKJC升水
+    hk_down = ht0 and ht1 and ht1[idx] < ht0[idx]         # HKJC掉水
+    hk_same = ht0 and ht1 and abs(ht1[idx] - ht0[idx]) < 1e-9
+    if pin_up and (hk_down or hk_same):                   # ①
+        stars += 2
+    if has_star:                                          # ②
+        stars += 1
+    if league in HIGH_HIT_LEAGUES:                        # ⑤ 🟢
+        stars += 1
+    if hk_up:                                             # ③ 红线
+        red = '🚫HKJC升水·不碰'
+    return '★' * stars, red
 
 
 def parse_md(path):
@@ -148,10 +195,13 @@ def build_rows(sections):
                                 hk_odds = parts[0] if d == '主' else parts[2] if d == '客' else parts[1]
                         except (IndexError, AttributeError):
                             pass
+            league = mt['league'].replace('🟢', '')
+            stars_str, red = calc_stars(d, p0, p1, h0, h1, star, league)
             rows.append({
                 'sec': idx, 'date': mt['date'], 'time': mt['time'],
-                'league': mt['league'].replace('🟢', ''), 'teams': mt['teams'],
-                'dir': f"→{d}{'★' if star else ''}",
+                'league': league, 'teams': mt['teams'],
+                'dir': f"→{d}",
+                'stars': stars_str, 'red': red,
                 'mdl': int(mdl) if mdl else '',
                 'lgbm': int(lgbm) if lgbm else '',
                 'ev': float(ev) if ev else '',
@@ -159,7 +209,7 @@ def build_rows(sections):
                 'hk_odds': float(hk_odds) if hk_odds else '',
                 'p_odds': f"{p0} → {p1}" if p0 else '',
                 'h_odds': f"{h0} → {h1}" if h0 else '',
-                'avoid': mt['avoid'].replace('🚫避雷', '🚫') if mt['avoid'] else '',
+                'avoid': mt['avoid'].replace('🚫避雷', '🚫').replace('⚠️⚡避雷', '⚠️⚡') if mt['avoid'] else '',
             })
     return rows
 
@@ -181,9 +231,9 @@ def main():
                 % datetime.now().strftime('%Y-%m-%d %H:%M'))
     ws['A2'].font = Font(size=10, color='808080')
 
-    headers = ['档位', '日期', '时间', '联赛', '对阵', '方向', 'Model%', 'LGBM%', 'EV',
+    headers = ['档位', '日期', '时间', '联赛', '对阵', '方向', '星级', 'Model%', 'LGBM%', 'EV',
                'TS', 'HKJC赔率', '平博 初→即', 'HKJC 初→即', '避雷']
-    widths = [7, 8, 8, 13, 30, 8, 7, 7, 7, 11, 9, 26, 26, 22]
+    widths = [7, 8, 8, 13, 30, 8, 9, 7, 7, 7, 11, 9, 26, 26, 22]
     SEC_FILL = {'①': CONF_FILL, '②': KKK_FILL, '③': KKK_FILL}
     n_secs = 0
     for idx, title, matches in sections:
@@ -207,8 +257,8 @@ def main():
         fill = SEC_FILL.get(idx)
         for r in [r for r in rows if r['sec'] == idx]:
             vals = [idx, r['date'], r['time'], r['league'], r['teams'], r['dir'],
-                    r['mdl'], r['lgbm'], r['ev'], r['ts'], r['hk_odds'],
-                    r['p_odds'], r['h_odds'], r['avoid']]
+                    r['stars'], r['mdl'], r['lgbm'], r['ev'], r['ts'], r['hk_odds'],
+                    r['p_odds'], r['h_odds'], ' '.join(x for x in (r['avoid'], r['red']) if x)]
             for ci, v in enumerate(vals, 1):
                 cell = ws.cell(row=row, column=ci, value=v)
                 cell.border = BORDER
@@ -216,6 +266,10 @@ def main():
                     cell.fill = fill
                 if ci == 4 and r['league'] in HIGH_HIT_LEAGUES:   # 高命中率联赛 绿字加粗
                     cell.font = HIGH_HIT_FONT
+                if ci == 7 and r['red']:                           # 红线 红色加粗
+                    cell.font = RED_FONT
+                if ci == 7 and r['stars'] and not r['red']:        # 星级 橙色
+                    cell.font = STAR_FONT
                 if ci in (1, 2, 3, 6, 7, 8, 9, 10, 11):
                     cell.alignment = Alignment(horizontal='center')
             row += 1
