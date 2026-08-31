@@ -332,8 +332,10 @@ def fetch_odds(matches, delay=0.3, workers=3):
             hl = match_out.get('odds_hkjc_loss', '-')
             print(f'  [{done}/{total}] ✓ {match_out["event"]} {match_out["home_team"]} vs {match_out["away_team"]}  '
                   f'Pinnacle: {ph}/{pd}/{pl}  HKJC: {hh}/{hd}/{hl}')
-            if delay > 0:
-                time.sleep(delay / workers)
+
+    # 批次睡眠一次（而非每完成一项都 sleep）——讓并发收益不被人为延迟吃回
+    if delay > 0:
+        time.sleep(delay)
 
     # 按比赛时间排序
     enriched.sort(key=lambda x: x['match_time'])

@@ -45,30 +45,27 @@ def enrich_rankings_and_form_from_db(matches: List[Dict]) -> None:
         conn = sqlite3.connect(DB_PATH)
         conn.row_factory = sqlite3.Row
         
-        # 获取所有队伍的最新排名
+        # 获取所有队伍的最新排名（home/away 合并成一个查询）
         cur = conn.execute("""
-            WITH ranked AS (
-                SELECT home_team, home_ranking AS ranking, date,
+            WITH combined AS (
+                SELECT home_team AS team, home_ranking AS ranking, date,
                        ROW_NUMBER() OVER (PARTITION BY home_team ORDER BY date DESC) AS rn
                 FROM poisson_predictions
                 WHERE home_ranking IS NOT NULL
-            )
-            SELECT home_team AS team, ranking FROM ranked WHERE rn=1
-        """)
-        team_rank = {r['team']: r['ranking'] for r in cur.fetchall()}
-        
-        cur = conn.execute("""
-            WITH ranked AS (
-                SELECT away_team, away_ranking AS ranking, date,
+            UNION ALL
+                SELECT away_team AS team, away_ranking AS ranking, date,
                        ROW_NUMBER() OVER (PARTITION BY away_team ORDER BY date DESC) AS rn
                 FROM poisson_predictions
                 WHERE away_ranking IS NOT NULL
+            ),
+            latest AS (
+                SELECT team, ranking
+                FROM combined
+                WHERE rn = 1
             )
-            SELECT away_team AS team, ranking FROM ranked WHERE rn=1
+            SELECT team, ranking FROM latest
         """)
-        for r in cur.fetchall():
-            if r['team'] not in team_rank:
-                team_rank[r['team']] = r['ranking']
+        team_rank = {r['team']: r['ranking'] for r in cur.fetchall()}
         
         # 构建近期战绩时间线（所有有比分的场次）
         cur = conn.execute("""

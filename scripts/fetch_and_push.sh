@@ -11,11 +11,11 @@ FILE="data/matches_${DATE//-/}.json"
 
 echo "[$(date '+%H:%M:%S')] 抓取 $DATE (24h窗口: 12:00~次日11:59)..."
 # 北单: fetch_all_matches 已自动包含今天+明天
-python3 scripts/fetch_zqdc.py --date "$DATE"
+python3 scripts/fetch_zqdc.py --date "$DATE" --parallel 8 --delay 0.5
 # 额外抓明天文件, 覆盖旧数据(让load_raw_matches拿到正确日期)
 TOMORROW=$(date -d "$DATE +1 day" '+%Y-%m-%d')
 echo "[$(date '+%H:%M:%S')] 抓取 $TOMORROW (凌晨场/次日午前)..."
-python3 scripts/fetch_zqdc.py --date "$TOMORROW"
+python3 scripts/fetch_zqdc.py --date "$TOMORROW" --parallel 8 --delay 0.5
 
 if [ ! -f "$FILE" ]; then
     echo "[$(date '+%H:%M:%S')] 无比赛数据，跳过"
@@ -57,7 +57,7 @@ python3 scripts/sync_scores_and_lambdas.py
 
 # ========== 香港马会赔率全量抓取（今天） ==========
 echo "[$(date '+%H:%M:%S')] 抓取 $DATE 香港马会比赛..."
-python3 scripts/fetch_hkjc_all.py --date "$DATE" --parallel 5 --delay 0.15
+python3 scripts/fetch_hkjc_all.py --date "$DATE" --parallel 8 --delay 0.15
 
 echo "[$(date '+%H:%M:%S')] 分析 $DATE ..."
 python3 scripts/ai_analysis.py
