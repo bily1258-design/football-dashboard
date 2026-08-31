@@ -14,9 +14,9 @@ SCRIPT_DIR = os.path.dirname(__file__)
 RESULTS = os.path.join(SCRIPT_DIR, '..', 'docs', 'data', 'results.json')
 FAILED_CACHE = os.path.join(SCRIPT_DIR, '..', '.ah_failed_cache.json')
 
-BATCH_SIZE = 30         # 每批30个fid并发
-MAX_WORKERS = 5         # 5线程并行
-BATCH_DELAY = 0.05      # 每批间隔
+BATCH_SIZE = 50         # 每批50个fid并发（原30）
+MAX_WORKERS = 10        # 10线程并行（原5）
+BATCH_DELAY = 0.02      # 每批间隔（原0.05）
 RETRY_DAYS = 7          # 失败fid超过N天未重试时再试一次
 
 def load_failed_cache():

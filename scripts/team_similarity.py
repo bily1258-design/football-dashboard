@@ -20,6 +20,7 @@ import logging
 import re
 from math import sqrt, exp
 from collections import defaultdict
+from functools import lru_cache
 from datetime import datetime, timedelta
 
 logger = logging.getLogger(__name__)
@@ -491,6 +492,12 @@ def _resolve_team_name(name: str, known_teams: set) -> str:
     return name  # 无法解析
 
 
+@lru_cache(maxsize=4096)
+def _parse_date(date_str: str):
+    """缓存日期解析，避免同一日期被重复 strptime（历史池日期高度重复）"""
+    return datetime.strptime(date_str, '%Y-%m-%d')
+
+
 def _cosine_sim(a: list, b: list) -> float:
     """余弦相似度"""
     if not a or not b:
@@ -511,6 +518,7 @@ def _cosine_sim(a: list, b: list) -> float:
     return dot / (na * nb)
 
 
+@lru_cache(maxsize=4096)
 def _compute_total_goals_top3(h_lambda: float, a_lambda: float,
                               min_prob: float = 0.15) -> list:
     """从泊松λ值计算总进球概率分布，返回概率 ≥ min_prob (默认15%) 的所有结果"""
@@ -525,17 +533,17 @@ def _compute_total_goals_top3(h_lambda: float, a_lambda: float,
     # 截断范围：λ*3+2 覆盖99.9%概率
     max_g = max(int(max(h_lambda, a_lambda) * 3 + 2), 6)
 
-    # 计算泊松概率
-    def poisson_pmf(k, lam):
-        if lam <= 0:
-            return 1.0 if k == 0 else 0.0
-        p = _exp(-lam)
-        for i in range(1, k + 1):
-            p *= lam / i
-        return p
+    # 计算泊松概率（用递推，避免每次从1重新累积）
+    def poisson_probs(lam, max_g):
+        """返回 [P(0), P(1), ..., P(max_g)]，用递推 poisson(k) = poisson(k-1)*lam/k"""
+        probs = [0.0] * (max_g + 1)
+        probs[0] = _exp(-lam)
+        for k in range(1, max_g + 1):
+            probs[k] = probs[k - 1] * lam / k
+        return probs
 
-    home_probs = [poisson_pmf(k, h_lambda) for k in range(max_g + 1)]
-    away_probs = [poisson_pmf(k, a_lambda) for k in range(max_g + 1)]
+    home_probs = poisson_probs(h_lambda, max_g)
+    away_probs = poisson_probs(a_lambda, max_g)
 
     total_probs = {}
     for h in range(max_g + 1):
@@ -637,6 +645,8 @@ def find_similar_matches(
     if not ht_vec or not at_vec:
         return []
 
+    # 时间衰减用：now 只在函数开头取一次，避免循环内反复调用 datetime.now()
+    now = datetime.now()
     scored = []
     for hm in historical_matches:
         # 跳过完全相同的对局
@@ -678,8 +688,8 @@ def find_similar_matches(
         # 时间衰减：近期比赛权重高
         if hm['date']:
             try:
-                match_date = datetime.strptime(hm['date'], '%Y-%m-%d')
-                days_ago = (datetime.now() - match_date).days
+                match_date = _parse_date(hm['date'])
+                days_ago = (now - match_date).days
                 if days_ago >= 0:
                     # 90天内无衰减，之后指数衰减
                     time_weight = 1.0 if days_ago < 90 else exp(-(days_ago - 90) / 365)

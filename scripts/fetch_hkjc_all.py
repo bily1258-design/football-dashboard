@@ -261,9 +261,11 @@ def fetch_hkjc_matches(date_str, max_matches=0, delay=0.3, workers=3):
             hd = match.get('odds_hkjc_open_draw', '?')
             hl = match.get('odds_hkjc_open_loss', '?')
             print(f'  [{processed}/{total}] ✓ {match["event"]} {match["home_team"]} vs {match["away_team"]}  HKJC: {hw}/{hd}/{hl}')
-            if delay > 0:
-                time.sleep(delay / workers)
-    
+
+    # 批次睡眠一次（而非每完成一项都 sleep）——让并发收益不被人为延迟吃回
+    if delay > 0:
+        time.sleep(delay)
+
     print(f'\n[INFO] 有HKJC赔率的比赛: {len(hkjc_matches)}/{total}')
     return hkjc_matches
 
