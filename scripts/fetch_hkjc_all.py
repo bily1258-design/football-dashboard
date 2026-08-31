@@ -306,10 +306,11 @@ def get_scores_from_over_page(date_str):
         # 1. 完赛比分: <tr ... sId='3038222' ...>
         #    <td class=style1>完</td>
         #    <td align=right>主队名</td>
-        #    <td ... onclick='showgoallist(3038222)'><font color=red>X</font>-<font color=blue>Y</font></td>
+        #    <td ... onclick='showgoallist(3038222)'><font color=red>X</font>-<font color=red>Y</font></td>
+        #    注意: 主客比分颜色可能相同(red-red)或不同(red-blue)，不能写死任一组合
         for m in re.finditer(
-            r"sId='(\d+)'.*?<td\s+class=style1\s+style='cursor:pointer;'\s+onclick='showgoallist\(\1\)'>"
-            r"<font\s+color=red>(\d+)</font>-<font\s+color=blue>(\d+)</font></td>",
+            r"sId='(\d+)'[^>]*>.*?<td\s+class=style1\s+style='cursor:pointer;'\s+onclick='showgoallist\(\1\)'>"
+            r"<font\s+color=[^>]+>(\d+)</font>-<font\s+color=[^>]+>(\d+)</font></td>",
             html, re.DOTALL):
             sid, hs, gs = m.group(1), m.group(2), m.group(3)
             scores[sid] = f"{hs}-{gs}"
