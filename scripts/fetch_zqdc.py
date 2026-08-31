@@ -413,21 +413,37 @@ def do_backfill(fpath, date_str):
         scores = get_scores_from_over_page(date_str)
 
         # 匹配key: 与 get_scores_from_over_page 相同的清理(去[]与()标记, 简转繁)
-        def _clean(name):
+        def _clean_keys(name):
+            """返回该队名可能出现的多个 key 形式，避免 OpenCC s2t 把繁体正字误转異体字导致失配。
+            OpenCC('s2t') 会把繁体正字"里"(U+91CC) 误判为简体并转成異体"裏"(U+88E1)，
+            而 Over 页 key 是繁体正字(如"瓦爾貝里")——若只套 s2t 会变成"瓦爾貝裏"失配。
+            因此同时保留 原样 与 s2t 后 两种 key。"""
             name = re.sub(r'\s*\[[^\]]*\]', '', name).strip()
             name = re.sub(r'\([^)]*\)', '', name).strip()
-            return _s2t.convert(name)
+            return {name, _s2t.convert(name)}   # 原样 + s2t后
 
         def _try_match(scores_map, remaining):
             """用 scores_map 匹配 remaining, 返回(已匹配列表, 仍未匹配列表)"""
             done, left = [], []
             for fid, m in remaining:
-                key = (_clean(m.get('home_team', '')), _clean(m.get('away_team', '')))
-                if key in scores_map:
+                hk = _clean_keys(m.get('home_team', ''))
+                ak = _clean_keys(m.get('away_team', ''))
+                key = None
+                # 主客正序: 任意 home_key × away_key 组合命中即算
+                for h in hk:
+                    for a in ak:
+                        if (h, a) in scores_map:
+                            key = (h, a); break
+                    if key: break
+                if key is None:
+                    # 主客倒序
+                    for h in hk:
+                        for a in ak:
+                            if (a, h) in scores_map:
+                                key = (a, h); break
+                        if key: break
+                if key:
                     m['score'] = scores_map[key]
-                    done.append((fid, m))
-                elif (key[1], key[0]) in scores_map:
-                    m['score'] = scores_map[(key[1], key[0])]
                     done.append((fid, m))
                 else:
                     left.append((fid, m))
