@@ -96,17 +96,4 @@ git add -A
 git commit -m "数据+分析 $DATE" || echo "无新数据"
 git push origin main
 
-# ========== ntfy 推送（独立通知通道, 不占微信限流配额） ==========
-# ntfy.sh 国内直连被墙, 走 v2rayNG socks 代理; 代理没开时静默跳过, 不影响主流程
-if curl -s -m 15 --socks5-hostname 127.0.0.1:10808 -o /dev/null \
-    -H "Title: ⚽ 今日清单已更新" \
-    -H "Priority: default" \
-    -H "Tags: soccer" \
-    -d "今日推荐清单已生成 → https://bily1258-design.github.io/football-dashboard/today_picks.md (GitHub Pages 原文)" \
-    "https://ntfy.sh/bily1258-football-daily"; then
-    echo "[$(date '+%H:%M:%S')] ✅ ntfy 推送成功"
-else
-    echo "[$(date '+%H:%M:%S')] ⚠️ ntfy 推送失败(代理未开?), 静默跳过" || true
-fi
-
 echo "[$(date '+%H:%M:%S')] ✅ 完成"
