@@ -160,14 +160,20 @@ def parse_md(path):
     return sections, avoids
 
 
-def build_rows(sections):
-    """sections → 表格行列表 (含档位标题行标记)"""
+def build_rows(sections, avoid_teams=None):
+    """sections → 表格行列表 (含档位标题行标记)
+    avoid_teams: 避雷场次 teams 集合 — 2026-08-31 用户拍板: 按场次全局过滤(跨档位),
+    同一场在任一档带🚫/红线即所有档位都过滤, 避免③档干净条目混入推荐.
+    """
+    avoid_teams = avoid_teams or set()
     rows = []
     for idx, title, matches in sections:
         if idx == '⚠️':
             continue
         default_dir = '客' if idx in ('①', '②') else ('主' if idx == '③' else '')
         for mt in matches:
+            if mt['teams'] in avoid_teams:   # 避雷场次全档位过滤
+                continue
             d = mt['dir'] or default_dir
             star = mt['star'] == '★'
             hk_odds, mdl, lgbm, ev = '', '', '', ''
@@ -228,7 +234,8 @@ def main():
         print(f'❌ 未找到 {MD_PATH}, 先跑 fetch_and_push.sh / away_value_picks.py --md')
         return 1
     sections, avoids = parse_md(MD_PATH)
-    rows = build_rows(sections)
+    avoid_teams = {av['teams'] for av in avoids}   # 避雷场次 teams 集合 → 全档位过滤
+    rows = build_rows(sections, avoid_teams)
     wb = Workbook()
 
     # ─── Sheet1 今日推荐 ─────────────────────────
