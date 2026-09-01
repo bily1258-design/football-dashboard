@@ -12,7 +12,9 @@ from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 
 PROJ_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-OUTPUT_DIR = os.path.join(PROJ_DIR, "docs", "data")
+# 2026-09-01 方案B: 北单产物(output)挪出主仓库docs/, 放独立目录 ~/beidan/, 避免混入football-dashboard
+OUTPUT_DIR = os.path.join(os.path.expanduser("~"), "beidan")
+os.makedirs(OUTPUT_DIR, exist_ok=True)
 TODAY = datetime.now().strftime("%Y-%m-%d")
 
 # ===== Styles =====

@@ -9,8 +9,11 @@ import re
 import openpyxl
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATA_DIR = os.path.join(BASE, 'docs', 'data')
-OUT = os.path.join(BASE, 'docs', 'beidan_dashboard.html')
+# 2026-09-01 方案B: 北单xlsx+html移出主仓库docs/, 放独立目录 ~/beidan/
+BEIDAN_DIR = os.path.join(os.path.expanduser("~"), "beidan")
+os.makedirs(BEIDAN_DIR, exist_ok=True)
+DATA_DIR = BEIDAN_DIR        # 读 xlsx 来源
+OUT = os.path.join(BEIDAN_DIR, 'beidan_dashboard.html')
 
 
 def prob_color(p):
