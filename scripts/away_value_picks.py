@@ -252,10 +252,12 @@ def main():
         is_fill = abs(ts_draw - 0.241) < 0.001  # TS填充值污染剔除
         star = (cur[2] < 2.0 and ts_draw < 0.25 and not is_fill)
         comp = m.get('comparison') or {}
+        tsp = max(m.get('ts_win', 0), m.get('ts_draw', 0), m.get('ts_loss', 0))
         rows_b.append({
             'date': m.get('date', ''), 'mt': mt, 'league': t2s(m.get('event', '')),
             'home': t2s(m.get('home_team', '')), 'away': t2s(m.get('away_team', '')),
             'odds': cur[2], 'ts_draw': ts_draw, 'star': star,
+            'ts_dir': tsd, 'ts_prob': tsp,  # TS最大概率方向及概率
             'model_prob': m.get('model_loss', 0),  # 客客客: 模型指客概率
             'ev': (m.get('best_value') or {}).get('ev', 0),
             'lgbm_prob': max(m.get('lgbm_win', 0), m.get('lgbm_draw', 0), m.get('lgbm_loss', 0)),
@@ -275,7 +277,7 @@ def main():
         star = " ★" if r['star'] else ""
         av = ' ⚠️⚡避雷' if r.get('avoid') else ''
         print(f"{t} [{lg_tag(r['league'])}] {r['home']} vs {r['away']}{star}{av}")
-        print(f"   HKJC客胜 {r['odds']} | 模型概率 {r['model_prob']*100:.0f}% | LGBM客概率 {r['lgbm_prob']*100:.0f}% | EV {r['ev']:.2f} | TS平 {r['ts_draw']*100:.0f}%")
+        print(f"   HKJC客胜 {r['odds']} | 模型概率 {r['model_prob']*100:.0f}% | LGBM客概率 {r['lgbm_prob']*100:.0f}% | EV {r['ev']:.2f} | TS{r['ts_dir']} {r['ts_prob']*100:.0f}%")
         print(f"   平博 初/即: {r['pin_open']} → {r['pin_cur']} | HKJC 初/即: {r['hkjc_open']} → {r['hkjc_cur']}")
     if not rows_b:
         if show_all:
@@ -301,10 +303,12 @@ def main():
         is_fill = abs(ts_draw - 0.241) < 0.001  # TS填充值污染剔除
         star = (cur[0] < 2.0 and ts_draw < 0.25 and not is_fill)  # 主赔<2.0
         comp = m.get('comparison') or {}
+        tsp = max(m.get('ts_win', 0), m.get('ts_draw', 0), m.get('ts_loss', 0))
         rows_d.append({
             'date': m.get('date', ''), 'mt': mt, 'league': t2s(m.get('event', '')),
             'home': t2s(m.get('home_team', '')), 'away': t2s(m.get('away_team', '')),
             'odds': cur[0], 'ts_draw': ts_draw, 'star': star,
+            'ts_dir': tsd, 'ts_prob': tsp,  # TS最大概率方向及概率
             'model_prob': m.get('model_win', 0),  # 胜胜胜: 模型指主概率
             'ev': (m.get('best_value') or {}).get('ev', 0),
             'lgbm_prob': max(m.get('lgbm_win', 0), m.get('lgbm_draw', 0), m.get('lgbm_loss', 0)),
@@ -324,7 +328,7 @@ def main():
         star = " ★" if r['star'] else ""
         av = ' ⚠️⚡避雷' if r.get('avoid') else ''
         print(f"{t} [{lg_tag(r['league'])}] {r['home']} vs {r['away']}{star}{av}")
-        print(f"   HKJC主胜 {r['odds']} | 模型概率 {r['model_prob']*100:.0f}% | LGBM主概率 {r['lgbm_prob']*100:.0f}% | EV {r['ev']:.2f} | TS平 {r['ts_draw']*100:.0f}%")
+        print(f"   HKJC主胜 {r['odds']} | 模型概率 {r['model_prob']*100:.0f}% | LGBM主概率 {r['lgbm_prob']*100:.0f}% | EV {r['ev']:.2f} | TS{r['ts_dir']} {r['ts_prob']*100:.0f}%")
         print(f"   平博 初/即: {r['pin_open']} → {r['pin_cur']} | HKJC 初/即: {r['hkjc_open']} → {r['hkjc_cur']}")
     if not rows_d:
         if show_all:
