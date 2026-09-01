@@ -2,10 +2,11 @@
 """客胜价值投注清单生成器 + 三方一致·客客客 高胜率板块
 规则A(经HKJC真实赔率回测验证): best_value.outcome==away 且 EV>0.5 且 HKJC客胜赔率 3-6
 规则B(2026-08-10 HKJC口径回测, 唯一正ROI方向): model==lgbm==ts 三方一致指客(客客客)
-   ★高置信标注: 客赔<2.0 且 TS平局概率<25%(剔除填充值0.241)
-   客客客全组合 HKJC口径 98场 66.3% ROI+11.1%; 客客客+客赔<2.0+TS平<25% 53场 77.4% ROI+13.0%
+   ★高置信标注: 客赔<2.0 且 TS平局概率<22%(剔除填充值0.241)  [2026-09-01 门限25%→22%]
+   历史回测: 客客客全组合 98场 66.3% ROI+11.1%; 客客客+客赔<2.0+TS平<25% 53场 77.4% ROI+13.0%
+   2026-09-01 收紧★门限到22% (2933场回测: 命中率83% vs 25%的75.8%, 单注EV +0.25 vs +0.17)
 规则D(2026-08-23 新增, 客客客镜像): model==lgbm==ts 三方一致指主(胜胜胜)
-   ★高置信标注: 主赔<2.0 且 TS平局概率<25%(剔除填充值0.241)
+   ★高置信标注: 主赔<2.0 且 TS平局概率<22%(剔除填充值0.241)  [2026-09-01 门限25%→22%]
 「今日窗口」= 今天12:00 → 明天11:59(跨自然日); 默认只输出窗口内及未来未开赛(可投注)场次
 附注: 平博(Pinnacle)与HKJC的初盘/即时赔率(主/平/客三元组, 参考用)
 用法: python3 scripts/away_value_picks.py [--all]  # --all 输出全部, 默认只输出窗口内及未来未开赛
@@ -250,7 +251,8 @@ def main():
         mt = parse_dt(m.get('match_time') or m.get('date'))
         ts_draw = m.get('ts_draw', 0)
         is_fill = abs(ts_draw - 0.241) < 0.001  # TS填充值污染剔除
-        star = (cur[2] < 2.0 and ts_draw < 0.25 and not is_fill)
+        # 2026-09-01 用户拍板: ★门限 TS平<25% 收紧到 <22% (回测: 命中率83% vs 25%的75.8%, 单注EV更高)
+        star = (cur[2] < 2.0 and ts_draw < 0.22 and not is_fill)
         comp = m.get('comparison') or {}
         tsp = max(m.get('ts_win', 0), m.get('ts_draw', 0), m.get('ts_loss', 0))
         rows_b.append({
@@ -270,7 +272,7 @@ def main():
 
     print()
     print("=" * 92)
-    print(f"②三方一致·客客客 ({'全部' if show_all else '今日窗口内及未来未开赛可投'} {len(rows_b)}场) 规则: model=LGBM=TS均指客 | ★=客赔<2.0且TS平<25%")
+    print(f"②三方一致·客客客 ({'全部' if show_all else '今日窗口内及未来未开赛可投'} {len(rows_b)}场) 规则: model=LGBM=TS均指客 | ★=客赔<2.0且TS平<22%")
     print("=" * 92)
     for r in rows_b:
         t = r['mt'].strftime('%m-%d %H:%M') if r['mt'] else r['date']
@@ -301,7 +303,8 @@ def main():
         mt = parse_dt(m.get('match_time') or m.get('date'))
         ts_draw = m.get('ts_draw', 0)
         is_fill = abs(ts_draw - 0.241) < 0.001  # TS填充值污染剔除
-        star = (cur[0] < 2.0 and ts_draw < 0.25 and not is_fill)  # 主赔<2.0
+        # 2026-09-01 用户拍板: ★门限 TS平<25% 收紧到 <22% (回测: 命中率83% vs 25%的75.8%, 单注EV更高)
+        star = (cur[0] < 2.0 and ts_draw < 0.22 and not is_fill)  # 主赔<2.0
         comp = m.get('comparison') or {}
         tsp = max(m.get('ts_win', 0), m.get('ts_draw', 0), m.get('ts_loss', 0))
         rows_d.append({
@@ -321,7 +324,7 @@ def main():
 
     print()
     print("=" * 92)
-    print(f"③三方一致·胜胜胜 ({'全部' if show_all else '今日窗口内及未来未开赛可投'} {len(rows_d)}场) 规则: model=LGBM=TS均指主 | ★=主赔<2.0且TS平<25%")
+    print(f"③三方一致·胜胜胜 ({'全部' if show_all else '今日窗口内及未来未开赛可投'} {len(rows_d)}场) 规则: model=LGBM=TS均指主 | ★=主赔<2.0且TS平<22%")
     print("=" * 92)
     for r in rows_d:
         t = r['mt'].strftime('%m-%d %H:%M') if r['mt'] else r['date']
