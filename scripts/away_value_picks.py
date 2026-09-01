@@ -277,7 +277,8 @@ def main():
     for r in rows_b:
         t = r['mt'].strftime('%m-%d %H:%M') if r['mt'] else r['date']
         star = " ★" if r['star'] else ""
-        av = ' ⚠️⚡避雷' if r.get('avoid') else ''
+        # 2026-09-01 用户拍板: ★场次豁免过滤(★=方向高置信>⚡避雷), 带★不标⚠️⚡
+        av = ' ⚠️⚡避雷' if (r.get('avoid') and not r['star']) else ''
         print(f"{t} [{lg_tag(r['league'])}] {r['home']} vs {r['away']}{star}{av}")
         print(f"   HKJC客胜 {r['odds']} | 模型概率 {r['model_prob']*100:.0f}% | LGBM客概率 {r['lgbm_prob']*100:.0f}% | EV {r['ev']:.2f} | TS{r['ts_dir']} {r['ts_prob']*100:.0f}%")
         print(f"   平博 初/即: {r['pin_open']} → {r['pin_cur']} | HKJC 初/即: {r['hkjc_open']} → {r['hkjc_cur']}")
@@ -329,7 +330,8 @@ def main():
     for r in rows_d:
         t = r['mt'].strftime('%m-%d %H:%M') if r['mt'] else r['date']
         star = " ★" if r['star'] else ""
-        av = ' ⚠️⚡避雷' if r.get('avoid') else ''
+        # 2026-09-01 用户拍板: ★场次豁免过滤(★=方向高置信>⚡避雷), 带★不标⚠️⚡
+        av = ' ⚠️⚡避雷' if (r.get('avoid') and not r['star']) else ''
         print(f"{t} [{lg_tag(r['league'])}] {r['home']} vs {r['away']}{star}{av}")
         print(f"   HKJC主胜 {r['odds']} | 模型概率 {r['model_prob']*100:.0f}% | LGBM主概率 {r['lgbm_prob']*100:.0f}% | EV {r['ev']:.2f} | TS{r['ts_dir']} {r['ts_prob']*100:.0f}%")
         print(f"   平博 初/即: {r['pin_open']} → {r['pin_cur']} | HKJC 初/即: {r['hkjc_open']} → {r['hkjc_cur']}")
@@ -339,8 +341,8 @@ def main():
         else:
             print(f"(今日窗口 {win_label} 内及未来无未开赛三方一致主场次)")
 
-    # 避雷汇总 (⚡高权重 + 扩展避雷)
-    av_total = [r for r in rows if r.get('av_reasons')] + [r for r in rows_b if r.get('avoid')]
+    # 避雷汇总 (⚡高权重 + 扩展避雷); 2026-09-01 ★场次豁免: 带★(方向高置信)不进避雷汇总
+    av_total = [r for r in rows if r.get('av_reasons') and not r.get('star')] + [r for r in rows_b if r.get('avoid') and not r.get('star')]
     if av_total:
         print()
         print("=" * 92)

@@ -180,10 +180,11 @@ def build_rows(sections, avoid_teams=None):
             continue
         default_dir = '客' if idx in ('①', '②') else ('主' if idx == '③' else '')
         for mt in matches:
-            if mt['teams'] in avoid_teams:   # 避雷场次全档位过滤
+            star = mt['star'] == '★'
+            # 2026-09-01 用户拍板: ★场次豁免过滤(★=方向高置信>⚡避雷), 带★不进avoid_teams
+            if mt['teams'] in avoid_teams and not star:   # 避雷场次全档位过滤, ★豁免
                 continue
             d = mt['dir'] or default_dir
-            star = mt['star'] == '★'
             hk_odds, mdl, lgbm, ev = '', '', '', ''
             tsd = tsp = ''
             if mt['hkjc_line']:

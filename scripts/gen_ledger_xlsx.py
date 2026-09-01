@@ -172,10 +172,11 @@ def build_rows(sections, avoid_teams=None):
             continue
         default_dir = '客' if idx in ('①', '②') else ('主' if idx == '③' else '')
         for mt in matches:
-            if mt['teams'] in avoid_teams:   # 避雷场次全档位过滤
+            star = mt['star'] == '★'
+            # 2026-09-01 用户拍板: ★场次豁免过滤(★=方向高置信>⚡避雷), 带★不进avoid_teams
+            if mt['teams'] in avoid_teams and not star:   # 避雷场次全档位过滤, ★豁免
                 continue
             d = mt['dir'] or default_dir
-            star = mt['star'] == '★'
             hk_odds, mdl, lgbm, ev = '', '', '', ''
             tsd = tsp = ''
             if mt['hkjc_line']:
@@ -210,8 +211,10 @@ def build_rows(sections, avoid_teams=None):
             avoid = mt['avoid'].replace('🚫避雷', '🚫').replace('⚠️⚡避雷', '⚠️⚡') if mt['avoid'] else ''
             # 2026-08-31 用户拍板: 今日推荐过滤掉带标记场次(🚫避雷 / 🚫HKJC升水·不碰), 干净场次保留;
             # ⚠️/⚡ 已在 avoid 匹配内; 单独的红线(红色)在 red 字段. Sheet2 避雷汇总独立保留作警示.
+            # 2026-09-01 用户拍板: ★场次豁免过滤(★=方向高置信), 带★即使有avoid/red也保留
             if avoid or red:
-                continue
+                if not star:
+                    continue
             rows.append({
                 'sec': idx, 'date': mt['date'], 'time': mt['time'],
                 'league': league, 'teams': mt['teams'],
