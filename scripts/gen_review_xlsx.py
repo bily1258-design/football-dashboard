@@ -19,9 +19,12 @@ PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MD_PATH = os.path.join(PROJECT_DIR, 'docs', '推荐清单·赛果回填复盘.md')
 OUT_DIR = os.path.expanduser('~/storage/shared/Documents')
 
-# 高命中率联赛 (与 gen_ledger_xlsx.py 同步, 绿字加粗)
-HIGH_HIT_LEAGUES = {'芬甲', '國際友誼賽', '日職聯', '智利甲', '歐冠杯',
-                    '挪甲', '挪超', '丹麥超', '歐羅巴杯', '英聯杯'}
+# 高命中率联赛 (简体, 与 gen_ledger_xlsx.py 同步, 绿字加粗)
+# 2026-08-31: 复盘md联赛名是简体+🟢(如丹麦超🟢), 原繁体集合匹配不上致+1★失效, 同步简体
+HIGH_HIT_LEAGUES = {'芬甲', '国际友谊赛', '日职联', '智利甲', '欧冠杯',
+                    '挪甲', '挪超', '丹麦超', '欧罗巴杯', '英联杯',
+                    '爱甲', '奥甲', 'NCAL Cup', '捷甲', '非女杯', '西甲',
+                    'SPL', '荷甲', '英乙', '澳维超', '瑞典超'}
 
 # 样式
 HEADER_FONT = Font(bold=True, color='FFFFFF', size=11)
@@ -33,6 +36,8 @@ HIT_FONT = Font(color='006100', bold=True)            # 命中 深绿加粗
 MISS_FONT = Font(color='9C0006', bold=True)           # 未中 深红加粗
 PEND_FONT = Font(color='808080')                      # 未收录 灰
 HIGH_HIT_FONT = Font(color='008000', bold=True)        # 高命中率联赛 绿字加粗
+RED_FONT = Font(color='FF0000', bold=True)              # 红线 红字加粗
+STAR_FONT = Font(color='E67E22', bold=True)             # 星级 橙字加粗
 TITLE_FONT = Font(bold=True, size=14, color='2F5597')
 SECTION_FONT = Font(bold=True, size=12, color='404040')
 THIN = Side(style='thin', color='BFBFBF')
@@ -44,9 +49,9 @@ MATCH_RE = re.compile(
 AVOID_ITEM_RE = re.compile(
     r'^\s*(\d{2}-\d{2})\s+(\d{2}:\d{2})\s+\[([^\]]+)\]\s+(.+?)\s+🚫(.+)$')
 PROB_RE = re.compile(
-    r'^(主|客|平)概率:\s*model\s*(\d+)%\s*\|\s*LGBM\s*(\d+)%\s*(?:\|\s*EV\s*([\d.]+))?(?:\|\s*TS\s*(主|客|平)\s*(\d+)%)?')
+    r'^(主|客|平)概率:\s*model\s*(\d+)%\s*\|\s*LGBM\s*(\d+)%\s*(?:\|\s*EV\s*([\d.]+))?\s*(?:\|\s*TS\s*(主|客|平)\s*(\d+)%)?')
 HKJC_RE = re.compile(
-    r'^HKJC(客|主|平)胜\s*([\d.]+)\s*\|\s*(?:模型概率\s*(\d+)%|LGBM(客|主|平)概率\s*(\d+)%)\s*(?:\|\s*EV\s*([\d.]+))?(?:\|\s*TS(平|主|客)\s*(\d+)%)?')
+    r'^HKJC(客|主|平)胜\s*([\d.]+)\s*(?:\|\s*模型概率\s*(\d+)%)?\s*(?:\|\s*LGBM(客|主|平)概率\s*(\d+)%)?\s*(?:\|\s*EV\s*([\d.]+))?\s*(?:\|\s*TS(平|主|客)\s*(\d+)%)?')
 ODDS_RE = re.compile(
     r'^平博\s+初/即:\s*([\d./\-]+)\s*→\s*([\d./\-]+)\s*\|\s*HKJC\s+初/即:\s*([\d./\-]+)\s*→\s*([\d./\-]+)')
 RESULT_RE = re.compile(r'\|\s*实际:\s*(\d+)[-:](\d+)\s*(✓|✘)\s*$')
@@ -121,6 +126,48 @@ def parse_md(path):
     return sections, avoids
 
 
+# ===== 2026-08-31 星级评估 (对齐投注簿 gen_ledger_xlsx.py calc_stars) =====
+DIR_IDX = {'主': 0, '平': 1, '客': 2}
+
+
+def parse_triple(s):
+    """'1.93/3.62/3.51' → [1.93, 3.62, 3.51]; '-'/非法 → None"""
+    try:
+        parts = [float(x) for x in s.split('/')]
+        if len(parts) == 3:
+            return parts
+    except (ValueError, AttributeError):
+        pass
+    return None
+
+
+def calc_stars(d, p0, p1, h0, h1, has_star, league):
+    """返回 (星级字符串, 红线标记)。与投注簿口径一致:
+    ① 平博升水+HKJC(掉水/不变)→+2★  ② 有★(赔率<2.0且TS平<25%)→+1★
+    ⑤ 高命中联赛🟢→+1★  ③ HKJC升水→红线🚫
+    """
+    idx = DIR_IDX.get(d)
+    if idx is None:
+        return '', ''
+    stars = 0
+    red = ''
+    pt0, pt1 = parse_triple(p0), parse_triple(p1)
+    ht0, ht1 = parse_triple(h0), parse_triple(h1)
+    pin_up = pt0 and pt1 and pt1[idx] > pt0[idx]
+    hk_up = ht0 and ht1 and ht1[idx] > ht0[idx]
+    hk_down = ht0 and ht1 and ht1[idx] < ht0[idx]
+    hk_same = ht0 and ht1 and abs(ht1[idx] - ht0[idx]) < 1e-9
+    if pin_up and (hk_down or hk_same):
+        stars += 2
+    if has_star:
+        stars += 1
+    if league in HIGH_HIT_LEAGUES:
+        stars += 1
+    if hk_up:
+        red = '🚫HKJC升水·不碰'
+    return '★' * stars, red
+
+
 def build_rows(sections, avoid_teams=None):
     """sections → 表格行列表 (含结果/盈亏)
     avoid_teams: 避雷场次 teams 集合 — 2026-08-31 用户拍板: 按场次全局过滤(跨档位),
@@ -138,15 +185,21 @@ def build_rows(sections, avoid_teams=None):
             d = mt['dir'] or default_dir
             star = mt['star'] == '★'
             hk_odds, mdl, lgbm, ev = '', '', '', ''
+            tsd = tsp = ''
             if mt['hkjc_line']:
                 m = HKJC_RE.search(mt['hkjc_line'])
                 if m:
                     hk_odds = m.group(2)
-                    if m.group(3):                       # 甜点区: 模型概率
-                        mdl, ev = m.group(3), m.group(6) or ''
-                    else:                                # 客客客: LGBM概率
-                        lgbm, ev = m.group(5), m.group(6) or ''
-            tsd = tsp = ''
+                    if m.group(3):                       # 甜点区/高置信: 模型概率
+                        mdl = m.group(3)
+                        ev = m.group(6) or ''
+                        if not m.group(4):               # 无LGBM时模型概率即主值
+                            pass
+                    if m.group(4):                       # LGBM概率(与模型并存或单独)
+                        lgbm = m.group(5)
+                        ev = m.group(6) or ev or ''
+                    if m.group(8):                       # ②③档TS嵌在HKJC行尾
+                        tsd, tsp = m.group(7), m.group(8)
             if mt['prob_line']:
                 m = PROB_RE.search(mt['prob_line'])
                 if m:
@@ -182,10 +235,13 @@ def build_rows(sections, avoid_teams=None):
                         pnl = round(float(use_odds) - 1.0, 2) if res['mark'] == '✓' else -1.0
                     except (ValueError, TypeError):
                         pnl = ''
+            league = mt['league'].replace('🟢', '')
+            stars_str, red = calc_stars(d, p0, p1, h0, h1, star, league)
             rows.append({
                 'sec': idx, 'date': mt['date'], 'time': mt['time'],
-                'league': mt['league'].replace('🟢', ''), 'teams': mt['teams'],
-                'dir': f"→{d}{'★' if star else ''}",
+                'league': league, 'teams': mt['teams'],
+                'dir': f"→{d}",
+                'stars': stars_str, 'red': red,
                 'score': res.get('score') or '',
                 'mark': res.get('mark') or '',
                 'mdl': int(mdl) if mdl else '',
@@ -225,10 +281,10 @@ def main():
                 % datetime.now().strftime('%Y-%m-%d %H:%M'))
     ws['A2'].font = Font(size=10, color='808080')
 
-    headers = ['档位', '日期', '时间', '联赛', '对阵', '方向', '比分', '结果',
-               'Model%', 'LGBM%', 'EV', 'TS', 'HKJC赔率', '平博 初→即',
-               'HKJC 初→即', '避雷', '盈亏']
-    widths = [7, 8, 8, 13, 30, 8, 8, 7, 7, 7, 7, 11, 9, 26, 26, 22, 8]
+    headers = ['档位', '日期', '时间', '联赛', '对阵', '方向', '星级',
+               '比分', '结果', 'Model%', 'LGBM%', 'EV', 'TS', 'HKJC赔率',
+               '平博 初→即', 'HKJC 初→即', '避雷', '盈亏']
+    widths = [7, 8, 8, 13, 30, 8, 9, 8, 7, 7, 7, 7, 11, 9, 26, 26, 22, 8]
     SEC_FILL = {'①': SWEET_FILL, '②': CONF_FILL, '③': KKK_FILL}
     MARK_FONT = {'✓': HIT_FONT, '✘': MISS_FONT, '⏳': PEND_FONT}
 
@@ -251,8 +307,9 @@ def main():
         st = sec_stats.setdefault(idx, {'n': 0, 'done': 0, 'hit': 0, 'pnl': 0.0})
         for r in [r for r in rows if r['sec'] == idx]:
             vals = [idx, r['date'], r['time'], r['league'], r['teams'], r['dir'],
-                    r['score'], r['mark'], r['mdl'], r['lgbm'], r['ev'], r['ts'],
-                    r['hk_odds'], r['p_odds'], r['h_odds'], r['avoid'], r['pnl']]
+                    r['stars'], r['score'], r['mark'], r['mdl'], r['lgbm'], r['ev'],
+                    r['ts'], r['hk_odds'], r['p_odds'], r['h_odds'],
+                    ' '.join(x for x in (r['avoid'], r['red']) if x), r['pnl']]
             for ci, v in enumerate(vals, 1):
                 cell = ws.cell(row=row, column=ci, value=v)
                 cell.border = BORDER
@@ -260,9 +317,13 @@ def main():
                     cell.fill = fill
                 if ci == 4 and r['league'] in HIGH_HIT_LEAGUES:   # 高命中率联赛 绿字加粗
                     cell.font = HIGH_HIT_FONT
-                if ci == 8 and r['mark']:                          # 结果列 ✓绿 ✘红 ⏳灰
+                if ci == 7 and r['red']:                           # 星级列红线 红色加粗
+                    cell.font = RED_FONT
+                if ci == 7 and r['stars'] and not r['red']:        # 星级 橙色
+                    cell.font = STAR_FONT
+                if ci == 9 and r['mark']:                          # 结果列 ✓绿 ✘红 ⏳灰
                     cell.font = MARK_FONT.get(r['mark'], PEND_FONT)
-                if ci in (1, 2, 3, 6, 7, 8, 10, 11, 17):
+                if ci in (1, 2, 3, 6, 7, 8, 9, 11, 12, 18):
                     cell.alignment = Alignment(horizontal='center')
             n_total += 1
             st['n'] += 1
