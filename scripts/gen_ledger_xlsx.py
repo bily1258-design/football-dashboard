@@ -201,6 +201,11 @@ def build_rows(sections):
                             pass
             league = mt['league'].replace('🟢', '')
             stars_str, red = calc_stars(d, p0, p1, h0, h1, star, league)
+            avoid = mt['avoid'].replace('🚫避雷', '🚫').replace('⚠️⚡避雷', '⚠️⚡') if mt['avoid'] else ''
+            # 2026-08-31 用户拍板: 今日推荐过滤掉带标记场次(🚫避雷 / 🚫HKJC升水·不碰), 干净场次保留;
+            # ⚠️/⚡ 已在 avoid 匹配内; 单独的红线(红色)在 red 字段. Sheet2 避雷汇总独立保留作警示.
+            if avoid or red:
+                continue
             rows.append({
                 'sec': idx, 'date': mt['date'], 'time': mt['time'],
                 'league': league, 'teams': mt['teams'],
