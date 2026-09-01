@@ -40,7 +40,7 @@ BORDER = Border(left=THIN, right=THIN, top=THIN, bottom=THIN)
 
 SEC_RE = re.compile(r'^(①|②|③|⚠️)')
 MATCH_RE = re.compile(
-    r'^(\d{2}-\d{2})\s+(\d{2}:\d{2})\s+\[([^\]]+)\]\s+(.+?)\s*(→(主|平|客))?\s*(🎯|★)?\s*(🚫.*)?$')
+    r'^(\d{2}-\d{2})\s+(\d{2}:\d{2})\s+\[([^\]]+)\]\s+(.+?)\s*(→(主|平|客))?\s*(🎯|★)?\s*((?:🚫|⚠️⚡).*)?$')
 AVOID_ITEM_RE = re.compile(
     r'^\s*(\d{2}-\d{2})\s+(\d{2}:\d{2})\s+\[([^\]]+)\]\s+(.+?)\s+🚫(.+)$')
 PROB_RE = re.compile(
@@ -121,14 +121,20 @@ def parse_md(path):
     return sections, avoids
 
 
-def build_rows(sections):
-    """sections → 表格行列表 (含结果/盈亏)"""
+def build_rows(sections, avoid_teams=None):
+    """sections → 表格行列表 (含结果/盈亏)
+    avoid_teams: 避雷场次 teams 集合 — 2026-08-31 用户拍板: 按场次全局过滤(跨档位),
+    同一场在任一档带🚫/⚠️⚡即所有档位都过滤, 避免②③档干净条目混入复盘明细.
+    """
+    avoid_teams = avoid_teams or set()
     rows = []
     for idx, title, matches in sections:
         if idx == '⚠️':
             continue
         default_dir = '客' if idx in ('①', '②') else ('主' if idx == '③' else '')
         for mt in matches:
+            if mt['teams'] in avoid_teams:   # 避雷场次全档位过滤
+                continue
             d = mt['dir'] or default_dir
             star = mt['star'] == '★'
             hk_odds, mdl, lgbm, ev = '', '', '', ''
@@ -189,7 +195,7 @@ def build_rows(sections):
                 'hk_odds': float(hk_odds) if hk_odds else '',
                 'p_odds': f"{p0} → {p1}" if p0 else '',
                 'h_odds': f"{h0} → {h1}" if h0 else '',
-                'avoid': mt['avoid'].replace('🚫避雷', '🚫') if mt['avoid'] else '',
+                'avoid': mt['avoid'].replace('🚫避雷', '🚫').replace('⚠️⚡避雷', '⚠️⚡') if mt['avoid'] else '',
                 'pnl': pnl,
             })
     return rows
@@ -200,7 +206,14 @@ def main():
         print(f'❌ 未找到 {MD_PATH}, 先跑 fetch_and_push.sh 生成复盘')
         return 1
     sections, avoids = parse_md(MD_PATH)
-    rows = build_rows(sections)
+    # 2026-08-31 用户拍板: 按场次全局过滤(跨档位)。避雷teams集合 = 避雷汇总 ∪ 档位内带标记场次,
+    # 避免避雷汇总漏收(如安特卫普带⚠️⚡但汇总未收录)导致标记场次混入复盘明细.
+    avoid_teams = {av['teams'] for av in avoids}
+    for _, _, matches in sections:
+        for mt in matches:
+            if mt.get('avoid'):
+                avoid_teams.add(mt['teams'])
+    rows = build_rows(sections, avoid_teams)
     wb = Workbook()
 
     # ─── Sheet1 复盘明细 ─────────────────────────
