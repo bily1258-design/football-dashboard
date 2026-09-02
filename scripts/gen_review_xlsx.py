@@ -6,7 +6,7 @@
 输入: docs/推荐清单·赛果回填复盘.md (fetch_and_push.sh 内 gen_daily_review.py 生成, 固定名每日覆盖)
 输出: ~/storage/shared/Documents/复盘.xlsx (固定文件名, 每日覆盖更新)
 内容:
-  Sheet1 复盘明细: 按档位(①甜点区/②高置信/③客客客)逐场: 方向/比分/结果/概率/EV/赔率/避雷/盈亏
+  Sheet1 复盘明细: 按档位(①高置信/②客客客/③胜胜胜)逐场: 方向/比分/结果/概率/EV/赔率/避雷/盈亏
   Sheet2 档位汇总: 每档 场数/完赛/命中/命中率/净盈亏
 """
 import os
@@ -168,6 +168,17 @@ def calc_stars(d, p0, p1, h0, h1, has_star, league):
     return '★' * stars, red
 
 
+def sec_label(title):
+    """从档位标题提取短档位名 (2026-09-02 修复: 不再硬编码①甜点区/②高置信/③客客客)。
+
+    清单档位标题随口径演进 (旧:①甜点区/②高置信/③客客客; 现行:①高置信/②客客客/③胜胜胜),
+    硬编码会错位。改从标题去序号+去括号规则说明, 只取纯档位名。
+    """
+    t = re.sub(r'^[①②③]\s*', '', title)          # 去序号
+    t = re.split(r'[（(]', t)[0].strip()            # 去括号规则说明
+    return t
+
+
 def build_rows(sections, avoid_teams=None):
     """sections → 表格行列表 (含结果/盈亏)
     avoid_teams: 避雷场次 teams 集合 — 2026-08-31 用户拍板: 按场次全局过滤(跨档位),
@@ -305,7 +316,8 @@ def main():
             cell.alignment = Alignment(horizontal='center')
         row += 1
         fill = SEC_FILL.get(idx)
-        st = sec_stats.setdefault(idx, {'n': 0, 'done': 0, 'hit': 0, 'pnl': 0.0})
+        st = sec_stats.setdefault(idx, {'n': 0, 'done': 0, 'hit': 0, 'pnl': 0.0,
+                                        'title': title})
         for r in [r for r in rows if r['sec'] == idx]:
             vals = [idx, r['date'], r['time'], r['league'], r['teams'], r['dir'],
                     r['stars'], r['score'], r['mark'], r['mdl'], r['lgbm'], r['ev'],
@@ -355,7 +367,8 @@ def main():
         cell.border = BORDER
         cell.alignment = Alignment(horizontal='center')
     rr = 3
-    SEC_NAME = {'①': '甜点区客胜', '②': '高置信方向', '③': '客客客'}
+    # 2026-09-02 修复: 档位名从标题动态提取, 不再硬编码(旧①甜点区/②高置信/③客客客 会错位)
+    SEC_NAME = {idx: sec_label(st.get('title', idx)) for idx, st in sec_stats.items()}
     for idx in ('①', '②', '③'):
         if idx not in sec_stats:
             continue
