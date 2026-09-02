@@ -38,6 +38,7 @@ PEND_FONT = Font(color='808080')                      # 未收录 灰
 HIGH_HIT_FONT = Font(color='008000', bold=True)        # 高命中率联赛 绿字加粗
 RED_FONT = Font(color='FF0000', bold=True)              # 红线 红字加粗
 STAR_FONT = Font(color='E67E22', bold=True)             # 星级 橙字加粗
+STAR_BADGE_FONT = Font(color='C00000', bold=True)       # 清单★ 深红加粗(豁免标记)
 TITLE_FONT = Font(bold=True, size=14, color='2F5597')
 SECTION_FONT = Font(bold=True, size=12, color='404040')
 THIN = Side(style='thin', color='BFBFBF')
@@ -334,13 +335,15 @@ def main():
                     cell.fill = fill
                 if ci == 4 and r['league'] in HIGH_HIT_LEAGUES:   # 高命中率联赛 绿字加粗
                     cell.font = HIGH_HIT_FONT
-                if ci == 7 and r['red']:                           # 星级列红线 红色加粗
+                if ci == 7 and r['star']:                         # 清单★ 深红加粗(豁免标记)
+                    cell.font = STAR_BADGE_FONT
+                if ci == 8 and r['red']:                           # 星级列红线 红色加粗
                     cell.font = RED_FONT
-                if ci == 7 and r['stars'] and not r['red']:        # 星级 橙色
+                if ci == 8 and r['stars'] and not r['red']:        # 星级 橙色
                     cell.font = STAR_FONT
-                if ci == 9 and r['mark']:                          # 结果列 ✓绿 ✘红 ⏳灰
+                if ci == 10 and r['mark']:                         # 结果列 ✓绿 ✘红 ⏳灰
                     cell.font = MARK_FONT.get(r['mark'], PEND_FONT)
-                if ci in (1, 2, 3, 6, 7, 8, 9, 11, 12, 18):
+                if ci in (1, 2, 3, 6, 7, 8, 9, 10, 12, 13, 19):
                     cell.alignment = Alignment(horizontal='center')
             n_total += 1
             st['n'] += 1
