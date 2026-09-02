@@ -281,6 +281,9 @@ def main():
         for mt in matches:
             if mt.get('avoid'):
                 avoid_teams.add(mt['teams'])
+    # 2026-09-02 用户拍板: 收集带★的场次集合(★豁免避雷), 避雷汇总里标★以示豁免保留
+    star_teams = {mt['teams'] for _, _, matches in sections for mt in matches
+                  if mt.get('star') == '★'}
     rows = build_rows(sections, avoid_teams)
     wb = Workbook()
 
@@ -397,7 +400,7 @@ def main():
     ws3 = wb.create_sheet('避雷汇总')
     ws3['A1'] = '⚠️🚫 避雷场次（历史败率 87-93%，慎跟）'
     ws3['A1'].font = SECTION_FONT
-    hdrs3 = ['日期', '时间', '联赛', '对阵', '避雷原因']
+    hdrs3 = ['日期', '时间', '联赛', '对阵', '避雷原因', '★豁免']
     for ci, h in enumerate(hdrs3, 1):
         cell = ws3.cell(row=2, column=ci, value=h)
         cell.font = HEADER_FONT
@@ -406,13 +409,14 @@ def main():
         cell.alignment = Alignment(horizontal='center')
     rr = 3
     for av in avoids:
+        mark = '★' if av['teams'] in star_teams else ''
         for ci, v in enumerate([av['date'], av['time'], av['league'], av['teams'],
-                                av['reason']], 1):
+                                av['reason'], mark], 1):
             cell = ws3.cell(row=rr, column=ci, value=v)
             cell.border = BORDER
             cell.fill = PatternFill('solid', fgColor='FFC7CE')
         rr += 1
-    for ci, w in enumerate([8, 8, 14, 32, 30], 1):
+    for ci, w in enumerate([8, 8, 14, 32, 36, 8], 1):
         ws3.column_dimensions[chr(64 + ci)].width = w
     ws3.freeze_panes = 'A3'
 
