@@ -253,6 +253,7 @@ def build_rows(sections, avoid_teams=None):
                 'sec': idx, 'date': mt['date'], 'time': mt['time'],
                 'league': league, 'teams': mt['teams'],
                 'dir': f"→{d}",
+                'star': '★' if star else '',
                 'stars': stars_str, 'red': red,
                 'score': res.get('score') or '',
                 'mark': res.get('mark') or '',
@@ -296,10 +297,10 @@ def main():
                 % datetime.now().strftime('%Y-%m-%d %H:%M'))
     ws['A2'].font = Font(size=10, color='808080')
 
-    headers = ['档位', '日期', '时间', '联赛', '对阵', '方向', '星级',
+    headers = ['档位', '日期', '时间', '联赛', '对阵', '方向', '清单★', '星级',
                '比分', '结果', 'Model%', 'LGBM%', 'EV', 'TS', 'HKJC赔率',
                '平博 初→即', 'HKJC 初→即', '避雷', '盈亏']
-    widths = [7, 8, 8, 13, 30, 8, 9, 8, 7, 7, 7, 7, 11, 9, 26, 26, 22, 8]
+    widths = [7, 8, 8, 13, 30, 8, 8, 9, 8, 7, 7, 7, 7, 11, 9, 26, 26, 22, 8]
     SEC_FILL = {'①': SWEET_FILL, '②': CONF_FILL, '③': KKK_FILL}
     MARK_FONT = {'✓': HIT_FONT, '✘': MISS_FONT, '⏳': PEND_FONT}
 
@@ -323,8 +324,8 @@ def main():
                                         'title': title})
         for r in [r for r in rows if r['sec'] == idx]:
             vals = [idx, r['date'], r['time'], r['league'], r['teams'], r['dir'],
-                    r['stars'], r['score'], r['mark'], r['mdl'], r['lgbm'], r['ev'],
-                    r['ts'], r['hk_odds'], r['p_odds'], r['h_odds'],
+                    r['star'], r['stars'], r['score'], r['mark'], r['mdl'], r['lgbm'],
+                    r['ev'], r['ts'], r['hk_odds'], r['p_odds'], r['h_odds'],
                     ' '.join(x for x in (r['avoid'], r['red']) if x), r['pnl']]
             for ci, v in enumerate(vals, 1):
                 cell = ws.cell(row=row, column=ci, value=v)
