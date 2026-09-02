@@ -76,12 +76,21 @@ echo "[$(date '+%H:%M:%S')] 生成客胜价值投注清单(+今日推荐文档).
 python3 scripts/away_value_picks.py --md docs/today_picks.md
 
 # ========== 昨日清单赛果回填复盘（固定文件名, Pages 可看） ==========
-if [ -f "docs/picks_${YDAY_C}.md" ]; then
-    echo "[$(date '+%H:%M:%S')] 生成昨日清单赛果回填复盘..."
-    python3 scripts/gen_daily_review.py --date "$YDAY" --picks "docs/picks_${YDAY_C}.md"
-    # Excel 版复盘 (复盘.xlsx, ~/storage/shared/Documents/, 每日覆盖)
-    echo "[$(date '+%H:%M:%S')] 生成 Excel 版复盘 (复盘.xlsx)..."
-    python3 scripts/gen_review_xlsx.py
+# 2026-09-02 防空壳覆盖: picks_*.md 不含场次(<10场)则跳过复盘生成, 防止凌晨空壳清单覆盖真实复盘
+REVIEW_LOG="$HOME/review_shell_guard.log"
+PICKS_FILE="docs/picks_${YDAY_C}.md"
+if [ -f "$PICKS_FILE" ]; then
+    PICKS_N=$(grep -cE '^[0-9]{2}-[0-9]{2}[[:space:]]+[0-9]{2}:[0-9]{2}[[:space:]].* vs ' "$PICKS_FILE" 2>/dev/null)
+    [ -z "$PICKS_N" ] && PICKS_N=0
+    if [ "$PICKS_N" -lt 10 ]; then
+        echo "[$(date '+%H:%M:%S')] ⚠️ 跳过复盘: $PICKS_FILE 仅 $PICKS_N 场(疑似空壳), 不覆盖真实复盘" | tee -a "$REVIEW_LOG"
+    else
+        echo "[$(date '+%H:%M:%S')] 生成昨日清单赛果回填复盘...($PICKS_FILE $PICKS_N 场)"
+        python3 scripts/gen_daily_review.py --date "$YDAY" --picks "$PICKS_FILE" >> "$REVIEW_LOG" 2>&1
+        # Excel 版复盘 (复盘.xlsx, ~/storage/shared/Documents/, 每日覆盖)
+        echo "[$(date '+%H:%M:%S')] 生成 Excel 版复盘 (复盘.xlsx)..."
+        python3 scripts/gen_review_xlsx.py >> "$REVIEW_LOG" 2>&1
+    fi
 fi
 
 # ⚡高权重场次追踪 (⚡>=1.14 临场窗口记录, 验证顶级1.2 vs 次级1.14 开出规律; 逐轮攒样本)
