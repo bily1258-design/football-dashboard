@@ -40,6 +40,7 @@ AVOID_FILL = PatternFill('solid', fgColor='FFC7CE')   # 避雷 红
 HIGH_HIT_FONT = Font(color='008000', bold=True)        # 高命中率联赛 绿字加粗
 RED_FONT = Font(color='FF0000', bold=True)              # 红线 红字加粗
 STAR_FONT = Font(color='E67E22', bold=True)             # 星级 橙字加粗
+STAR_BADGE_FONT = Font(color='C00000', bold=True)       # 清单★ 深红加粗(豁免标记)
 TITLE_FONT = Font(bold=True, size=14, color='2F5597')
 SECTION_FONT = Font(bold=True, size=12, color='404040')
 THIN = Side(style='thin', color='BFBFBF')
@@ -219,6 +220,7 @@ def build_rows(sections, avoid_teams=None):
                 'sec': idx, 'date': mt['date'], 'time': mt['time'],
                 'league': league, 'teams': mt['teams'],
                 'dir': f"→{d}",
+                'star': '★' if star else '',
                 'stars': stars_str, 'red': red,
                 'mdl': int(mdl) if mdl else '',
                 'lgbm': int(lgbm) if lgbm else '',
@@ -238,6 +240,9 @@ def main():
         return 1
     sections, avoids = parse_md(MD_PATH)
     avoid_teams = {av['teams'] for av in avoids}   # 避雷场次 teams 集合 → 全档位过滤
+    # 2026-09-02 用户拍板: 收集带★的场次集合(★豁免避雷), 避雷汇总里标★以示豁免保留
+    star_teams = {mt['teams'] for _, _, matches in sections for mt in matches
+                  if mt.get('star') == '★'}
     rows = build_rows(sections, avoid_teams)
     wb = Workbook()
 
@@ -250,9 +255,9 @@ def main():
                 % datetime.now().strftime('%Y-%m-%d %H:%M'))
     ws['A2'].font = Font(size=10, color='808080')
 
-    headers = ['档位', '日期', '时间', '联赛', '对阵', '方向', '星级', 'Model%', 'LGBM%', 'EV',
+    headers = ['档位', '日期', '时间', '联赛', '对阵', '方向', '清单★', '星级', 'Model%', 'LGBM%', 'EV',
                'TS', 'HKJC赔率', '平博 初→即', 'HKJC 初→即', '避雷']
-    widths = [7, 8, 8, 13, 30, 8, 9, 7, 7, 7, 11, 9, 26, 26, 22]
+    widths = [7, 8, 8, 13, 30, 8, 8, 9, 7, 7, 7, 11, 9, 26, 26, 22]
     SEC_FILL = {'①': CONF_FILL, '②': KKK_FILL, '③': KKK_FILL}
     n_secs = 0
     for idx, title, matches in sections:
@@ -276,8 +281,9 @@ def main():
         fill = SEC_FILL.get(idx)
         for r in [r for r in rows if r['sec'] == idx]:
             vals = [idx, r['date'], r['time'], r['league'], r['teams'], r['dir'],
-                    r['stars'], r['mdl'], r['lgbm'], r['ev'], r['ts'], r['hk_odds'],
-                    r['p_odds'], r['h_odds'], ' '.join(x for x in (r['avoid'], r['red']) if x)]
+                    r['star'], r['stars'], r['mdl'], r['lgbm'], r['ev'], r['ts'],
+                    r['hk_odds'], r['p_odds'], r['h_odds'],
+                    ' '.join(x for x in (r['avoid'], r['red']) if x)]
             for ci, v in enumerate(vals, 1):
                 cell = ws.cell(row=row, column=ci, value=v)
                 cell.border = BORDER
@@ -285,11 +291,13 @@ def main():
                     cell.fill = fill
                 if ci == 4 and r['league'] in HIGH_HIT_LEAGUES:   # 高命中率联赛 绿字加粗
                     cell.font = HIGH_HIT_FONT
-                if ci == 7 and r['red']:                           # 红线 红色加粗
+                if ci == 7 and r['star']:                          # 清单★ 深红加粗(豁免标记)
+                    cell.font = STAR_BADGE_FONT
+                if ci == 8 and r['red']:                           # 红线 红色加粗
                     cell.font = RED_FONT
-                if ci == 7 and r['stars'] and not r['red']:        # 星级 橙色
+                if ci == 8 and r['stars'] and not r['red']:        # 星级 橙色
                     cell.font = STAR_FONT
-                if ci in (1, 2, 3, 6, 7, 8, 9, 10, 11):
+                if ci in (1, 2, 3, 6, 7, 8, 9, 10, 11, 12):
                     cell.alignment = Alignment(horizontal='center')
             row += 1
         row += 1
@@ -302,7 +310,7 @@ def main():
     ws2 = wb.create_sheet('避雷汇总')
     ws2['A1'] = '⚠️🚫 避雷场次（历史败率 87-93%，慎跟）'
     ws2['A1'].font = SECTION_FONT
-    hdrs2 = ['日期', '时间', '联赛', '对阵', '避雷原因']
+    hdrs2 = ['日期', '时间', '联赛', '对阵', '避雷原因', '★豁免']
     for ci, h in enumerate(hdrs2, 1):
         cell = ws2.cell(row=2, column=ci, value=h)
         cell.font = HEADER_FONT
@@ -311,12 +319,14 @@ def main():
         cell.alignment = Alignment(horizontal='center')
     rr = 3
     for av in avoids:
-        for ci, v in enumerate([av['date'], av['time'], av['league'], av['teams'], av['reason']], 1):
+        mark = '★' if av['teams'] in star_teams else ''
+        for ci, v in enumerate([av['date'], av['time'], av['league'], av['teams'],
+                                av['reason'], mark], 1):
             cell = ws2.cell(row=rr, column=ci, value=v)
             cell.border = BORDER
             cell.fill = AVOID_FILL
         rr += 1
-    for ci, w in enumerate([8, 8, 14, 32, 30], 1):
+    for ci, w in enumerate([8, 8, 14, 32, 36, 8], 1):
         ws2.column_dimensions[chr(64 + ci)].width = w
     ws2.freeze_panes = 'A3'
 
