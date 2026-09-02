@@ -87,6 +87,11 @@ if [ -f "$PICKS_FILE" ]; then
     else
         echo "[$(date '+%H:%M:%S')] 生成昨日清单赛果回填复盘...($PICKS_FILE $PICKS_N 场)"
         python3 scripts/gen_daily_review.py --date "$YDAY" --picks "$PICKS_FILE" >> "$REVIEW_LOG" 2>&1
+        # 备份真实复盘到仓库外(防再被空壳覆盖, 不进git避免仓库膨胀)
+        mkdir -p "$HOME/football-review-backups"
+        cp "$PICKS_FILE" "$HOME/football-review-backups/picks_${YDAY_C}.md" >> "$REVIEW_LOG" 2>&1
+        cp "docs/推荐清单·赛果回填复盘.md" "$HOME/football-review-backups/review_${YDAY_C}.md" >> "$REVIEW_LOG" 2>&1
+        echo "[$(date '+%H:%M:%S')] 复盘md已备份 → ~/football-review-backups/review_${YDAY_C}.md" >> "$REVIEW_LOG"
         # Excel 版复盘 (复盘.xlsx, ~/storage/shared/Documents/, 每日覆盖)
         echo "[$(date '+%H:%M:%S')] 生成 Excel 版复盘 (复盘.xlsx)..."
         python3 scripts/gen_review_xlsx.py >> "$REVIEW_LOG" 2>&1
