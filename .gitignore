@@ -31,6 +31,6 @@ SECRET.md
 /data/football.db.bak*
 scripts/prof_run.py
 
-# 2026-09-01 方案B: 北单产物已移出主仓库docs/到~/beidan/, 防止未来再被git add误入库
+# 2026-09-03 方案C: 北单看板整块(脚本+产物)已迁至 football-odds-api 仓库独立管理
 docs/beidan_dashboard.html
 docs/data/beidan_*_dashboard.xlsx
