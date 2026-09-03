@@ -2,8 +2,11 @@
 """
 从500.com抓取北单数据，生成Excel看板（单表，合并让球胜平负+胜负过关）
 支持自动获取当前期数或 --expect 参数指定
-"""
 
+2026-09-03 数据源迁移: zx.500.com 被腾讯云 EdgeOne 防护封锁(bot挑战+人机验证码),
+改为 trade.500.com (bjdc=让球胜平负 / bjdcsf=胜负过关) —— 该域未被防护.
+注意: trade 源不含 zx 特有的"皇冠历史相同亚盘"概率列(胜%/平%/负%), 该列暂空.
+"""
 import re, os, sys, argparse
 from datetime import datetime
 from urllib.request import Request, urlopen
@@ -43,8 +46,7 @@ RESULT_MAP = {"3": "胜", "1": "平", "0": "负", "*": "＊"}
 def fetch(url):
     req = Request(url, headers={
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-        "Referer": "https://zx.500.com/zqdc/",
-        "Cookie": "sfrom=zqdc",
+        "Referer": "https://trade.500.com/bjdc/",
     })
     with urlopen(req, timeout=15) as resp:
         raw = resp.read()
@@ -54,28 +56,39 @@ def fetch(url):
         return raw.decode("gbk", errors="replace")
 
 
+def strip_rank_home(s):
+    """'[6] 奥卢' -> '奥卢'; 无排名则原样去前缀"""
+    m = re.match(r'^\[(\d+)\]\s*(.+)$', s)
+    return m.group(2).strip() if m else re.sub(r'^\s*\[\d+\]\s*', '', s).strip()
+
+
+def strip_rank_away(s):
+    """'塞那乔其 [10]' -> '塞那乔其'; 无排名则原样去后缀"""
+    return re.sub(r'\s*\[\d+\]\s*$', '', s).strip()
+
+
 def detect_current_expect():
-    """Auto-detect current 期数 from 500.com dropdown"""
+    """Auto-detect current 期数 from trade.500.com dropdown (取最大值=当前期)"""
     print("🔍 自动检测当前期数...")
-    text = fetch("https://zx.500.com/zqdc/saiguo.php?playid=3")
-    # Find the first <select> with 期数 options
-    selects = re.findall(r'<select[^>]*>.*?</select>', text, re.DOTALL)
-    for s in selects:
-        opts = re.findall(r'<option[^>]*value="?(\d+)"?', s)
-        if opts and len(opts[0]) == 5:
-            expect = int(opts[0])
-            print(f"   ✓ 当前期数: {expect}")
-            return expect
+    text = fetch("https://trade.500.com/bjdc/")
+    opts = [int(x) for x in re.findall(r'<option[^>]*value="?(\d{5})"?', text) if x.isdigit()]
+    if opts:
+        expect = max(opts)
+        print(f"   ✓ 当前期数: {expect}")
+        return expect
     raise RuntimeError("无法检测当前北单期数")
 
 
 def fetch_page(playid, expect):
-    url = f"https://zx.500.com/zqdc/saiguo.php?playid={playid}&expect={expect}"
+    if playid == 3:
+        url = f"https://trade.500.com/bjdc/?expect={expect}"
+    else:
+        url = f"https://trade.500.com/bjdcsf/?expect={expect}"
     return fetch(url)
 
 
 def parse_matches(text, playid):
-    """Parse table rows from 500.com page"""
+    """Parse table rows. playid=3 -> 让球胜平负(bjdc); 默认 playid=0 -> 胜负过关(bjdcsf)"""
     rows = re.findall(r'<tr[^>]*>(.*?)</tr>', text, re.DOTALL)
     matches = {}
     for r in rows:
@@ -93,30 +106,32 @@ def parse_matches(text, playid):
         num = int(first)
 
         if playid == 3:
-            # 让球胜平负: cells [0]num [1]league [2]time [3]home [4]handicap [5]away [6]score [9]胜% [11]平% [13]负%
-            if len(vals) >= 14:
-                probs = [v.rstrip("%") for v in [vals[9], vals[11], vals[13]] if "%" in v]
+            # 让球胜平负(bjdc): [0]num [1]league [2]time [3]主队[排名] [4]让球 [5]客队[排名] [6]欧赔 [7]比分
+            if len(vals) >= 8:
+                score = vals[7] if re.match(r'^\d+:\d+$', vals[7]) else ""
                 matches[num] = {
                     "num": num, "league": vals[1], "time": vals[2],
-                    "home": vals[3], "handicap": vals[4], "away": vals[5],
-                    "score": vals[6], "result": vals[7],
-                    "h_prob": int(probs[0]) if len(probs) > 0 else -1,
-                    "d_prob": int(probs[1]) if len(probs) > 1 else -1,
-                    "a_prob": int(probs[2]) if len(probs) > 2 else -1,
+                    "home": strip_rank_home(vals[3]), "away": strip_rank_away(vals[5]),
+                    "handicap": vals[4], "score": score, "result": "",
+                    "h_prob": -1, "d_prob": -1, "a_prob": -1, "ah_desc": "",
                 }
         else:
-            # 胜负过关: [0]num [1]league [2]time [3]home [4]handicap [5]away [6]score [8]亚盘 [10]胜% [12]平% [14]负%
-            if len(vals) >= 15:
-                probs = [v.rstrip("%") for v in [vals[10], vals[12], vals[14]] if "%" in v]
-                matches[num] = {
-                    "num": num, "league": vals[1], "time": vals[2],
-                    "home": vals[3], "handicap": vals[4], "away": vals[5],
-                    "score": vals[6], "result": vals[7],
-                    "ah_desc": vals[8],
-                    "h_prob": int(probs[0]) if len(probs) > 0 else -1,
-                    "d_prob": int(probs[1]) if len(probs) > 1 else -1,
-                    "a_prob": int(probs[2]) if len(probs) > 2 else -1,
-                }
+            # 胜负过关(bjdcsf): [0]num [1]足球 [2]league [3]time [4]主队 盘口 水位 客队 [5]比分 [6]欧赔
+            if len(vals) >= 7:
+                m = re.match(
+                    r'^\s*\[?(\d*)\]?\s*(.+?)\s+([+-]?\d+\.?\d*球)\s+([\d.]+)(?:\s+([\d.]+))?\s+(.+?)(?:\s*\[\d+\])?\s*$',
+                    vals[4].strip())
+                if m:
+                    time_tokens = vals[3].split()
+                    score = vals[5] if re.match(r'^\d+:\d+$', vals[5]) else ""
+                    matches[num] = {
+                        "num": num, "league": vals[2],
+                        "time": time_tokens[1] if len(time_tokens) > 1 else vals[3],
+                        "home": m.group(2).strip(), "away": m.group(6).strip(),
+                        "handicap": "", "score": score, "result": "",
+                        "h_prob": -1, "d_prob": -1, "a_prob": -1,
+                        "ah_desc": m.group(3), "water": m.group(4),
+                    }
     return matches
 
 
@@ -191,10 +206,10 @@ def main():
     ]
     max_col = len(headers)
 
-    ws.cell(row=1, column=1, value=f"⚽ 北京单场{expect}期 比赛看板（皇冠历史相同亚盘） — {TODAY}").font = TITLE_FONT
+    ws.cell(row=1, column=1, value=f"⚽ 北京单场{expect}期 比赛看板 — {TODAY}").font = TITLE_FONT
     ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=max_col)
 
-    ws.cell(row=2, column=1, value="数据来源：500.com 皇冠公司（cid=280）历史相同亚盘概率").font = Font(
+    ws.cell(row=2, column=1, value="数据来源：500.com trade（让球胜平负+胜负过关）│ 皇冠历史概率列暂缺（zx源被EdgeOne封锁，需另源）").font = Font(
         name="微软雅黑", size=9, italic=True, color="888888"
     )
     ws.merge_cells(start_row=2, start_column=1, end_row=2, end_column=max_col)
@@ -283,12 +298,11 @@ def main():
         a = d3.get("away", d0.get("away", ""))
         hc = d3.get("handicap", d0.get("handicap", ""))
         ah = d0.get("ah_desc", "")
-        hp = d0.get("h_prob", d3.get("h_prob", -1))
-        dp = d0.get("d_prob", d3.get("d_prob", -1))
-        ap = d0.get("a_prob", d3.get("a_prob", -1))
+        hp, dp, ap = d0.get("h_prob", -1), d0.get("d_prob", -1), d0.get("a_prob", -1)
         sc = d3.get("score") or d0.get("score") or "-"
         rs = RESULT_MAP.get(d3.get("result") or d0.get("result") or "", "")
-        print(f"   {num}. {l} {t} {h}({hc}){a} [{ah}] 胜{hp}%平{dp}%负{ap}% 比分{sc} {rs}")
+        probstr = (f"胜{hp}%平{dp}%负{ap}%" if (hp >= 0 and dp >= 0 and ap >= 0) else "皇冠概率待补")
+        print(f"   {num}. {l} {t} {h}({hc}){a} [{ah}] {probstr} 比分{sc} {rs}")
 
     return OUTPUT_FILE
 
