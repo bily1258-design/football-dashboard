@@ -9,6 +9,7 @@
   Sheet1 复盘明细: 按档位(①高置信/②客客客/③胜胜胜)逐场: 方向/比分/结果/概率/EV/赔率/避雷/盈亏
   Sheet2 档位汇总: 每档 场数/完赛/命中/命中率/净盈亏
 """
+import json
 import os
 import re
 from datetime import datetime
@@ -52,7 +53,53 @@ AVOID_ITEM_RE = re.compile(
 PROB_RE = re.compile(
     r'^(主|客|平)概率:\s*model\s*(\d+)%\s*\|\s*LGBM\s*(\d+)%\s*(?:\|\s*EV\s*([\d.]+))?\s*(?:\|\s*TS\s*(主|客|平)\s*(\d+)%)?')
 HKJC_RE = re.compile(
-    r'^HKJC(客|主|平)胜\s*([\d.]+)\s*(?:\|\s*模型概率\s*(\d+)%)?\s*(?:\|\s*LGBM(客|主|平)概率\s*(\d+)%)?\s*(?:\|\s*EV\s*([\d.]+))?\s*(?:\|\s*TS(平|主|客)\s*(\d+)%)?')
+    r'^HKJC(客|主|平)胜\s*([\d.]+)\s*(?:\|\s*模型概率\s*(\d+)%)?\s*(?:\|\s*LGBM(客|主|平)概率\s*(\d+)%)?\s*(?:\|\s*EV\s*([\d.]+))?\s*(?:\|\s*TS\s*(平|主|客)\s*(\d+)%)?')
+
+# 2026-09-02 方案C: 旧版②③档 md 行尾 TS 段是 "TS平 24%" (平概率, 无方向).
+# 新版为 "TS客 61%" (方向+概率). 解析遇 TS平 → 回退 results.json ts_win/draw/loss
+# argmax 求最大方向及概率. 不影响★判定(★来自 md 行尾符号).
+RESULTS_JSON = os.path.join(PROJECT_DIR, 'docs', 'data', 'results.json')
+_TSCACHE = None
+
+def _ts_records():
+    global _TSCACHE
+    if _TSCACHE is None:
+        try:
+            with open(RESULTS_JSON, encoding='utf-8') as f:
+                data = json.load(f)
+            recs = data['matches'] if isinstance(data, dict) else data
+            _TSCACHE = [r for r in recs if r.get('ts_win') is not None
+                        and r.get('ts_draw') is not None and r.get('ts_loss') is not None]
+        except Exception:
+            _TSCACHE = []
+    return _TSCACHE
+
+def _ts_fallback(mt):
+    """按 match_time 前缀(MM-DD HH:MM)+队名(繁简归一化 t2s) 匹配 results.json,
+    返回 (最大方向, 概率整数) 或 (None, None)."""
+    recs = _ts_records()
+    if not recs:
+        return None, None
+    try:
+        from opencc import OpenCC
+        _cc = OpenCC('t2s')
+        norm = lambda s: _cc.convert(s.strip())
+    except Exception:
+        norm = lambda s: s.strip()
+    want = f"{mt['date']} {mt['time']}"          # '09-01 02:45'
+    try:
+        home, away = (norm(x) for x in mt['teams'].split(' vs '))
+    except ValueError:
+        return None, None
+    for r in recs:
+        if r.get('match_time', '')[5:16] != want:   # results.json 完整时间 YYYY-MM-DD HH:MM
+            continue
+        if norm(r.get('home_team', '')) != home or norm(r.get('away_team', '')) != away:
+            continue
+        probs = {'主': r['ts_win'], '平': r['ts_draw'], '客': r['ts_loss']}
+        d = max(probs, key=probs.get)
+        return d, int(round(probs[d] * 100))
+    return None, None
 ODDS_RE = re.compile(
     r'^平博\s+初/即:\s*([\d./\-]+)\s*→\s*([\d./\-]+)\s*\|\s*HKJC\s+初/即:\s*([\d./\-]+)\s*→\s*([\d./\-]+)')
 RESULT_RE = re.compile(r'\|\s*实际:\s*(\d+)[-:](\d+)\s*(✓|✘)\s*$')
@@ -213,6 +260,10 @@ def build_rows(sections, avoid_teams=None):
                         ev = m.group(6) or ev or ''
                     if m.group(8):                       # ②③档TS嵌在HKJC行尾
                         tsd, tsp = m.group(7), m.group(8)
+                        if tsd == '平':                   # 旧格式"TS平 XX%"仅平概率无方向
+                            _d, _p = _ts_fallback(mt)    # → 回退 results.json argmax (方案C)
+                            if _d is not None:
+                                tsd, tsp = _d, _p
             if mt['prob_line']:
                 m = PROB_RE.search(mt['prob_line'])
                 if m:
