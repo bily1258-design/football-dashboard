@@ -1,0 +1,120 @@
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#f0f2f5;color:#1a2332;min-height:100vh}
+.container{max-width:1400px;margin:0 auto;padding:16px}
+header{background:linear-gradient(135deg,#2563eb,#1d4ed8);border-radius:12px;padding:20px 24px;margin-bottom:16px;color:#fff}
+h1{font-size:22px;color:#fff;margin-bottom:8px}
+.meta{display:flex;gap:20px;font-size:13px;color:#d0d8ff;flex-wrap:wrap}
+.meta span{background:rgba(255,255,255,0.15);padding:4px 12px;border-radius:6px;color:#fff}
+.controls{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
+.controls select,.controls button{background:#fff;color:#1a2332;border:1px solid #d0d4dc;border-radius:6px;padding:6px 12px;font-size:13px;cursor:pointer}
+.controls button{background:#2563eb;border-color:#2563eb;color:#fff;font-weight:600}
+.controls button:hover{background:#1d4ed8}
+.meta-hit{background:#fff;border:1px solid #d0d4dc;border-radius:6px;padding:6px 12px;font-size:13px;color:#2563eb;font-weight:600}
+#stats-bar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.stat-card{background:#fff;border:1px solid #d0d4dc;border-radius:8px;padding:8px 14px;text-align:center;min-width:80px}
+.stat-card .stat-val{font-size:18px;font-weight:700;color:#2563eb}
+.stat-card .stat-label{font-size:11px;color:#667788;margin-top:2px}
+#loading{text-align:center;padding:40px;color:#667788;font-size:16px}
+#table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+#table-wrap::before{content:'← 左右滑动查看更多 →';display:block;text-align:center;font-size:11px;color:#8899aa;padding:4px 0}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:#f8f9fb;padding:8px 10px;text-align:left;font-weight:600;color:#556677;border-bottom:2px solid #d0d4dc;cursor:pointer;white-space:nowrap;user-select:none}
+th:hover{color:#2563eb}
+td{padding:8px 10px;border-bottom:1px solid #e8ecf0;white-space:nowrap}
+tr:hover{background:#f0f6ff}
+.team-name{font-weight:600;color:#1a2332}
+.vs{color:#8899aa;padding:0 4px}
+.odds-cell{font-variant-numeric:tabular-nums}
+.lgbm-cell{font-variant-numeric:tabular-nums}
+.lgbm-prob{margin-top:4px;padding-top:3px;border-top:1px solid #e0e4e8;font-size:11px;color:#2563eb;text-align:center}
+.lgbm-sub{margin-top:4px;padding-top:3px;border-top:1px solid #e0e4e8;font-size:11px;color:#d97706;text-align:center}
+.odds-val{display:inline-block;min-width:48px;text-align:center;padding:1px 4px;border-radius:3px;font-size:12px}
+.odds-w{color:#16a34a}
+.odds-d{color:#d97706}
+.odds-l{color:#dc2626}
+.dir-home{color:#16a34a;font-weight:700}
+.dir-draw{color:#d97706;font-weight:700}
+.dir-away{color:#dc2626;font-weight:700}
+.dir-wait{color:#8899aa}
+.tag{display:inline-block;padding:1px 6px;border-radius:3px;font-size:11px;background:#e8ecf0;color:#556677}
+.tag-beidan{background:#dbeafe;color:#2563eb}
+.tag-jingcai{background:#fef3c7;color:#d97706}
+.tag-beidan_jingcai{background:linear-gradient(135deg,#dbeafe 50%,#fef3c7 50%);color:#2563eb;border:1px solid #d97706}
+.hit-yes{color:#16a34a;font-weight:700;font-size:1.1em;text-align:center}
+.hit-no{color:#dc2626;font-weight:700;font-size:1.1em;text-align:center}
+.score-cell{text-align:center}
+.score-cell span{display:inline-block;padding:1px 8px;border-radius:3px;font-size:12px;background:#dbeafe;color:#2563eb;font-weight:600}
+.form-cell{font-size:0;padding:8px 6px;text-align:center;line-height:1.2}
+.form-icons{font-size:13px;letter-spacing:1px;white-space:nowrap}
+/* 合并赔率列 */
+.odds-combined{font-size:11px;line-height:1.7;white-space:nowrap}
+.odds-combined .oc-line{display:flex;gap:4px;align-items:center}
+.odds-combined .oc-label{display:inline-block;width:14px;color:#8899aa;font-size:10px;text-align:right}
+.odds-combined .oc-open{color:#8899aa}
+.odds-combined .oc-cur{color:#1a2332;font-weight:500}
+.odds-combined .oc-div{font-size:10px}
+.odds-combined .oc-pct-down{color:#dc2626;font-weight:600}
+.odds-combined .oc-pct-up{color:#16a34a;font-weight:600}
+.odds-combined .oc-pct-flat{color:#8899aa}
+.odds-combined .oc-sep{color:#c0c4cc;margin:0 1px}
+.oc-source{font-size:10px;color:#667788;margin:2px 0 1px;font-weight:600}
+.oc-source-hkjc{color:#92400e}
+.oc-sep-line{height:1px;background:#e0e4e8;margin:4px 0}
+.odds-combined .oc-pred{color:#2563eb;font-size:10px;font-weight:600}
+.ah-pred-inline{color:#2563eb;font-size:10px;font-weight:600}
+.ah-hit-dir{color:#7c3aed;font-size:10px;font-weight:600;margin-left:2px}
+.warn-badge{display:inline-block;margin-left:3px;vertical-align:middle}
+.warn-badge .warn-trap{cursor:help;font-size:12px}
+.warn-badge .warn-uncert{cursor:help;font-size:12px;margin-left:1px}
+.hw-warn{display:inline-block;margin-left:4px;padding:0 4px;border:1px solid #e53935;border-radius:3px;color:#e53935;font-size:11px;font-weight:bold;cursor:help;vertical-align:middle}
+.warn-filter-btn{cursor:pointer;padding:3px 8px;border-radius:4px;color:#666;font-size:12px}
+.warn-filter-btn.active{background:#fff3cd;color:#856404;font-weight:bold}
+@media(max-width:768px){
+  .container{padding:8px}
+  table{font-size:11px}
+  th,td{padding:5px 4px}
+  .meta{flex-direction:column;gap:6px}
+}
+/* 价值投注徽章 */
+.vb-badge{cursor:pointer;display:inline-block;padding:1px 6px;border-radius:3px;font-size:11px;font-weight:600;margin-top:2px}
+.vb-hot{background:#dcfce7;color:#166534}
+.vb-warm{background:#fef3c7;color:#92400e}
+.vb-cool{background:#dbeafe;color:#1e40af}
+.vb-none{font-size:10px;color:#99aabb}
+.vb-neg{color:#dc2626}
+/* 投注弹窗 */
+#betModal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:1000}
+#betModal .modal-content{background:#fff;border-radius:12px;padding:24px;max-width:400px;margin:15% auto;box-shadow:0 8px 32px rgba(0,0,0,0.2);position:relative}
+#betModal .modal-close{position:absolute;top:12px;right:16px;font-size:22px;cursor:pointer;color:#999}
+#betModal h3{margin-bottom:16px;color:#1a2332}
+#betModal p{margin:8px 0;font-size:14px}
+#betModal label{display:inline-block;width:80px;color:#667788}
+.modal-actions{margin-top:16px;text-align:right}
+/* 投注追踪器 */
+#betTracker{background:#fff;border-radius:8px;padding:16px;margin-bottom:16px;border:1px solid #d0d4dc}
+#betTracker h3{font-size:16px;margin-bottom:12px;color:#1a2332}
+#betSummary{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;padding:10px;background:#f8f9fb;border-radius:6px}
+.bs-row{display:flex;flex-direction:column;align-items:center;min-width:70px}
+.bs-label{font-size:11px;color:#667788}
+.bs-val{font-size:16px;font-weight:700;color:#1a2332}
+.bs-profit{color:#16a34a}
+.bs-loss{color:#dc2626}
+.bs-empty{color:#99aabb;font-size:13px;padding:10px;text-align:center;width:100%}
+#betTable{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
+#betTable th{background:#f0f2f5;padding:6px 8px;font-size:11px;color:#667788}
+#betTable td{padding:6px 8px;border-bottom:1px solid #e5e7eb}
+.bt-pending{color:#f59e0b;font-weight:600}
+.bt-win{color:#16a34a;font-weight:600}
+.bt-loss{color:#dc2626;font-weight:600}
+.bt-del{cursor:pointer;background:none;border:none;color:#dc2626;font-size:14px;padding:2px 6px}
+.bt-del:hover{background:#fee2e2;border-radius:4px}
+.sim-cell{font-size:11px;max-width:280px;min-width:160px}
+.sim-list{display:flex;flex-direction:column;gap:2px}
+.sim-item{display:flex;gap:2px;align-items:center;white-space:nowrap}
+.sim-teams{color:#3a4a5c;overflow:hidden;text-overflow:ellipsis;max-width:130px}
+.sim-score{color:#667788;font-size:10px}
+.sim-pct{color:#2563eb;font-weight:600;font-size:10px;margin-left:auto}
+.sim-goals{font-size:11px;color:#e67e22;margin-top:3px;padding-top:2px;border-top:1px dashed #e0e4e8}
+.weight-badge{display:inline-block;font-size:10px;color:#888;margin-left:3px;cursor:help;vertical-align:middle}
+.lp-row{opacity:0.55}
+.lp-row:hover{opacity:0.85}

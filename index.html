@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>足彩价值投注看板</title>
+<link rel="stylesheet" href="style.css?v=20260816v3">
+<script src="script.js?v=20260816v3"></script>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>⚽ 足彩价值投注看板</h1>
+    <div class="meta">
+      <span id="updateTime">加载中...</span>
+      <span id="matchCount">—</span>
+      <span id="dateRange">—</span>
+    </div>
+    <div class="controls">
+      <select id="dateFilter" onchange="applyFilters()">
+        <option value="all">全部日期</option>
+      </select>
+      <select id="sourceFilter" onchange="applyFilters()">
+        <option value="all">全部来源</option>
+
+        <option value="jingcai">竞彩</option>
+        <option value="beidan">北单</option>
+      </select>
+      <select id="dirFilter" onchange="applyFilters()">
+        <option value="all">全部方向组合</option>
+        <option value="home-home">主主</option>
+        <option value="home-draw">主和</option>
+        <option value="home-away">主客</option>
+        <option value="draw-home">和主</option>
+        <option value="draw-draw">和和</option>
+        <option value="draw-away">和客</option>
+        <option value="away-home">客主</option>
+        <option value="away-draw">客和</option>
+        <option value="away-away">客客</option>
+      </select>
+      <select id="sortBy" onchange="applyFilters()">
+        <option value="time">按时间</option>
+        <option value="odds">按赔率</option>
+      </select>
+      <button id="refreshBtn" onclick="location.reload()">🔄 刷新</button>
+      <span id="warnToggle" class="warn-filter-btn" onclick="toggleWarnFilter()" title="仅显示有风险标记的比赛">⚠️ 全部</span>
+      <span id="valueToggle" class="warn-filter-btn" onclick="toggleValueFilter()" title="仅显示有价值投注的比赛">💰 全部</span>
+      <span id="impToggle" class="warn-filter-btn" onclick="toggleImportantFilter()" title="仅显示高重要性比赛">⚡ 全部</span>
+      <span id="hitRate" class="meta-hit"></span>
+      <span id="valueStats"></span>
+    </div>
+  </header>
+  <div id="stats-bar"></div>
+  <div id="loading">加载中...</div>
+  <div id="table-wrap" style="display:none">
+    <table id="matchTable">
+      <thead>
+        <tr>
+          <th data-sort="time">时间</th>
+          <th data-sort="league">赛事</th>
+          <th>主队</th>
+          <th>比分</th>
+          <th>客队</th>
+          <th>相似历史</th>
+          <th>方向</th>
+          <th>命中</th>
+          <th>赔率(欧/亚)</th>
+          <th>模型/LGBM</th>
+        </tr>
+      </thead>
+      <tbody id="matchBody"></tbody>
+    </table>
+  </div>
+  <!-- 投注追踪器 -->
+  <div id="betTracker" style="display:none">
+    <h3>📋 投注记录</h3>
+    <div id="betSummary"></div>
+    <table id="betTable">
+      <thead><tr><th>时间</th><th>比赛</th><th>方向</th><th>赔率</th><th>注额</th><th>结果</th><th>盈亏</th><th></th></tr></thead>
+      <tbody id="betTableBody"></tbody>
+    </table>
+  </div>
+
+  <!-- 投注弹窗 -->
+  <div id="betModal">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closeBetModal()">&times;</span>
+      <h3>💰 确认投注</h3>
+      <p><label>比赛:</label> <span id="bmMatch"></span></p>
+      <p><label>方向:</label> <span id="bmOutcome"></span></p>
+      <p><label>赔率:</label> <span id="bmOdds"></span></p>
+      <p><label>Kelly建议:</label> <span id="bmKelly" style="color:#2563eb;font-weight:600"></span></p>
+      <p><label>注额:</label> <input type="number" id="bmStake" step="0.1" min="0" style="width:80px;padding:4px 8px;border:1px solid #ccc;border-radius:4px"></p>
+      <div class="modal-actions">
+        <button onclick="confirmBet()" style="background:#2563eb;color:#fff;border:none;padding:8px 20px;border-radius:6px;cursor:pointer;font-weight:600">确认投注</button>
+        <button onclick="closeBetModal()" style="background:#e5e7eb;color:#333;border:none;padding:8px 20px;border-radius:6px;cursor:pointer;margin-left:8px">取消</button>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
