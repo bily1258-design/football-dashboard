@@ -95,11 +95,19 @@ def filter_beidan(matches):
 
 
 def filter_jingzu(matches):
-    """从比赛列表中过滤出竞足(f[58]!="")"""
+    """从比赛列表中过滤出竞彩场次(f[57]=竞彩编号, 如'周三002', 非空)
+
+    2026-09-16 修正判据:
+      f[57] = 竞彩编号(周三001~017)  → 竞彩足球当日销售场次(17场)
+      f[58] = 1~14 的序号            → 实为"足彩14场(胜负彩)"序号, 不是竞彩!
+      f[59] = 北单期次号(42~73)      → 北京单场
+    旧代码误用 f[58] 当竞彩判据: 把 14 场足彩标成竞彩(其中2场并非竞彩),
+    又漏标真正的竞彩5场。现改为 f[57]。
+    """
     result = []
     for m in matches:
         f = m['fields']
-        if len(f) > 58 and f[58].strip():
+        if len(f) > 57 and f[57].strip():
             result.append(m)
     return result
 
@@ -170,7 +178,7 @@ def fetch_all_matches(date_str, max_matches=0):
     jingzu = filter_jingzu(all_matches)
 
     print(f'[INFO] bfdata_ut.js → 总{len(all_matches)}场, '
-          f'北单{len(beidan)}场, 竞足{len(jingzu)}场')
+          f'北单{len(beidan)}场, 竞彩{len(jingzu)}场')
 
     # 过滤24小时窗口(12:00~次日11:59): 匹配今天和明天的比赛
     date_compact = date_str.replace('-', '')
