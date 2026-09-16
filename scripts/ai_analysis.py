@@ -1868,7 +1868,7 @@ def generate_frontend(results: List[Dict]):
     # 写入 results.json
     rp = os.path.join(DOCS_DIR, 'data', 'results.json')
     with open(rp, 'w', encoding='utf-8') as f:
-        json.dump(output, f, ensure_ascii=False, indent=2)
+        json.dump(output, f, ensure_ascii=False, separators=(',', ':'))
     logger.info(f"结果 → {rp} ({all_counts} 场)")
 
     # 5. 比赛重要性权重 (Week 3)
@@ -1927,7 +1927,7 @@ def generate_frontend(results: List[Dict]):
 
     # 回写 results.json（权重字段）
     with open(os.path.join(DOCS_DIR, 'data', 'results.json'), 'w', encoding='utf-8') as f:
-        json.dump(output, f, ensure_ascii=False, indent=2)
+        json.dump(output, f, ensure_ascii=False, separators=(',', ':'))
 
     # 回写 lgbm_win/draw/loss（模型概率独立列，2026-08-19 与 poisson_* 语义分离）
     # poisson_* 列保留给真正的泊松模型输出；LGBM 模型概率写入 lgbm_*，避免列名误导
