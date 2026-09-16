@@ -109,13 +109,13 @@ def main():
         # 定期保存结果+缓存
         save_failed_cache(failed_cache)
         with open(RESULTS, 'w') as f:
-            json.dump(d, f, ensure_ascii=False, indent=2)
+            json.dump(d, f, ensure_ascii=False, separators=(',', ':'))  # 紧凑输出, 防 results.json 回涨到 62MB
         time.sleep(BATCH_DELAY)
 
     # 最终保存
     save_failed_cache(failed_cache)
     with open(RESULTS, 'w') as f:
-        json.dump(d, f, ensure_ascii=False, indent=2)
+        json.dump(d, f, ensure_ascii=False, separators=(',', ':'))  # 紧凑输出, 防 results.json 回涨到 62MB
 
     elapsed = time.time() - t0
     print(f"\n完成! 成功: {ok}, 失败: {fail}, 总耗时: {elapsed:.0f}s")

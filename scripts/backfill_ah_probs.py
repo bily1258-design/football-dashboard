@@ -74,7 +74,7 @@ def main():
 
     # 5. 写回
     with open(RESULTS_PATH, 'w') as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+        json.dump(data, f, ensure_ascii=False, separators=(',', ':'))  # 紧凑输出, 防 results.json 回涨
     logger.info(f"已写入 {RESULTS_PATH}")
 
     # 验证
