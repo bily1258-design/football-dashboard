@@ -9,6 +9,7 @@ function fmtTime(t){if(!t)return'';var m=t.match(/^(?:\d{4}-)?(\d{2})-(\d{2})\s+
 function dirClass(d){return d==='home'?'dir-home':d==='draw'?'dir-draw':d==='away'?'dir-away':'dir-wait'}
 function dirText(d){return d==='home'?'主胜':d==='draw'?'平局':d==='away'?'客胜':'观望'}
 function dirZh(d){return d==='home'?'主':d==='draw'?'平':d==='away'?'客':'?'}
+function noText(m){if(!m.beidan_no&&!m.jingcai_no)return '';return (m.beidan_no?'北单'+m.beidan_no:'')+(m.jingcai_no?(m.beidan_no?'<br>':'')+m.jingcai_no:'')}
 function ahDir(m){
   if(m.ah_home_covers_prob==null)return'';
   var d=m.ah_home_covers_prob>m.ah_away_covers_prob
@@ -277,6 +278,7 @@ function renderTable(matches){
     tr.innerHTML =
       '<td>'+fmtTime(m.match_time)+'</td>'+
       '<td><span class="tag tag-'+m.source+'">'+(m.event||m.source)+'</span></td>'+
+      '<td class="no-cell">'+noText(m)+'</td>'+
       '<td class="team-name">'+m.home_team+'</td>'+
       '<td class="score-cell"><span>'+(m.score||(m.postponed?'推迟':'-'))+'</span></td>'+
       '<td class="team-name">'+m.away_team+'</td>'+

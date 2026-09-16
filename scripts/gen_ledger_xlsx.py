@@ -127,7 +127,9 @@ def parse_md(path):
         s = ln.strip()
         if not s:
             continue
-        # 去掉行尾编号标记(#北单74/周三017), 保持既有正则口径不变
+        # 抽出并去掉行尾编号标记(#北单74/周三017), 保持既有正则口径不变
+        mno = re.search(r'#(\S+)\s*$', s)
+        no = mno.group(1) if mno else ''
         s = re.sub(r'\s*#\S+\s*$', '', s)
         m_sec = SEC_RE.match(s)
         if m_sec:                               # 档位标题
@@ -140,7 +142,7 @@ def parse_md(path):
             if m:
                 avoids.append({'date': m.group(1), 'time': m.group(2),
                                'league': m.group(3), 'teams': m.group(4).strip(),
-                               'reason': m.group(5).strip()})
+                               'reason': m.group(5).strip(), 'no': no})
                 continue
         m = MATCH_RE.match(s)                   # 场次行
         if m:
@@ -149,6 +151,7 @@ def parse_md(path):
                 'date': m.group(1), 'time': m.group(2), 'league': m.group(3),
                 'teams': m.group(4).strip(), 'dir': m.group(6) or '',
                 'star': m.group(7) or '', 'avoid': m.group(8) or '',
+                'no': no,
                 'prob_line': '', 'hkjc_line': '', 'odds_line': '',
             }
             continue
@@ -232,6 +235,7 @@ def build_rows(sections, avoid_teams=None):
                 'p_odds': f"{p0} → {p1}" if p0 else '',
                 'h_odds': f"{h0} → {h1}" if h0 else '',
                 'avoid': mt['avoid'].replace('🚫避雷', '🚫').replace('⚠️⚡避雷', '⚠️⚡') if mt['avoid'] else '',
+                'no': mt.get('no', ''),
             })
     return rows
 
@@ -258,8 +262,8 @@ def main():
     ws['A2'].font = Font(size=10, color='808080')
 
     headers = ['档位', '日期', '时间', '联赛', '对阵', '方向', '清单★', '星级', 'Model%', 'LGBM%', 'EV',
-               'TS', 'HKJC赔率', '平博 初→即', 'HKJC 初→即', '避雷']
-    widths = [7, 8, 8, 13, 30, 8, 8, 9, 7, 7, 7, 11, 9, 26, 26, 22]
+               'TS', 'HKJC赔率', '平博 初→即', 'HKJC 初→即', '避雷', '编号']
+    widths = [7, 8, 8, 13, 30, 8, 8, 9, 7, 7, 7, 11, 9, 26, 26, 22, 16]
     SEC_FILL = {'①': CONF_FILL, '②': KKK_FILL, '③': KKK_FILL}
     n_secs = 0
     for idx, title, matches in sections:
@@ -285,7 +289,8 @@ def main():
             vals = [idx, r['date'], r['time'], r['league'], r['teams'], r['dir'],
                     r['star'], r['stars'], r['mdl'], r['lgbm'], r['ev'], r['ts'],
                     r['hk_odds'], r['p_odds'], r['h_odds'],
-                    ' '.join(x for x in (r['avoid'], r['red']) if x)]
+                    ' '.join(x for x in (r['avoid'], r['red']) if x),
+                    r.get('no', '')]
             for ci, v in enumerate(vals, 1):
                 cell = ws.cell(row=row, column=ci, value=v)
                 cell.border = BORDER
@@ -312,7 +317,7 @@ def main():
     ws2 = wb.create_sheet('避雷汇总')
     ws2['A1'] = '⚠️🚫 避雷场次（历史败率 87-93%，慎跟）'
     ws2['A1'].font = SECTION_FONT
-    hdrs2 = ['日期', '时间', '联赛', '对阵', '避雷原因', '★豁免']
+    hdrs2 = ['日期', '时间', '联赛', '对阵', '避雷原因', '★豁免', '编号']
     for ci, h in enumerate(hdrs2, 1):
         cell = ws2.cell(row=2, column=ci, value=h)
         cell.font = HEADER_FONT
@@ -323,12 +328,12 @@ def main():
     for av in avoids:
         mark = '★' if av['teams'] in star_teams else ''
         for ci, v in enumerate([av['date'], av['time'], av['league'], av['teams'],
-                                av['reason'], mark], 1):
+                                av['reason'], mark, av.get('no', '')], 1):
             cell = ws2.cell(row=rr, column=ci, value=v)
             cell.border = BORDER
             cell.fill = AVOID_FILL
         rr += 1
-    for ci, w in enumerate([8, 8, 14, 32, 36, 8], 1):
+    for ci, w in enumerate([8, 8, 14, 32, 36, 8, 16], 1):
         ws2.column_dimensions[chr(64 + ci)].width = w
     ws2.freeze_panes = 'A3'
 
