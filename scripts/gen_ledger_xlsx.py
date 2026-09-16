@@ -127,6 +127,8 @@ def parse_md(path):
         s = ln.strip()
         if not s:
             continue
+        # 去掉行尾编号标记(#北单74/周三017), 保持既有正则口径不变
+        s = re.sub(r'\s*#\S+\s*$', '', s)
         m_sec = SEC_RE.match(s)
         if m_sec:                               # 档位标题
             flush_match()
@@ -134,7 +136,7 @@ def parse_md(path):
             sections.append(cur_sec)
             continue
         if cur_sec and cur_sec[0] == '⚠️':      # ⚠️档内: 避雷明细行
-            m = AVOID_ITEM_RE.match(ln)
+            m = AVOID_ITEM_RE.match(s)
             if m:
                 avoids.append({'date': m.group(1), 'time': m.group(2),
                                'league': m.group(3), 'teams': m.group(4).strip(),

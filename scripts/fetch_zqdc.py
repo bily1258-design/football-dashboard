@@ -202,6 +202,13 @@ def fetch_all_matches(date_str, max_matches=0):
     # 构建sid→是否为竞彩的映射
     jingzu_sids = {m['sid'] for m in jingzu}
 
+    # sid→竞彩编号(f[57], 如"周三017")
+    jingzu_no = {}
+    for m in jingzu:
+        f = m['fields']
+        if len(f) > 57 and str(f[57]).strip():
+            jingzu_no[m['sid']] = str(f[57]).strip()
+
     if max_matches > 0:
         filtered = filtered[:max_matches]
 
@@ -237,6 +244,8 @@ def fetch_all_matches(date_str, max_matches=0):
             'date': actual_date,
             'score': score,
             'source': src,
+            'beidan_no': (str(f[59]).strip() if len(f) > 59 else ''),
+            'jingcai_no': jingzu_no.get(m['sid'], ''),
         })
 
     # 追加纯竞彩(不在北单中的)比赛
@@ -268,6 +277,8 @@ def fetch_all_matches(date_str, max_matches=0):
                 'date': actual_date,
                 'score': score,
                 'source': 'jingcai',
+                'beidan_no': (str(f[59]).strip() if len(f) > 59 else ''),
+                'jingcai_no': (str(f[57]).strip() if len(f) > 57 else ''),
             })
 
     return result
@@ -293,6 +304,8 @@ def fetch_odds(matches, delay=0.3, workers=3):
             'score': match.get('score', ''),
             'status': '',
             'source': match.get('source', 'beidan'),
+            'beidan_no': match.get('beidan_no', ''),
+            'jingcai_no': match.get('jingcai_no', ''),
             'home_rank': 0,
             'away_rank': 0,
         }

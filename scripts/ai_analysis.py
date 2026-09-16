@@ -1646,6 +1646,8 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             'score': score_raw,
             'hit': hit,
             'source': m.get('source', 'beidan'),
+            'beidan_no': m.get('beidan_no', ''),
+            'jingcai_no': m.get('jingcai_no', ''),
             'odds_source': odds_source,
             'odds_win': round(ow, 2),
             'odds_draw': round(od, 2),

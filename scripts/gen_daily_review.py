@@ -75,7 +75,8 @@ def main():
     for i, line in enumerate(lines):
         if re.match(r'^[①②③]', line):
             sec = line[0]
-        mm = LINE_RE.match(line)
+        lc = re.sub(r'\s*#\S+\s*$', '', line)   # 去行尾编号标记(#北单74/周三017)后再解析
+        mm = LINE_RE.match(lc)
         if mm:
             tstr, league, home, away = mm.group(1), mm.group(2), mm.group(3), mm.group(4)
             side = mm.group(5) or ('主' if sec == '③' else '客')  # 无箭头行按段取隐含方向

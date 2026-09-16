@@ -71,6 +71,18 @@ t2s = _mk_t2s()  # 繁体 → 简体 (看板直接显示简体, 2026-08-21)
 def lg_tag(league):
     return f"{league}🟢" if league in HIGH_HIT_LEAGUES else league
 
+
+def no_tag(m):
+    """场次编号标记: ' #北单74/周三017' (无编号返回空串)"""
+    parts = []
+    b = str(m.get('beidan_no') or '').strip()
+    j = str(m.get('jingcai_no') or '').strip()
+    if b:
+        parts.append('北单' + b)
+    if j:
+        parts.append(j)
+    return (' #' + '/'.join(parts)) if parts else ''
+
 # ===== 2026-08-28 池内回测定案 (betting_ledger 152场双时点) =====
 # ① 平博升水+HKJC(掉水或不变) → 可投 25.0% (52场)
 # ② 有★(赔率<2.0 且 TS平<25%) → 加倍 63.6% (11场); ★整体54.2% vs 无★10.2%
@@ -191,7 +203,7 @@ def main():
         bv = m.get('best_value') or {}
         rows.append({
             'date': m.get('date', ''), 'mt': mt, 'league': t2s(m.get('event', '')),
-            'home': t2s(m.get('home_team', '')), 'away': t2s(m.get('away_team', '')),
+            'home': t2s(m.get('home_team', '')), 'away': t2s(m.get('away_team', '')), 'no': no_tag(m),
             'odds': cur[2] if cur else None,
             'dir': md, 'model_prob': mv, 'lgbm_prob': lv, 'ev': bv.get('ev', 0),
             # 参考赔率: 平博开/即, HKJC开/即 (均为 主/平/客 三元组)
@@ -220,7 +232,7 @@ def main():
             tag = ' 🚫避雷(' + ','.join(r['av_reasons']) + ')'
         elif r.get('avoid'):
             tag = ' ⚠️⚡避雷'
-        print(f"{t} [{lg_tag(r['league'])}] {r['home']} vs {r['away']} →{r['dir']}{tag}")
+        print(f"{t} [{lg_tag(r['league'])}] {r['home']} vs {r['away']} →{r['dir']}{tag}{r.get('no', '')}")
         print(f"   {r['dir']}概率: model {r['model_prob']*100:.0f}% | LGBM {r['lgbm_prob']*100:.0f}% | EV {r['ev']:.2f} | TS {r['ts_dir']}{r['ts_prob']*100:.0f}%")
         print(f"   平博 初/即: {r['pin_open']} → {r['pin_cur']} | HKJC 初/即: {r['hkjc_open']} → {r['hkjc_cur']}")
     if not rows:
@@ -257,7 +269,7 @@ def main():
         tsp = max(m.get('ts_win', 0), m.get('ts_draw', 0), m.get('ts_loss', 0))
         rows_b.append({
             'date': m.get('date', ''), 'mt': mt, 'league': t2s(m.get('event', '')),
-            'home': t2s(m.get('home_team', '')), 'away': t2s(m.get('away_team', '')),
+            'home': t2s(m.get('home_team', '')), 'away': t2s(m.get('away_team', '')), 'no': no_tag(m),
             'odds': cur[2], 'ts_draw': ts_draw, 'star': star,
             'ts_dir': tsd, 'ts_prob': tsp,  # TS最大概率方向及概率
             'model_prob': m.get('model_loss', 0),  # 客客客: 模型指客概率
@@ -279,7 +291,7 @@ def main():
         star = " ★" if r['star'] else ""
         # 2026-09-01 用户拍板: ★场次豁免过滤(★=方向高置信>⚡避雷), 带★不标⚠️⚡
         av = ' ⚠️⚡避雷' if (r.get('avoid') and not r['star']) else ''
-        print(f"{t} [{lg_tag(r['league'])}] {r['home']} vs {r['away']}{star}{av}")
+        print(f"{t} [{lg_tag(r['league'])}] {r['home']} vs {r['away']}{star}{av}{r.get('no', '')}")
         print(f"   HKJC客胜 {r['odds']} | 模型概率 {r['model_prob']*100:.0f}% | LGBM客概率 {r['lgbm_prob']*100:.0f}% | EV {r['ev']:.2f} | TS{r['ts_dir']} {r['ts_prob']*100:.0f}%")
         print(f"   平博 初/即: {r['pin_open']} → {r['pin_cur']} | HKJC 初/即: {r['hkjc_open']} → {r['hkjc_cur']}")
     if not rows_b:
@@ -310,7 +322,7 @@ def main():
         tsp = max(m.get('ts_win', 0), m.get('ts_draw', 0), m.get('ts_loss', 0))
         rows_d.append({
             'date': m.get('date', ''), 'mt': mt, 'league': t2s(m.get('event', '')),
-            'home': t2s(m.get('home_team', '')), 'away': t2s(m.get('away_team', '')),
+            'home': t2s(m.get('home_team', '')), 'away': t2s(m.get('away_team', '')), 'no': no_tag(m),
             'odds': cur[0], 'ts_draw': ts_draw, 'star': star,
             'ts_dir': tsd, 'ts_prob': tsp,  # TS最大概率方向及概率
             'model_prob': m.get('model_win', 0),  # 胜胜胜: 模型指主概率
@@ -332,7 +344,7 @@ def main():
         star = " ★" if r['star'] else ""
         # 2026-09-01 用户拍板: ★场次豁免过滤(★=方向高置信>⚡避雷), 带★不标⚠️⚡
         av = ' ⚠️⚡避雷' if (r.get('avoid') and not r['star']) else ''
-        print(f"{t} [{lg_tag(r['league'])}] {r['home']} vs {r['away']}{star}{av}")
+        print(f"{t} [{lg_tag(r['league'])}] {r['home']} vs {r['away']}{star}{av}{r.get('no', '')}")
         print(f"   HKJC主胜 {r['odds']} | 模型概率 {r['model_prob']*100:.0f}% | LGBM主概率 {r['lgbm_prob']*100:.0f}% | EV {r['ev']:.2f} | TS{r['ts_dir']} {r['ts_prob']*100:.0f}%")
         print(f"   平博 初/即: {r['pin_open']} → {r['pin_cur']} | HKJC 初/即: {r['hkjc_open']} → {r['hkjc_cur']}")
     if not rows_d:
@@ -350,7 +362,7 @@ def main():
         for r in av_total:
             t = r['mt'].strftime('%m-%d %H:%M') if r.get('mt') else r.get('date', '')
             why = ','.join(r.get('av_reasons') or ['⚡高权重'])
-            print(f"   {t} [{lg_tag(r.get('league',''))}] {r.get('home','')} vs {r.get('away','')} 🚫{why}")
+            print(f"   {t} [{lg_tag(r.get('league',''))}] {r.get('home','')} vs {r.get('away','')} 🚫{why}{r.get('no', '')}")
 
     if md_file:
         sys.stdout.write("```\n")
