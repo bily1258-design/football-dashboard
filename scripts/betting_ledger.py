@@ -358,6 +358,61 @@ def main():
         print('⚡高权重追踪 (避雷标记, 非投注, 不计入战绩):')
         print(f"  {len(wcomp):4d}场  命中率{ww / len(wcomp) * 100:5.1f}%  " f'盈亏{wp:+.2f}')
 
+    # ── 影子追踪 (2026-09-16 立): 按赔率档只观察, 不改任何选号规则 ──
+    if completed:
+        def _band(o):
+            return ('<2' if o < 2 else '2-4' if o < 4 else '4-8' if o < 8
+                    else '8-15' if o < 15 else '15-30' if o < 30 else '30+')
+
+        # 市场基准: 平博三向赔率按同档统计实际命中率 (不掺模型选向)
+        mkt = {}
+        for m in matches:
+            sc = m.get('score')
+            ow, odr, ol = m.get('odds_win'), m.get('odds_draw'), m.get('odds_loss')
+            if not sc or not ow or not odr or not ol:
+                continue
+            s2 = parse_score(sc)
+            if not s2:
+                continue
+            for o, oc in ((ow, 'home'), (odr, 'draw'), (ol, 'away')):
+                hit = score_to_outcome(s2, oc)
+                if hit is None:
+                    continue
+                b = mkt.setdefault(_band(o), {'n': 0, 'w': 0, 'so': 0.0})
+                b['n'] += 1
+                b['w'] += 1 if hit else 0
+                b['so'] += o
+
+        bands = {}
+        for e in completed:
+            o = e.get('odds') or 0
+            if o <= 0:
+                continue
+            b = bands.setdefault(_band(o), {'n': 0, 'w': 0, 'so': 0.0, 'p': 0.0})
+            b['n'] += 1
+            b['w'] += 1 if e['result'] == 'win' else 0
+            b['so'] += o
+            b['p'] += e.get('profit', 0)
+
+        if bands:
+            print()
+            print('🔬 影子追踪 (按赔率档观察, 不改选号规则):')
+            print('  档      注数  命中率   保本线   市场实际    ROI      盈亏')
+            for k in ('<2', '2-4', '4-8', '8-15', '15-30', '30+'):
+                b = bands.get(k)
+                if not b:
+                    continue
+                ao = b['so'] / b['n']
+                mk = mkt.get(k) or {'n': 0, 'w': 0}
+                mk_rate = 100 * mk['w'] / mk['n'] if mk['n'] else 0.0
+                roi = 100 * b['p'] / b['n']
+                wr = 100 * b['w'] / b['n']
+                flag = ''
+                if b['n'] >= 30 and mk['n'] >= 100 and (wr - mk_rate) <= -8:
+                    flag = '  ⚠️持续落后市场'
+                print(f"  {k:6s} {b['n']:4d}  {wr:5.1f}%  {100 / ao:7.1f}%  "
+                      f"{mk_rate:7.1f}%  {roi:+7.1f}%  {b['p']:+8.2f}{flag}")
+
     print()
     print(f'账本文件: docs/data/betting_ledger.json')
 
