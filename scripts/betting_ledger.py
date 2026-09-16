@@ -131,6 +131,16 @@ def collect_signals(matches, top_n=TOP_N_PER_DAY):
         # 结论: 期望正但实际打平, 非负资产但无超额收益; 保留看板组合筛选(主主/客客), 不投注
 
 
+        # ── 2026-09-16 修复: 同一场次 value/ruleA 同时命中会重复计入 ──
+        # (实测 255 场被记成 442 条; ruleA 是 value 的客胜子集, 同一注不重复下)
+        if sum(1 for s in match_signals if s['signal'] in ('value', 'ruleA')) > 1:
+            keep = next(s for s in match_signals if s['signal'] == 'value')
+            extra = [s['signal'] for s in match_signals if s['signal'] in ('value', 'ruleA')
+                     and s is not keep]
+            if extra:
+                keep['signal_extra'] = extra
+            match_signals = [s for s in match_signals if s['signal'] != 'ruleA']
+
         if match_signals:
             ev = max((s.get('ev', 0) or 0) for s in match_signals)
             raw.append((day, fid, ev, match_signals))
@@ -184,6 +194,47 @@ def main():
 
     # 读取现有账本 (按 fid+signal 去重)
     ledger = load_ledger()
+
+    # ── 2026-09-16 修复结算断链 ──
+    # 旧逻辑: (fid, signal) 已存在即 continue, 采集时 score 为空的记录永不再刷新比分,
+    # 末尾补结算又要求 score 非空 → 已完赛场次永远待结算(实测 980 条 / 965 条其实早有比分)。
+    # 现在每次运行都用 results.json 最新比分回填账本缺失的 score。
+    score_by_fid = {}
+    for m in matches:
+        sc = m.get('score')
+        if sc:
+            score_by_fid[str(m.get('fid', ''))] = sc
+    refreshed = 0
+    for e in ledger:
+        if not e.get('score'):
+            sc = score_by_fid.get(str(e.get('fid', '')))
+            if sc:
+                e['score'] = sc
+                refreshed += 1
+
+    # ── 2026-09-16 口径修正: 同场重复投注去重 (value/ruleA 曾各记一条) ──
+    dedup = {}
+    kept = []
+    dropped = 0
+    for e in ledger:
+        if e.get('signal') in ('value', 'ruleA'):
+            k = str(e.get('fid', ''))
+            if k in dedup:
+                prev = dedup[k]
+                if e.get('signal') not in (prev.get('signal_extra') or []):
+                    prev.setdefault('signal_extra', []).append(e['signal'])
+                # 重复条已结算而保留条未结算 → 迁移结算结果(避免丢战绩)
+                if not prev.get('result') and e.get('result'):
+                    for f in ('score', 'result', 'profit', 'settled_at', 'odds'):
+                        if e.get(f) not in (None, ''):
+                            prev[f] = e[f]
+                dropped += 1
+                continue
+            dedup[k] = e
+        kept.append(e)
+    if dropped:
+        ledger = kept
+
     seen = {(e['fid'], e['signal']) for e in ledger}
 
     new_count = 0
@@ -235,15 +286,19 @@ def main():
     save_ledger(ledger)
 
     # ── 统计 ──
-    completed = [e for e in ledger if e.get('result') in ('win', 'loss')]
+    # 2026-09-16 口径修正: ⚡高权重(weight) 是避雷追踪标记, 不是投注 → 单列, 不计入战绩
+    bets = [e for e in ledger if e.get('signal') != 'weight']
+    wtrack = [e for e in ledger if e.get('signal') == 'weight']
+    completed = [e for e in bets if e.get('result') in ('win', 'loss')]
     wins = [e for e in completed if e['result'] == 'win']
     losses = [e for e in completed if e['result'] == 'loss']
-    pending = [e for e in ledger if not e.get('result')]
+    pending = [e for e in bets if not e.get('result')]
 
     print('═' * 50)
     print('📒 统一投注簿')
     print('═' * 50)
-    print(f'总记录: {len(ledger)} (新增 {new_count}, 本次结算 {settled})')
+    print(f'总记录: {len(ledger)} (投注 {len(bets)} / ⚡追踪 {len(wtrack)}; 新增 {new_count}, '
+          f'本次补比分 {refreshed}, 去重 {dropped}, 结算 {settled})')
     print(f'已结算: {len(completed)}  待结算: {len(pending)}')
     if completed:
         total_profit = sum(e.get('profit', 0) for e in completed)
@@ -294,6 +349,14 @@ def main():
         for (s, d), st in sorted(by_sig_dir.items(), key=lambda x: -x[1]['n']):
             wr = st['w'] / st['n'] * 100 if st['n'] else 0
             print(f"  {s:8s} {d:8s} {st['n']:4d}场  胜率{wr:5.1f}%  利润{st['profit']:+8.2f}")
+
+    wcomp = [e for e in wtrack if e.get('result') in ('win', 'loss')]
+    if wcomp:
+        ww = sum(1 for e in wcomp if e['result'] == 'win')
+        wp = sum(e.get('profit', 0) for e in wcomp)
+        print()
+        print('⚡高权重追踪 (避雷标记, 非投注, 不计入战绩):')
+        print(f"  {len(wcomp):4d}场  命中率{ww / len(wcomp) * 100:5.1f}%  " f'盈亏{wp:+.2f}')
 
     print()
     print(f'账本文件: docs/data/betting_ledger.json')
