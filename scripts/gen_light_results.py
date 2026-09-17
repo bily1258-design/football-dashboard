@@ -31,8 +31,8 @@ KEEP_MATCH = {
     'total_goals_top3', 'ts_draw', 'ts_loss', 'ts_win', 'value_bets', 'warning',
 }
 
-# similar_matches 子项: script.js 只用 home_team/away_team/score/similarity
-KEEP_SIM = {'home_team', 'away_team', 'score', 'similarity'}
+# similar_matches 子项: script.js 只用 home_team/away_team/score/similarity/similarity_raw
+KEEP_SIM = {'home_team', 'away_team', 'score', 'similarity', 'similarity_raw'}
 
 # total_goals_top3 子项: script.js 只用 total_goals/prob
 KEEP_GOALS = {'total_goals', 'prob'}

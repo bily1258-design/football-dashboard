@@ -8,7 +8,9 @@
 改动要点:
 - 特征从5维 [lambda, gs, gc, lam_vs_league, tier] 升级为46维LGBM特征
 - 删减12维尾部（盘路胜率/大球率/角球因覆盖过低已移除）
-- 同联赛加成从×1.5降为×1.2（46维特征已含联赛信息）
+- 同联赛加成×1.8（2026-08-07 由 1.2 上调；跨联赛实力相近误配率高，须显著提权）
+- 排序用未封顶的 rank_score（同联赛样本加成分常>1，封顶会让大量样本并列1.000丢失分辨率），
+  展示值 similarity 仍封顶 1.0，另出 similarity_raw（未加成、未封顶）供前端显示真实相似度
 - 对手互换场次自动跳过（避免"卡拉巴赫vs维斯特里"匹配"维斯特里vs卡拉巴赫"100%）
 """
 
@@ -30,6 +32,11 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_DIR = os.path.dirname(SCRIPT_DIR)
 DB_PATH = os.path.join(PROJECT_DIR, 'data', 'football.db')
 RESULTS_PATH = os.path.join(PROJECT_DIR, 'docs', 'data', 'results.json')
+
+# ---------- 相似度参数 ----------
+POOL_SIZE = 2000            # 历史池上限（约覆盖最近25天；500 时仅约6天，2026-09-18 上调）
+SAME_LEAGUE_BONUS = 1.8     # 同联赛加成（2026-08-07 由 1.2 上调）
+SIM_DISPLAY_CAP = 1.0       # 展示值封顶；排序用未封顶 rank_score
 
 # ---------- league tier mapping ----------
 LEAGUE_TIER: dict = {
@@ -558,7 +565,7 @@ def _compute_total_goals_top3(h_lambda: float, a_lambda: float,
 
 
 def load_historical_matches(db_path: str = DB_PATH, limit: int = 3000) -> list:
-    """加载历史对局（默认取最近500场）"""
+    """加载历史对局（limit 由调用方以 POOL_SIZE 控制，当前 2000≈最近25天）"""
     if not os.path.exists(db_path):
         return []
     conn = sqlite3.connect(db_path)
@@ -680,12 +687,15 @@ def find_similar_matches(
                 combined = combined * 0.7 + roll_sim * 0.3
 
         # 同联赛加成（2026-08-07: 1.2→1.8，跨联赛实力相近误配率高，须显著提权）
+        # 注意：此处不再封顶 —— 封顶会把加成后≥1.0的同联赛样本全部压成并列，排序失去分辨率
         same_league = bool(hm['league'] and league and \
            (hm['league'] == league or league in hm['league'] or hm['league'] in league))
+        raw_score = combined  # 未加成、未封顶：跨联赛尺度可比的真实相似度（展示用）
         if same_league:
-            combined = min(combined * 1.8, 1.0)
+            combined = combined * SAME_LEAGUE_BONUS
 
         # 时间衰减：近期比赛权重高
+        time_weight = 1.0
         if hm['date']:
             try:
                 match_date = _parse_date(hm['date'])
@@ -693,9 +703,10 @@ def find_similar_matches(
                 if days_ago >= 0:
                     # 90天内无衰减，之后指数衰减
                     time_weight = 1.0 if days_ago < 90 else exp(-(days_ago - 90) / 365)
-                    combined *= time_weight
             except ValueError:
                 pass
+        combined *= time_weight
+        raw_score *= time_weight
 
         scored.append({
             'home_team': hm['home_team'],
@@ -706,14 +717,19 @@ def find_similar_matches(
             'actual': hm['actual'],
             'sim_h': round(sim_h, 3),
             'sim_a': round(sim_a, 3),
-            'similarity': round(combined, 3),
+            'rank_score': round(combined, 3),                          # 排序依据（未封顶）
+            'similarity': round(min(combined, SIM_DISPLAY_CAP), 3),    # 展示值（封顶）
+            'similarity_raw': round(min(raw_score, 1.0), 3),           # 未加成真实相似度
             'same_league': same_league,
             'total_goals_top3': _compute_total_goals_top3(
                 hm.get('home_lambda', 0), hm.get('away_lambda', 0)),
         })
 
-    scored.sort(key=lambda x: -x['similarity'])
-    # 按(主队,客队)去重，同两队只保留相似度最高的一场
+    # 用未封顶的 rank_score 排序：否则同联赛样本大量并列 1.000，前3的取舍实际由日期决定
+    # tie-break 显式化：分数相同则日期近的优先（两趟稳定排序实现）
+    scored.sort(key=lambda x: x['date'] or '', reverse=True)
+    scored.sort(key=lambda x: -x['rank_score'])
+    # 按(主队,客队)去重，同两队只保留 rank_score 最高的一场
     seen_pairs = set()
     deduped = []
     for s in scored:
@@ -731,7 +747,7 @@ def find_similar_matches(
 
 
 def run(results_path: str = RESULTS_PATH, db_path: str = DB_PATH,
-        force: bool = False, pool_size: int = 500,
+        force: bool = False, pool_size: int = POOL_SIZE,
         no_rolling: bool = False) -> int:
     if not os.path.exists(results_path):
         logger.error("results.json 不存在: %s", results_path)
@@ -984,8 +1000,11 @@ def run(results_path: str = RESULTS_PATH, db_path: str = DB_PATH,
             matched_count += 1
 
     # 写回
+    # 写出格式与 ai_analysis.py 一致（紧凑单行）：
+    # run() 是 results.json 的最后一个写入者，若用 indent=2 会把文件从 ~33MB 撑到 ~62MB
+    # （push 体积、Pages 加载、GH001 大文件风险都直接翻倍）
     with open(results_path, 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+        json.dump(data, f, ensure_ascii=False, separators=(',', ':'))
 
     if not_found_teams:
         logger.info("未匹配队伍 (%d): %s", len(not_found_teams),
@@ -1000,7 +1019,7 @@ if __name__ == '__main__':
         format='%(asctime)s | %(levelname)-8s | %(message)s',
     )
     force = '--force' in sys.argv
-    pool_size = 500
+    pool_size = POOL_SIZE
     no_rolling = '--no-rolling' in sys.argv
     for a in sys.argv:
         if a.startswith('--pool-size='):
