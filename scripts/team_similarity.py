@@ -23,7 +23,7 @@ import re
 from math import sqrt, exp
 from collections import defaultdict
 from functools import lru_cache
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 logger = logging.getLogger(__name__)
 
@@ -998,6 +998,12 @@ def run(results_path: str = RESULTS_PATH, db_path: str = DB_PATH,
         if similar:
             m['similar_matches'] = similar
             matched_count += 1
+
+    # 刷新生成时间戳（与 ai_analysis.py 的写法/口径一致）
+    # run() 是 results.json 的最后一个写入者；不回写会让 generated_at 停在上一轮
+    # ai_analysis 的时间——内容已是新的、元数据却是旧的（2026-09-18 巡检查出）。
+    data['generated_at'] = datetime.now(
+        timezone(timedelta(hours=8))).strftime('%Y-%m-%d %H:%M:%S')
 
     # 写回
     # 写出格式与 ai_analysis.py 一致（紧凑单行）：
