@@ -128,9 +128,30 @@ except Exception:                                     # opencc 缺失时退化�
     _CC = _CC2 = None
 
 
+# 译名别名: 500.com 用简体短名/亚运代称, 我方用繁体全名; 只收已逐条核对是同一场的对
+# 键/值都是 _norm 之后的形式 (s2t + 去空格标点 + 去 FC/队/隊/U23/女足)
+NAME_ALIAS = {
+    '阿爾傑什': '阿格斯',            # FC Argeș (罗甲)
+    '法爾肯貝裏': '法爾肯堡',        # Falkenberg (瑞典甲)
+    '厄斯特松德': '奧斯特桑斯',      # Östersund
+    '卡普芬貝格': '卡芬堡',          # Kapfenberg (奥乙)
+    '阿姆施泰滕': '阿姆斯特頓',      # Amstetten
+    '佈雷流浪者': '佈雷',            # Bray Wanderers (爱甲)
+    '條約聯': '特瑞特聯',            # Treaty United
+    '葡萄牙體育': '里斯本',          # Sporting CP (葡超)
+    '布瑞恩斯': '法蘭波壘斯',        # Francs Borains (比乙)
+    '沙特亞運男足': '沙特阿拉伯', '科威特亞運男足': '科威特',
+    '卡塔爾亞運男足': '卡塔爾', '烏茲別克亞運男足': '烏茲別克斯坦',
+    '布魯日NXT': '布魯日', '布魯日B': '布魯日',
+    '根特預備': '根特', '根特B': '根特',
+    '安德萊赫特預備': '安德萊赫特', '安德萊赫特B': '安德萊赫特',
+}
+
+
 def _norm(s):
     s = _CC.convert(s or '') if _CC else (s or '')
-    return re.sub(r'[\s\(\)（）·.\-]|FC|fc|队|隊|U23|女足', '', s)
+    s = re.sub(r'[\s\(\)（）·.\-]|FC|fc|队|隊|U23|女足', '', s)
+    return NAME_ALIAS.get(s, s)
 
 
 def _sim(a, b):
