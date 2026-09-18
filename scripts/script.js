@@ -9,6 +9,7 @@ function fmtTime(t){if(!t)return'';var m=t.match(/^(?:\d{4}-)?(\d{2})-(\d{2})\s+
 function dirClass(d){return d==='home'?'dir-home':d==='draw'?'dir-draw':d==='away'?'dir-away':'dir-wait'}
 function dirText(d){return d==='home'?'主胜':d==='draw'?'平局':d==='away'?'客胜':'观望'}
 function dirZh(d){return d==='home'?'主':d==='draw'?'平':d==='away'?'客':'?'}
+function noText(m){if(!m.beidan_no&&!m.jingcai_no)return '';return (m.beidan_no?'北单'+m.beidan_no:'')+(m.jingcai_no?(m.beidan_no?'<br>':'')+m.jingcai_no:'')}
 function ahDir(m){
   if(m.ah_home_covers_prob==null)return'';
   var d=m.ah_home_covers_prob>m.ah_away_covers_prob
@@ -277,6 +278,7 @@ function renderTable(matches){
     tr.innerHTML =
       '<td>'+fmtTime(m.match_time)+'</td>'+
       '<td><span class="tag tag-'+m.source+'">'+(m.event||m.source)+'</span></td>'+
+      '<td class="no-cell">'+noText(m)+'</td>'+
       '<td class="team-name">'+m.home_team+'</td>'+
       '<td class="score-cell"><span>'+(m.score||(m.postponed?'推迟':'-'))+'</span></td>'+
       '<td class="team-name">'+m.away_team+'</td>'+
@@ -403,11 +405,19 @@ function renderOdds(c, p, m){
       '<div class="oc-line"><span class="oc-label">即</span><span class="oc-cur">'+cur[0].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+cur[1].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+cur[2].toFixed(2)+'</span></div>'+
       '<div class="oc-line oc-div"><span class="oc-label">分</span>'+divStr+'</div>';
   }
-  // 亚盘
-  if(m && m.ah_home != null){
-    var ahOpen = '<span class="oc-label">亚初</span><span class="oc-open">'+m.ah_open_home.toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-open">'+(m.ah_open_handicap_text||m.ah_open_handicap.toFixed(2))+'</span><span class="oc-sep">/</span><span class="oc-open">'+m.ah_open_away.toFixed(2)+'</span>';
-    var ahCur = '<span class="oc-label">亚即</span><span class="oc-cur">'+m.ah_home.toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+(m.ah_handicap_text||m.ah_handicap.toFixed(2))+'</span><span class="oc-sep">/</span><span class="oc-cur">'+m.ah_away.toFixed(2)+'</span>';
-    html += '<div class="oc-sep-line"></div><div class="oc-line">'+ahOpen+'</div><div class="oc-line">'+ahCur+'</div>';
+  // 亚盘 (真盘 ah_* 优先; 无真盘时用 500.com 北单: 初=让球胜平负, 即=胜负过关, 标「北」)
+  if(m && (m.ah_home != null || m.ahbd_cur_home != null || m.ahbd_open_home != null)){
+    var bd = (m.ah_home == null) ? '北' : '';
+    var o = (m.ah_open_home != null)
+      ? [m.ah_open_home, (m.ah_open_handicap_text || (m.ah_open_handicap != null ? m.ah_open_handicap.toFixed(2) : '')), m.ah_open_away]
+      : (m.ahbd_open_home != null ? [m.ahbd_open_home, (m.ahbd_open_handicap_text || ''), m.ahbd_open_away] : null);
+    var cu = (m.ah_home != null)
+      ? [m.ah_home, (m.ah_handicap_text || (m.ah_handicap != null ? m.ah_handicap.toFixed(2) : '')), m.ah_away]
+      : (m.ahbd_cur_home != null ? [m.ahbd_cur_home, (m.ahbd_cur_handicap_text || ''), m.ahbd_cur_away] : null);
+    var L = '';
+    if(o) L += '<div class="oc-line"><span class="oc-label">亚初'+bd+'</span><span class="oc-open">'+o[0].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-open">'+o[1]+'</span><span class="oc-sep">/</span><span class="oc-open">'+o[2].toFixed(2)+'</span></div>';
+    if(cu) L += '<div class="oc-line"><span class="oc-label">亚即'+bd+'</span><span class="oc-cur">'+cu[0].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+cu[1]+'</span><span class="oc-sep">/</span><span class="oc-cur">'+cu[2].toFixed(2)+'</span></div>';
+    if(L) html += '<div class="oc-sep-line"></div>' + L;
   }
   // 亚盘预测 — 已移至推荐列
   return '<div class="odds-combined">'+html+'</div>';

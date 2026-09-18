@@ -2029,6 +2029,7 @@ def generate_frontend(results: List[Dict]):
         <tr>
           <th data-sort="time">时间</th>
           <th data-sort="league">赛事</th>
+          <th>编号</th>
           <th>主队</th>
           <th>比分</th>
           <th>客队</th>
@@ -2194,7 +2195,8 @@ tr:hover{background:#f0f6ff}
 .sim-goals{font-size:11px;color:#e67e22;margin-top:3px;padding-top:2px;border-top:1px dashed #e0e4e8}
 .weight-badge{display:inline-block;font-size:10px;color:#888;margin-left:3px;cursor:help;vertical-align:middle}
 .lp-row{opacity:0.55}
-.lp-row:hover{opacity:0.85}'''
+.lp-row:hover{opacity:0.85}
+.no-cell{font-size:12px;color:#888;white-space:nowrap;text-align:center}'''
     with open(os.path.join(DOCS_DIR, 'style.css'), 'w', encoding='utf-8') as f:
         f.write(css)
 
