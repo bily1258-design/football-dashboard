@@ -1250,6 +1250,11 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
                         'company_id': _pm.get('ah_company_id'),
                     }
                 _ac = {k: v for k, v in _pm.items() if k.startswith('ahbd_') and v is not None}
+                _bp = str(_pm.get('beidan_period') or '').strip()
+                if _bp:
+                    # 北单期号: 由 scripts/fetch_500_bjdc.py 命中 500 行时核定(期号+编号+队名三方一致),
+                    # 全量重写时必须原样接班, 否则每次 ai_analysis 都会被抹掉。
+                    _ac['beidan_period'] = _bp
                 if _ac:
                     _ahbd_carry[_pfid] = _ac
         logger.info(f"亚盘历史值复用: {len(ah_data_map)} 场, 北单兜底值复用: {len(_ahbd_carry)} 场")

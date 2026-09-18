@@ -27,7 +27,7 @@ KEEP_MATCH = {
     'ahbd_cur_away', 'ahbd_cur_handicap', 'ahbd_cur_handicap_text', 'ahbd_cur_home',
     'ahbd_open_away', 'ahbd_open_handicap', 'ahbd_open_handicap_text', 'ahbd_open_home',
     'ahbd_open_push',
-    'away_team', 'beidan_no', 'best_value', 'comparison', 'date', 'event', 'fid', 'hit',
+    'away_team', 'beidan_no', 'beidan_period', 'best_value', 'comparison', 'date', 'event', 'fid', 'hit',
     'home_team', 'importance_weight', 'jingcai_no', 'lgbm_confidence', 'lgbm_draw',
     'lgbm_loss', 'lgbm_prediction', 'lgbm_win', 'low_priority', 'match_time',
     'model_draw', 'model_loss', 'model_prediction', 'model_win', 'odds_win',

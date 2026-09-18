@@ -41,6 +41,47 @@ def _period(t):
     return m.group(1) if m else ''
 
 
+# 北单期号: 500 每行的「场次编号」是【期号内】唯一的 —— 编号相同 + 期号相同 = 同一场。
+# 但编号会跨期重复(实测 编77: 26096=忠南牙山/天安城, 26095=瓦埃勒/布隆德比),
+# 且一期横跨多个比赛日, 所以「期号」不能按日期推断, 只能由命中行(期号+编号+队名三方一致)带出。
+PERIOD_DEPTH = 2      # 抓 当前期 + 前一期 (我方清单常含上一期刚完赛的场次)
+
+
+def fetch_plays(expect=''):
+    """(让球胜平负行, 胜负过关行) —— 指定期号(空 = 当期)"""
+    return fetch_rangqiu(expect), fetch_sf(expect)
+
+
+def fetch_pool(depth=PERIOD_DEPTH):
+    """多期池: [(期号, {fid: 让行}, {fid: 过行}), ...], 当期在前; 前一期拉不到就停"""
+    rq0, sf0 = fetch_plays()
+    cur = next((str(r.get('period')) for r in list(rq0.values()) + list(sf0.values())
+                if r.get('period')), '')
+    out = [(cur, rq0, sf0)]
+    p = cur
+    for _ in range(max(0, depth - 1)):
+        if not p.isdigit():
+            break
+        p = str(int(p) - 1)
+        try:
+            rq, sf = fetch_plays(p)
+        except Exception:
+            break
+        if not rq and not sf:
+            break
+        out.append((p, rq, sf))
+    return out
+
+
+def merge_pool(pool):
+    """多期池 -> ({fid: 让行}, {fid: 过行}); 每行自带 period"""
+    rq, sf = {}, {}
+    for _, a, b in pool:
+        rq.update(a)
+        sf.update(b)
+    return rq, sf
+
+
 def fetch_rangqiu(expect=''):
     """让球胜平负 -> {fid: {...}}   num = 期号内场次编号(chnum)"""
     t = get('https://trade.500.com/bjdc/' + (f'?expect={expect}' if expect else ''))
@@ -187,6 +228,7 @@ def _shift(d, delta):
 JOIN_MIN, JOIN_DAYS = 1.3, 1        # 双队名相似度之和下限 / 日期容差(天)
 NUM_SCORE = 2.0                     # 场次编号命中(精确配对) 分数
 NUM_NAME_MIN = 0.6                  # 编号命中仍要求的最低队名相似度和
+NUM_DAYS = 2                        # 编号命中允许的日期差(天): 我方日 vs 500 销售日
                                     # (只认编号会串场: 同一编号在相邻期号里是另一场,
                                     #  例 编号47 本期=史泰比亞/切塞納, 上一期=AB格萊薩克瑟/桑德捷斯基)
 
@@ -195,6 +237,11 @@ def _beidan_no_num(m):
     """我方 beidan_no -> 期号内场次编号 (容忍 '17' / '#北单17' / '北单17' 等写法)"""
     mm = re.search(r'(\d+)', str(m.get('beidan_no') or ''))
     return (mm.group(1).lstrip('0') or '0') if mm else ''
+
+
+def _period_of(m):
+    """我方 match 已核定的北单期号(由上次命中行带出); 从未核定 = ''"""
+    return str(m.get('beidan_period') or '').strip()
 
 
 def _day_diff(d1, d2):
@@ -209,11 +256,13 @@ def _day_diff(d1, d2):
 def join_rows(rows, matches):
     """500.com 行 -> 我方 match; 一对一择优
 
-    ① 场次编号优先: 500 页面的「场次编号」(chnum/ordernum) 与我方 beidan_no 是同一套
-       北单期号内编号(实测 45/45 全对), 能救译名完全对不上的场次
-       (耶尔文佩↔查普斯 / FAC维也纳↔弗洛裏茨多夫 / 宫崎特格瓦嘉洛↔宮崎棒牛鳥),
-       但要求日期也 ±1 天内, 避免不同期号撞号。
-    ② 编号对不上/缺失时, 退回 (双队名相似度 ≥ JOIN_MIN, 日期 ±1 天) 模糊匹配。
+    ① 期号 + 场次编号精确配对(主键): 一期内编号唯一 —— 编号相同 + 期号相同 = 同一场。
+       行自带期号(26096/26095); 我方期号只认已核定的 beidan_period(上次命中行带出),
+       绝不按日期推断 —— 一期横跨多个比赛日, 编号又跨期重复
+       (实测 编77: 26096=忠南牙山/天安城, 26095=瓦埃勒/布隆德比; 我方 09-18 编77 是后者),
+       按日期推期号会把 09-18 的欧洲场配到 09-19 的日韩场上。
+       三重校验: 期号(两侧都有则须相同) + 日期 ≤ NUM_DAYS 天 + 队名相似度和 ≥ NUM_NAME_MIN。
+    ② 编号对不上/缺失时, 退回 (双队名相似度 ≥ JOIN_MIN, 日期 ±JOIN_DAYS 天) 模糊匹配。
     """
     by_day, by_num = {}, {}
     for m in matches:
@@ -225,15 +274,19 @@ def join_rows(rows, matches):
     for fid, r in rows.items():
         d = (r.get('dt') or r.get('date') or '')[:10]
         n = str(r.get('num') or '').strip().lstrip('0')
+        rp = str(r.get('period') or '').strip()
         ns_pred = lambda m: (_sim(r.get('h') or r.get('home'), m.get('home_team')) +
                              _sim(r.get('a') or r.get('away'), m.get('away_team')))
         if n:
             for m in by_num.get(n, []):
                 dd = _day_diff(d, m.get('date'))
-                if dd is None or abs(dd) > JOIN_DAYS:
-                    continue
                 ns = ns_pred(m)
-                if ns < NUM_NAME_MIN:            # 编号撞车防线: 队名也得像
+                mp = _period_of(m)
+                if mp and rp and mp != rp:              # 期号不符 = 别期的同号场(编77 双胞胎)
+                    continue
+                if dd is None or abs(dd) > NUM_DAYS:    # 期号+编号之外还要日期对得上
+                    continue
+                if ns < NUM_NAME_MIN:                   # 再加队名门槛(挡跨期串场/译名对不上)
                     continue
                 sc = NUM_SCORE + min(ns, 2.0) * 0.01 - abs(dd) * 0.002
                 key = (fid, id(m))
@@ -258,14 +311,21 @@ def join_rows(rows, matches):
 
 def write_into(path, dry=False):
     """把两玩法的让球/水位写进 results.json 的 ahbd_* 字段 (不碰 ah_*, 不参与规则)
-    A 方案: ahbd_open_* <- 让球胜平负(bjdc) ; ahbd_cur_* <- 胜负过关(bjdcsf)"""
+    A 方案: ahbd_open_* <- 让球胜平负(bjdc) ; ahbd_cur_* <- 胜负过关(bjdcsf)
+    另落 beidan_period(北单期号) —— 由命中的 500 行带出(期号+编号+队名三方一致), 不按日期推断。"""
     data = json.load(open(path, encoding='utf-8'))
     ms = data.get('matches') if isinstance(data, dict) else data
-    rq, sf = fetch_rangqiu(), fetch_sf()
+    pool = fetch_pool()
+    rq, sf = merge_pool(pool)
     jr = {id(m): r for _, _, m, r in join_rows(rq, ms)}
     js = {id(m): r for _, _, m, r in join_rows(sf, ms)}
-    n_open = n_cur = 0
+    n_open = n_cur = n_per = 0
     for m in ms:
+        r = jr.get(id(m)) or js.get(id(m)) or {}
+        p = str(r.get('period') or '').strip()
+        if p:
+            m['beidan_period'] = p
+            n_per += 1
         f = build_fields(jr.get(id(m)), js.get(id(m)))
         for k in AHD_KEYS:
             m.pop(k, None)
@@ -275,8 +335,10 @@ def write_into(path, dry=False):
             n_cur += 1 if 'ahbd_cur_home' in f else 0
     if not dry:
         json.dump(data, open(path, 'w', encoding='utf-8'), ensure_ascii=False)
+    per = sorted({str(r.get('period')) for r in list(rq.values()) + list(sf.values()) if r.get('period')})
     print(f'500.com: 让球胜平负 {len(rq)} 行 / 胜负过关 {len(sf)} 行 | 配对到我方 {len(jr)} / {len(js)}')
     print(f'{"[dry] " if dry else ""}写入: 初盘行(让球胜平负) {n_open} 场 | 即时盘行(胜负过关) {n_cur} 场')
+    print(f'期号: {"、".join(per) or "—"} | 带期号场次 {n_per}')
     n = 0
     for m in ms:
         if m.get('ahbd_cur_home') is not None or m.get('ahbd_open_home') is not None:
@@ -296,7 +358,7 @@ def main():
             p = sys.argv[sys.argv.index('--results') + 1]
         write_into(p, dry='--write' not in sys.argv)
         return
-    rq, sf = fetch_rangqiu(), fetch_sf()
+    rq, sf = merge_pool(fetch_pool())
     print(f'让球胜平负: {len(rq)} 场 | 胜负过关: {len(sf)} 场 | 共同 fid: {len(set(rq) & set(sf))}')
     both = sorted(set(rq) & set(sf))
     for f in both[:8]:

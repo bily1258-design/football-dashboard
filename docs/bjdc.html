@@ -43,7 +43,7 @@
 <div class="wrap">
   <header>
     <h1>📋 500北单全池</h1>
-    <span class="meta">让球胜平负(<b>让</b>) / 胜负过关(<b>过</b>) · trade.500.com 当日在售池 · 期号 <b id="period">—</b></span>
+    <span class="meta">让球胜平负(<b>让</b>) / 胜负过关(<b>过</b>) · trade.500.com 在售池(当期 + 前一期) · 期号 <b id="period">—</b></span>
     <span class="meta" id="stat">加载中…</span>
     <span class="meta"><a href="./index.html">← 回主看板</a></span>
   </header>
@@ -61,7 +61,7 @@
   <div style="overflow:auto;max-height:78vh">
   <table>
     <thead><tr>
-      <th>日期</th><th class="hide-sm num">场次</th><th class="hide-sm">时间</th><th class="hide-sm">联赛</th>
+      <th>日期</th><th class="hide-sm num">期号·场次</th><th class="hide-sm">时间</th><th class="hide-sm">联赛</th>
       <th>主队</th><th>客队</th>
       <th>让 盘口/SP</th>
       <th>过 盘口/SP</th>
@@ -74,7 +74,9 @@
   <footer>
     赔率按 <code>盘口 SP/SP[/SP]</code> 显示（SP = 含本金赔率，水位 = SP − 1；<span class="w-none">—</span> = 未开售/占位，实测有 1.03 / 31.00）；鼠标悬停格内看盘口中文。<br>
     「让」「过」两行与主看板「赔率欧亚列」的亚初/亚即同源；本页是<b>全池</b>，含大量我方清单没抓的场次（英冠、巴甲、西乙、日韩下午场等），属源池差异，非匹配错误。<br>
-    配对以「<b>期号 + 场次编号</b>」为准（500 的场次编号与我方 <code>beidan_no</code> 同一套）；编号撞车时（相邻期号同号是另一场）要求日期 ±1 天且队名相似度和 ≥0.6 才认，编号对不上再退队名模糊（opencc 繁简 + 相似度和 ≥1.3）。译名差异在 <code>scripts/fetch_500_bjdc.py</code> 的 <code>NAME_ALIAS</code> 里补。
+    配对主键是「<b>期号 + 场次编号</b>」：500 的场次编号是<b>期号内</b>唯一、与我方 <code>beidan_no</code> 同一套，但编号会<b>跨期重复</b>（实测 编77：26096 = 忠南牙山/天安城，26095 = 瓦埃勒/布隆德比；我方 09-18 编77 是后者），一期又横跨多个比赛日 —— 所以期号<b>不能按日期推</b>，只由命中行带出。<br>
+    三重校验：期号（两侧都有则须相同）+ 日期差 ≤2 天 + 队名相似度和 ≥0.6；编号对不上或缺编号再退队名模糊（opencc 繁简 + 相似度和 ≥1.3、日期 ±1 天）。译名差异在 <code>scripts/fetch_500_bjdc.py</code> 的 <code>NAME_ALIAS</code> 里补。<br>
+    为让上一期刚完赛的场次也拿到让/过，抓取端会同时拉<b>当期 + 前一期</b>两个池；「期号·场次」列里 <code>26095#77</code> 这种带期号前缀的就是前一期行。
   </footer>
 </div>
 
@@ -119,7 +121,8 @@ function render(){
     var r=rows[i], o=r.open, c=r.cur, t='';
     t+='<tr>';
     t+='<td>'+r.date.slice(5)+'</td>';
-    t+='<td class="hide-sm num muted">'+txt(r.num)+'</td>';
+    var pn=String(r.period||''), pfx=(pn&&DATA.period&&pn!==DATA.period)?(pn+'#'):'';
+    t+='<td class="hide-sm num muted">'+pfx+txt(r.num)+'</td>';
     t+='<td class="hide-sm muted">'+txt(r.time)+'</td>';
     t+='<td class="hide-sm lg">'+txt(r.league)+'</td>';
     t+='<td class="hm">'+txt(r.home)+'</td>';
@@ -130,10 +133,10 @@ function render(){
     else { t+='<td class="muted">—</td>'; }
     if(r.hit){
       var hh=r.hit, extra=(hh.day_diff?(' 差'+hh.day_diff+'天'):'');
-      var bad=(hh.home!==r.home||hh.away!==r.away);
+      var bad=(hh.sim<1.3);
       t+='<td><span class="tag y">✓ '+hh.date.slice(5)+extra+'</span>'
-        +(hh.no?' <span class="num">#'+hh.no+'</span>':'')
-        +(bad?' <span class="muted">'+hh.home+' vs '+hh.away+'</span>':'')
+        +(hh.period?' <span class="num muted">期'+hh.period+'</span>':'')
+        +(bad?' <span class="muted">'+hh.home+' vs '+hh.away+' 相似'+hh.sim+'</span>':'')
         +((!hh.in_open&&!hh.in_cur)?' <span class="tag n">无水位</span>':'')+'</td>';
     } else { t+='<td><span class="tag n">未收录</span></td>'; }
     t+='</tr>';

@@ -41,6 +41,7 @@ def build_rows(rr, rs, matches):
     for rows, key in ((rr, 'open'), (rs, 'cur')):
         for sc, fid, m, r in f5.join_rows(rows, matches):
             h = hits.setdefault(fid, {'m': m, 'in_open': False, 'in_cur': False, 'sim': 0.0})
+            h['period'] = h.get('period') or (r.get('period') or '')
             h['in_' + key] = (m.get('ahbd_open_home') if key == 'open'
                               else m.get('ahbd_cur_home')) is not None
             h['sim'] = max(h['sim'], round(sc, 2))
@@ -53,6 +54,7 @@ def build_rows(rr, rs, matches):
         row = {
             'fid': fid, 'date': d, 'time': (r or {}).get('time') or (s or {}).get('time') or '',
             'num': (r or {}).get('num') or (s or {}).get('num') or '',
+            'period': (r or {}).get('period') or (s or {}).get('period') or '',
             'league': (r or {}).get('league') or (s or {}).get('league') or '',
             'home': base.get('home', ''),
             'away': base.get('away', ''), 'in_open': bool(r), 'in_cur': bool(s), 'hit': None,
@@ -74,7 +76,7 @@ def build_rows(rr, rs, matches):
                 dd = (b - a).days
             row['hit'] = {'date': (m.get('date') or '')[:10], 'home': m.get('home_team'),
                           'away': m.get('away_team'), 'league': m.get('league'),
-                          'no': m.get('beidan_no'), 'fid': m.get('fid'),
+                          'no': m.get('beidan_no'), 'fid': m.get('fid'), 'period': h.get('period'),
                           'day_diff': dd, 'sim': h['sim'],
                           'in_open': h['in_open'], 'in_cur': h['in_cur']}
             row['league'] = row['league'] or m.get('league') or ''
@@ -85,15 +87,16 @@ def build_rows(rr, rs, matches):
 
 def main():
     matches = json.load(open(RESULTS, encoding='utf-8'))['matches']
-    rr, rs = f5.fetch_rangqiu(), f5.fetch_sf()
+    rr, rs = f5.merge_pool(f5.fetch_pool())
     rows = build_rows(rr, rs, matches)
     hit = [r for r in rows if r['hit']]
     nz = list(rr.values()) + list(rs.values())
-    period = next((x.get('period') for x in nz if x.get('period')), '')
+    periods = sorted({str(x.get('period')) for x in nz if x.get('period')})
     data = {
         'generated_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
         'source': 'trade.500.com bjdc(让球胜平负) + bjdcsf(胜负过关)',
-        'period': period,                      # 北单期号 (如 26096); 场次编号在本期内唯一
+        'period': periods[-1] if periods else '',   # 当期期号(如 26096)
+        'periods': periods,                        # 池内涉及的各期(当期+前一期)
         'counts': {'total': len(rows), 'rangqiu': len(rr), 'shengfu': len(rs),
                    'hit': len(hit),
                    'hit_open': sum(1 for r in rows if r.get('hit', {}) and r['hit']['in_open']),
