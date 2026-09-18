@@ -405,18 +405,23 @@ function renderOdds(c, p, m){
       '<div class="oc-line"><span class="oc-label">即</span><span class="oc-cur">'+cur[0].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+cur[1].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+cur[2].toFixed(2)+'</span></div>'+
       '<div class="oc-line oc-div"><span class="oc-label">分</span>'+divStr+'</div>';
   }
-  // 亚盘 (真盘 ah_* 优先; 无真盘时用 500.com 北单: 初=让球胜平负, 即=胜负过关, 标「北」)
+  // 亚盘: 500.com 北单数据 —— 让=让球胜平负(bjdc), 过=胜负过关(bjdcsf)
+  // (真盘 ah_* 仅在该场完全没有北单数据时兜底显示, 标「亚初/亚即」)
   if(m && (m.ah_home != null || m.ahbd_cur_home != null || m.ahbd_open_home != null)){
-    var bd = (m.ah_home == null) ? '北' : '';
-    var o = (m.ah_open_home != null)
-      ? [m.ah_open_home, (m.ah_open_handicap_text || (m.ah_open_handicap != null ? m.ah_open_handicap.toFixed(2) : '')), m.ah_open_away]
-      : (m.ahbd_open_home != null ? [m.ahbd_open_home, (m.ahbd_open_handicap_text || ''), m.ahbd_open_away] : null);
-    var cu = (m.ah_home != null)
-      ? [m.ah_home, (m.ah_handicap_text || (m.ah_handicap != null ? m.ah_handicap.toFixed(2) : '')), m.ah_away]
-      : (m.ahbd_cur_home != null ? [m.ahbd_cur_home, (m.ahbd_cur_handicap_text || ''), m.ahbd_cur_away] : null);
     var L = '';
-    if(o) L += '<div class="oc-line"><span class="oc-label">亚初'+bd+'</span><span class="oc-open">'+o[0].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-open">'+o[1]+'</span><span class="oc-sep">/</span><span class="oc-open">'+o[2].toFixed(2)+'</span></div>';
-    if(cu) L += '<div class="oc-line"><span class="oc-label">亚即'+bd+'</span><span class="oc-cur">'+cu[0].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+cu[1]+'</span><span class="oc-sep">/</span><span class="oc-cur">'+cu[2].toFixed(2)+'</span></div>';
+    if(m.ahbd_open_home != null){
+      L += '<div class="oc-line"><span class="oc-label" title="北单 让球胜平负">让</span><span class="oc-open">'+m.ahbd_open_home.toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-open">'+(m.ahbd_open_handicap_text||'')+'</span><span class="oc-sep">/</span><span class="oc-open">'+m.ahbd_open_away.toFixed(2)+'</span></div>';
+    }
+    if(m.ahbd_cur_home != null){
+      L += '<div class="oc-line"><span class="oc-label" title="北单 胜负过关">过</span><span class="oc-cur">'+m.ahbd_cur_home.toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+(m.ahbd_cur_handicap_text||'')+'</span><span class="oc-sep">/</span><span class="oc-cur">'+m.ahbd_cur_away.toFixed(2)+'</span></div>';
+    }
+    if(!L && m.ah_home != null){
+      var ro = (m.ah_open_home != null)
+        ? [m.ah_open_home, (m.ah_open_handicap_text || (m.ah_open_handicap != null ? m.ah_open_handicap.toFixed(2) : '')), m.ah_open_away] : null;
+      var rc = [m.ah_home, (m.ah_handicap_text || (m.ah_handicap != null ? m.ah_handicap.toFixed(2) : '')), m.ah_away];
+      if(ro) L += '<div class="oc-line"><span class="oc-label">亚初</span><span class="oc-open">'+ro[0].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-open">'+ro[1]+'</span><span class="oc-sep">/</span><span class="oc-open">'+ro[2].toFixed(2)+'</span></div>';
+      if(rc[0] != null) L += '<div class="oc-line"><span class="oc-label">亚即</span><span class="oc-cur">'+rc[0].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+rc[1]+'</span><span class="oc-sep">/</span><span class="oc-cur">'+rc[2].toFixed(2)+'</span></div>';
+    }
     if(L) html += '<div class="oc-sep-line"></div>' + L;
   }
   // 亚盘预测 — 已移至推荐列
