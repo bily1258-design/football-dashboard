@@ -35,9 +35,16 @@ def _js_val(blob, key):
     return m.group(1) if m else ''
 
 
-def fetch_rangqiu():
-    """让球胜平负 -> {fid: {...}}"""
-    t = get('https://trade.500.com/bjdc/')
+def _period(t):
+    """页面 responseJson 里的期号 (如 26096 = 当期)"""
+    m = re.search(r'period\s*:\s*"(\d+)"', t)
+    return m.group(1) if m else ''
+
+
+def fetch_rangqiu(expect=''):
+    """让球胜平负 -> {fid: {...}}   num = 期号内场次编号(chnum)"""
+    t = get('https://trade.500.com/bjdc/' + (f'?expect={expect}' if expect else ''))
+    per = _period(t)
     out = {}
     for tr in re.findall(r'<tr class="vs_lines".*?</tr>', t, re.S):
         fm = re.search(r'fid="(\d+)"', tr)
@@ -47,17 +54,18 @@ def fetch_rangqiu():
         v = vm.group(1)
         hcp = _js_val(v, 'rangqiuNum')
         sps = re.findall(r'class="sp_w35 eng pjoz">([\d.]+)<', tr)
+        cm = re.search(r'class="chnum">(\d+)<', tr)
         out[fm.group(1)] = {
             'league': _js_val(v, 'leagueName'), 'home': _js_val(v, 'homeTeam'),
             'away': _js_val(v, 'guestTeam'), 'date': _js_val(v, 'scheduleDate'),
             'time': _js_val(v, 'endTime').split(' ')[-1], 'hcp': hcp, 'sp': sps[:3],
-            'num': _js_val(v, 'index')}
+            'num': cm.group(1) if cm else _js_val(v, 'index'), 'period': per}
     return out
 
 
-def fetch_sf():
-    """胜负过关 -> {fid: {...}}"""
-    t = get('https://trade.500.com/bjdcsf/')
+def fetch_sf(expect=''):
+    """胜负过关 -> {fid: {...}}   num = 期号内场次编号(ordernum), period = 期号(pdate)"""
+    t = get('https://trade.500.com/bjdcsf/' + (f'?expect={expect}' if expect else ''))
     out = {}
     for tr in re.findall(r'<tr[^>]*fid="\d+".*?</tr>', t, re.S):
         a = dict(re.findall(r'(\w+)="([^"]*)"', tr.split('>')[0]))
@@ -67,6 +75,7 @@ def fetch_sf():
         out[a['fid']] = {'home': a.get('homesxname', ''), 'away': a.get('awaysxname', ''),
                          'league': a.get('lg', '').replace('足球-', ''),
                          'time': a.get('pendtime', '').split(' ')[-1], 'num': a.get('ordernum', ''),
+                         'period': a.get('pdate', ''),
                          'date': a.get('gdate', ''), 'rq': a.get('rq', ''), 'sp': sps}
     return out
 
@@ -176,32 +185,74 @@ def _shift(d, delta):
 
 
 JOIN_MIN, JOIN_DAYS = 1.3, 1        # 双队名相似度之和下限 / 日期容差(天)
+NUM_SCORE = 2.0                     # 场次编号命中(精确配对) 分数
+NUM_NAME_MIN = 0.6                  # 编号命中仍要求的最低队名相似度和
+                                    # (只认编号会串场: 同一编号在相邻期号里是另一场,
+                                    #  例 编号47 本期=史泰比亞/切塞納, 上一期=AB格萊薩克瑟/桑德捷斯基)
+
+
+def _beidan_no_num(m):
+    """我方 beidan_no -> 期号内场次编号 (容忍 '17' / '#北单17' / '北单17' 等写法)"""
+    mm = re.search(r'(\d+)', str(m.get('beidan_no') or ''))
+    return (mm.group(1).lstrip('0') or '0') if mm else ''
+
+
+def _day_diff(d1, d2):
+    """两个日期字符串相差天数; 无法解析返回 None"""
+    try:
+        return (datetime.strptime((d2 or '')[:10], '%Y-%m-%d') -
+                datetime.strptime((d1 or '')[:10], '%Y-%m-%d')).days
+    except ValueError:
+        return None
 
 
 def join_rows(rows, matches):
-    """500.com 行 -> 我方 match; 按 (队名相似度, 日期±1天) 一对一配对"""
-    by_day = {}
+    """500.com 行 -> 我方 match; 一对一择优
+
+    ① 场次编号优先: 500 页面的「场次编号」(chnum/ordernum) 与我方 beidan_no 是同一套
+       北单期号内编号(实测 45/45 全对), 能救译名完全对不上的场次
+       (耶尔文佩↔查普斯 / FAC维也纳↔弗洛裏茨多夫 / 宫崎特格瓦嘉洛↔宮崎棒牛鳥),
+       但要求日期也 ±1 天内, 避免不同期号撞号。
+    ② 编号对不上/缺失时, 退回 (双队名相似度 ≥ JOIN_MIN, 日期 ±1 天) 模糊匹配。
+    """
+    by_day, by_num = {}, {}
     for m in matches:
         by_day.setdefault((m.get('date') or '')[:10], []).append(m)
-    cand = []
+        n = _beidan_no_num(m)
+        if n:
+            by_num.setdefault(n, []).append(m)
+    cand = {}
     for fid, r in rows.items():
         d = (r.get('dt') or r.get('date') or '')[:10]
+        n = str(r.get('num') or '').strip().lstrip('0')
+        ns_pred = lambda m: (_sim(r.get('h') or r.get('home'), m.get('home_team')) +
+                             _sim(r.get('a') or r.get('away'), m.get('away_team')))
+        if n:
+            for m in by_num.get(n, []):
+                dd = _day_diff(d, m.get('date'))
+                if dd is None or abs(dd) > JOIN_DAYS:
+                    continue
+                ns = ns_pred(m)
+                if ns < NUM_NAME_MIN:            # 编号撞车防线: 队名也得像
+                    continue
+                sc = NUM_SCORE + min(ns, 2.0) * 0.01 - abs(dd) * 0.002
+                key = (fid, id(m))
+                if key not in cand or sc > cand[key][0]:
+                    cand[key] = (sc, m)
         pool = []
         for k in range(-JOIN_DAYS, JOIN_DAYS + 1):
             pool += by_day.get(_shift(d, k), [])
         for m in pool:
-            sc = _sim(r.get('h') or r.get('home'), m.get('home_team')) + \
-                 _sim(r.get('a') or r.get('away'), m.get('away_team'))
-            if sc >= JOIN_MIN:
-                cand.append((sc, fid, id(m), m, r))
-    cand.sort(key=lambda x: -x[0])
+            sc = ns_pred(m)
+            if sc >= JOIN_MIN and sc > cand.get((fid, id(m)), (0, None))[0]:
+                cand[(fid, id(m))] = (sc, m)
     pairs, used_row, used_m = [], set(), set()
-    for sc, fid, mid, m, r in cand:
+    for (fid, mid), (sc, m) in sorted(cand.items(), key=lambda kv: -kv[1][0]):
         if fid in used_row or mid in used_m:
             continue
         used_row.add(fid)
         used_m.add(mid)
-        pairs.append((sc, fid, m, r))
+        pairs.append((sc, fid, m, rows[fid]))
     return pairs
 
 

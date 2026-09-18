@@ -88,9 +88,12 @@ def main():
     rr, rs = f5.fetch_rangqiu(), f5.fetch_sf()
     rows = build_rows(rr, rs, matches)
     hit = [r for r in rows if r['hit']]
+    nz = list(rr.values()) + list(rs.values())
+    period = next((x.get('period') for x in nz if x.get('period')), '')
     data = {
         'generated_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
         'source': 'trade.500.com bjdc(让球胜平负) + bjdcsf(胜负过关)',
+        'period': period,                      # 北单期号 (如 26096); 场次编号在本期内唯一
         'counts': {'total': len(rows), 'rangqiu': len(rr), 'shengfu': len(rs),
                    'hit': len(hit),
                    'hit_open': sum(1 for r in rows if r.get('hit', {}) and r['hit']['in_open']),
