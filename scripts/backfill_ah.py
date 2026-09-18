@@ -17,7 +17,10 @@ FAILED_CACHE = os.path.join(SCRIPT_DIR, '..', '.ah_failed_cache.json')
 BATCH_SIZE = 50         # 每批50个fid并发（原30）
 MAX_WORKERS = 10        # 10线程并行（原5）
 BATCH_DELAY = 0.02      # 每批间隔（原0.05）
-RETRY_DAYS = 7          # 失败fid超过N天未重试时再试一次
+RETRY_DAYS = 1          # 失败fid超过N天未重试时再试一次
+# 批次级网络降级保护: 整批零成功通常是本机网络抽风(HTTP=000/ConnectError),
+# 此时不该把 fid 写进失败缓存(否则正常场次被误判"无AH"卡住 RETRY_DAYS 天)。
+OUTAGE_MIN_BATCH = 5    # 批次>=N 且 成功率=0 时, 本批失败不写缓存
 
 def load_failed_cache():
     """加载失败fid缓存 {fid: last_attempt_epoch}"""
@@ -83,6 +86,12 @@ def main():
         batch = unique_fids[batch_start:batch_start + BATCH_SIZE]
         results = fetch_asian_odds_batch(batch, max_workers=MAX_WORKERS)
 
+        batch_ok = sum(1 for fid in batch
+                       if (results.get(fid) or {}).get('handicap') is not None)
+        outage = len(batch) >= OUTAGE_MIN_BATCH and batch_ok == 0
+        if outage:
+            print(f"  ! 本批 {len(batch)} 个 fid 全部失败, 判定为网络降级, 不写失败缓存")
+
         for fid in batch:
             r = results.get(fid)
             if r and r.get('handicap') is not None:
@@ -100,7 +109,8 @@ def main():
                     m['ah_company_id'] = r.get('company_id')
             else:
                 fail += 1
-                failed_cache[fid] = now_ts
+                if not outage:
+                    failed_cache[fid] = now_ts
 
         processed = batch_start + len(batch)
         elapsed = time.time() - t0
