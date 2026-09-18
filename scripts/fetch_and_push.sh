@@ -71,6 +71,10 @@ python3 scripts/backfill_ah_probs.py
 echo "[$(date '+%H:%M:%S')] 补 500.com 北单让球 (亚初/亚即兜底)..."
 python3 scripts/fetch_500_bjdc.py --write
 
+# 500.com 北单全池表 (docs/bjdc.html 的数据源, 含我方清单未收录的场次; 纯展示, 不参与规则)
+echo "[$(date '+%H:%M:%S')] 生成北单全池表 (bjdc_pool.json)..."
+python3 scripts/gen_bjdc_pool.py || echo "  ⚠️ 北单全池表生成失败, 继续"
+
 # 生成看板精简版 JSON (剔除 stats 等无用大字段, 12.7MB→1.6MB, 加速页面加载)
 echo "[$(date '+%H:%M:%S')] 生成看板精简数据 (results_light.json)..."
 python3 scripts/gen_light_results.py

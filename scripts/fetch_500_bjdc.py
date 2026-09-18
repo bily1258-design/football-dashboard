@@ -50,7 +50,8 @@ def fetch_rangqiu():
         out[fm.group(1)] = {
             'league': _js_val(v, 'leagueName'), 'home': _js_val(v, 'homeTeam'),
             'away': _js_val(v, 'guestTeam'), 'date': _js_val(v, 'scheduleDate'),
-            'time': _js_val(v, 'endTime').split(' ')[-1], 'hcp': hcp, 'sp': sps[:3]}
+            'time': _js_val(v, 'endTime').split(' ')[-1], 'hcp': hcp, 'sp': sps[:3],
+            'num': _js_val(v, 'index')}
     return out
 
 
@@ -64,6 +65,8 @@ def fetch_sf():
             continue
         sps = re.findall(r'data-type="sf" value="\d+" data-sp="([\d.]+)"', tr)
         out[a['fid']] = {'home': a.get('homesxname', ''), 'away': a.get('awaysxname', ''),
+                         'league': a.get('lg', '').replace('足球-', ''),
+                         'time': a.get('pendtime', '').split(' ')[-1], 'num': a.get('ordernum', ''),
                          'date': a.get('gdate', ''), 'rq': a.get('rq', ''), 'sp': sps}
     return out
 
@@ -198,7 +201,7 @@ def join_rows(rows, matches):
             continue
         used_row.add(fid)
         used_m.add(mid)
-        pairs.append((sc, m, r))
+        pairs.append((sc, fid, m, r))
     return pairs
 
 
@@ -208,8 +211,8 @@ def write_into(path, dry=False):
     data = json.load(open(path, encoding='utf-8'))
     ms = data.get('matches') if isinstance(data, dict) else data
     rq, sf = fetch_rangqiu(), fetch_sf()
-    jr = {id(m): r for _, m, r in join_rows(rq, ms)}
-    js = {id(m): r for _, m, r in join_rows(sf, ms)}
+    jr = {id(m): r for _, _, m, r in join_rows(rq, ms)}
+    js = {id(m): r for _, _, m, r in join_rows(sf, ms)}
     n_open = n_cur = 0
     for m in ms:
         f = build_fields(jr.get(id(m)), js.get(id(m)))
