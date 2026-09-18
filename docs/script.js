@@ -64,15 +64,11 @@ function renderSimilarMatches(m){
   for(var i=0;i<count;i++){
     var s = m.similar_matches[i];
     var scoreStr = s.score ? ' '+s.score : '';
-    // 加成后封顶的 similarity 会常显 100%，补一个未加成的真实相似度小字
-    var rawStr = (s.similarity_raw!=null && s.similarity_raw < s.similarity - 0.001)
-      ? '<span class="sim-raw" style="opacity:.55;font-size:11px;margin-left:4px">原始'+(s.similarity_raw*100).toFixed(0)+'%</span>'
-      : '';
     items.push(
       '<div class="sim-item">'+
         '<span class="sim-teams">'+s.home_team+' vs '+s.away_team+'</span>'+
         '<span class="sim-score">'+scoreStr+'</span>'+
-        '<span class="sim-pct">'+(s.similarity*100).toFixed(0)+'%</span>'+rawStr+
+        '<span class="sim-pct">'+(s.similarity*100).toFixed(0)+'%</span>'+
       '</div>'
     );
   }
