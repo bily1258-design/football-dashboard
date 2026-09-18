@@ -372,8 +372,19 @@ fetch('data/results_light.json', {cache:'no-cache'})
     document.getElementById('loading').innerHTML = '❌ 数据加载失败，请刷新重试<br><small>'+err.message+'</small>';
   });
 
+function fmtHcp(h){ // 盘口: 带符号, 去尾零  (+1 / -0.5 / 0)
+  if(h === null || h === undefined || h === '') return '';
+  var v = Number(h);
+  if(isNaN(v)) return String(h);
+  var a = Math.abs(v);
+  var s = (Math.abs(a - Math.round(a)) < 0.001) ? String(Math.round(a)) : a.toFixed(2).replace(/0$/, '');
+  return (v > 0 ? '+' : (v < 0 ? '-' : '')) + s;
+}
+function spTxt(w){ return (w == null) ? '—' : (w + 1).toFixed(2); } // 水位 -> SP(赔率)
 function renderOdds(c, p, m){
   var html = '';
+  // 固定顺序: 平博在前, 马会在后
+  if(c && c.current && p && p.current && c.source === 'hkjc' && p.source === 'pinnacle'){ var _t = c; c = p; p = _t; }
   // 主赔率（动态标源）
   if(c && c.current){
     var o=c.open, cur=c.current, d=c.div_pct;
@@ -410,10 +421,10 @@ function renderOdds(c, p, m){
   if(m && (m.ah_home != null || m.ahbd_cur_home != null || m.ahbd_open_home != null)){
     var L = '';
     if(m.ahbd_open_home != null){
-      L += '<div class="oc-line"><span class="oc-label" title="北单 让球胜平负">让</span><span class="oc-open">'+m.ahbd_open_home.toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-open">'+(m.ahbd_open_handicap_text||'')+'</span><span class="oc-sep">/</span><span class="oc-open">'+m.ahbd_open_away.toFixed(2)+'</span></div>';
+      L += '<div class="oc-line"><span class="oc-label" title="北单 让球胜平负">让</span><span class="oc-open">'+fmtHcp(m.ahbd_open_handicap)+' '+spTxt(m.ahbd_open_home)+'/'+spTxt(m.ahbd_open_push)+'/'+spTxt(m.ahbd_open_away)+'</span></div>';
     }
     if(m.ahbd_cur_home != null){
-      L += '<div class="oc-line"><span class="oc-label" title="北单 胜负过关">过</span><span class="oc-cur">'+m.ahbd_cur_home.toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+(m.ahbd_cur_handicap_text||'')+'</span><span class="oc-sep">/</span><span class="oc-cur">'+m.ahbd_cur_away.toFixed(2)+'</span></div>';
+      L += '<div class="oc-line"><span class="oc-label" title="北单 胜负过关">过</span><span class="oc-cur">'+fmtHcp(m.ahbd_cur_handicap)+' '+spTxt(m.ahbd_cur_home)+'/'+spTxt(m.ahbd_cur_away)+'</span></div>';
     }
     if(!L && m.ah_home != null){
       var ro = (m.ah_open_home != null)

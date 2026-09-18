@@ -26,6 +26,7 @@ KEEP_MATCH = {
     # 500.com 北单让球兜底 (初=让球胜平负, 即=胜负过关)
     'ahbd_cur_away', 'ahbd_cur_handicap', 'ahbd_cur_handicap_text', 'ahbd_cur_home',
     'ahbd_open_away', 'ahbd_open_handicap', 'ahbd_open_handicap_text', 'ahbd_open_home',
+    'ahbd_open_push',
     'away_team', 'beidan_no', 'best_value', 'comparison', 'date', 'event', 'fid', 'hit',
     'home_team', 'importance_weight', 'jingcai_no', 'lgbm_confidence', 'lgbm_draw',
     'lgbm_loss', 'lgbm_prediction', 'lgbm_win', 'low_priority', 'match_time',
