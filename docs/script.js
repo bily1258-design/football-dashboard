@@ -417,21 +417,14 @@ function renderOdds(c, p, m){
       '<div class="oc-line oc-div"><span class="oc-label">分</span>'+divStr+'</div>';
   }
   // 亚盘: 500.com 北单数据 —— 让=让球胜平负(bjdc), 过=胜负过关(bjdcsf)
-  // (真盘 ah_* 仅在该场完全没有北单数据时兜底显示, 标「亚初/亚即」)
-  if(m && (m.ah_home != null || m.ahbd_cur_home != null || m.ahbd_open_home != null)){
+  // (真盘 ah_* 已去掉: 无北单数据时该场不显示亚盘行, 不兜底)
+  if(m && (m.ahbd_cur_home != null || m.ahbd_open_home != null)){
     var L = '';
     if(m.ahbd_open_home != null){
       L += '<div class="oc-line"><span class="oc-label" title="北单 让球胜平负">让</span><span class="oc-open">'+fmtHcp(m.ahbd_open_handicap)+' '+spTxt(m.ahbd_open_home)+'/'+spTxt(m.ahbd_open_push)+'/'+spTxt(m.ahbd_open_away)+'</span></div>';
     }
     if(m.ahbd_cur_home != null){
       L += '<div class="oc-line"><span class="oc-label" title="北单 胜负过关">过</span><span class="oc-cur">'+fmtHcp(m.ahbd_cur_handicap)+' '+spTxt(m.ahbd_cur_home)+'/'+spTxt(m.ahbd_cur_away)+'</span></div>';
-    }
-    if(!L && m.ah_home != null){
-      var ro = (m.ah_open_home != null)
-        ? [m.ah_open_home, (m.ah_open_handicap_text || (m.ah_open_handicap != null ? m.ah_open_handicap.toFixed(2) : '')), m.ah_open_away] : null;
-      var rc = [m.ah_home, (m.ah_handicap_text || (m.ah_handicap != null ? m.ah_handicap.toFixed(2) : '')), m.ah_away];
-      if(ro) L += '<div class="oc-line"><span class="oc-label">亚初</span><span class="oc-open">'+ro[0].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-open">'+ro[1]+'</span><span class="oc-sep">/</span><span class="oc-open">'+ro[2].toFixed(2)+'</span></div>';
-      if(rc[0] != null) L += '<div class="oc-line"><span class="oc-label">亚即</span><span class="oc-cur">'+rc[0].toFixed(2)+'</span><span class="oc-sep">/</span><span class="oc-cur">'+rc[1]+'</span><span class="oc-sep">/</span><span class="oc-cur">'+rc[2].toFixed(2)+'</span></div>';
     }
     if(L) html += '<div class="oc-sep-line"></div>' + L;
   }
