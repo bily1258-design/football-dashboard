@@ -47,7 +47,8 @@ def parse_page(html):
         game = re.search(r'gamename="([^"]*)"', m.group(0))
         poly = re.search(r'polygoal="([^"]*)"', m.group(0))
         can = re.search(r'cansale="([^"]*)"', m.group(0))
-        seq = re.search(r'<td[^>]*>(\d{3})</td>', body)
+        # 编号单元格内嵌 <img>, 且 tr 上有 name="周五": <td onClick="hideRow('row_x');" ...><img .../>006</td>
+        seq = re.search(r">(\d{3})</td>", body)
         home = re.search(r'id="HomeTeam_(\d+)"[^>]*>([^<]*)<', body)
         away = re.search(r'id="GuestTeam_(\d+)"[^>]*>([^<]*)<', body)
         kick = re.search(r'title="开赛时间：([^"]*)"', body)
