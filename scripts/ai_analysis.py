@@ -1224,7 +1224,37 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
     enrich_analysis_features_from_cache(matches)
 
     # ─── 亚盘数据（跳过实时获取，由 backfill_ah.py 补抓仅3天窗口）──
+    # 复用上一轮 results.json 里已有的亚盘/北单兜底值: ai_analysis 每次全量重写这个文件,
+    # 不carry-over就会把 backfill_ah.py / fetch_500_bjdc.py 补出来的历史值清成 None
     ah_data_map = {}
+    _ahbd_carry = {}
+    try:
+        _prev_rp = os.path.join(DOCS_DIR, 'data', 'results.json')
+        if os.path.exists(_prev_rp):
+            with open(_prev_rp, encoding='utf-8') as _pf:
+                _prev_data = json.load(_pf)
+            for _pm in _prev_data.get('matches', []) or []:
+                _pfid = str(_pm.get('fid') or '').strip()
+                if not _pfid or _pfid == '0':
+                    continue
+                if _pm.get('ah_home') is not None:
+                    ah_data_map[_pfid] = {
+                        'open_home_odds': _pm.get('ah_open_home'),
+                        'open_handicap': _pm.get('ah_open_handicap'),
+                        'open_away_odds': _pm.get('ah_open_away'),
+                        'open_handicap_text': _pm.get('ah_open_handicap_text'),
+                        'home_odds': _pm.get('ah_home'),
+                        'handicap': _pm.get('ah_handicap'),
+                        'away_odds': _pm.get('ah_away'),
+                        'handicap_text': _pm.get('ah_handicap_text'),
+                        'company_id': _pm.get('ah_company_id'),
+                    }
+                _ac = {k: v for k, v in _pm.items() if k.startswith('ahbd_') and v is not None}
+                if _ac:
+                    _ahbd_carry[_pfid] = _ac
+        logger.info(f"亚盘历史值复用: {len(ah_data_map)} 场, 北单兜底值复用: {len(_ahbd_carry)} 场")
+    except Exception as _e:
+        logger.warning(f"亚盘/北单历史值载入失败(不影响主流程): {_e}")
 
     # 新增：初始化贝叶斯模块（球队攻防实力模型 + 概率校准器）
     team_model, calibrator = init_bayesian_modules(DB_PATH)
@@ -1714,6 +1744,8 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             'ah_away': ah.get('away_odds'),
             'ah_handicap_text': ah.get('handicap_text'),
             'ah_company_id': ah.get('company_id'),
+            # 北单兜底（500.com 让球胜平负/胜负过关，独立字段不参与规则）— 从上一轮结果 carry-over
+            **(_ahbd_carry.get(fid_str, {})),
             # 近期战绩
             'stats': None,
         })
