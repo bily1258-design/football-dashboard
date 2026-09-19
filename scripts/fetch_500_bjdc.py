@@ -87,7 +87,7 @@ def fetch_rangqiu(expect=''):
     t = get('https://trade.500.com/bjdc/' + (f'?expect={expect}' if expect else ''))
     per = _period(t)
     out = {}
-    for tr in re.findall(r'<tr class="vs_lines".*?</tr>', t, re.S):
+    for tr in re.findall(r'<tr class="vs_lines[^"]*".*?</tr>', t, re.S):
         fm = re.search(r'fid="(\d+)"', tr)
         vm = re.search(r'value="\{([^}]*)\}"', tr)
         if not (fm and vm):
@@ -320,19 +320,29 @@ def write_into(path, dry=False):
     jr = {id(m): r for _, _, m, r in join_rows(rq, ms)}
     js = {id(m): r for _, _, m, r in join_rows(sf, ms)}
     n_open = n_cur = n_per = 0
+    n_carry = 0
     for m in ms:
         r = jr.get(id(m)) or js.get(id(m)) or {}
         p = str(r.get('period') or '').strip()
+        prev_p = str(m.get('beidan_period') or '').strip()   # 上一轮已核定的期号(可能为空)
         if p:
             m['beidan_period'] = p
             n_per += 1
         f = build_fields(jr.get(id(m)), js.get(id(m)))
+        old = {k: m.get(k) for k in AHD_KEYS}
         for k in AHD_KEYS:
             m.pop(k, None)
         if f:
             m.update(f)
-            n_open += 1 if 'ahbd_open_home' in f else 0
-            n_cur += 1 if 'ahbd_cur_home' in f else 0
+        # 赛后才跑(500 把「已结束」行的 SP 撤掉, 抓不到)时保留赛前抓到的值:
+        # 同一场(期号一致, 或本来就没有期号)不该因为跑得晚就把让/过整行抹掉
+        if not p or not prev_p or prev_p == p:
+            for k, v in old.items():
+                if k not in m and v is not None:
+                    m[k] = v
+                    n_carry += 1
+        n_open += 1 if m.get('ahbd_open_home') is not None else 0
+        n_cur += 1 if m.get('ahbd_cur_home') is not None else 0
     if not dry:
         json.dump(data, open(path, 'w', encoding='utf-8'), ensure_ascii=False)
     per = sorted({str(r.get('period')) for r in list(rq.values()) + list(sf.values()) if r.get('period')})
