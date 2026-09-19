@@ -35,6 +35,12 @@ def _js_val(blob, key):
     return m.group(1) if m else ''
 
 
+def _sp_of(tr, outcome):
+    """取「主胜/平/主负」三列里的指数(= 北单官方赔率, sp_value span); 缺失/停售返回 ''"""
+    m = re.search(r'value="%s"[\s\S]{0,300}?<span class="sp_value[^"]*">([\d.]+)<' % outcome, tr)
+    return m.group(1) if m else ''
+
+
 def _period(t):
     """页面 responseJson 里的期号 (如 26096 = 当期)"""
     m = re.search(r'period\s*:\s*"(\d+)"', t)
@@ -94,8 +100,12 @@ def fetch_rangqiu(expect=''):
             continue
         v = vm.group(1)
         hcp = _js_val(v, 'rangqiuNum')
-        sps = re.findall(r'class="sp_w35 eng pjoz">([\d.]+)<', tr)
         cm = re.search(r'class="chnum">(\d+)<', tr)
+        # 指数(主胜/平/主负 三列) = 北单让球胜平负赔率; 页面另有 pjoz class 的
+        # 「平均赔率/投注比例」(欧赔平均, 带 ~8% 水位) —— 那个不是北单指数, 严禁用
+        sps = [_sp_of(tr, x) for x in ('胜', '平', '负')]
+        if not all(sps):
+            sps = []          # 停售/完赛后 500 会撤掉部分指数 -> 让行留空, 由 carry 补
         out[fm.group(1)] = {
             'league': _js_val(v, 'leagueName'), 'home': _js_val(v, 'homeTeam'),
             'away': _js_val(v, 'guestTeam'), 'date': _js_val(v, 'scheduleDate'),
