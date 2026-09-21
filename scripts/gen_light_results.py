@@ -27,6 +27,8 @@ KEEP_MATCH = {
     'ahbd_cur_away', 'ahbd_cur_handicap', 'ahbd_cur_handicap_text', 'ahbd_cur_home',
     'ahbd_open_away', 'ahbd_open_handicap', 'ahbd_open_handicap_text', 'ahbd_open_home',
     'ahbd_open_push',
+    # 北单「过」盘口赢盘概率 (命中列 上/下 方向来源, 见 backfill_bd_probs.py)
+    'ahbd_away_covers_prob', 'ahbd_home_covers_prob', 'ahbd_pred_desc', 'ahbd_push_prob',
     'away_team', 'beidan_no', 'beidan_period', 'best_value', 'comparison', 'date', 'event', 'fid', 'hit',
     'home_team', 'importance_weight', 'jingcai_no', 'lgbm_confidence', 'lgbm_draw',
     'lgbm_loss', 'lgbm_prediction', 'lgbm_win', 'low_priority', 'match_time',

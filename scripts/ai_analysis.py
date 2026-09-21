@@ -1153,9 +1153,10 @@ def compute_ah_probs(team_model, home_team, away_team,
                 if prob < 1e-14:
                     continue
                 d = i - j
-                if d > h:
+                net = d + h  # 让球后净胜 (h=主队视角让球数: 正=主受让, 负=主让球)
+                if net > 1e-9:
                     hc += prob
-                elif d == h:
+                elif net > -1e-9:
                     pc += prob
                 else:
                     ac += prob

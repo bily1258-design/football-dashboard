@@ -71,6 +71,12 @@ python3 scripts/backfill_ah_probs.py
 echo "[$(date '+%H:%M:%S')] 补 500.com 北单让球 (亚初/亚即兜底)..."
 python3 scripts/fetch_500_bjdc.py --write
 
+# 北单「胜负过关」盘口赢盘概率 (命中列 上/下 方向 + ahbd_pred_desc)
+# 必须跑在 fetch_500_bjdc.py 之后: 让球数 ahbd_cur_handicap 那时才写进 results.json
+# 口径: 正=主队受让, 主队过关 ⟺ 净胜+让球>0; 纯看板显示层, 不参与清单规则
+echo "[$(date '+%H:%M:%S')] 补算北单「过」盘口赢盘概率 (ahbd_*)..."
+python3 scripts/backfill_bd_probs.py
+
 # 500.com 北单全池表 (docs/bjdc.html 的数据源, 含我方清单未收录的场次; 纯展示, 不参与规则)
 echo "[$(date '+%H:%M:%S')] 生成北单全池表 (bjdc_pool.json)..."
 python3 scripts/gen_bjdc_pool.py || echo "  ⚠️ 北单全池表生成失败, 继续"

@@ -10,21 +10,29 @@ function dirClass(d){return d==='home'?'dir-home':d==='draw'?'dir-draw':d==='awa
 function dirText(d){return d==='home'?'主胜':d==='draw'?'平局':d==='away'?'客胜':'观望'}
 function dirZh(d){return d==='home'?'主':d==='draw'?'平':d==='away'?'客':'?'}
 function noText(m){if(!m.beidan_no&&!m.jingcai_no)return '';return (m.beidan_no?'北单'+m.beidan_no:'')+(m.jingcai_no?(m.beidan_no?'<br>':'')+m.jingcai_no:'')}
+function bdLine(m){ // 北单让球行: 「过」(胜负过关)优先, 「让」(让球胜平负)兜底; 正=主队受让, 负=主队让球
+  var v=m.ahbd_cur_handicap;if(v==null||v==='')v=m.ahbd_open_handicap;
+  if(v==null||v==='')return null;
+  var f=parseFloat(v);return isNaN(f)?null:f;
+}
+function bdPick(m){ // 北单「过」盘口方向: 上=主队过关 下=客队过关 走=走盘
+  var ph=m.ahbd_home_covers_prob,pa=m.ahbd_away_covers_prob,pp=m.ahbd_push_prob||0;
+  if(ph==null||pa==null)return'';
+  return ph>pa?(ph>pp?'上':'走'):(pa>pp?'下':'走');
+}
 function ahDir(m){
-  if(m.ah_home_covers_prob==null)return'';
-  var d=m.ah_home_covers_prob>m.ah_away_covers_prob
-    ?(m.ah_home_covers_prob>m.ah_push_prob?'上':'走')
-    :(m.ah_away_covers_prob>m.ah_push_prob?'下':'走');
-  // 用比分+盘口独立计算命中，不依赖 m.hit（那是比赛预测命中）
-  var sc=m.score?m.score.split('-'):null;
+  // 口径=北单胜负过关「过」行 (500.com/bjdcsf, 2way 半盘无走盘); 方向取模型赢盘概率(泊松+战绩+排名+对赛)
+  // 命中=用比分+北单让球独立判, 不依赖 m.hit (那是比赛预测命中)
+  var d=bdPick(m);if(!d)return'';
+  var hc=bdLine(m);if(hc==null)return d;
+  var sc=m.score?String(m.score).split('-'):null;
   if(sc&&sc.length===2){
     var sh=parseInt(sc[0]),sa=parseInt(sc[1]);
-    var hc=m.ah_handicap||m.ah_open_handicap||0;
     if(!isNaN(sh)&&!isNaN(sa)){
-      var net=sh+hc-sa; // hc<0主队让球：net>0→上盘(主)赢；hc>0主队受让：net>0→下盘(主)赢
-      var upperWon=hc<=0?net>0:net<0; // 让球方(上盘)是否赢盘
-      if(d==='上') return d+(upperWon?'✔':(net===0?'走':'✘'));
-      return d+(!upperWon?'✔':(net===0?'走':'✘'));
+      var net=sh+hc-sa; // 主队过关 ⟺ 净胜+让球>0 (hc正=主受让)
+      if(net===0)return d+'走';
+      if(d==='走')return d;
+      return d+(((d==='上')===(net>0))?'✔':'✘');
     }
   }
   return d;
@@ -283,7 +291,7 @@ function renderTable(matches){
       '<td class="score-cell"><span>'+(m.score||(m.postponed?'推迟':'-'))+'</span></td>'+
       '<td class="team-name">'+m.away_team+'</td>'+
       '<td class="sim-cell">'+renderSimilarMatches(m)+'</td>'+
-      '<td><span class="'+dirClass(m.lgbm_prediction)+'">'+dirText(m.lgbm_prediction)+'</span> <span style="font-size:11px;color:#999">'+dirText(m.model_prediction)+(m.ah_home_covers_prob!=null?' <span class="ah-pred-inline">('+(m.ah_home_covers_prob>m.ah_away_covers_prob?(m.ah_home_covers_prob>m.ah_push_prob?'上':'走'):(m.ah_away_covers_prob>m.ah_push_prob?'下':'走'))+')</span>':'')+'</span><span class="weight-badge" title="权重 '+m.importance_weight.toFixed(2)+'">⚡'+m.importance_weight.toFixed(2)+'</span>'+renderHighWeight(m)+renderWarning(m.warning)+'<br>'+vbHtml+'</td>'+
+      '<td><span class="'+dirClass(m.lgbm_prediction)+'">'+dirText(m.lgbm_prediction)+'</span> <span style="font-size:11px;color:#999">'+dirText(m.model_prediction)+(bdPick(m)?' <span class="ah-pred-inline">('+bdPick(m)+')</span>':'')+'</span><span class="weight-badge" title="权重 '+m.importance_weight.toFixed(2)+'">⚡'+m.importance_weight.toFixed(2)+'</span>'+renderHighWeight(m)+renderWarning(m.warning)+'<br>'+vbHtml+'</td>'+
 
       '<td class="'+hc+'">'+(m.hit||'')+(ahDir(m)?' <span class="ah-hit-dir">'+ahDir(m)+'</span>':'')+'</td>'+
       '<td class="odds-cell">'+renderOdds(m.comparison, m.pin_comparison, m)+'</td>'+
