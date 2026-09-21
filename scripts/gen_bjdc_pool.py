@@ -42,8 +42,8 @@ def build_rows(rr, rs, matches):
         for sc, fid, m, r in f5.join_rows(rows, matches):
             h = hits.setdefault(fid, {'m': m, 'in_open': False, 'in_cur': False, 'sim': 0.0})
             h['period'] = h.get('period') or (r.get('period') or '')
-            h['in_' + key] = (m.get('ahbd_open_home') if key == 'open'
-                              else m.get('ahbd_cur_home')) is not None
+            h['in_open'] = h['in_open'] or (m.get('ahbd_open_home') is not None)
+            h['in_cur'] = h['in_cur'] or (m.get('ahbd_cur_home') is not None)
             h['sim'] = max(h['sim'], round(sc, 2))
 
     out = []

@@ -327,8 +327,22 @@ def write_into(path, dry=False):
     ms = data.get('matches') if isinstance(data, dict) else data
     pool = fetch_pool()
     rq, sf = merge_pool(pool)
-    jr = {id(m): r for _, _, m, r in join_rows(rq, ms)}
-    js = {id(m): r for _, _, m, r in join_rows(sf, ms)}
+    pr = join_rows(rq, ms)
+    ps = join_rows(sf, ms)
+    jr = {id(m): r for _, _, m, r in pr}
+    js = {id(m): r for _, _, m, r in ps}
+    fr = {id(m): f for _, f, m, _ in pr}          # 我方 match -> 命中的「让」行 fid
+    fs = {id(m): f for _, f, m, _ in ps}
+    # fid 桥接: 两玩法共用同一 fid 空间, 但【期号内场次编号体系不同】—— 过页掺篮球/橄榄球,
+    # 足球尾段被挤到 403-417, 让球页是纯足球 1-402(尾段 388-402); 只按编号查 -> 尾段场次
+    # 「让」行查不到, 让列空白(实测 412/414/416 全空)。一侧配到就用同 fid 行补齐另一侧。
+    n_bridge = 0
+    for m in ms:
+        if id(m) not in jr and id(m) in fs and rq.get(fs[id(m)]):
+            jr[id(m)] = rq[fs[id(m)]]
+            n_bridge += 1
+        if id(m) not in js and id(m) in fr and sf.get(fr[id(m)]):
+            js[id(m)] = sf[fr[id(m)]]
     n_open = n_cur = n_per = 0
     n_carry = 0
     for m in ms:
@@ -356,7 +370,8 @@ def write_into(path, dry=False):
     if not dry:
         json.dump(data, open(path, 'w', encoding='utf-8'), ensure_ascii=False)
     per = sorted({str(r.get('period')) for r in list(rq.values()) + list(sf.values()) if r.get('period')})
-    print(f'500.com: 让球胜平负 {len(rq)} 行 / 胜负过关 {len(sf)} 行 | 配对到我方 {len(jr)} / {len(js)}')
+    print(f'500.com: 让球胜平负 {len(rq)} 行 / 胜负过关 {len(sf)} 行 | 配对到我方 {len(jr)} / {len(js)}'
+          f'{" | fid桥接补 " + str(n_bridge) + " 场让行" if n_bridge else ""}')
     print(f'{"[dry] " if dry else ""}写入: 初盘行(让球胜平负) {n_open} 场 | 即时盘行(胜负过关) {n_cur} 场')
     print(f'期号: {"、".join(per) or "—"} | 带期号场次 {n_per}')
     n = 0
