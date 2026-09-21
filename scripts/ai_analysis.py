@@ -1625,8 +1625,12 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
                 }
 
         # ─── 风险标记 ──────────────────────────────────
-        # 🚩分歧陷阱: LGBM最大值≥53% 且 模型同方向≥40%
-        # ⚠️模型犹豫: 模型top1-top2差距<10% 或 LGBM主推概率<45%
+        # 🚩高置信同向(正向信号, 绿色渲染): LGBM最大值≥53% 且 模型同方向≥40%
+        #    实测(2026-09-21, n=4563完赛): 🚩组 61场命中55场 = 90.2%, 远高于无标记 72.3%
+        #    → 它不是陷阱, 原按预警渲染误导观感, 改绿色正向标记
+        # ⚠️低置信(警示): 仅 LGBM主推概率<40%
+        #    2026-09-21 用户拍板收紧: 原 (gap<10% 或 lmax<45%) 覆盖 86.1% ≈ 每场都标
+        #    新口径 覆盖 54.1%, 标记组命中 42.3% vs 未标 62.0%
         warning = ''
         try:
             lmax = max(lgbm_w, lgbm_d, lgbm_l)
@@ -1634,11 +1638,11 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             raw_vals = sorted([lgbm_feat_w, lgbm_feat_d, lgbm_feat_l], reverse=True)
             gap = raw_vals[0] - raw_vals[1]
 
-            # 🚩分歧陷阱
+            # 🚩高置信同向(正向)
             model_val = [model_w, model_d, model_l][ldir_idx]
             trap = (lmax >= 0.53 and model_val >= 0.40)
-            # ⚠️模型犹豫
-            uncer = (gap < 0.10 or lmax < 0.45)
+            # ⚠️低置信(警示): 只看 LGBM 主推概率
+            uncer = (lmax < 0.40)
 
             parts = []
             if trap: parts.append('🚩')
@@ -2012,8 +2016,8 @@ def generate_frontend(results: List[Dict]):
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>足彩价值投注看板</title>
-<link rel="stylesheet" href="style.css?v=20260816v3">
-<script src="script.js?v=20260816v3"></script>
+<link rel="stylesheet" href="style.css?v=20260921">
+<script src="script.js?v=20260921"></script>
 </head>
 <body>
 <div class="container">
@@ -2051,7 +2055,7 @@ def generate_frontend(results: List[Dict]):
         <option value="odds">按赔率</option>
       </select>
       <button id="refreshBtn" onclick="location.reload()">🔄 刷新</button>
-      <span id="warnToggle" class="warn-filter-btn" onclick="toggleWarnFilter()" title="仅显示有风险标记的比赛">⚠️ 全部</span>
+      <span id="warnToggle" class="warn-filter-btn" onclick="toggleWarnFilter()" title="仅显示 LGBM 低置信(⚠️) 场次">⚠️ 全部</span>
       <span id="valueToggle" class="warn-filter-btn" onclick="toggleValueFilter()" title="仅显示有价值投注的比赛">💰 全部</span>
       <span id="impToggle" class="warn-filter-btn" onclick="toggleImportantFilter()" title="仅显示高重要性比赛">⚡ 全部</span>
       <span id="hitRate" class="meta-hit"></span>
@@ -2179,8 +2183,8 @@ tr:hover{background:#f0f6ff}
 .ah-pred-inline{color:#2563eb;font-size:10px;font-weight:600}
 .ah-hit-dir{color:#7c3aed;font-size:10px;font-weight:600;margin-left:2px}
 .warn-badge{display:inline-block;margin-left:3px;vertical-align:middle}
-.warn-badge .warn-trap{cursor:help;font-size:12px}
-.warn-badge .warn-uncert{cursor:help;font-size:12px;margin-left:1px}
+.warn-badge .sig-strong{cursor:help;font-size:12px;color:#16a34a}
+.warn-badge .warn-uncert{cursor:help;font-size:12px;margin-left:1px;color:#d97706}
 .hw-warn{display:inline-block;margin-left:4px;padding:0 4px;border:1px solid #e53935;border-radius:3px;color:#e53935;font-size:11px;font-weight:bold;cursor:help;vertical-align:middle}
 .warn-filter-btn{cursor:pointer;padding:3px 8px;border-radius:4px;color:#666;font-size:12px}
 .warn-filter-btn.active{background:#fff3cd;color:#856404;font-weight:bold}

@@ -32,8 +32,8 @@ function ahDir(m){
 function renderWarning(w){
   if(!w)return'';
   var h='<span class="warn-badge">';
-  if(w.indexOf('🚩')>-1) h+='<span class="warn-trap" title="热门降水+冷门大涨: 可能分歧陷阱">🚩</span>';
-  if(w.indexOf('⚠️')>-1) h+='<span class="warn-uncert" title="模型犹豫或LGBM低置信">⚠️</span>';
+  if(w.indexOf('🚩')>-1) h+='<span class="sig-strong" title="高置信同向: LGBM≥53%且模型同向≥40% — 历史命中90.2%(61场)">🚩</span>';
+  if(w.indexOf('⚠️')>-1) h+='<span class="warn-uncert" title="LGBM主推概率<40%: 方向不可信 — 历史命中42.3% vs 未标62.0%">⚠️</span>';
   return h+'</span>';
 }
 // ⚡高权重避雷: ⚡>=1.14 且 模型==TS 同向 → 历史命中率低(35%) 警告
@@ -212,7 +212,7 @@ var showValueOnly = false;
 var showImportantOnly = false;
 function toggleWarnFilter(){
   showWarnedOnly = !showWarnedOnly;
-  document.getElementById('warnToggle').textContent = showWarnedOnly?'⚠️ 仅标记':'⚠️ 全部';
+  document.getElementById('warnToggle').textContent = showWarnedOnly?'⚠️ 仅低置信':'⚠️ 全部';
   document.getElementById('warnToggle').className = 'warn-filter-btn'+(showWarnedOnly?' active':'');
   applyFilters();
 }
@@ -241,7 +241,7 @@ function applyFilters(){
       var comb = (m.model_prediction||'')+'-'+(m.lgbm_prediction||'');
       if(comb!==dirVal) return false;
     }
-    if(showWarnedOnly && !m.warning) return false;
+    if(showWarnedOnly && (m.warning||'').indexOf('⚠️')<0) return false;
     if(showValueOnly && (!m.best_value||m.best_value.ev<=0.05)) return false;
     if(showImportantOnly && m.low_priority) return false;
     return true;
