@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-20 16:45:49",
+  "generated_at": "2026-09-21 13:01:14",
   "threshold": 1.14,
   "note": "⚡=importance_weight(联赛等级×紧迫). 历史场次紧迫系数跌至0.90, 仅临场窗口权重>=1.14. 逐轮记录攒样本.",
   "tracked": [
@@ -18820,9 +18820,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-09-20 13:02:09"
+      "score": "2 - 0",
+      "hit": true,
+      "recorded_at": "2026-09-20 13:02:09",
+      "updated_at": "2026-09-21 13:01:14"
     },
     {
       "fid": "3039896",
@@ -18835,9 +18836,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-09-20 13:02:09"
+      "score": "2 - 1",
+      "hit": true,
+      "recorded_at": "2026-09-20 13:02:09",
+      "updated_at": "2026-09-21 13:01:14"
     },
     {
       "fid": "3013705",
@@ -18850,9 +18852,10 @@
       "model_dir": "客",
       "ts_dir": "客",
       "same_dir": true,
-      "score": "",
+      "score": "1 - 1",
       "hit": false,
-      "recorded_at": "2026-09-20 13:02:09"
+      "recorded_at": "2026-09-20 13:02:09",
+      "updated_at": "2026-09-21 13:01:14"
     },
     {
       "fid": "3014078",
@@ -18865,9 +18868,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-09-20 13:02:09"
+      "score": "2 - 0",
+      "hit": true,
+      "recorded_at": "2026-09-20 13:02:09",
+      "updated_at": "2026-09-21 13:01:14"
     },
     {
       "fid": "3014084",
@@ -18880,9 +18884,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
+      "score": "1 - 2",
       "hit": false,
-      "recorded_at": "2026-09-20 13:02:09"
+      "recorded_at": "2026-09-20 13:02:09",
+      "updated_at": "2026-09-21 13:01:14"
     },
     {
       "fid": "3003582",
@@ -18895,9 +18900,25 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-09-20 13:02:09"
+      "score": "3 - 0",
+      "hit": true,
+      "recorded_at": "2026-09-20 13:02:09",
+      "updated_at": "2026-09-21 13:01:14"
+    },
+    {
+      "fid": "3013711",
+      "date": "2026-09-21",
+      "match_time": "2026-09-21 00:30",
+      "event": "西甲",
+      "home_team": "比利亞雷亞爾",
+      "away_team": "萊萬特",
+      "weight": 1.2,
+      "model_dir": "主",
+      "ts_dir": "主",
+      "same_dir": true,
+      "score": "3 - 1",
+      "hit": true,
+      "recorded_at": "2026-09-21 13:01:14"
     },
     {
       "fid": "3023486",
@@ -18910,9 +18931,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
+      "score": "1 - 2",
       "hit": false,
-      "recorded_at": "2026-09-20 13:02:09"
+      "recorded_at": "2026-09-20 13:02:09",
+      "updated_at": "2026-09-21 13:01:14"
     },
     {
       "fid": "3023491",
@@ -18925,9 +18947,10 @@
       "model_dir": "客",
       "ts_dir": "主",
       "same_dir": false,
-      "score": "",
+      "score": "0 - 0",
       "hit": false,
-      "recorded_at": "2026-09-20 13:02:09"
+      "recorded_at": "2026-09-20 13:02:09",
+      "updated_at": "2026-09-21 13:01:14"
     },
     {
       "fid": "2912898",
@@ -18940,9 +18963,10 @@
       "model_dir": "客",
       "ts_dir": "客",
       "same_dir": true,
-      "score": "",
+      "score": "2 - 1",
       "hit": false,
-      "recorded_at": "2026-09-20 13:02:09"
+      "recorded_at": "2026-09-20 13:02:09",
+      "updated_at": "2026-09-21 13:01:14"
     },
     {
       "fid": "3018818",
@@ -18955,9 +18979,10 @@
       "model_dir": "客",
       "ts_dir": "主",
       "same_dir": false,
-      "score": "",
+      "score": "3 - 1",
       "hit": false,
-      "recorded_at": "2026-09-20 13:02:09"
+      "recorded_at": "2026-09-20 13:02:09",
+      "updated_at": "2026-09-21 13:01:14"
     },
     {
       "fid": "3040751",
@@ -18970,9 +18995,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-09-20 13:02:09"
+      "score": "2 - 1",
+      "hit": true,
+      "recorded_at": "2026-09-20 13:02:09",
+      "updated_at": "2026-09-21 13:01:14"
     },
     {
       "fid": "2962650",
@@ -18985,9 +19011,10 @@
       "model_dir": "客",
       "ts_dir": "客",
       "same_dir": true,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-09-20 13:02:09"
+      "score": "0 - 2",
+      "hit": true,
+      "recorded_at": "2026-09-20 13:02:09",
+      "updated_at": "2026-09-21 13:01:14"
     },
     {
       "fid": "2993795",
@@ -19000,9 +19027,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-09-19 12:53:09"
+      "score": "3 - 0",
+      "hit": true,
+      "recorded_at": "2026-09-19 12:53:09",
+      "updated_at": "2026-09-21 13:01:14"
     },
     {
       "fid": "2995352",
@@ -19015,9 +19043,10 @@
       "model_dir": "客",
       "ts_dir": "主",
       "same_dir": false,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-09-20 13:02:09"
+      "score": "1 - 2",
+      "hit": true,
+      "recorded_at": "2026-09-20 13:02:09",
+      "updated_at": "2026-09-21 13:01:14"
     },
     {
       "fid": "3014083",
@@ -19030,9 +19059,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-09-20 13:02:09"
+      "score": "3 - 2",
+      "hit": true,
+      "recorded_at": "2026-09-20 13:02:09",
+      "updated_at": "2026-09-21 13:01:14"
     },
     {
       "fid": "2910899",
@@ -19045,9 +19075,10 @@
       "model_dir": "主",
       "ts_dir": "客",
       "same_dir": false,
-      "score": "",
+      "score": "1 - 3",
       "hit": false,
-      "recorded_at": "2026-09-20 13:02:09"
+      "recorded_at": "2026-09-20 13:02:09",
+      "updated_at": "2026-09-21 13:01:14"
     },
     {
       "fid": "3013710",
@@ -19060,9 +19091,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
+      "score": "2 - 3",
       "hit": false,
-      "recorded_at": "2026-09-20 13:02:09"
+      "recorded_at": "2026-09-20 13:02:09",
+      "updated_at": "2026-09-21 13:01:14"
     },
     {
       "fid": "2910906",
@@ -19075,9 +19107,10 @@
       "model_dir": "客",
       "ts_dir": "客",
       "same_dir": true,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-09-20 13:02:09"
+      "score": "1-3",
+      "hit": true,
+      "recorded_at": "2026-09-20 13:02:09",
+      "updated_at": "2026-09-21 13:01:14"
     },
     {
       "fid": "3023488",
@@ -19090,9 +19123,10 @@
       "model_dir": "主",
       "ts_dir": "客",
       "same_dir": false,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-09-19 12:53:09"
+      "score": "3 - 1",
+      "hit": true,
+      "recorded_at": "2026-09-19 12:53:09",
+      "updated_at": "2026-09-21 13:01:14"
     },
     {
       "fid": "2962646",
@@ -19105,9 +19139,10 @@
       "model_dir": "平",
       "ts_dir": "客",
       "same_dir": false,
-      "score": "",
+      "score": "0 - 1",
       "hit": false,
-      "recorded_at": "2026-09-20 13:02:09"
+      "recorded_at": "2026-09-20 13:02:09",
+      "updated_at": "2026-09-21 13:01:14"
     },
     {
       "fid": "2962649",
@@ -19120,9 +19155,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-09-20 13:02:09"
+      "score": "1 - 0",
+      "hit": true,
+      "recorded_at": "2026-09-20 13:02:09",
+      "updated_at": "2026-09-21 13:01:14"
     },
     {
       "fid": "2910900",
@@ -19135,9 +19171,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-09-20 13:02:09"
+      "score": "2 - 1",
+      "hit": true,
+      "recorded_at": "2026-09-20 13:02:09",
+      "updated_at": "2026-09-21 13:01:14"
     },
     {
       "fid": "2962640",
@@ -19150,9 +19187,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-09-20 13:02:09"
+      "score": "2 - 1",
+      "hit": true,
+      "recorded_at": "2026-09-20 13:02:09",
+      "updated_at": "2026-09-21 13:01:14"
     },
     {
       "fid": "2910897",
@@ -19165,9 +19203,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-09-20 13:02:09"
+      "score": "2 - 1",
+      "hit": true,
+      "recorded_at": "2026-09-20 13:02:09",
+      "updated_at": "2026-09-21 13:01:14"
     },
     {
       "fid": "3024450",
@@ -19180,9 +19219,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-09-20 13:02:09"
+      "score": "4-0",
+      "hit": true,
+      "recorded_at": "2026-09-20 13:02:09",
+      "updated_at": "2026-09-21 13:01:14"
     },
     {
       "fid": "2962652",
@@ -19195,9 +19235,55 @@
       "model_dir": "平",
       "ts_dir": "主",
       "same_dir": false,
+      "score": "3 - 2",
+      "hit": false,
+      "recorded_at": "2026-09-20 13:02:09",
+      "updated_at": "2026-09-21 13:01:14"
+    },
+    {
+      "fid": "2962638",
+      "date": "2026-09-22",
+      "match_time": "2026-09-22 01:30",
+      "event": "阿甲",
+      "home_team": "阿爾多斯維",
+      "away_team": "圖庫曼競技",
+      "weight": 1.14,
+      "model_dir": "客",
+      "ts_dir": "客",
+      "same_dir": true,
       "score": "",
       "hit": false,
-      "recorded_at": "2026-09-20 13:02:09"
+      "recorded_at": "2026-09-21 13:01:14"
+    },
+    {
+      "fid": "2962639",
+      "date": "2026-09-22",
+      "match_time": "2026-09-22 06:00",
+      "event": "阿甲",
+      "home_team": "巴拉卡斯中央隊",
+      "away_team": "門多薩獨立",
+      "weight": 1.14,
+      "model_dir": "客",
+      "ts_dir": "客",
+      "same_dir": true,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-09-21 13:01:14"
+    },
+    {
+      "fid": "2962645",
+      "date": "2026-09-22",
+      "match_time": "2026-09-22 08:15",
+      "event": "阿甲",
+      "home_team": "拉努斯",
+      "away_team": "拉普拉塔大學生",
+      "weight": 1.14,
+      "model_dir": "平",
+      "ts_dir": "主",
+      "same_dir": false,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-09-21 13:01:14"
     }
   ]
 }
