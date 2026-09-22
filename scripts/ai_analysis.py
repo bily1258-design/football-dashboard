@@ -2017,8 +2017,8 @@ def generate_frontend(results: List[Dict]):
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>足彩价值投注看板</title>
-<link rel="stylesheet" href="style.css?v=20260922">
-<script src="script.js?v=20260922"></script>
+<link rel="stylesheet" href="style.css?v=20260922b">
+<script src="script.js?v=20260922b"></script>
 </head>
 <body>
 <div class="container">
@@ -2170,6 +2170,8 @@ tr:hover{background:#f0f6ff}
 .odds-combined{font-size:11px;line-height:1.7;white-space:nowrap}
 .odds-combined .oc-line{display:flex;gap:4px;align-items:center}
 .odds-combined .oc-label{display:inline-block;width:14px;color:#8899aa;font-size:10px;text-align:right}
+.odds-combined .oc-bd-rang{color:#c2410c;font-weight:700}
+.odds-combined .oc-bd-guo{color:#0e7490;font-weight:700}
 .odds-combined .oc-open{color:#8899aa}
 .odds-combined .oc-cur{color:#1a2332;font-weight:500}
 .odds-combined .oc-div{font-size:10px}

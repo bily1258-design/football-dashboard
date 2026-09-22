@@ -432,10 +432,10 @@ function renderOdds(c, p, m){
   if(m && (m.ahbd_cur_home != null || m.ahbd_open_home != null)){
     var L = '';
     if(m.ahbd_open_home != null){
-      L += '<div class="oc-line"><span class="oc-label" title="北单 让球胜平负">让</span><span class="oc-open">'+fmtHcp(m.ahbd_open_handicap)+' '+spTxt(m.ahbd_open_home)+'/'+spTxt(m.ahbd_open_push)+'/'+spTxt(m.ahbd_open_away)+'</span></div>';
+      L += '<div class="oc-line"><span class="oc-label oc-bd-rang" title="北单 让球胜平负">让</span><span class="oc-bd-rang">'+fmtHcp(m.ahbd_open_handicap)+'</span><span class="oc-open"> '+spTxt(m.ahbd_open_home)+'/'+spTxt(m.ahbd_open_push)+'/'+spTxt(m.ahbd_open_away)+'</span></div>';
     }
     if(m.ahbd_cur_home != null){
-      L += '<div class="oc-line"><span class="oc-label" title="北单 胜负过关">过</span><span class="oc-cur">'+fmtHcp(m.ahbd_cur_handicap)+' '+spTxt(m.ahbd_cur_home)+'/'+spTxt(m.ahbd_cur_away)+'</span></div>';
+      L += '<div class="oc-line"><span class="oc-label oc-bd-guo" title="北单 胜负过关">过</span><span class="oc-bd-guo">'+fmtHcp(m.ahbd_cur_handicap)+'</span><span class="oc-cur"> '+spTxt(m.ahbd_cur_home)+'/'+spTxt(m.ahbd_cur_away)+'</span></div>';
     }
     if(L) html += '<div class="oc-sep-line"></div>' + L;
   }
