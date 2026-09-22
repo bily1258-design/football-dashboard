@@ -23,7 +23,7 @@ DOCS_DATA_DIR = os.path.join(os.path.dirname(SCRIPT_DIR), "docs", "data")
 
 # 导入titan007工具
 sys.path.insert(0, SCRIPT_DIR)
-from titan007_utils import get_match_list, get_odds_history, fetch_url, translate_team_name, fetch_1x2d_odds, _normalize_league
+from titan007_utils import get_match_list, get_odds_history, fetch_url, translate_team_name, fetch_1x2d_odds, _normalize_league, _is_ascii
 
 # titan007 cid映射: 177=平博, 432=HKJC
 CID_PINNACLE = '177'  # 平博(Pinnacle)
@@ -103,6 +103,51 @@ def _get_cn_from_1x2d(sid):
     if h_cn and a_cn:
         return (_s2t.convert(h_cn.strip()), _s2t.convert(a_cn.strip()))
     return None
+
+
+def _get_league_cn_from_1x2d(sid):
+    """从1x2d.js获取中文联赛名(match/lib名称)，作为联赛名兜底
+
+    仅在 HKJC_LEAGUE_CN 表里没有的英文联赛代号上调用（新联赛出现时）
+    """
+    url = f'https://1x2d.titan007.com/{sid}.js'
+    req = urllib.request.Request(url, headers={
+        'User-Agent': 'Mozilla/5.0', 'Referer': 'https://live.titan007.com/'
+    })
+    try:
+        raw = urllib.request.urlopen(req, timeout=8).read()
+    except Exception:
+        return None
+
+    def decode(match):
+        if not match:
+            return None
+        try:
+            return match.group(1).decode('utf-8')
+        except UnicodeDecodeError:
+            try:
+                return match.group(1).decode('gbk')
+            except Exception:
+                return None
+
+    cn = decode(re.search(rb'var matchname_f="([^"]*)"', raw))
+    if not cn:
+        cn = decode(re.search(rb'var matchname_cn="([^"]*)"', raw))
+    if not cn:
+        return None
+    name = cn.strip()
+    return _normalize_league(_s2t.convert(name)) if name else None
+
+
+def _resolve_league(ev, sid):
+    """联赛名：先查表归一化；仍是英文代号时用1x2d的官方中文名兜底"""
+    ev = _normalize_league(ev)
+    if _is_ascii(ev):
+        cn = _get_league_cn_from_1x2d(sid)
+        if cn and not _is_ascii(cn):
+            print(f'[LEAGUE] 未收录代号 {ev!r} → {cn!r} (sid={sid})')
+            ev = cn
+    return ev
 
 
 def fetch_hkjc_matches(date_str, max_matches=0, delay=0.3, workers=3):
@@ -188,7 +233,7 @@ def fetch_hkjc_matches(date_str, max_matches=0, delay=0.3, workers=3):
             'fid': sid,  # 用sid代替fid（保持下游兼容）
             'date': mt_date,  # 1x2d MatchTime日期优先
             'match_time': mt_time,  # 1x2d MatchTime时间优先
-            'event': m.get('event', m.get('league', '')),
+            'event': _resolve_league(m.get('event', m.get('league', '')), sid),
             'home_team': home_name,
             'away_team': away_name,
             'score': score_from_bfdata,

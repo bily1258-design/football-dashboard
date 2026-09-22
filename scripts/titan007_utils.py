@@ -17,13 +17,83 @@ _s2t = opencc.OpenCC('s2t')  # 简体→繁体转换，用于统一队名匹配
 # 联赛名归一化：球探同一联赛偶尔缩写不同
 LEAGUE_NORMALIZE = {
     '巴乙': '巴西乙',     # 巴西乙级联赛
+    '巴甲': '巴西甲',     # 巴西甲级联赛
+    '美冠': '美超',       # 美冠联=USL Championship，与美超同联赛
+    '美女職': '美職女聯',  # NWSL
 }
 
+# HKJC(香港马会)场次的联赛名：titan007源常给英文代号，统一译成中文
+# 命名取自 titan007 官方繁体联赛名(matchname_f)；其中「杯/盃」等与看板既有中文
+# 联赛名不一致的，按既有名字统一(见行尾「统一」注释)，避免同联赛两个名字。
+HKJC_LEAGUE_CN = {
+    'ACL2': '亞冠聯2',
+    'ACLE': '亞冠精英',
+    'AFC U20': '亞洲杯U20',
+    'AGSW': '亞運女足',
+    'ARG C': '阿根廷杯',          # 统一：titan007 作「阿根廷盃」
+    'BEL D1': '比甲',
+    'CAG': '中美運男',
+    'CAN CHL': '加拿冠',
+    'CAF YCQ': '非青盃外',
+    'CHI D1': '智利甲',
+    'Chile Cup': '智利盃',
+    'CON CLA': '解放者杯',
+    'Copa do Brasil': '巴西杯',   # 统一：titan007 作「巴西盃」
+    'DAN Cup': '丹麥杯',          # 统一：titan007 作「丹麥盃」
+    'EFL Trophy': '英錦賽',
+    'ENG FAWSL': '英總女超',
+    'ENG L1': '英甲',
+    'ENG LC': '英聯杯',           # 统一：titan007 作「英聯盃」
+    'ENG PR': '英超',
+    'Emirates C': '酋長盃',
+    'FIFA IC': '世俱洲際盃',      # 统一：titan007 作「世俱洲際杯」
+    'FIFA WU20': '世女盃U20',
+    'GER WD1': '德女聯',
+    'GERC': '德國杯',             # 统一：titan007 作「德國盃」
+    'Ger LTC': '德電信盃',
+    'HOL D2': '荷乙',
+    'HOL WD1': '荷女甲',
+    'INT FRL': '國際友誼賽',      # 统一：titan007 作「國際友誼」
+    'ITA Cup': '意杯',            # 统一：titan007 作「意盃」
+    'JE Cup': '日皇盃',
+    'JPN LC': '日聯杯',           # 统一：titan007 作「日聯盃」
+    'JWL': '日女聯',
+    'Mex MFW': '墨西女超',
+    'NCAL Cup': '中北美杯',
+    'NOR A CUP': '北冠杯',
+    'NORW': '挪女超',
+    'QAT D1': '卡塔爾聯',
+    'QATL CUP': '卡塔盃',
+    'QCP Cup': '卡王儲盃',
+    'RUS Cup': '俄盃',
+    'RUS WPL': '俄女超',
+    'SAWC': '意甲女杯',
+    'SK CUP': '沙王冠',
+    'SPA WD1': '西女超',
+    'SPL': '沙地聯',
+    'SUI Cup': '瑞士盃',
+    'SWE Cup': '瑞典盃',
+    'THA PR': '泰超',
+    'U Cup': '烏拉盃',
+    'UAE': '阿聯盃',
+    'UAE C': '阿聯酋杯',
+    'UAE LP': '阿聯酋超',
+    'UEFA W EL': '女歐霸盃',
+    'UEFA WUC': '歐女盃',
+    'URU Cup': '烏拉盃',
+    'WJLC': '女日聯盃',
+}
+
+def _is_ascii(s):
+    return bool(s) and all(ord(c) < 128 for c in s)
+
 def _normalize_league(name):
-    """归一化联赛名"""
+    """归一化联赛名：英文代号→中文，中文别名统一"""
     if not name:
         return name
-    return LEAGUE_NORMALIZE.get(name.strip(), name.strip())
+    n = name.strip()
+    n = HKJC_LEAGUE_CN.get(n, n)
+    return LEAGUE_NORMALIZE.get(n, n)
 
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
