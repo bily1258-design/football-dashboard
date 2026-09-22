@@ -25255,7 +25255,7 @@
     "fid": "3088371",
     "teams": "科林蒂安女足 vs EC巴伊亞女足",
     "match_time": "2026-09-22 08:30",
-    "score": "",
+    "score": "1-0",
     "signal": "value",
     "signal_cn": "价值投注",
     "outcome": "away",
@@ -25265,13 +25265,16 @@
     "kelly": 0.1725,
     "signal_extra": [
       "ruleA"
-    ]
+    ],
+    "result": "loss",
+    "profit": -1.0,
+    "settled_at": "2026-09-22T13:01:24.665529"
   },
   {
     "fid": "3010431",
     "teams": "佩特羅魯 vs FK米耶爾庫雷亞丘克",
     "match_time": "2026-09-22 02:00",
-    "score": "",
+    "score": "2 - 0",
     "signal": "value",
     "signal_cn": "价值投注",
     "outcome": "away",
@@ -25281,7 +25284,10 @@
     "kelly": 0.1727,
     "signal_extra": [
       "ruleA"
-    ]
+    ],
+    "result": "loss",
+    "profit": -1.0,
+    "settled_at": "2026-09-22T13:01:24.665640"
   },
   {
     "fid": "2940187",
@@ -25303,7 +25309,7 @@
     "fid": "2962645",
     "teams": "拉努斯 vs 拉普拉塔大學生",
     "match_time": "2026-09-22 08:15",
-    "score": "",
+    "score": "2 - 1",
     "signal": "weight",
     "signal_cn": "⚡高权重",
     "outcome": "draw",
@@ -25312,13 +25318,16 @@
     "edge": 0,
     "kelly": 0,
     "weight": 1.14,
-    "same_dir": false
+    "same_dir": false,
+    "result": "loss",
+    "profit": -1.0,
+    "settled_at": "2026-09-22T13:01:24.665680"
   },
   {
     "fid": "2962639",
     "teams": "巴拉卡斯中央隊 vs 門多薩獨立",
     "match_time": "2026-09-22 06:00",
-    "score": "",
+    "score": "0 - 1",
     "signal": "weight",
     "signal_cn": "⚡高权重",
     "outcome": "draw",
@@ -25327,13 +25336,16 @@
     "edge": 0,
     "kelly": 0,
     "weight": 1.14,
-    "same_dir": false
+    "same_dir": false,
+    "result": "loss",
+    "profit": -1.0,
+    "settled_at": "2026-09-22T13:01:24.665707"
   },
   {
     "fid": "2962638",
     "teams": "阿爾多斯維 vs 圖庫曼競技",
     "match_time": "2026-09-22 01:30",
-    "score": "",
+    "score": "1 - 0",
     "signal": "weight",
     "signal_cn": "⚡高权重",
     "outcome": "away",
@@ -25342,6 +25354,86 @@
     "edge": 0,
     "kelly": 0,
     "weight": 1.14,
-    "same_dir": true
+    "same_dir": true,
+    "result": "loss",
+    "profit": -1.0,
+    "settled_at": "2026-09-22T13:01:24.665730"
+  },
+  {
+    "fid": "3089641",
+    "teams": "莫桑比克U20 vs 毛里求斯U20",
+    "match_time": "2026-09-22 21:00",
+    "score": "",
+    "signal": "value",
+    "signal_cn": "价值投注",
+    "outcome": "away",
+    "odds": 20.0,
+    "ev": 3.888,
+    "edge": 0.1944,
+    "kelly": 0.2046,
+    "signal_extra": [
+      "ruleA"
+    ]
+  },
+  {
+    "fid": "3049669",
+    "teams": "韓國U23(中) vs 沙特阿拉伯U23",
+    "match_time": "2026-09-22 18:00",
+    "score": "",
+    "signal": "value",
+    "signal_cn": "价值投注",
+    "outcome": "away",
+    "odds": 7.9,
+    "ev": 1.4506,
+    "edge": 0.1836,
+    "kelly": 0.2102,
+    "signal_extra": [
+      "ruleA"
+    ]
+  },
+  {
+    "fid": "3092350",
+    "teams": "阿森納女足 vs 靴爾科治女足",
+    "match_time": "2026-09-23 03:00",
+    "score": "",
+    "signal": "value",
+    "signal_cn": "价值投注",
+    "outcome": "away",
+    "odds": 30.0,
+    "ev": 6.653,
+    "edge": 0.2218,
+    "kelly": 0.2294,
+    "signal_extra": [
+      "ruleA"
+    ]
+  },
+  {
+    "fid": "3012999",
+    "teams": "米爾頓凱恩斯 vs 克勞利",
+    "match_time": "2026-09-23 02:00",
+    "score": "",
+    "signal": "value",
+    "signal_cn": "价值投注",
+    "outcome": "away",
+    "odds": 5.36,
+    "ev": 0.616,
+    "edge": 0.1149,
+    "kelly": 0.1413,
+    "signal_extra": [
+      "ruleA"
+    ]
+  },
+  {
+    "fid": "3012982",
+    "teams": "斯文登 vs 紐波特",
+    "match_time": "2026-09-23 02:00",
+    "score": "",
+    "signal": "value",
+    "signal_cn": "价值投注",
+    "outcome": "away",
+    "odds": 3.76,
+    "ev": 0.3544,
+    "edge": 0.0942,
+    "kelly": 0.1284
   }
 ]
