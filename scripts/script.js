@@ -53,7 +53,7 @@ function renderHighWeight(m){
   var dirs=['home','draw','away'];
   var sameDir=(m.model_prediction===dirs[tsi]);
   if(!sameDir) return'';
-  return'<span class="hw-warn" title="⚡'+m.importance_weight.toFixed(2)+' 且 模型与TS同向: 大样本 1108 场命中 48.3%% / 均赔 2.12 (隐含 50.9%%, ROI -7.0%%); 非强避雷, 仅记号">⚠️⚡避雷</span>';
+  return'<span class="hw-warn" title="⚡'+m.importance_weight.toFixed(2)+' 且 模型与TS同向: 大样本 1108 场命中 48.3% / 均赔 2.12 (隐含 50.9%, ROI -7.0%); 非强避雷, 仅记号">⚠️⚡避雷</span>';
 }
 function renderForm(s){
   if(!s||!s.home_recent||s.home_recent.length===0)return'';
