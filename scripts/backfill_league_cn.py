@@ -47,7 +47,21 @@ def backfill_file(path, dry_run=False):
             if not dry_run:
                 m['event'] = new
 
-    if changed and not dry_run:
+    # 2026-09-24: 源数据只有 event(联赛名), 存量 results.json 的 league 字段全空 →
+    # 用（已归一化的）event 兜底填 league。只在原本就带 league 字段的文件里补（results_light 不含该字段, 不动）。
+    filled = 0
+    for m in matches:
+        if not isinstance(m, dict) or 'league' not in m:
+            continue
+        if (m.get('league') or '').strip():
+            continue
+        lg = _normalize_league((m.get('event') or '').strip())
+        if lg:
+            filled += 1
+            if not dry_run:
+                m['league'] = lg
+
+    if (changed or filled) and not dry_run:
         tmp = path + '.tmp'
         with open(tmp, 'w', encoding='utf-8') as f:
             json.dump(holder if holder is not None else matches, f,
@@ -55,10 +69,10 @@ def backfill_file(path, dry_run=False):
         os.replace(tmp, path)
 
     total = sum(changed.values())
-    print(f'[{path}] 改动 {total} 条' + (' (dry-run)' if dry_run else ''))
+    print(f'[{path}] 联赛名归一化 {total} 条 / league 兜底 {filled} 条' + (' (dry-run)' if dry_run else ''))
     for (o, n), c in changed.most_common():
         print(f'   {c:5d}  {o} → {n}')
-    return total
+    return total + filled
 
 
 def main():

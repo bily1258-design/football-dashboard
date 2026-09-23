@@ -1627,10 +1627,11 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
 
         # ─── 统一信号 (2026-09-24: 原 ⚡权重 / ⚠️低置信 / 🚩高置信 三记号合并为 1 个信号) ──
         # 实测 n=4764 完赛(2026-09-24), 命中=主推方向正确:
-        #   🟢强跟 = LGBM最大值≥53% 且 模型同向≥40%   → 命中 90.5% (n=63)
-        #   🟡中性 = 0.40 ≤ LGBM最大值 < 0.53         → 命中 61.4% (n=2109)
+        #   🟢强跟 = LGBM最大值≥45% 且 模型同向≥40%   → 命中 73.4% (n=919)
+        #                                                            (原门槛 53% 时 🟢 仅 63 场, 样本过少; 0.45~0.53 段实测仍为正 edge)
+        #   🟡中性 = 0.40 ≤ LGBM最大值 < 0.45         → 命中 53.9% (n=1250, ROI 略负)
         #   🔴避雷 = LGBM最大值 < 0.40                → 命中 41.8% (n=2592)
-        #            其中 主推方向赔率<1.5 是硬雷: 53.3% vs 隐含71.5% (-18.2pp, n=75)
+        #            其中 主推方向赔率<1.5 是硬雷: 52.4% vs 隐含69.4% (-17.1pp, n=21)
         # 旧 ⚡(weight≥1.14 且 模型=TS 同向): 1108 场 48.3% / ROI -7.0% ≈ 价格, 无独立信息 → 并入本信号
         warning = ''
         try:
@@ -1640,7 +1641,7 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             gap = raw_vals[0] - raw_vals[1]
 
             model_val = [model_w, model_d, model_l][ldir_idx]
-            if lmax >= 0.53 and model_val >= 0.40:
+            if lmax >= 0.45 and model_val >= 0.40:
                 warning = '🟢'
             elif lmax >= 0.40:
                 warning = '🟡'
@@ -1718,7 +1719,7 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             'comparison': comparison,
             'pin_comparison': pin_comparison,
             'league_baseline': league_baseline,
-            'league': m.get('league', ''),
+            'league': m.get('league') or m.get('event', ''),   # 2026-09-24: 源数据只有 event(联赛名), league 全空 → event 兜底
             'home_rank': m.get('home_rank', 0),
             'away_rank': m.get('away_rank', 0),
             'home_pts': m.get('home_pts', 0),

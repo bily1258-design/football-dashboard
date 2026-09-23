@@ -46,12 +46,13 @@ function sigTier(w){
   return '';
 }
 var SIG_META={
-  strong:['sig-strong','🟢强跟','🟢强跟: LGBM≥53% 且 模型同向≥40% — 实测命中 90.5% (n=63)'],
-  mid:['sig-mid','🟡中性','🟡中性: LGBM 40~53% — 实测命中 61.4% (n=2109)'],
-  weak:['sig-weak','🔴避雷','🔴避雷: LGBM<40% — 实测命中 41.8% (n=2592); 主推方向赔率<1.5 为硬雷(命中 53.3% vs 隐含 71.5%, n=75)']
+  strong:['sig-strong','🟢强跟','🟢强跟: LGBM≥45% 且 模型同向≥40% — 实测命中 73.4% (n=919)'],
+  mid:['sig-mid','🟡中性','🟡中性: LGBM 40~45% — 实测命中 53.9% (n=1250)'],
+  weak:['sig-weak','🔴避雷','🔴避雷: LGBM<40% — 实测命中 41.8% (n=2592); 主推方向赔率<1.5 为硬雷(命中 52.4% vs 隐含 69.4%, n=21)']
 };
 // 2026-09-24: 三记号合并为 1 个信号, 并复用看板原有「LGBM 前置圆点」作为唯一位点(不再另加徽章)
-// 依据: 实测 n=4764 完赛 —— 🟢90.5% / 🟡61.4% / 🔴41.8%; 旧 ⚡ 1108 场 48.3%·ROI-7.0% ≈ 价格, 无独立信息
+// 依据: 实测 n=4764 完赛(门槛 2026-09-24 由 53% 下调至 45%) —— 🟢73.4%(n=919) / 🟡53.9%(n=1250) / 🔴41.8%(n=2592)
+//       旧 ⚡ 1108 场 48.3%·ROI-7.0% ≈ 价格, 无独立信息; 旧 53% 门槛下 🟢 仅 63 场, 样本过少
 function renderForm(s){
   if(!s||!s.home_recent||s.home_recent.length===0)return'';
   var hf=s.home_recent, af=s.away_recent;
@@ -97,7 +98,7 @@ function matchTier(m){
   var l=[m.lgbm_win||0,m.lgbm_draw||0,m.lgbm_loss||0];
   var mx=Math.max.apply(null,l), i=l.indexOf(mx);
   var mv=[m.model_win||0,m.model_draw||0,m.model_loss||0][i];
-  if(mx>=0.53 && mv>=0.40) return 'strong';
+  if(mx>=0.45 && mv>=0.40) return 'strong';
   return mx>=0.40?'mid':'weak';
 }
 function sigDot(m){

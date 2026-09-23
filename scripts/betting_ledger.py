@@ -34,6 +34,12 @@ EV_MIN = 0.05          # 价值投注 EV 门槛
 EDGE_MIN = 0.02        # edge 门槛 (2026-08-12 双门槛)
 AWAY_EV_MIN = 0.5      # 规则A: 客胜 EV>0.5
 WEIGHT_MIN = 1.14      # ⚡高权重门槛
+# 2026-09-24 用户拍板(方案③): value/ruleA 限赔率 ≤5.0
+# 依据: 实测"宣称 edge/EV 无预测力"——宣称 edge 0.10-0.20 (n=229) 实际 -1.7pp,
+# edge>0.20 (n=63) 实际 -2.6pp (越高越差); 全月皆负 (6月-0.2pp/7月-3.2pp/8月-1.8pp/9月-1.6pp);
+# 且赔率 1.0-5.0 以外的档位 ROI 全负。故对 value 与 ruleA(同一深盘冷门宇宙)一并限赔率。
+VALUE_ODDS_MAX = 5.0
+VALUE_ODDS_MAX_SIGNALS = ('value', 'ruleA')
 TOP_N_PER_DAY = 3      # 每日限额: 每天只记 EV 最高的 N 场 (2026-08-15 新增; 回测 top1 +4.94 / top3 -0.45, 取3均衡样本量)
 
 LABELS = {'home': '主胜', 'draw': '平局', 'away': '客胜'}
@@ -78,9 +84,11 @@ def collect_signals(matches, top_n=TOP_N_PER_DAY):
 
         match_signals = []
 
-        # ── 信号1: 价值投注 (双门槛) ──
+        # ── 信号1: 价值投注 (双门槛 + 赔率≤5.0) ──
         bv = m.get('best_value') or {}
-        if bv.get('outcome') and bv.get('ev', 0) > EV_MIN and bv.get('edge', 0) > EDGE_MIN:
+        _bv_odds = bv.get('odds', 0) or 0
+        if (bv.get('outcome') and bv.get('ev', 0) > EV_MIN and bv.get('edge', 0) > EDGE_MIN
+                and 1.0 < _bv_odds <= VALUE_ODDS_MAX):
             match_signals.append({
                 'fid': fid, 'teams': teams, 'match_time': mt, 'score': score,
                 'signal': 'value', 'signal_cn': '价值投注',
@@ -89,8 +97,9 @@ def collect_signals(matches, top_n=TOP_N_PER_DAY):
                 'kelly': bv.get('kelly', 0),
             })
 
-        # ── 信号2: 客胜规则A ──
-        if bv.get('outcome') == 'away' and bv.get('ev', 0) > AWAY_EV_MIN:
+        # ── 信号2: 客胜规则A (同批修正: 与 value 同一深盘冷门宇宙, 一并限赔率) ──
+        if (bv.get('outcome') == 'away' and bv.get('ev', 0) > AWAY_EV_MIN
+                and 1.0 < _bv_odds <= VALUE_ODDS_MAX):
             match_signals.append({
                 'fid': fid, 'teams': teams, 'match_time': mt, 'score': score,
                 'signal': 'ruleA', 'signal_cn': '客胜规则A',
@@ -194,6 +203,27 @@ def main():
 
     # 读取现有账本 (按 fid+signal 去重)
     ledger = load_ledger()
+
+    # ── 2026-09-24 用户拍板(方案③): value/ruleA 限赔率 ≤5.0 (含存量修正) ──
+    # 账本是增量式(load→append→save), 只加过滤不改历史 → 存量超限记录须显式剔除,
+    # 否则本次规则对已有战绩毫无影响。剔除 = 该场不再视为投注(与"不下注"同义);
+    # 旧账本可从 git 历史取回。
+    if VALUE_ODDS_MAX and VALUE_ODDS_MAX > 0:
+        before = len(ledger)
+        pruned_detail = {}
+        kept_v = []
+        for e in ledger:
+            if (e.get('signal') in VALUE_ODDS_MAX_SIGNALS
+                    and (e.get('odds') or 0) > VALUE_ODDS_MAX):
+                k = e.get('signal')
+                pruned_detail[k] = pruned_detail.get(k, 0) + 1
+                continue
+            kept_v.append(e)
+        ledger = kept_v
+        pruned = before - len(ledger)
+    else:
+        pruned = 0
+        pruned_detail = {}
 
     # ── 2026-09-16 修复结算断链 ──
     # 旧逻辑: (fid, signal) 已存在即 continue, 采集时 score 为空的记录永不再刷新比分,
@@ -300,6 +330,9 @@ def main():
     print('═' * 50)
     print(f'总记录: {len(ledger)} (其中⚡高权重 {len(wtrack)}; 新增 {new_count}, '
           f'本次补比分 {refreshed}, 去重 {dropped}, 结算 {settled})')
+    if pruned:
+        print(f'③ value 限赔率 ≤{VALUE_ODDS_MAX}: 剔除存量超限 {pruned} 条 '
+              f'({", ".join(f"{k}:{v}" for k, v in pruned_detail.items())})')
     print(f'已结算: {len(completed)}  待结算: {len(pending)}')
     if completed:
         total_profit = sum(e.get('profit', 0) for e in completed)
