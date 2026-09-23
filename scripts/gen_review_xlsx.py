@@ -8,6 +8,7 @@
 内容:
   Sheet1 复盘明细: 按档位(①高置信/②客客客/③胜胜胜)逐场: 方向/比分/结果/概率/EV/赔率/避雷/盈亏
   Sheet2 档位汇总: 每档 场数/完赛/命中/命中率/净盈亏
+  2026-09-23 撤销避雷汇总: 无 Sheet3, 避雷场次照进明细并计入命中率/净盈亏(保留避雷列标记)
 """
 import json
 import os
@@ -227,12 +228,11 @@ def sec_label(title):
     return t
 
 
-def build_rows(sections, avoid_teams=None):
+def build_rows(sections):
     """sections → 表格行列表 (含结果/盈亏)
-    avoid_teams: 避雷场次 teams 集合 — 2026-08-31 用户拍板: 按场次全局过滤(跨档位),
-    同一场在任一档带🚫/⚠️⚡即所有档位都过滤, 避免②③档干净条目混入复盘明细.
+    2026-09-23 用户拍板(撤销避雷汇总): 不再过滤避雷场次 —— 避雷场次照进复盘明细
+    (行内保留「避雷」列 🚫 标记提示), 并照常计入命中率/净盈亏.
     """
-    avoid_teams = avoid_teams or set()
     rows = []
     for idx, title, matches in sections:
         if idx == '⚠️':
@@ -240,9 +240,6 @@ def build_rows(sections, avoid_teams=None):
         default_dir = '客' if idx in ('①', '②') else ('主' if idx == '③' else '')
         for mt in matches:
             star = mt['star'] == '★'
-            # 2026-09-01 用户拍板: ★场次豁免过滤(★=方向高置信>⚡避雷), 带★不进avoid_teams
-            if mt['teams'] in avoid_teams and not star:   # 避雷场次全档位过滤, ★豁免
-                continue
             d = mt['dir'] or default_dir
             hk_odds, mdl, lgbm, ev = '', '', '', ''
             tsd = tsp = ''
@@ -326,18 +323,9 @@ def main():
     if not os.path.exists(MD_PATH):
         print(f'❌ 未找到 {MD_PATH}, 先跑 fetch_and_push.sh 生成复盘')
         return 1
+    # avoids: 旧格式清单的⚠️档, 现行清单已无该档(2026-09-23 撤销避雷汇总), 仅解析兼容
     sections, avoids = parse_md(MD_PATH)
-    # 2026-08-31 用户拍板: 按场次全局过滤(跨档位)。避雷teams集合 = 避雷汇总 ∪ 档位内带标记场次,
-    # 避免避雷汇总漏收(如安特卫普带⚠️⚡但汇总未收录)导致标记场次混入复盘明细.
-    avoid_teams = {av['teams'] for av in avoids}
-    for _, _, matches in sections:
-        for mt in matches:
-            if mt.get('avoid'):
-                avoid_teams.add(mt['teams'])
-    # 2026-09-02 用户拍板: 收集带★的场次集合(★豁免避雷), 避雷汇总里标★以示豁免保留
-    star_teams = {mt['teams'] for _, _, matches in sections for mt in matches
-                  if mt.get('star') == '★'}
-    rows = build_rows(sections, avoid_teams)
+    rows = build_rows(sections)
     wb = Workbook()
 
     # ─── Sheet1 复盘明细 ─────────────────────────
@@ -451,30 +439,7 @@ def main():
     for ci, w in enumerate([12, 8, 8, 8, 10, 10], 1):
         ws2.column_dimensions[chr(64 + ci)].width = w
 
-    # ─── Sheet3 避雷汇总 ─────────────────────────
-    ws3 = wb.create_sheet('避雷汇总')
-    ws3['A1'] = '⚠️🚫 避雷场次（历史败率 87-93%，慎跟）'
-    ws3['A1'].font = SECTION_FONT
-    hdrs3 = ['日期', '时间', '联赛', '对阵', '避雷原因', '★豁免']
-    for ci, h in enumerate(hdrs3, 1):
-        cell = ws3.cell(row=2, column=ci, value=h)
-        cell.font = HEADER_FONT
-        cell.fill = HEADER_FILL
-        cell.border = BORDER
-        cell.alignment = Alignment(horizontal='center')
-    rr = 3
-    for av in avoids:
-        mark = '★' if av['teams'] in star_teams else ''
-        for ci, v in enumerate([av['date'], av['time'], av['league'], av['teams'],
-                                av['reason'], mark], 1):
-            cell = ws3.cell(row=rr, column=ci, value=v)
-            cell.border = BORDER
-            cell.fill = PatternFill('solid', fgColor='FFC7CE')
-        rr += 1
-    for ci, w in enumerate([8, 8, 14, 32, 36, 8], 1):
-        ws3.column_dimensions[chr(64 + ci)].width = w
-    ws3.freeze_panes = 'A3'
-
+    # 2026-09-23 用户拍板: Sheet3 避雷汇总 整块撤销(避雷场次照推, 不单独汇总)
     os.makedirs(OUT_DIR, exist_ok=True)
     out_path = os.path.join(OUT_DIR, '复盘.xlsx')
     wb.save(out_path)

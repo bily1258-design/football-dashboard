@@ -71,6 +71,19 @@ def main():
     has_pnl = 0
     changed = 0
     lines = body.split('\n')
+    # 2026-09-23 用户拍板(撤销避雷汇总): 复盘 md 不再照抄旧清单的「⚠️🚫 避雷汇总」段
+    _clean, _i = [], 0
+    while _i < len(lines):
+        if '避雷汇总' in lines[_i] and lines[_i].lstrip().startswith('⚠️'):
+            if _clean and re.match(r'^={10,}$', _clean[-1]):
+                _clean.pop()                      # 连上方 ==== 分隔线一起去掉
+            _i += 1
+            while _i < len(lines) and not re.match(r'^={10,}$', lines[_i]):
+                _i += 1
+            continue
+        _clean.append(lines[_i])
+        _i += 1
+    lines = _clean
     sec = None  # 当前档位段: ②客客客无箭头隐含客, ③胜胜胜无箭头隐含主
     for i, line in enumerate(lines):
         if re.match(r'^[①②③]', line):

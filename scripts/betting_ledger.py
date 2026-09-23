@@ -286,8 +286,9 @@ def main():
     save_ledger(ledger)
 
     # ── 统计 ──
-    # 2026-09-16 口径修正: ⚡高权重(weight) 是避雷追踪标记, 不是投注 → 单列, 不计入战绩
-    bets = [e for e in ledger if e.get('signal') != 'weight']
+    # 2026-09-23 用户拍板(撤销避雷汇总, 避雷场次照推): ⚡高权重(weight) 并入战绩统计
+    # (旧口径 2026-09-16: weight 单列"避雷追踪标记, 非投注, 不计入战绩")
+    bets = list(ledger)
     wtrack = [e for e in ledger if e.get('signal') == 'weight']
     completed = [e for e in bets if e.get('result') in ('win', 'loss')]
     wins = [e for e in completed if e['result'] == 'win']
@@ -297,7 +298,7 @@ def main():
     print('═' * 50)
     print('📒 统一投注簿')
     print('═' * 50)
-    print(f'总记录: {len(ledger)} (投注 {len(bets)} / ⚡追踪 {len(wtrack)}; 新增 {new_count}, '
+    print(f'总记录: {len(ledger)} (其中⚡高权重 {len(wtrack)}; 新增 {new_count}, '
           f'本次补比分 {refreshed}, 去重 {dropped}, 结算 {settled})')
     print(f'已结算: {len(completed)}  待结算: {len(pending)}')
     if completed:
@@ -355,8 +356,9 @@ def main():
         ww = sum(1 for e in wcomp if e['result'] == 'win')
         wp = sum(e.get('profit', 0) for e in wcomp)
         print()
-        print('⚡高权重追踪 (避雷标记, 非投注, 不计入战绩):')
-        print(f"  {len(wcomp):4d}场  命中率{ww / len(wcomp) * 100:5.1f}%  " f'盈亏{wp:+.2f}')
+        share = f'  占已结算{len(wcomp) / len(completed) * 100:.0f}%' if completed else ''
+        print('⚡高权重追踪 (避雷标记, 已并入上方战绩):')
+        print(f"  {len(wcomp):4d}场  命中率{ww / len(wcomp) * 100:5.1f}%  " f'盈亏{wp:+.2f}{share}')
 
     # ── 影子追踪 (2026-09-16 立): 按赔率档只观察, 不改任何选号规则 ──
     if completed:
