@@ -37,23 +37,26 @@ function ahDir(m){
   }
   return d;
 }
-function renderWarning(w){
-  if(!w)return'';
-  var h='<span class="warn-badge">';
-  if(w.indexOf('🚩')>-1) h+='<span class="sig-strong" title="高置信同向: LGBM≥53%且模型同向≥40% — 历史命中90.2%(61场)">🚩</span>';
-  if(w.indexOf('⚠️')>-1) h+='<span class="warn-uncert" title="LGBM主推概率<40%: 方向不可信 — 历史命中42.3% vs 未标62.0%">⚠️</span>';
-  return h+'</span>';
+function sigTier(w){
+  // 统一信号 (2026-09-24 起 ai_analysis 写 🟢/🟡/🔴): 兼容历史数据里的 🚩/⚠️
+  if(!w) return '';
+  if(w.indexOf('🟢')>-1 || w.indexOf('🚩')>-1) return 'strong';
+  if(w.indexOf('🟡')>-1) return 'mid';
+  if(w.indexOf('🔴')>-1 || w.indexOf('⚠️')>-1) return 'weak';
+  return '';
 }
-// ⚡高权重: ⚡>=1.14 且 模型==TS 同向 (2026-08-11 小样本17场曾判命中 35.3%)
-// 2026-09-23 大样本复核: 账本 weight 信号已结算 1108 场 命中 48.3% ≈ 随机 —— 与 edge/kelly>=15% 那类真避雷不同, 仅保留行内记号
-function renderHighWeight(m){
-  if(!m.importance_weight || m.importance_weight<1.14) return'';
-  var ts=[m.ts_win||0,m.ts_draw||0,m.ts_loss||0];
-  var tsi=ts.indexOf(Math.max.apply(null,ts));
-  var dirs=['home','draw','away'];
-  var sameDir=(m.model_prediction===dirs[tsi]);
-  if(!sameDir) return'';
-  return'<span class="hw-warn" title="⚡'+m.importance_weight.toFixed(2)+' 且 模型与TS同向: 大样本 1108 场命中 48.3% / 均赔 2.12 (隐含 50.9%, ROI -7.0%); 非强避雷, 仅记号">⚠️⚡避雷</span>';
+var SIG_META={
+  strong:['sig-strong','🟢强跟','🟢强跟: LGBM≥53% 且 模型同向≥40% — 实测命中 90.5% (n=63)'],
+  mid:['sig-mid','🟡中性','🟡中性: LGBM 40~53% — 实测命中 61.4% (n=2109)'],
+  weak:['sig-weak','🔴避雷','🔴避雷: LGBM<40% — 实测命中 41.8% (n=2592); 主推方向赔率<1.5 为硬雷(命中 53.3% vs 隐含 71.5%, n=75)']
+};
+// 2026-09-24: 原 ⚡权重 / ⚠️低置信 / 🚩高置信 三记号合并为 1 个信号, 旧 hw-warn 徽章取消
+// 依据: 实测 n=4764 完赛 —— 🟢90.5% / 🟡61.4% / 🔴41.8%; 旧 ⚡ 1108 场 48.3%·ROI-7.0% ≈ 价格, 无独立信息
+function renderWarning(w){
+  var t=sigTier(w);
+  if(!t) return '';
+  var m=SIG_META[t];
+  return '<span class="warn-badge"><span class="'+m[0]+'" title="'+m[2]+'">'+m[1]+'</span></span>';
 }
 function renderForm(s){
   if(!s||!s.home_recent||s.home_recent.length===0)return'';
@@ -220,7 +223,7 @@ var showValueOnly = false;
 var showImportantOnly = false;
 function toggleWarnFilter(){
   showWarnedOnly = !showWarnedOnly;
-  document.getElementById('warnToggle').textContent = showWarnedOnly?'⚠️ 仅低置信':'⚠️ 全部';
+  document.getElementById('warnToggle').textContent = showWarnedOnly?'🔴 仅避雷':'🔴 全部';
   document.getElementById('warnToggle').className = 'warn-filter-btn'+(showWarnedOnly?' active':'');
   applyFilters();
 }
@@ -232,7 +235,7 @@ function toggleValueFilter(){
 }
 function toggleImportantFilter(){
   showImportantOnly = !showImportantOnly;
-  document.getElementById('impToggle').textContent = showImportantOnly?'⚡ 仅重要':'⚡ 全部';
+  document.getElementById('impToggle').textContent = showImportantOnly?'🟢 仅强跟':'🟢 全部';
   document.getElementById('impToggle').className = 'warn-filter-btn'+(showImportantOnly?' active':'');
   applyFilters();
 }
@@ -249,9 +252,9 @@ function applyFilters(){
       var comb = (m.model_prediction||'')+'-'+(m.lgbm_prediction||'');
       if(comb!==dirVal) return false;
     }
-    if(showWarnedOnly && (m.warning||'').indexOf('⚠️')<0) return false;
+    if(showWarnedOnly && sigTier(m.warning)!=='weak') return false;
     if(showValueOnly && (!m.best_value||m.best_value.ev<=0.05)) return false;
-    if(showImportantOnly && m.low_priority) return false;
+    if(showImportantOnly && sigTier(m.warning)!=='strong') return false;
     return true;
   });
   if(sortVal==='time') filtered.sort(function(a,b){return a.match_time.localeCompare(b.match_time)});
@@ -294,7 +297,7 @@ function renderTable(matches){
       '<td class="score-cell"><span>'+(m.score||(m.postponed?'推迟':'-'))+'</span></td>'+
       '<td class="team-name">'+m.away_team+'</td>'+
       '<td class="sim-cell">'+renderSimilarMatches(m)+'</td>'+
-      '<td><span class="'+dirClass(m.lgbm_prediction)+'">'+dirText(m.lgbm_prediction)+'</span> <span style="font-size:11px;color:#999">'+dirText(m.model_prediction)+(bdPick(m)?' <span class="ah-pred-inline">('+bdPick(m)+')</span>':'')+'</span><br><span class="weight-badge" title="权重 '+m.importance_weight.toFixed(2)+'">⚡'+m.importance_weight.toFixed(2)+'</span>'+renderHighWeight(m)+renderWarning(m.warning)+'<br>'+vbHtml+'</td>'+
+      '<td><span class="'+dirClass(m.lgbm_prediction)+'">'+dirText(m.lgbm_prediction)+'</span> <span style="font-size:11px;color:#999">'+dirText(m.model_prediction)+(bdPick(m)?' <span class="ah-pred-inline">('+bdPick(m)+')</span>':'')+'</span><br><span class="weight-badge" title="权重 '+m.importance_weight.toFixed(2)+'">⚡'+m.importance_weight.toFixed(2)+'</span>'+renderWarning(m.warning)+'<br>'+vbHtml+'</td>'+
 
       '<td class="'+hc+'">'+(hitTxt?hitTxt+'<br>':'')+(ahTxt?'<span class="ah-hit-dir">'+ahTxt+'</span>':'')+'</td>'+
       '<td class="odds-cell">'+renderOdds(m.comparison, m.pin_comparison, m)+'</td>'+

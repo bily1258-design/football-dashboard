@@ -1625,13 +1625,13 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
                     'source': p_label,
                 }
 
-        # ─── 风险标记 ──────────────────────────────────
-        # 🚩高置信同向(正向信号, 绿色渲染): LGBM最大值≥53% 且 模型同方向≥40%
-        #    实测(2026-09-21, n=4563完赛): 🚩组 61场命中55场 = 90.2%, 远高于无标记 72.3%
-        #    → 它不是陷阱, 原按预警渲染误导观感, 改绿色正向标记
-        # ⚠️低置信(警示): 仅 LGBM主推概率<40%
-        #    2026-09-21 用户拍板收紧: 原 (gap<10% 或 lmax<45%) 覆盖 86.1% ≈ 每场都标
-        #    新口径 覆盖 54.1%, 标记组命中 42.3% vs 未标 62.0%
+        # ─── 统一信号 (2026-09-24: 原 ⚡权重 / ⚠️低置信 / 🚩高置信 三记号合并为 1 个信号) ──
+        # 实测 n=4764 完赛(2026-09-24), 命中=主推方向正确:
+        #   🟢强跟 = LGBM最大值≥53% 且 模型同向≥40%   → 命中 90.5% (n=63)
+        #   🟡中性 = 0.40 ≤ LGBM最大值 < 0.53         → 命中 61.4% (n=2109)
+        #   🔴避雷 = LGBM最大值 < 0.40                → 命中 41.8% (n=2592)
+        #            其中 主推方向赔率<1.5 是硬雷: 53.3% vs 隐含71.5% (-18.2pp, n=75)
+        # 旧 ⚡(weight≥1.14 且 模型=TS 同向): 1108 场 48.3% / ROI -7.0% ≈ 价格, 无独立信息 → 并入本信号
         warning = ''
         try:
             lmax = max(lgbm_w, lgbm_d, lgbm_l)
@@ -1639,16 +1639,13 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             raw_vals = sorted([lgbm_feat_w, lgbm_feat_d, lgbm_feat_l], reverse=True)
             gap = raw_vals[0] - raw_vals[1]
 
-            # 🚩高置信同向(正向)
             model_val = [model_w, model_d, model_l][ldir_idx]
-            trap = (lmax >= 0.53 and model_val >= 0.40)
-            # ⚠️低置信(警示): 只看 LGBM 主推概率
-            uncer = (lmax < 0.40)
-
-            parts = []
-            if trap: parts.append('🚩')
-            if uncer: parts.append('⚠️')
-            warning = ''.join(parts)
+            if lmax >= 0.53 and model_val >= 0.40:
+                warning = '🟢'
+            elif lmax >= 0.40:
+                warning = '🟡'
+            else:
+                warning = '🔴'
         except Exception:
             pass
 
@@ -2187,8 +2184,8 @@ tr:hover{background:#f0f6ff}
 .ah-hit-dir{color:#7c3aed;font-size:10px;font-weight:600;margin-left:2px}
 .warn-badge{display:inline-block;margin-left:3px;vertical-align:middle}
 .warn-badge .sig-strong{cursor:help;font-size:12px;color:#16a34a}
-.warn-badge .warn-uncert{cursor:help;font-size:12px;margin-left:1px;color:#d97706}
-.hw-warn{display:inline-block;margin-left:4px;padding:0 4px;border:1px solid #e53935;border-radius:3px;color:#e53935;font-size:11px;font-weight:bold;cursor:help;vertical-align:middle}
+.warn-badge .sig-mid{cursor:help;font-size:12px;margin-left:1px;color:#ca8a04}
+.warn-badge .sig-weak{cursor:help;font-size:12px;margin-left:1px;color:#dc2626}
 .warn-filter-btn{cursor:pointer;padding:3px 8px;border-radius:4px;color:#666;font-size:12px}
 .warn-filter-btn.active{background:#fff3cd;color:#856404;font-weight:bold}
 @media(max-width:768px){
