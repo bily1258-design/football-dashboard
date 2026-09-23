@@ -49,7 +49,7 @@ BORDER = Border(left=THIN, right=THIN, top=THIN, bottom=THIN)
 
 SEC_RE = re.compile(r'^(①|②|③|⚠️)')
 MATCH_RE = re.compile(
-    r'^(\d{2}-\d{2})\s+(\d{2}:\d{2})\s+\[([^\]]+)\]\s+(.+?)\s*(→(主|平|客))?\s*(🎯|★)?\s*((?:🚫|⚠️⚡).*)?$')
+    r'^(\d{2}-\d{2})\s+(\d{2}:\d{2})\s+\[([^\]]+)\]\s+(.+?)\s*(→(主|平|客))?\s*(🎯|★)?\s*((?:🚫|⚠️⚡|💡机会).*)?$')
 AVOID_ITEM_RE = re.compile(
     r'^\s*(\d{2}-\d{2})\s+(\d{2}:\d{2})\s+\[([^\]]+)\]\s+(.+?)\s+🚫(.+)$')
 PROB_RE = re.compile(
@@ -105,6 +105,14 @@ def calc_stars(d, p0, p1, h0, h1, has_star, league):
     if hk_up:                                             # ③ 红线
         red = '🚫HKJC升水·不碰'
     return '★' * stars, red
+
+
+def _fmt_avoid(a):
+    """避雷列文本: 缩短标记; 💡机会(2026-09-24 上线)与🚫/⚠️⚡并列"""
+    if not a:
+        return ''
+    return (a.replace('🚫避雷', '🚫').replace('⚠️⚡提示', '⚠️⚡')
+             .replace('💡机会(edge≥15·TS同向)', '💡机会'))
 
 
 def parse_md(path):
@@ -211,7 +219,7 @@ def build_rows(sections):
                             pass
             league = mt['league'].replace('🟢', '')
             stars_str, red = calc_stars(d, p0, p1, h0, h1, star, league)
-            avoid = mt['avoid'].replace('🚫避雷', '🚫').replace('⚠️⚡提示', '⚠️⚡') if mt['avoid'] else ''
+            avoid = _fmt_avoid(mt['avoid'])
             # 2026-09-01 用户拍板: ★场次豁免过滤(★=方向高置信), 带★即使有red也保留
             # 2026-09-23 用户拍板: 撤销避雷汇总 → 🚫避雷/⚠️⚡提示 不再过滤, 避雷场次照推(避雷列保留标记);
             # 仅保留 HKJC升水(red) 红线过滤(历史命中率7.9%)
@@ -230,7 +238,7 @@ def build_rows(sections):
                 'hk_odds': float(hk_odds) if hk_odds else '',
                 'p_odds': f"{p0} → {p1}" if p0 else '',
                 'h_odds': f"{h0} → {h1}" if h0 else '',
-                'avoid': mt['avoid'].replace('🚫避雷', '🚫').replace('⚠️⚡提示', '⚠️⚡') if mt['avoid'] else '',
+                'avoid': _fmt_avoid(mt['avoid']),
                 'no': mt.get('no', ''),
             })
     return rows
@@ -289,9 +297,13 @@ def main():
                 cell.border = BORDER
                 if fill and not r['avoid']:
                     cell.fill = fill
-                if ci == 16 and r['avoid']:                        # 避雷列 红底红字(照推但标警示)
-                    cell.fill = AVOID_FILL
-                    cell.font = AVOID_FONT
+                if ci == 16 and r['avoid']:                        # 标记列: 🚫/⚠️⚡ 红, 纯💡机会 绿
+                    if '💡' in r['avoid'] and not any(x in r['avoid'] for x in ('🚫', '⚠️')):
+                        cell.fill = PatternFill('solid', fgColor='C6EFCE')
+                        cell.font = Font(color='006100', bold=True)
+                    else:
+                        cell.fill = AVOID_FILL
+                        cell.font = AVOID_FONT
                 if ci == 4 and r['league'] in HIGH_HIT_LEAGUES:   # 高命中率联赛 绿字加粗
                     cell.font = HIGH_HIT_FONT
                 if ci == 7 and r['star']:                          # 清单★ 深红加粗(豁免标记)

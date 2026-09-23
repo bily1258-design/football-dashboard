@@ -107,6 +107,11 @@ def is_sweet(m):
         return False
     return True
 
+def vb_dir(bv):
+    """best_value.outcome(home/draw/away) → 主/平/客; 缺失返回 None"""
+    return {'home': '主', 'draw': '平', 'away': '客'}.get(((bv or {}).get('outcome') or ''))
+
+
 def avoid_reasons(m, bv=None):
     """返回 🚫避雷原因列表(可多个); 空=不打 🚫
 
@@ -115,8 +120,17 @@ def avoid_reasons(m, bv=None):
       · EV>=2 (= 赔率×edge)   → 94.8% 败, 仅作 edge 附注
       · kelly>=15% 不再单独触发: 剔除 edge 后 522 场败率 79.7% = 客胜池基准 78.6%,
         ROI +10.6% 纯噪音 (数学上 edge>=15% ⇒ kelly>=15%, 附注亦无信息量)
-      · edge>=15% 且 TS 同向  → 62.7% 败 / ROI +186% (n=67, 小样本) → 不打避雷,
-        改由 shadow_ts_divergence.py 影子跟踪, 攒够样本再定是否标 💡
+      · edge>=15% 且 TS 同向  → 命中 37.3% vs 隐含 12.4% / ROI +229.5% (n=67)
+        2026-09-24 细化复核后升为 💡机会标: 各赔率档全正
+        (<6: 50.0% n=8 | 6-10: 42.9% n=35 | 10-13: 25.0% n=16 | >=13: 25.0% n=8), 故不设赔率上限
+        支持性大样本: TS同向且 edge<15% 亦为正 (n=895, 47.2% vs 27.9%, ROI +73.9%)
+      · 2026-09-24 细化否掉的两条:
+        (a) TS反向强度 gap=tsmax-自身TS概率 不加门槛 — 全池单调(<0.03:+22.2% → >=0.15:-49.0%),
+            但在 edge>=15% 集内不成立: gap 0.03~0.08 (n=35, ROI -64.3%) 比整体(-51.0%)更雷,
+            gap>=0.15 (n=433) 与 0.08~0.15 (n=60, -6.8%) 也比整体浅; 唯一无害的 gap<0.03 仅 9 场,
+            剔掉只让 🚫 集 ROI 从 -51.0% 变 -52.1% => 不值得加规则
+        (b) 赔率>=13 不单列 🚫 原因 — value池 159 场中 150 场(94%)已被 edge∧反向覆盖
+            (那 150 场 2.7% 命中/ROI -58.6%, 比整体更雷), 余 9 场反而是 TS同向 💡机会场(+366.7%, n=9)
       · ⚡高权重 已降级: 前向 1065 场命中 48.1% vs 隐含 50.9% (ROI -7.1%), 只出 ⚠️⚡提示
     """
     bv = bv or (m.get('best_value') or {})
@@ -223,6 +237,8 @@ def main():
             'ts_dir': tsd, 'ts_prob': tsp,  # TS最大概率及方向
             'avoid': is_hw_avoid(m),  # ⚡高权重弱提示(2026-09-24 降级)
             'av_reasons': avoid_reasons(m, bv),  # 扩展避雷原因
+            # 💡机会(2026-09-24): value方向 edge>=15% 且 TS 同向 → 高赔正期望
+            'chance': bool(vb_dir(bv) and (bv.get('edge') or 0) >= 0.15 and vb_dir(bv) == tsd),
         })
     rows.sort(key=lambda x: (x['mt'] or datetime.datetime.max, -x['ev']))
 
@@ -245,6 +261,8 @@ def main():
             tag = ' ⚠️⚡提示'
         if r.get('av_reasons') and r.get('avoid'):
             tag += '·⚡'  # 🚫与⚡同时命中: 保留 ⚡ 信息
+        if r.get('chance'):
+            tag += ' 💡机会(edge≥15·TS同向)'  # 与 🚫 互斥(反向/同向), 可与 ⚠️⚡提示 并存
         print(f"{t} [{lg_tag(r['league'])}] {r['home']} vs {r['away']} →{r['dir']}{tag}{r.get('no', '')}")
         print(f"   {r['dir']}概率: model {r['model_prob']*100:.0f}% | LGBM {r['lgbm_prob']*100:.0f}% | EV {r['ev']:.2f} | TS {r['ts_dir']}{r['ts_prob']*100:.0f}%")
         print(f"   平博 初/即: {r['pin_open']} → {r['pin_cur']} | HKJC 初/即: {r['hkjc_open']} → {r['hkjc_cur']}")
