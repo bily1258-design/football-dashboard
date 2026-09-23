@@ -50,14 +50,8 @@ var SIG_META={
   mid:['sig-mid','🟡中性','🟡中性: LGBM 40~53% — 实测命中 61.4% (n=2109)'],
   weak:['sig-weak','🔴避雷','🔴避雷: LGBM<40% — 实测命中 41.8% (n=2592); 主推方向赔率<1.5 为硬雷(命中 53.3% vs 隐含 71.5%, n=75)']
 };
-// 2026-09-24: 原 ⚡权重 / ⚠️低置信 / 🚩高置信 三记号合并为 1 个信号, 旧 hw-warn 徽章取消
+// 2026-09-24: 三记号合并为 1 个信号, 并复用看板原有「LGBM 前置圆点」作为唯一位点(不再另加徽章)
 // 依据: 实测 n=4764 完赛 —— 🟢90.5% / 🟡61.4% / 🔴41.8%; 旧 ⚡ 1108 场 48.3%·ROI-7.0% ≈ 价格, 无独立信息
-function renderWarning(w){
-  var t=sigTier(w);
-  if(!t) return '';
-  var m=SIG_META[t];
-  return '<span class="warn-badge"><span class="'+m[0]+'" title="'+m[2]+'">'+m[1]+'</span></span>';
-}
 function renderForm(s){
   if(!s||!s.home_recent||s.home_recent.length===0)return'';
   var hf=s.home_recent, af=s.away_recent;
@@ -96,11 +90,23 @@ function renderSimilarMatches(m){
   }
   return html;
 }
-function confDot(c){
-  if(c==null)return'';
-  var color=c>0.47?'#4caf50':c>=0.40?'#ffc107':'#f44336';
-  var label=c>0.47?'高':c>=0.40?'中':'低';
-  return'<span class="conf-dot" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+color+';margin-right:4px" title="置信度'+fmtPct(c)+'"></span>';
+function matchTier(m){
+  // 统一信号取档: 优先读数据里的 warning(🟢/🟡/🔴, 兼容历史 🚩/⚠️), 缺失时按同一口径现算
+  var t=sigTier(m.warning);
+  if(t) return t;
+  var l=[m.lgbm_win||0,m.lgbm_draw||0,m.lgbm_loss||0];
+  var mx=Math.max.apply(null,l), i=l.indexOf(mx);
+  var mv=[m.model_win||0,m.model_draw||0,m.model_loss||0][i];
+  if(mx>=0.53 && mv>=0.40) return 'strong';
+  return mx>=0.40?'mid':'weak';
+}
+function sigDot(m){
+  // 看板唯一位点: LGBM 前置圆点 = 合并后的 1 个信号 (2026-09-24)
+  if(m.lgbm_confidence==null)return'';
+  var t=matchTier(m); if(!t)return'';
+  var color={strong:'#4caf50',mid:'#ffc107',weak:'#f44336'}[t];
+  var sm=SIG_META[t];
+  return'<span class="conf-dot" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+color+';margin-right:4px" title="'+sm[2]+' | LGBM 置信 '+fmtPct(m.lgbm_confidence)+'"></span>';
 }
 
 // ─── 价值投注 ────────────────────────────────
@@ -252,9 +258,9 @@ function applyFilters(){
       var comb = (m.model_prediction||'')+'-'+(m.lgbm_prediction||'');
       if(comb!==dirVal) return false;
     }
-    if(showWarnedOnly && sigTier(m.warning)!=='weak') return false;
+    if(showWarnedOnly && matchTier(m)!=='weak') return false;
     if(showValueOnly && (!m.best_value||m.best_value.ev<=0.05)) return false;
-    if(showImportantOnly && sigTier(m.warning)!=='strong') return false;
+    if(showImportantOnly && matchTier(m)!=='strong') return false;
     return true;
   });
   if(sortVal==='time') filtered.sort(function(a,b){return a.match_time.localeCompare(b.match_time)});
@@ -297,12 +303,12 @@ function renderTable(matches){
       '<td class="score-cell"><span>'+(m.score||(m.postponed?'推迟':'-'))+'</span></td>'+
       '<td class="team-name">'+m.away_team+'</td>'+
       '<td class="sim-cell">'+renderSimilarMatches(m)+'</td>'+
-      '<td><span class="'+dirClass(m.lgbm_prediction)+'">'+dirText(m.lgbm_prediction)+'</span> <span style="font-size:11px;color:#999">'+dirText(m.model_prediction)+(bdPick(m)?' <span class="ah-pred-inline">('+bdPick(m)+')</span>':'')+'</span><br><span class="weight-badge" title="权重 '+m.importance_weight.toFixed(2)+'">⚡'+m.importance_weight.toFixed(2)+'</span>'+renderWarning(m.warning)+'<br>'+vbHtml+'</td>'+
+      '<td><span class="'+dirClass(m.lgbm_prediction)+'">'+dirText(m.lgbm_prediction)+'</span> <span style="font-size:11px;color:#999">'+dirText(m.model_prediction)+(bdPick(m)?' <span class="ah-pred-inline">('+bdPick(m)+')</span>':'')+'</span><br><span class="weight-badge" title="权重 '+m.importance_weight.toFixed(2)+'">⚡'+m.importance_weight.toFixed(2)+'</span><br>'+vbHtml+'</td>'+
 
       '<td class="'+hc+'">'+(hitTxt?hitTxt+'<br>':'')+(ahTxt?'<span class="ah-hit-dir">'+ahTxt+'</span>':'')+'</td>'+
       '<td class="odds-cell">'+renderOdds(m.comparison, m.pin_comparison, m)+'</td>'+
       '<td class="odds-cell" style="font-size:12px"><div>模型: <span class="odds-val odds-w">'+fmtPct(m.model_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.model_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.model_loss)+'</span></div>'+
-        '<div style="margin-top:3px">'+confDot(m.lgbm_confidence)+'LGBM: <span class="odds-val odds-w">'+fmtPct(m.lgbm_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.lgbm_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.lgbm_loss)+'</span>'+
+        '<div style="margin-top:3px">'+sigDot(m)+'LGBM: <span class="odds-val odds-w">'+fmtPct(m.lgbm_win)+'</span> <span class="odds-val odds-d">'+fmtPct(m.lgbm_draw)+'</span> <span class="odds-val odds-l">'+fmtPct(m.lgbm_loss)+'</span>'+
           '<div style="margin-top:2px"><span class="oc-label" style="margin-right:3px">分</span>'+
             '<span class="'+((m.model_win-m.lgbm_win)<-0.003?'oc-pct-down':(m.model_win-m.lgbm_win)>0.003?'oc-pct-up':'oc-pct-flat')+'">'+fmtPctSign((m.model_win-m.lgbm_win)*100)+'</span> '+
             '<span class="'+((m.model_draw-m.lgbm_draw)<-0.003?'oc-pct-down':(m.model_draw-m.lgbm_draw)>0.003?'oc-pct-up':'oc-pct-flat')+'">'+fmtPctSign((m.model_draw-m.lgbm_draw)*100)+'</span> '+
