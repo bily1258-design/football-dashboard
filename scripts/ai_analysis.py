@@ -1969,20 +1969,6 @@ def generate_frontend(results: List[Dict]):
         if bv and bv.get('kelly'):
             bv['kelly_weighted'] = round(bv['kelly'] * weight, 4)
 
-        # ===== 2026-09-24 事前过滤: ⚡反向价值注 → no_bet (看板 🚫 徽章) =====
-        # 依据: 同一场次 ⚡(weight>=1.14 且 模型=TS 同向) 方向与价值注相反 → value 侧 53 场仅 2 胜(3.8%), ROI -66.9%
-        # 判定在下注当时即可完成, 故为事前过滤(非事后筛); 记账层 scripts/betting_ledger.py 同步采用同一规则
-        if bv and weight >= 1.14 and not bv.get('no_bet'):
-            _pm = [match.get('model_win'), match.get('model_draw'), match.get('model_loss')]
-            _pt = [match.get('ts_win'), match.get('ts_draw'), match.get('ts_loss')]
-            if all(isinstance(x, (int, float)) for x in _pm + _pt):
-                _dir_m = 'win' if _pm[0] == max(_pm) else ('draw' if _pm[1] == max(_pm) else 'loss')
-                _dir_t = 'win' if _pt[0] == max(_pt) else ('draw' if _pt[1] == max(_pt) else 'loss')
-                _dir_bv = {'home': 'win', 'draw': 'draw', 'away': 'loss'}.get(bv.get('outcome'))
-                if _dir_m == _dir_t and _dir_bv and _dir_bv != _dir_m:
-                    bv['no_bet'] = True
-                    bv['no_bet_cn'] = '⚡反向·不投'
-
     # 回写 results.json（权重字段）
     with open(os.path.join(DOCS_DIR, 'data', 'results.json'), 'w', encoding='utf-8') as f:
         json.dump(output, f, ensure_ascii=False, separators=(',', ':'))
@@ -2214,7 +2200,6 @@ tr:hover{background:#f0f6ff}
 /* 价值投注徽章 */
 .vb-badge{cursor:pointer;display:inline-block;padding:1px 6px;border-radius:3px;font-size:11px;font-weight:600;margin-top:2px}
 .vb-hot{background:#dcfce7;color:#166534}
-.vb-nobet{background:#fee2e2;color:#b91c1c;cursor:not-allowed}
 .vb-warm{background:#fef3c7;color:#92400e}
 .vb-cool{background:#dbeafe;color:#1e40af}
 .vb-none{font-size:10px;color:#99aabb}
