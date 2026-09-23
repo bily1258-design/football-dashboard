@@ -281,7 +281,9 @@ function renderTable(matches){
         '<span class="odds-val odds-l">'+fmtPct(m.ts_loss)+'</span></div>';
     }
     var bv = m.best_value;
-    var vbHtml = bv && bv.ev > 0.05 ?
+    var vbHtml = (bv && bv.no_bet) ?
+      '<span class="vb-badge vb-nobet" data-fid="'+m.fid+'" title="🚫 ⚡反向·不投 (2026-09-24 起事前过滤): 本场 ⚡('+(m.importance_weight||0).toFixed(2)+', 模型=TS 同向) 方向与价值注 '+dirText(bv.outcome)+' 相反 — 历史 53 场仅 2 胜(3.8%), ROI -66.9%; 本注不下">🚫 '+'💰 '+fmtPct(bv.ev)+'</span>' :
+      bv && bv.ev > 0.05 ?
       '<span class="vb-badge '+(bv.ev>0.5?'vb-hot':bv.ev>0.2?'vb-warm':'vb-cool')+
       '" data-fid="'+m.fid+'" title="EV '+fmtPct(bv.ev)+' Kelly '+fmtPct(bv.kelly)+'">'+
       '💰 '+fmtPct(bv.ev)+'</span>' :
@@ -346,7 +348,8 @@ fetch('data/results_light.json', {cache:'no-cache'})
     allMatches = data.matches || [];
 
     // 价值投注统计
-    var valueCount = allMatches.filter(function(m){return m.best_value&&m.best_value.ev>0.05}).length;
+    var valueCount = allMatches.filter(function(m){return m.best_value&&m.best_value.ev>0.05&&!m.best_value.no_bet}).length;
+    var noBetCount = allMatches.filter(function(m){return m.best_value&&m.best_value.no_bet}).length;
 
     document.getElementById('loading').style.display='none';
     document.getElementById('table-wrap').style.display='block';
@@ -354,7 +357,7 @@ fetch('data/results_light.json', {cache:'no-cache'})
     document.getElementById('dateRange').textContent = data.date_range;
     document.getElementById('matchCount').textContent = data.total_matches+' 场';
     document.getElementById('hitRate').textContent = '🎯 '+data.hit_count+'/'+data.total_scored+' ('+fmtPct(data.hit_rate)+')';
-    document.getElementById('valueStats').textContent = '💰 价值: '+valueCount+' 场';
+    document.getElementById('valueStats').textContent = '💰 价值: '+valueCount+' 场'+(noBetCount?' (🚫⚡反向过滤 '+noBetCount+')':'');
 
     // 填充日期过滤 — 只列最近 14 天, 减少下拉选项与误选全量
     var sel = document.getElementById('dateFilter');

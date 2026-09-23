@@ -79,7 +79,10 @@ def collect_signals(matches, top_n=TOP_N_PER_DAY):
         match_signals = []
 
         # ── 信号1: 价值投注 (双门槛) ──
+        # 2026-09-24 事前过滤: ⚡反向(权重≥1.14 且 模型=TS 同向, 方向与本注相反) → 不下注
+        # 依据(2026-09-23 复盘): 同场反向 53 场 value 侧仅 2 胜(3.8%) / ROI -66.9%
         bv = m.get('best_value') or {}
+        nobet = bool(bv.get('no_bet'))
         if bv.get('outcome') and bv.get('ev', 0) > EV_MIN and bv.get('edge', 0) > EDGE_MIN:
             match_signals.append({
                 'fid': fid, 'teams': teams, 'match_time': mt, 'score': score,
@@ -87,6 +90,7 @@ def collect_signals(matches, top_n=TOP_N_PER_DAY):
                 'outcome': bv['outcome'], 'odds': bv.get('odds', 0),
                 'ev': bv.get('ev', 0), 'edge': bv.get('edge', 0),
                 'kelly': bv.get('kelly', 0),
+                'no_bet': nobet, 'no_bet_cn': '⚡反向·不投' if nobet else '',
             })
 
         # ── 信号2: 客胜规则A ──
@@ -97,6 +101,7 @@ def collect_signals(matches, top_n=TOP_N_PER_DAY):
                 'outcome': 'away', 'odds': bv.get('odds', 0),
                 'ev': bv.get('ev', 0), 'edge': bv.get('edge', 0),
                 'kelly': bv.get('kelly', 0),
+                'no_bet': nobet, 'no_bet_cn': '⚡反向·不投' if nobet else '',
             })
 
         # ── 信号3: ⚡高权重 (避雷, 不受限额) ──
@@ -140,6 +145,16 @@ def collect_signals(matches, top_n=TOP_N_PER_DAY):
             if extra:
                 keep['signal_extra'] = extra
             match_signals = [s for s in match_signals if s['signal'] != 'ruleA']
+
+        # ── 2026-09-24 事前过滤: ⚡反向价值注 → 标 no_bet(不下注) ──
+        # 同一场次价值注方向 与 ⚡方向 相反(历史上 53 场 0 场同向) → 该价值注不投
+        # ①本场即时可判(事前) ②仍留在账本里(带 no_bet 标记)供影子追踪对照
+        _v = next((s for s in match_signals if s['signal'] == 'value'), None)
+        _w = next((s for s in match_signals if s['signal'] == 'weight'), None)
+        if _v and _w and _v.get('outcome') != _w.get('outcome'):
+            _v['no_bet'] = True
+            _v['no_bet_cn'] = '⚡反向·不投'
+            _v['no_bet_with'] = _w.get('outcome')
 
         if match_signals:
             ev = max((s.get('ev', 0) or 0) for s in match_signals)
@@ -283,12 +298,29 @@ def main():
             e['settled_at'] = datetime.now().isoformat()
             settled += 1
 
+    # ── 回填 no_bet (2026-09-24 事前过滤, 历史行同样适用; 幂等) ──
+    by_fid = {}
+    for _e in ledger:
+        by_fid.setdefault(_e.get('fid'), []).append(_e)
+    nobet_filled = 0
+    for _fid, rows in by_fid.items():
+        vrows = [e for e in rows if e.get('signal') == 'value']
+        wdirs = {e.get('outcome') for e in rows if e.get('signal') == 'weight'}
+        if not vrows or not wdirs:
+            continue
+        for v in vrows:
+            if v.get('outcome') not in wdirs and not v.get('no_bet'):
+                v['no_bet'] = True
+                v['no_bet_cn'] = '⚡反向·不投'
+                nobet_filled += 1
+
     save_ledger(ledger)
 
     # ── 统计 ──
     # 2026-09-23 用户拍板(撤销避雷汇总, 避雷场次照推): ⚡高权重(weight) 并入战绩统计
     # (旧口径 2026-09-16: weight 单列"避雷追踪标记, 非投注, 不计入战绩")
-    bets = list(ledger)
+    bets = [e for e in ledger if not e.get('no_bet')]
+    nobet_rows = [e for e in ledger if e.get('no_bet')]
     wtrack = [e for e in ledger if e.get('signal') == 'weight']
     completed = [e for e in bets if e.get('result') in ('win', 'loss')]
     wins = [e for e in completed if e['result'] == 'win']
@@ -298,9 +330,12 @@ def main():
     print('═' * 50)
     print('📒 统一投注簿')
     print('═' * 50)
-    print(f'总记录: {len(ledger)} (其中⚡高权重 {len(wtrack)}; 新增 {new_count}, '
-          f'本次补比分 {refreshed}, 去重 {dropped}, 结算 {settled})')
+    print(f'总记录: {len(ledger)} (其中⚡高权重 {len(wtrack)}; 🚫⚡反向过滤 {len(nobet_rows)}; '
+          f'新增 {new_count}, 本次补比分 {refreshed}, 去重 {dropped}, 结算 {settled})')
     print(f'已结算: {len(completed)}  待结算: {len(pending)}')
+    if nobet_rows:
+        print(f"🚫 ⚡反向价值注已事前过滤(不下注/不计战绩): {len(nobet_rows)} 条 "
+              f"(影子对照 scripts/shadow_opposite_value.py)")
     if completed:
         total_profit = sum(e.get('profit', 0) for e in completed)
         win_rate = len(wins) / len(completed) * 100
