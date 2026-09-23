@@ -41,6 +41,7 @@ WEIGHT_MIN = 1.14      # ⚡高权重门槛
 VALUE_ODDS_MAX = 5.0
 VALUE_ODDS_MAX_SIGNALS = ('value', 'ruleA')
 TOP_N_PER_DAY = 3      # 每日限额: 每天只记 EV 最高的 N 场 (2026-08-15 新增; 回测 top1 +4.94 / top3 -0.45, 取3均衡样本量)
+SAME_MATCH_KEEP = 'weight'  # 同场双计修正: 同一 fid 同时有 weight(⚡大热)与 value(价值)时只记一条, 取哪侧 ('weight'|'value')
 
 LABELS = {'home': '主胜', 'draw': '平局', 'away': '客胜'}
 
@@ -313,12 +314,38 @@ def main():
             e['settled_at'] = datetime.now().isoformat()
             settled += 1
 
+    # ── 2026-09-24 用户拍板: 同场只记一条 (取 weight/⚡大热侧) ──
+    # 同场双计: 同一 fid 的 value(当时为深盘冷门) 与 weight(⚡大热) 各记一条、方向实测 100% 相反
+    # (43/43 组), 战绩里既双算又互相抵消。修正 = 每场只留一条计入战绩。
+    # 口径: 留行 + 打标记 + 不计战绩 (不删行、不改历史数值 → 可对账、可回退);
+    #       标记每次运行重算, 改 SAME_MATCH_KEEP 即可翻转取哪侧 (单纯改常数+重跑)。
+    for _e in ledger:
+        _e.pop('dedup_same_match', None)
+        _e.pop('dedup_kept', None)
+    _by_fid = {}
+    for _e in ledger:
+        _by_fid.setdefault(str(_e.get('fid', '')), []).append(_e)
+    same_match_pairs = 0
+    same_match_dropped = 0
+    for _fid, _rows in _by_fid.items():
+        _w = [r for r in _rows if r.get('signal') == 'weight']
+        _v = [r for r in _rows if r.get('signal') in VALUE_ODDS_MAX_SIGNALS]
+        if not (_w and _v):
+            continue
+        if _w[0].get('outcome') == _v[0].get('outcome'):
+            continue  # 同向不属双计
+        same_match_pairs += 1
+        for _r in (_v if SAME_MATCH_KEEP == 'weight' else _w):
+            _r['dedup_same_match'] = True
+            _r['dedup_kept'] = SAME_MATCH_KEEP
+            same_match_dropped += 1
+
     save_ledger(ledger)
 
     # ── 统计 ──
     # 2026-09-23 用户拍板(撤销避雷汇总, 避雷场次照推): ⚡高权重(weight) 并入战绩统计
     # (旧口径 2026-09-16: weight 单列"避雷追踪标记, 非投注, 不计入战绩")
-    bets = list(ledger)
+    bets = [e for e in ledger if not e.get('dedup_same_match')]
     wtrack = [e for e in ledger if e.get('signal') == 'weight']
     completed = [e for e in bets if e.get('result') in ('win', 'loss')]
     wins = [e for e in completed if e['result'] == 'win']
@@ -333,6 +360,9 @@ def main():
     if pruned:
         print(f'③ value 限赔率 ≤{VALUE_ODDS_MAX}: 剔除存量超限 {pruned} 条 '
               f'({", ".join(f"{k}:{v}" for k, v in pruned_detail.items())})')
+    if same_match_dropped:
+        print(f'同场双计修正: 剔除 {same_match_dropped} 条 (取 {SAME_MATCH_KEEP} 侧, 反向对 {same_match_pairs} 组; '
+              f'留行标 dedup_same_match, 不计战绩)')
     print(f'已结算: {len(completed)}  待结算: {len(pending)}')
     if completed:
         total_profit = sum(e.get('profit', 0) for e in completed)

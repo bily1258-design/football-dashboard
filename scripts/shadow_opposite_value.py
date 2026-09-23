@@ -51,11 +51,19 @@ def main():
     val = [b for b in done if b.get('signal') == 'value']
     grpA = [b for b in val if b['fid'] in flags and b.get('outcome') not in flags[b['fid']]]
     grpB = [b for b in val if b not in grpA]
+    # 2026-09-24 新口径: 组A 已按「同场只记一条·取 weight 侧」标 dedup_same_match → 不再计入战绩
+    off = [b for b in grpA if b.get('dedup_same_match')]
 
     print('⚡反向 value 影子追踪（只读；不改规则）')
     print(f'  数据源 {os.path.relpath(LEDGER)}  已结算 {len(done)} 条')
     print(fmt('A 同场有反向⚡', stats(grpA)))
     print(fmt('B 其余 value  ', stats(grpB)))
+    if off:
+        prints = stats(off)
+        print(f"  其中 A 组 {prints['n']} 注自 2026-09-24 起标 dedup_same_match（取 weight 侧）→ 已不计战绩:")
+        print(fmt('A 不计战绩的', prints))
+        print(f"    取 weight 侧的机会成本: 该 {prints['n']} 场若改取 value 侧 {prints['profit']:+.2f} 单位")
+        print(fmt('A 实际计入的', stats([b for b in grpA if not b.get('dedup_same_match')])))
     d = stats(grpA)['roi'] - stats(grpB)['roi']
     print(f"  组A ROI 落后组B {abs(d):.1f}pp" if d < 0 else f"  组A ROI 领先组B {d:.1f}pp")
 
