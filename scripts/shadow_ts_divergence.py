@@ -92,6 +92,9 @@ def load(since=None):
             continue
         fav = min(odds, key=lambda k: odds[k])
         tsmax = max(tw, td, tl)
+        bv = m.get('best_value') or {}
+        bv_dir = bv.get('outcome')
+        bv_odds = odds.get(bv_dir) if bv_dir else None
         rows.append({
             'date': date, 'league': m.get('league') or m.get('event') or '',
             'home': m.get('home_team'), 'away': m.get('away_team'), 'score': m.get('score'),
@@ -99,6 +102,11 @@ def load(since=None):
             'band': band_of(tsmax), 'tsmax': tsmax,
             'pick': lgbm_pick, 'odds': odds[lgbm_pick],
             'hit': (lgbm_pick == res), 'fid': m.get('fid'),
+            # ── 避雷器影子 (2026-09-24 方案A): value池 edge 分档 × TS 同向/反向 ──
+            'bv_dir': bv_dir, 'bv_edge': bv.get('edge'), 'bv_ev': bv.get('ev'),
+            'bv_hit': (bv_dir == res) if bv_dir else None,
+            'bv_ts_same': (argmax3(tw, td, tl) == bv_dir) if bv_dir else None,
+            'bv_odds': bv_odds if bv_odds else None,
         })
     return rows
 
@@ -147,6 +155,38 @@ def main():
             imp = sum(1 / r['odds'] for r in g) / n; hr = hit / n
             profit = sum((r['odds'] - 1) if r['hit'] else -1 for r in g)
             print(f'{CLASS_CN[cls]:<12}{bn:<12}{n:>5}{hr:>9.1%}{imp:>9.1%}{hr - imp:>+10.1%}{profit / n:>+10.1%}')
+    # ── 避雷器影子区 (2026-09-24 方案A 上线后追踪) ──
+    # 🚫 现只标 'edge>=15% 且 TS 反向'; 'edge>=15% 且 TS 同向' 历史 67 场 62.7% 败/ROI+186%
+    #    样本不足未改标记 → 此处前向累积, 同向组 n>=100 且 edge>0 时提示可考虑改标 💡
+    bv_rows = [r for r in rows if r['bv_dir'] and r['bv_odds']]
+    if bv_rows:
+        print('\n【避雷器影子: value池 edge 分档 × TS 同向/反向】(方案A: 只标 TS反向)')
+        print(f'{"分类":<22}{"n":>6}{"命中率":>9}{"隐含":>9}{"edge":>10}{"ROI":>10}')
+        groups = defaultdict(list)
+        for r in bv_rows:
+            e = r['bv_edge'] or 0
+            if e >= 0.15:
+                key = 'edge>=15%·TS反向' if not r['bv_ts_same'] else 'edge>=15%·TS同向'
+            else:
+                key = 'edge<15%(基准)'
+            groups[key].append(r)
+        for key in ['edge>=15%·TS反向', 'edge>=15%·TS同向', 'edge<15%(基准)']:
+            g = groups.get(key)
+            if not g:
+                continue
+            n = len(g); hit = sum(1 for r in g if r['bv_hit'])
+            imp = sum(1 / r['bv_odds'] for r in g) / n; hr = hit / n
+            profit = sum((r['bv_odds'] - 1) if r['bv_hit'] else -1 for r in g)
+            print(f'{key:<20}{n:>6}{hr:>9.1%}{imp:>9.1%}{hr - imp:>+10.1%}{profit / n:>+10.1%}')
+        same = groups.get('edge>=15%·TS同向') or []
+        if same:
+            n = len(same); hr = sum(1 for r in same if r['bv_hit']) / n
+            imp = sum(1 / r['bv_odds'] for r in same) / n
+            if n >= 100 and hr - imp > 0:
+                print(f'  ⚠ 同向组已达预警线 (n={n}, edge={hr - imp:+.1%}) → 可考虑改标 💡机会')
+            else:
+                print(f'  ⏳ 同向组追踪中 (n={n}, edge={hr - imp:+.1%}; 预警线 n>=100 且 edge>0)')
+
     # 预警线
     dh = [r for r in rows if r['cls'] == 'diverge_hot']
     if dh:

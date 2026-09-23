@@ -211,9 +211,9 @@ def build_rows(sections):
                             pass
             league = mt['league'].replace('🟢', '')
             stars_str, red = calc_stars(d, p0, p1, h0, h1, star, league)
-            avoid = mt['avoid'].replace('🚫避雷', '🚫').replace('⚠️⚡避雷', '⚠️⚡') if mt['avoid'] else ''
+            avoid = mt['avoid'].replace('🚫避雷', '🚫').replace('⚠️⚡提示', '⚠️⚡') if mt['avoid'] else ''
             # 2026-09-01 用户拍板: ★场次豁免过滤(★=方向高置信), 带★即使有red也保留
-            # 2026-09-23 用户拍板: 撤销避雷汇总 → 🚫避雷/⚠️⚡避雷 不再过滤, 避雷场次照推(避雷列保留标记);
+            # 2026-09-23 用户拍板: 撤销避雷汇总 → 🚫避雷/⚠️⚡提示 不再过滤, 避雷场次照推(避雷列保留标记);
             # 仅保留 HKJC升水(red) 红线过滤(历史命中率7.9%)
             if red and not star:
                 continue
@@ -230,7 +230,7 @@ def build_rows(sections):
                 'hk_odds': float(hk_odds) if hk_odds else '',
                 'p_odds': f"{p0} → {p1}" if p0 else '',
                 'h_odds': f"{h0} → {h1}" if h0 else '',
-                'avoid': mt['avoid'].replace('🚫避雷', '🚫').replace('⚠️⚡避雷', '⚠️⚡') if mt['avoid'] else '',
+                'avoid': mt['avoid'].replace('🚫避雷', '🚫').replace('⚠️⚡提示', '⚠️⚡') if mt['avoid'] else '',
                 'no': mt.get('no', ''),
             })
     return rows

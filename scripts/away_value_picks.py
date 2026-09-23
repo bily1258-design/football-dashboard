@@ -108,15 +108,26 @@ def is_sweet(m):
     return True
 
 def avoid_reasons(m, bv=None):
-    """返回避雷原因列表(可多个); 空=不避雷"""
-    reasons = []
-    if is_hw_avoid(m):
-        reasons.append('⚡高权重')
+    """返回 🚫避雷原因列表(可多个); 空=不打 🚫
+
+    2026-09-24 用户拍板方案A —— 4764 场已结算复核(results.json):
+      · edge>=15% 且 TS 反向  → 94.2% 败 / ROI -54.3% (n=537)   ← 唯一 🚫 触发条件
+      · EV>=2 (= 赔率×edge)   → 94.8% 败, 仅作 edge 附注
+      · kelly>=15% 不再单独触发: 剔除 edge 后 522 场败率 79.7% = 客胜池基准 78.6%,
+        ROI +10.6% 纯噪音 (数学上 edge>=15% ⇒ kelly>=15%, 附注亦无信息量)
+      · edge>=15% 且 TS 同向  → 62.7% 败 / ROI +186% (n=67, 小样本) → 不打避雷,
+        改由 shadow_ts_divergence.py 影子跟踪, 攒够样本再定是否标 💡
+      · ⚡高权重 已降级: 前向 1065 场命中 48.1% vs 隐含 50.9% (ROI -7.1%), 只出 ⚠️⚡提示
+    """
     bv = bv or (m.get('best_value') or {})
-    if (bv.get('edge') or 0) >= 0.15:
-        reasons.append('edge≥15%')
-    if (bv.get('kelly') or 0) >= 0.15:
-        reasons.append('kelly≥15%')
+    d = bv.get('outcome')
+    if not d or (bv.get('edge') or 0) < 0.15:
+        return []
+    # 注意: 本文件 argmax3 返回 '主/平/客', best_value.outcome 是 'home/draw/away' —— 必须译名后比
+    tsd = argmax3(m.get('ts_win', 0), m.get('ts_draw', 0), m.get('ts_loss', 0))
+    if tsd == {'home': '主', 'draw': '平', 'away': '客'}.get(d):
+        return []
+    reasons = ['edge≥15%·TS反向']
     if (bv.get('ev') or 0) >= 2.0:
         reasons.append('EV≥2')
     return reasons
@@ -210,7 +221,7 @@ def main():
             'pin_open': fmt3(comp.get('open')), 'pin_cur': fmt3(comp.get('current')),
             'hkjc_open': fmt3((m.get('pin_comparison') or {}).get('open')), 'hkjc_cur': fmt3(cur),
             'ts_dir': tsd, 'ts_prob': tsp,  # TS最大概率及方向
-            'avoid': is_hw_avoid(m),  # ⚡高权重避雷
+            'avoid': is_hw_avoid(m),  # ⚡高权重弱提示(2026-09-24 降级)
             'av_reasons': avoid_reasons(m, bv),  # 扩展避雷原因
         })
     rows.sort(key=lambda x: (x['mt'] or datetime.datetime.max, -x['ev']))
@@ -231,7 +242,9 @@ def main():
         elif r.get('av_reasons'):
             tag = ' 🚫避雷(' + ','.join(r['av_reasons']) + ')'
         elif r.get('avoid'):
-            tag = ' ⚠️⚡避雷'
+            tag = ' ⚠️⚡提示'
+        if r.get('av_reasons') and r.get('avoid'):
+            tag += '·⚡'  # 🚫与⚡同时命中: 保留 ⚡ 信息
         print(f"{t} [{lg_tag(r['league'])}] {r['home']} vs {r['away']} →{r['dir']}{tag}{r.get('no', '')}")
         print(f"   {r['dir']}概率: model {r['model_prob']*100:.0f}% | LGBM {r['lgbm_prob']*100:.0f}% | EV {r['ev']:.2f} | TS {r['ts_dir']}{r['ts_prob']*100:.0f}%")
         print(f"   平博 初/即: {r['pin_open']} → {r['pin_cur']} | HKJC 初/即: {r['hkjc_open']} → {r['hkjc_cur']}")
@@ -277,7 +290,7 @@ def main():
             'lgbm_prob': max(m.get('lgbm_win', 0), m.get('lgbm_draw', 0), m.get('lgbm_loss', 0)),
             'pin_open': fmt3(comp.get('open')), 'pin_cur': fmt3(comp.get('current')),
             'hkjc_open': fmt3((m.get('pin_comparison') or {}).get('open')), 'hkjc_cur': fmt3(cur),
-            'avoid': is_hw_avoid(m),  # ⚡高权重避雷
+            'avoid': is_hw_avoid(m),  # ⚡高权重弱提示(2026-09-24 降级)
         })
     # 高置信优先, 再按时间
     rows_b.sort(key=lambda x: (not x['star'], x['mt'] or datetime.datetime.max))
@@ -290,7 +303,7 @@ def main():
         t = r['mt'].strftime('%m-%d %H:%M') if r['mt'] else r['date']
         star = " ★" if r['star'] else ""
         # 2026-09-01 用户拍板: ★场次豁免过滤(★=方向高置信>⚡避雷), 带★不标⚠️⚡
-        av = ' ⚠️⚡避雷' if (r.get('avoid') and not r['star']) else ''
+        av = ' ⚠️⚡提示' if (r.get('avoid') and not r['star']) else ''
         print(f"{t} [{lg_tag(r['league'])}] {r['home']} vs {r['away']}{star}{av}{r.get('no', '')}")
         print(f"   HKJC客胜 {r['odds']} | 模型概率 {r['model_prob']*100:.0f}% | LGBM客概率 {r['lgbm_prob']*100:.0f}% | EV {r['ev']:.2f} | TS{r['ts_dir']} {r['ts_prob']*100:.0f}%")
         print(f"   平博 初/即: {r['pin_open']} → {r['pin_cur']} | HKJC 初/即: {r['hkjc_open']} → {r['hkjc_cur']}")
@@ -330,7 +343,7 @@ def main():
             'lgbm_prob': max(m.get('lgbm_win', 0), m.get('lgbm_draw', 0), m.get('lgbm_loss', 0)),
             'pin_open': fmt3(comp.get('open')), 'pin_cur': fmt3(comp.get('current')),
             'hkjc_open': fmt3((m.get('pin_comparison') or {}).get('open')), 'hkjc_cur': fmt3(cur),
-            'avoid': is_hw_avoid(m),  # ⚡高权重避雷
+            'avoid': is_hw_avoid(m),  # ⚡高权重弱提示(2026-09-24 降级)
         })
     # 高置信优先, 再按时间
     rows_d.sort(key=lambda x: (not x['star'], x['mt'] or datetime.datetime.max))
@@ -343,7 +356,7 @@ def main():
         t = r['mt'].strftime('%m-%d %H:%M') if r['mt'] else r['date']
         star = " ★" if r['star'] else ""
         # 2026-09-01 用户拍板: ★场次豁免过滤(★=方向高置信>⚡避雷), 带★不标⚠️⚡
-        av = ' ⚠️⚡避雷' if (r.get('avoid') and not r['star']) else ''
+        av = ' ⚠️⚡提示' if (r.get('avoid') and not r['star']) else ''
         print(f"{t} [{lg_tag(r['league'])}] {r['home']} vs {r['away']}{star}{av}{r.get('no', '')}")
         print(f"   HKJC主胜 {r['odds']} | 模型概率 {r['model_prob']*100:.0f}% | LGBM主概率 {r['lgbm_prob']*100:.0f}% | EV {r['ev']:.2f} | TS{r['ts_dir']} {r['ts_prob']*100:.0f}%")
         print(f"   平博 初/即: {r['pin_open']} → {r['pin_cur']} | HKJC 初/即: {r['hkjc_open']} → {r['hkjc_cur']}")
