@@ -7,7 +7,7 @@
 输出: ~/storage/shared/Documents/投注簿.xlsx (固定文件名, 每日覆盖更新)
 内容:
   Sheet1 今日推荐: 按档位(🎯甜点区/②高置信/③客客客)逐场: 时间/联赛/对阵/方向/概率/EV/赔率/避雷
-  Sheet2 避雷汇总: 🚫 全部避雷场次, 慎跟
+  2026-09-23 用户拍板: 撤销避雷汇总 —— 避雷场次照推(档位表内保留🚫标记列), 不再单独出「避雷汇总」sheet
 """
 import os
 import re
@@ -41,6 +41,7 @@ HIGH_HIT_FONT = Font(color='008000', bold=True)        # 高命中率联赛 绿�
 RED_FONT = Font(color='FF0000', bold=True)              # 红线 红字加粗
 STAR_FONT = Font(color='E67E22', bold=True)             # 星级 橙字加粗
 STAR_BADGE_FONT = Font(color='C00000', bold=True)       # 清单★ 深红加粗(豁免标记)
+AVOID_FONT = Font(color='C00000', bold=True)            # 避雷标记 红字加粗
 TITLE_FONT = Font(bold=True, size=14, color='2F5597')
 SECTION_FONT = Font(bold=True, size=12, color='404040')
 THIN = Side(style='thin', color='BFBFBF')
@@ -166,12 +167,11 @@ def parse_md(path):
     return sections, avoids
 
 
-def build_rows(sections, avoid_teams=None):
+def build_rows(sections):
     """sections → 表格行列表 (含档位标题行标记)
-    avoid_teams: 避雷场次 teams 集合 — 2026-08-31 用户拍板: 按场次全局过滤(跨档位),
-    同一场在任一档带🚫/红线即所有档位都过滤, 避免③档干净条目混入推荐.
+
+    2026-09-23 用户拍板: 撤销避雷汇总 → 避雷场次不再按 teams 全局过滤, 照常进档位表.
     """
-    avoid_teams = avoid_teams or set()
     rows = []
     for idx, title, matches in sections:
         if idx == '⚠️':
@@ -179,9 +179,6 @@ def build_rows(sections, avoid_teams=None):
         default_dir = '客' if idx in ('①', '②') else ('主' if idx == '③' else '')
         for mt in matches:
             star = mt['star'] == '★'
-            # 2026-09-01 用户拍板: ★场次豁免过滤(★=方向高置信>⚡避雷), 带★不进avoid_teams
-            if mt['teams'] in avoid_teams and not star:   # 避雷场次全档位过滤, ★豁免
-                continue
             d = mt['dir'] or default_dir
             hk_odds, mdl, lgbm, ev = '', '', '', ''
             tsd = tsp = ''
@@ -215,12 +212,11 @@ def build_rows(sections, avoid_teams=None):
             league = mt['league'].replace('🟢', '')
             stars_str, red = calc_stars(d, p0, p1, h0, h1, star, league)
             avoid = mt['avoid'].replace('🚫避雷', '🚫').replace('⚠️⚡避雷', '⚠️⚡') if mt['avoid'] else ''
-            # 2026-08-31 用户拍板: 今日推荐过滤掉带标记场次(🚫避雷 / 🚫HKJC升水·不碰), 干净场次保留;
-            # ⚠️/⚡ 已在 avoid 匹配内; 单独的红线(红色)在 red 字段. Sheet2 避雷汇总独立保留作警示.
-            # 2026-09-01 用户拍板: ★场次豁免过滤(★=方向高置信), 带★即使有avoid/red也保留
-            if avoid or red:
-                if not star:
-                    continue
+            # 2026-09-01 用户拍板: ★场次豁免过滤(★=方向高置信), 带★即使有red也保留
+            # 2026-09-23 用户拍板: 撤销避雷汇总 → 🚫避雷/⚠️⚡避雷 不再过滤, 避雷场次照推(避雷列保留标记);
+            # 仅保留 HKJC升水(red) 红线过滤(历史命中率7.9%)
+            if red and not star:
+                continue
             rows.append({
                 'sec': idx, 'date': mt['date'], 'time': mt['time'],
                 'league': league, 'teams': mt['teams'],
@@ -245,11 +241,8 @@ def main():
         print(f'❌ 未找到 {MD_PATH}, 先跑 fetch_and_push.sh / away_value_picks.py --md')
         return 1
     sections, avoids = parse_md(MD_PATH)
-    avoid_teams = {av['teams'] for av in avoids}   # 避雷场次 teams 集合 → 全档位过滤
-    # 2026-09-02 用户拍板: 收集带★的场次集合(★豁免避雷), 避雷汇总里标★以示豁免保留
-    star_teams = {mt['teams'] for _, _, matches in sections for mt in matches
-                  if mt.get('star') == '★'}
-    rows = build_rows(sections, avoid_teams)
+    # 2026-09-23 用户拍板: 撤销避雷汇总 → 不再按 avoid_teams 过滤(避雷场次照推), star_teams 亦不再需要
+    rows = build_rows(sections)
     wb = Workbook()
 
     # ─── Sheet1 今日推荐 ─────────────────────────
@@ -296,6 +289,9 @@ def main():
                 cell.border = BORDER
                 if fill and not r['avoid']:
                     cell.fill = fill
+                if ci == 16 and r['avoid']:                        # 避雷列 红底红字(照推但标警示)
+                    cell.fill = AVOID_FILL
+                    cell.font = AVOID_FONT
                 if ci == 4 and r['league'] in HIGH_HIT_LEAGUES:   # 高命中率联赛 绿字加粗
                     cell.font = HIGH_HIT_FONT
                 if ci == 7 and r['star']:                          # 清单★ 深红加粗(豁免标记)
@@ -313,36 +309,15 @@ def main():
         ws.column_dimensions[chr(64 + ci)].width = w
     ws.freeze_panes = 'A5'
 
-    # ─── Sheet2 避雷汇总 ─────────────────────────
-    ws2 = wb.create_sheet('避雷汇总')
-    ws2['A1'] = '⚠️🚫 避雷场次（历史败率 87-93%，慎跟）'
-    ws2['A1'].font = SECTION_FONT
-    hdrs2 = ['日期', '时间', '联赛', '对阵', '避雷原因', '★豁免', '编号']
-    for ci, h in enumerate(hdrs2, 1):
-        cell = ws2.cell(row=2, column=ci, value=h)
-        cell.font = HEADER_FONT
-        cell.fill = HEADER_FILL
-        cell.border = BORDER
-        cell.alignment = Alignment(horizontal='center')
-    rr = 3
-    for av in avoids:
-        mark = '★' if av['teams'] in star_teams else ''
-        for ci, v in enumerate([av['date'], av['time'], av['league'], av['teams'],
-                                av['reason'], mark, av.get('no', '')], 1):
-            cell = ws2.cell(row=rr, column=ci, value=v)
-            cell.border = BORDER
-            cell.fill = AVOID_FILL
-        rr += 1
-    for ci, w in enumerate([8, 8, 14, 32, 36, 8, 16], 1):
-        ws2.column_dimensions[chr(64 + ci)].width = w
-    ws2.freeze_panes = 'A3'
+    # 2026-09-23 用户拍板: 撤销 Sheet2「避雷汇总」 —— 避雷场次已并入 Sheet1 档位表(避雷列红色标记)
 
     os.makedirs(OUT_DIR, exist_ok=True)
     out_path = os.path.join(OUT_DIR, '投注簿.xlsx')
     wb.save(out_path)
     n_matches = len(rows)
+    n_av = sum(1 for r in rows if r['avoid'])
     print(f'✅ 已生成: {out_path}')
-    print(f'   推荐 {n_matches} 场 ({n_secs} 档) + 避雷 {len(avoids)} 场')
+    print(f'   推荐 {n_matches} 场 ({n_secs} 档), 其中带避雷标记 {n_av} 场(照推, 不再单独汇总)')
 
 
 if __name__ == '__main__':

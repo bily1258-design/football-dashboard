@@ -353,16 +353,8 @@ def main():
         else:
             print(f"(今日窗口 {win_label} 内及未来无未开赛三方一致主场次)")
 
-    # 避雷汇总 (⚡高权重 + 扩展避雷); 2026-09-01 ★场次豁免: 带★(方向高置信)不进避雷汇总
-    av_total = [r for r in rows if r.get('av_reasons') and not r.get('star')] + [r for r in rows_b if r.get('avoid') and not r.get('star')]
-    if av_total:
-        print()
-        print("=" * 92)
-        print(f"⚠️🚫 避雷汇总 (⚡高权重/edge≥15%/kelly≥15%/EV≥2, 历史败率87-93%): 共{len(av_total)}场, 慎跟")
-        for r in av_total:
-            t = r['mt'].strftime('%m-%d %H:%M') if r.get('mt') else r.get('date', '')
-            why = ','.join(r.get('av_reasons') or ['⚡高权重'])
-            print(f"   {t} [{lg_tag(r.get('league',''))}] {r.get('home','')} vs {r.get('away','')} 🚫{why}{r.get('no', '')}")
+    # 2026-09-23 用户拍板: 撤销「避雷汇总」段
+    # 避雷场次照推 —— 不再单独汇总/警示, 只在各档位明细行保留 🚫/⚠️⚡ 标记, 是否跟由用户自判
 
     if md_file:
         sys.stdout.write("```\n")

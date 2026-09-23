@@ -25293,7 +25293,7 @@
     "fid": "2940187",
     "teams": "克里丘馬 vs 歐帕爾利奧",
     "match_time": "2026-09-22 06:30",
-    "score": "",
+    "score": "0 - 2",
     "signal": "value",
     "signal_cn": "价值投注",
     "outcome": "away",
@@ -25303,7 +25303,10 @@
     "kelly": 0.1367,
     "signal_extra": [
       "ruleA"
-    ]
+    ],
+    "result": "win",
+    "profit": 4.07,
+    "settled_at": "2026-09-23T13:01:03.493335"
   },
   {
     "fid": "2962645",
@@ -25363,7 +25366,7 @@
     "fid": "3089641",
     "teams": "莫桑比克U20 vs 毛里求斯U20",
     "match_time": "2026-09-22 21:00",
-    "score": "",
+    "score": "5-0",
     "signal": "value",
     "signal_cn": "价值投注",
     "outcome": "away",
@@ -25373,13 +25376,16 @@
     "kelly": 0.2046,
     "signal_extra": [
       "ruleA"
-    ]
+    ],
+    "result": "loss",
+    "profit": -1.0,
+    "settled_at": "2026-09-23T13:01:03.493356"
   },
   {
     "fid": "3049669",
     "teams": "韓國U23(中) vs 沙特阿拉伯U23",
     "match_time": "2026-09-22 18:00",
-    "score": "",
+    "score": "2-0",
     "signal": "value",
     "signal_cn": "价值投注",
     "outcome": "away",
@@ -25389,13 +25395,16 @@
     "kelly": 0.2102,
     "signal_extra": [
       "ruleA"
-    ]
+    ],
+    "result": "loss",
+    "profit": -1.0,
+    "settled_at": "2026-09-23T13:01:03.493368"
   },
   {
     "fid": "3092350",
     "teams": "阿森納女足 vs 靴爾科治女足",
     "match_time": "2026-09-23 03:00",
-    "score": "",
+    "score": "1-0",
     "signal": "value",
     "signal_cn": "价值投注",
     "outcome": "away",
@@ -25405,13 +25414,16 @@
     "kelly": 0.2294,
     "signal_extra": [
       "ruleA"
-    ]
+    ],
+    "result": "loss",
+    "profit": -1.0,
+    "settled_at": "2026-09-23T13:01:03.493376"
   },
   {
     "fid": "3012999",
     "teams": "米爾頓凱恩斯 vs 克勞利",
     "match_time": "2026-09-23 02:00",
-    "score": "",
+    "score": "4 - 1",
     "signal": "value",
     "signal_cn": "价值投注",
     "outcome": "away",
@@ -25421,19 +25433,118 @@
     "kelly": 0.1413,
     "signal_extra": [
       "ruleA"
-    ]
+    ],
+    "result": "loss",
+    "profit": -1.0,
+    "settled_at": "2026-09-23T13:01:03.493384"
   },
   {
     "fid": "3012982",
     "teams": "斯文登 vs 紐波特",
     "match_time": "2026-09-23 02:00",
-    "score": "",
+    "score": "0 - 2",
     "signal": "value",
     "signal_cn": "价值投注",
     "outcome": "away",
     "odds": 3.76,
     "ev": 0.3544,
     "edge": 0.0942,
-    "kelly": 0.1284
+    "kelly": 0.1284,
+    "result": "win",
+    "profit": 2.76,
+    "settled_at": "2026-09-23T13:01:03.493395"
+  },
+  {
+    "fid": "2995131",
+    "teams": "杜塞爾多夫 vs 弗賴堡",
+    "match_time": "2026-08-24 00:00",
+    "score": "1-5",
+    "signal": "value",
+    "signal_cn": "价值投注",
+    "outcome": "home",
+    "odds": 8.08,
+    "ev": 1.3852,
+    "edge": 0.1714,
+    "kelly": 0.1956,
+    "result": "loss",
+    "profit": -1.0,
+    "settled_at": "2026-09-23T13:01:03.492777"
+  },
+  {
+    "fid": "3049653",
+    "teams": "日本U23 vs 泰國U23",
+    "match_time": "2026-09-23 18:30",
+    "score": "",
+    "signal": "value",
+    "signal_cn": "价值投注",
+    "outcome": "away",
+    "odds": 17.0,
+    "ev": 3.1854,
+    "edge": 0.1874,
+    "kelly": 0.1991,
+    "signal_extra": [
+      "ruleA"
+    ]
+  },
+  {
+    "fid": "3084567",
+    "teams": "柏太陽神 vs 今治",
+    "match_time": "2026-09-23 16:00",
+    "score": "",
+    "signal": "value",
+    "signal_cn": "价值投注",
+    "outcome": "away",
+    "odds": 16.0,
+    "ev": 3.1696,
+    "edge": 0.1981,
+    "kelly": 0.2113,
+    "signal_extra": [
+      "ruleA"
+    ]
+  },
+  {
+    "fid": "3092355",
+    "teams": "切爾西女足 vs 奧地利維也納女足",
+    "match_time": "2026-09-24 03:00",
+    "score": "",
+    "signal": "value",
+    "signal_cn": "价值投注",
+    "outcome": "away",
+    "odds": 38.64,
+    "ev": 8.7141,
+    "edge": 0.2255,
+    "kelly": 0.2315,
+    "signal_extra": [
+      "ruleA"
+    ]
+  },
+  {
+    "fid": "3094048",
+    "teams": "朝鮮女足U20(中) vs 哥倫比亞女足U20",
+    "match_time": "2026-09-24 00:30",
+    "score": "",
+    "signal": "value",
+    "signal_cn": "价值投注",
+    "outcome": "away",
+    "odds": 26.0,
+    "ev": 5.1776,
+    "edge": 0.1991,
+    "kelly": 0.2071,
+    "signal_extra": [
+      "ruleA"
+    ]
+  },
+  {
+    "fid": "3086457",
+    "teams": "赫斯女足 vs 皇家社會女足",
+    "match_time": "2026-09-24 02:00",
+    "score": "",
+    "signal": "value",
+    "signal_cn": "价值投注",
+    "outcome": "home",
+    "odds": 16.0,
+    "ev": 3.472,
+    "edge": 0.217,
+    "kelly": 0.2315
   }
 ]
