@@ -44,8 +44,8 @@ function renderWarning(w){
   if(w.indexOf('⚠️')>-1) h+='<span class="warn-uncert" title="LGBM主推概率<40%: 方向不可信 — 历史命中42.3% vs 未标62.0%">⚠️</span>';
   return h+'</span>';
 }
-// ⚡高权重避雷: ⚡>=1.14 且 模型==TS 同向 → 历史命中率低(35%) 警告
-// 依据: 全量验证 同向+⚡>=1.14 命中 35.3% vs 同向基准 59% (2026-08-11, 样本17场, 待追踪验证)
+// ⚡高权重: ⚡>=1.14 且 模型==TS 同向 (2026-08-11 小样本17场曾判命中 35.3%)
+// 2026-09-23 大样本复核: 账本 weight 信号已结算 1108 场 命中 48.3% ≈ 随机 —— 与 edge/kelly>=15% 那类真避雷不同, 仅保留行内记号
 function renderHighWeight(m){
   if(!m.importance_weight || m.importance_weight<1.14) return'';
   var ts=[m.ts_win||0,m.ts_draw||0,m.ts_loss||0];
@@ -53,7 +53,7 @@ function renderHighWeight(m){
   var dirs=['home','draw','away'];
   var sameDir=(m.model_prediction===dirs[tsi]);
   if(!sameDir) return'';
-  return'<span class="hw-warn" title="⚡'+m.importance_weight.toFixed(2)+' 且 模型与TS同向: 历史命中率仅35% (样本17场, 追踪中)">⚠️⚡避雷</span>';
+  return'<span class="hw-warn" title="⚡'+m.importance_weight.toFixed(2)+' 且 模型与TS同向: 大样本 1108 场命中 48.3% (2026-09-23核, 接近随机; 仅作记号)">⚠️⚡避雷</span>';
 }
 function renderForm(s){
   if(!s||!s.home_recent||s.home_recent.length===0)return'';
