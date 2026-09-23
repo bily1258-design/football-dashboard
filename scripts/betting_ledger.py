@@ -41,7 +41,7 @@ WEIGHT_MIN = 1.14      # ⚡高权重门槛
 VALUE_ODDS_MAX = 5.0
 VALUE_ODDS_MAX_SIGNALS = ('value', 'ruleA')
 TOP_N_PER_DAY = 3      # 每日限额: 每天只记 EV 最高的 N 场 (2026-08-15 新增; 回测 top1 +4.94 / top3 -0.45, 取3均衡样本量)
-SAME_MATCH_KEEP = 'weight'  # 同场双计修正: 同一 fid 同时有 weight(⚡大热)与 value(价值)时只记一条, 取哪侧 ('weight'|'value')
+SAME_MATCH_KEEP = 'value'  # 同场双计修正: 同一 fid 同时有 weight(⚡大热)与 value(价值)时只记一条, 取哪侧 ('weight'|'value')
 
 LABELS = {'home': '主胜', 'draw': '平局', 'away': '客胜'}
 
@@ -346,7 +346,8 @@ def main():
     # 2026-09-23 用户拍板(撤销避雷汇总, 避雷场次照推): ⚡高权重(weight) 并入战绩统计
     # (旧口径 2026-09-16: weight 单列"避雷追踪标记, 非投注, 不计入战绩")
     bets = [e for e in ledger if not e.get('dedup_same_match')]
-    wtrack = [e for e in ledger if e.get('signal') == 'weight']
+    # ⚡追踪与战绩同population: 同场双计被剔除的 weight 行也不进⚡组, 否则两处口径打架
+    wtrack = [e for e in bets if e.get('signal') == 'weight']
     completed = [e for e in bets if e.get('result') in ('win', 'loss')]
     wins = [e for e in completed if e['result'] == 'win']
     losses = [e for e in completed if e['result'] == 'loss']
