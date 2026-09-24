@@ -1070,17 +1070,29 @@ def _poisson_1x2(lambda_h: float, lambda_a: float, max_g: int = 10) -> list:
     return [round(w / total, 4), round(d / total, 4), round(l_ / total, 4)]
 
 
-def build_team_strength_model(db_path: str = DB_PATH) -> Optional[Dict]:
-    """从DB已完赛场次计算每队攻防实力（经验贝叶斯 + James-Stein收缩）"""
+def build_team_strength_model(db_path: str = DB_PATH, before_date: str = None) -> Optional[Dict]:
+    """从DB已完赛场次计算每队攻防实力（经验贝叶斯 + James-Stein收缩）
+
+    before_date: 赛前口径截止日 YYYY-MM-DD — 只统计 date < before_date 的场次。
+    不加此参数=全库口径(含该场自身结果), 会造成 TS 结果泄漏, 见 references/ts-source-leak.md
+    """
     if not os.path.exists(db_path):
         return None
     try:
         conn = sqlite3.connect(db_path)
-        rows = conn.execute("""
-            SELECT home_team, away_team, reference_score
-            FROM poisson_predictions
-            WHERE reference_score IS NOT NULL AND reference_score != ''
-        """).fetchall()
+        if before_date:
+            rows = conn.execute("""
+                SELECT home_team, away_team, reference_score
+                FROM poisson_predictions
+                WHERE reference_score IS NOT NULL AND reference_score != ''
+                  AND date < ?
+            """, (str(before_date)[:10],)).fetchall()
+        else:
+            rows = conn.execute("""
+                SELECT home_team, away_team, reference_score
+                FROM poisson_predictions
+                WHERE reference_score IS NOT NULL AND reference_score != ''
+            """).fetchall()
         conn.close()
         if len(rows) < 30:
             return None
@@ -1151,6 +1163,24 @@ def team_strength_prediction(model: Optional[Dict], home_team: str, away_team: s
     exp_h = ha['attack'] * aa['defense'] * league_avg * home_adv
     exp_a = aa['attack'] * ha['defense'] * league_avg
     return _poisson_1x2(exp_h, exp_a)
+
+
+# ── TS 赛前口径 (2026-09-24): 每场只用其开赛日之前的数据建模, 防结果泄漏 ──
+_TS_EXANTE_CACHE: Dict[str, Optional[Dict]] = {}
+
+
+def ts_model_exante(match_date: str = '', db_path: str = DB_PATH) -> Optional[Dict]:
+    """按比赛日期取「赛前」实力模型: 仅用 date < match_date 的已完赛场次
+
+    旧实现用全库(含该场自身结果)建模 → results.json 里 ts_* 是事后值, 相关回测被系统性高估。
+    这里按日期切分, 同日期共享缓存。
+    """
+    cutoff = str(match_date or '')[:10]
+    if len(cutoff) != 10:
+        cutoff = datetime.now().strftime('%Y-%m-%d')
+    if cutoff not in _TS_EXANTE_CACHE:
+        _TS_EXANTE_CACHE[cutoff] = build_team_strength_model(db_path, before_date=cutoff)
+    return _TS_EXANTE_CACHE[cutoff]
 
 
 def compute_ah_probs(team_model, home_team, away_team,
@@ -1406,7 +1436,8 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
                     lgbm_w, lgbm_d, lgbm_l = proba
 
         # 新增：球队攻防实力Poisson预测
-        ts_probs = team_strength_prediction(team_model, m.get('home_team',''), m.get('away_team',''))
+        # 赛前口径: 只用该场开赛日之前的数据建模 (防结果泄漏)
+        ts_probs = team_strength_prediction(ts_model_exante(m.get('date','')), m.get('home_team',''), m.get('away_team',''))
         # 新增：不确定性量化 — 改用最大概率做置信度（熵公式对3分类过于严格）
         lgbm_confidence = max(lgbm_w, lgbm_d, lgbm_l)
         r_entropy, r_confidence = prediction_entropy([lgbm_feat_w, lgbm_feat_d, lgbm_feat_l])
@@ -1809,6 +1840,7 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             'ts_win': ts_probs[0] if ts_probs else None,
             'ts_draw': ts_probs[1] if ts_probs else None,
             'ts_loss': ts_probs[2] if ts_probs else None,
+            'ts_cutoff': str(m.get('date', ''))[:10] if ts_probs else None,
             'lgbm_entropy': lgbm_entropy,
             'lgbm_confidence': lgbm_confidence,
             'raw_entropy': r_entropy,

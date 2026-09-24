@@ -34,7 +34,7 @@ KEEP_MATCH = {
     'lgbm_loss', 'lgbm_prediction', 'lgbm_win', 'low_priority', 'match_time',
     'model_draw', 'model_loss', 'model_prediction', 'model_win', 'odds_win',
     'pin_comparison', 'postponed', 'score', 'similar_matches', 'source',
-    'total_goals_top3', 'ts_draw', 'ts_loss', 'ts_win', 'value_bets', 'warning',
+    'total_goals_top3', 'ts_cutoff', 'ts_draw', 'ts_loss', 'ts_win', 'true_value', 'value_bets', 'warning',
 }
 
 # similar_matches 子项: script.js 只用 home_team/away_team/score/similarity/similarity_raw
