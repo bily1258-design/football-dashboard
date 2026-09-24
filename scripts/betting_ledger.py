@@ -45,6 +45,13 @@ SAME_MATCH_KEEP = 'value'  # 同场双计修正: 同一 fid 同时有 weight(⚡
 
 LABELS = {'home': '主胜', 'draw': '平局', 'away': '客胜'}
 
+# ── 真价值口径 (2026-09-24 方案②, 与 ai_analysis._get_true_value 对齐) ──
+TRUE_EDGE_MIN = 0.03
+# 只从该日起记录 truev — 门槛在 06-26~09-23 上定出, 回填历史=样本内自证 (要全史视图就改这里)
+TRUEV_START = '2026-09-25'
+# 同一场只算一注的「价值侧」信号 (2026-09-16 起 value/ruleA 互斥; 2026-09-24 并入 truev)
+VALUE_SIDE = ('value', 'ruleA', 'truev')
+
 
 def parse_score(s):
     """'3-3' / '2 - 1' / '2:1' → (3,3); 无法解析返回 None"""
@@ -85,20 +92,26 @@ def collect_signals(matches, top_n=TOP_N_PER_DAY):
 
         match_signals = []
 
-        # ── 信号1: 价值投注 (双门槛 + 赔率≤5.0) ──
-        bv = m.get('best_value') or {}
-        _bv_odds = bv.get('odds', 0) or 0
-        if (bv.get('outcome') and bv.get('ev', 0) > EV_MIN and bv.get('edge', 0) > EDGE_MIN
-                and 1.0 < _bv_odds <= VALUE_ODDS_MAX):
+        # ── 信号1: 真价值投注 (2026-09-24 方案②: 真edge≥0.03 ∧ TS同向, 全天候选号) ──
+        # 旧 value 口径(best_value: ev>5% ∧ edge>2%, 未去水) 已停发, 历史行保留为凭证:
+        #   旧口径同日大样本 n=3962 命中 22.6% / 均赔 5.31 / ROI −3.7% (虚 edge 均值 9.3pp)
+        #   新口径 66 天 n=332 命中 68.1% / fair 隐含 48.2% → 超额 +19.9pp / ROI +33.9% / 日均 5.0
+        # TRUEV_START: 只记起点之后的场次 — 门槛是在 06-26~09-23 上定出来的, 回填历史=样本内自证
+        tv = m.get('true_value') or {}
+        if (tv.get('outcome') and (tv.get('true_edge') or 0) >= TRUE_EDGE_MIN
+                and day >= TRUEV_START):
             match_signals.append({
                 'fid': fid, 'teams': teams, 'match_time': mt, 'score': score,
-                'signal': 'value', 'signal_cn': '价值投注',
-                'outcome': bv['outcome'], 'odds': bv.get('odds', 0),
-                'ev': bv.get('ev', 0), 'edge': bv.get('edge', 0),
-                'kelly': bv.get('kelly', 0),
+                'signal': 'truev', 'signal_cn': '真价值',
+                'outcome': tv['outcome'], 'odds': tv.get('odds', 0),
+                'ev': tv.get('ev', 0), 'edge': tv.get('true_edge', 0),
+                'true_edge': tv.get('true_edge', 0), 'fair': tv.get('fair'),
+                'kelly': tv.get('kelly', 0),
             })
 
         # ── 信号2: 客胜规则A (同批修正: 与 value 同一深盘冷门宇宙, 一并限赔率) ──
+        bv = m.get('best_value') or {}
+        _bv_odds = bv.get('odds', 0) or 0
         if (bv.get('outcome') == 'away' and bv.get('ev', 0) > AWAY_EV_MIN
                 and 1.0 < _bv_odds <= VALUE_ODDS_MAX):
             match_signals.append({
@@ -141,15 +154,24 @@ def collect_signals(matches, top_n=TOP_N_PER_DAY):
         # 结论: 期望正但实际打平, 非负资产但无超额收益; 保留看板组合筛选(主主/客客), 不投注
 
 
-        # ── 2026-09-16 修复: 同一场次 value/ruleA 同时命中会重复计入 ──
-        # (实测 255 场被记成 442 条; ruleA 是 value 的客胜子集, 同一注不重复下)
-        if sum(1 for s in match_signals if s['signal'] in ('value', 'ruleA')) > 1:
-            keep = next(s for s in match_signals if s['signal'] == 'value')
-            extra = [s['signal'] for s in match_signals if s['signal'] in ('value', 'ruleA')
-                     and s is not keep]
+        # ── 2026-09-16 修复: 同一场次价值侧信号同时命中会重复计入 (2026-09-24 并入 truev) ──
+        # (ruleA 是 value 的客胜子集; truev 是新口径, 与旧口径同场时保留旧行不双计)
+        # 2026-09-24: value 停发后 ruleA 会「浮出」(ruleA ⊆ 旧 value 门槛: edge=EV/odds>2% 恒成立)
+        #   → 保持原屏蔽语义: 凡通过旧 value 门槛的场次, ruleA 照旧不记 (否则账本凭空多一批 ruleA 行)
+        _old_gate = (bv.get('outcome') and bv.get('ev', 0) > EV_MIN and bv.get('edge', 0) > EDGE_MIN
+                     and 1.0 < _bv_odds <= VALUE_ODDS_MAX)
+        if _old_gate and any(s['signal'] == 'ruleA' for s in match_signals):
+            match_signals = [s for s in match_signals if s['signal'] != 'ruleA']
+        _side = [s for s in match_signals if s['signal'] in VALUE_SIDE]
+        if len(_side) > 1:
+            # 优先级: value(旧口径历史行) > truev(新口径) > ruleA; 均无则取首条
+            keep = (next((s for s in _side if s['signal'] == 'value'), None)
+                    or next((s for s in _side if s['signal'] == 'truev'), None)
+                    or _side[0])
+            extra = [s['signal'] for s in _side if s is not keep]
             if extra:
                 keep['signal_extra'] = extra
-            match_signals = [s for s in match_signals if s['signal'] != 'ruleA']
+            match_signals = [s for s in match_signals if s is keep or s['signal'] not in VALUE_SIDE]
 
         if match_signals:
             ev = max((s.get('ev', 0) or 0) for s in match_signals)
@@ -166,10 +188,10 @@ def collect_signals(matches, top_n=TOP_N_PER_DAY):
         items.sort(key=lambda x: -x[0])  # EV 降序
         for ev, sigs in items[:top_n]:
             signals.extend(sigs)
-        # weight 信号不受限额: 从所有场次里补上
+        # weight/truev 信号不受限额: weight=避雷全量; truev=真价值全天候选号(回测口径无每日上限)
         for ev, sigs in items[top_n:]:
             for s in sigs:
-                if s['signal'] == 'weight':
+                if s['signal'] in ('weight', 'truev'):
                     signals.append(s)
     return signals
 
@@ -243,12 +265,12 @@ def main():
                 e['score'] = sc
                 refreshed += 1
 
-    # ── 2026-09-16 口径修正: 同场重复投注去重 (value/ruleA 曾各记一条) ──
+    # ── 2026-09-16 口径修正: 同场重复投注去重 (value/ruleA 曾各记一条; 2026-09-24 并入 truev) ──
     dedup = {}
     kept = []
     dropped = 0
     for e in ledger:
-        if e.get('signal') in ('value', 'ruleA'):
+        if e.get('signal') in VALUE_SIDE:
             k = str(e.get('fid', ''))
             if k in dedup:
                 prev = dedup[k]
@@ -267,12 +289,16 @@ def main():
         ledger = kept
 
     seen = {(e['fid'], e['signal']) for e in ledger}
+    # 已存在价值侧行的 fid: truev 不重复记 (同一场只保留一条, 旧口径行优先)
+    _fid_side = {str(e.get('fid', '')) for e in ledger if e.get('signal') in VALUE_SIDE}
 
     new_count = 0
     settled = 0
     for sig in collect_signals(matches, top_n):
         key = (sig['fid'], sig['signal'])
         if key in seen:
+            continue
+        if sig['signal'] == 'truev' and str(sig['fid']) in _fid_side:
             continue
 
         # 结算 (若有比分)
@@ -329,7 +355,7 @@ def main():
     same_match_dropped = 0
     for _fid, _rows in _by_fid.items():
         _w = [r for r in _rows if r.get('signal') == 'weight']
-        _v = [r for r in _rows if r.get('signal') in VALUE_ODDS_MAX_SIGNALS]
+        _v = [r for r in _rows if r.get('signal') in VALUE_SIDE]
         if not (_w and _v):
             continue
         if _w[0].get('outcome') == _v[0].get('outcome'):

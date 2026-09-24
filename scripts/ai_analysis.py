@@ -816,16 +816,54 @@ def prediction_entropy(probs: list, normalize: bool = True) -> Tuple[float, floa
 # 模块A2：价值投注检测器
 # ======================================================
 
+# ── 真 edge 口径 (2026-09-24 用户拍板方案②): 市场融合 + 去水 ──
+# 融合权重由样本 logit 回归估计 (训练窗 06-26~08-26):
+#   logit(p_true) = B0 + BM*logit(p_model) + BP*logit(p_fair)
+# 市场权重(0.873)≈模型权重(0.459)的 1.9 倍 —— 模型单体 Brier 0.2070 劣于市场 0.1975,
+# 故任何"模型概率 − 含水赔率倒数"的 edge 都是虚的 (宣称均值 9.3pp, 实兑 ROI −3.7%)。
+# 样本外(08-26~09-23)验证: 真edge>=0.03 且 TS 同向 → n=144, 命中 68.8%, 均赔 2.11, ROI +42.4%;
+# 同门槛 TS 反向 −31.6%; 真edge<0(即模型看反) 全档为负。
+TRUE_EDGE_B0 = 0.224
+TRUE_EDGE_BM = 0.459
+TRUE_EDGE_BP = 0.873
+TRUE_EDGE_MIN = 0.03
+
+
+def _logit(p: float) -> float:
+    p = min(max(float(p), 1e-6), 1 - 1e-6)
+    return math.log(p / (1 - p))
+
+
+def _sigmoid(x: float) -> float:
+    return 1.0 / (1.0 + math.exp(-x))
+
+
+def _fair_probs(odds_arr: list) -> list:
+    """赔率三元组 → 去水隐含概率 (overround 归一化); 单项无效返回 None 占位"""
+    inv = [(1.0 / float(o) if o and float(o) > 1 else None) for o in list(odds_arr)[:3]]
+    s = sum(x for x in inv if x)
+    if s <= 0:
+        return [None] * 3
+    return [(x / s if x else None) for x in inv]
+
+
+def _true_edge_of(prob: float, fair: float) -> float:
+    """真 edge = 融合概率 − 去水隐含概率"""
+    p_true = _sigmoid(TRUE_EDGE_B0 + TRUE_EDGE_BM * _logit(prob) + TRUE_EDGE_BP * _logit(fair))
+    return round(p_true - fair, 4)
+
+
 def _compute_value_bets(probs: list, comparison: dict = None, pin_comparison: dict = None) -> list:
-    """计算三向价值投注（EV + Kelly + Edge）
+    """计算三向价值投注（EV + Kelly + Edge + 真edge）
 
     Args:
         probs: [主胜, 平局, 客胜] 概率
         comparison: 主赔率源字典 {source, current: [h,d,a]}
         pin_comparison: 备查赔率源字典
 
-    Returns: [{outcome, odds, prob, ev, edge, kelly, source}]
-        edge = 模型概率 - 赔率隐含概率（2026-08-12 新增，双门槛过滤用）
+    Returns: [{outcome, odds, prob, ev, edge, kelly, fair, true_edge, source}]
+        edge = 模型概率 - 含水赔率隐含概率（2026-08-12 新增，双门槛过滤用）
+        fair/true_edge = 去水隐含概率 / 市场融合真edge（2026-09-24 新增）
     """
     LABELS = ['home', 'draw', 'away']
     results = []
@@ -840,6 +878,7 @@ def _compute_value_bets(probs: list, comparison: dict = None, pin_comparison: di
     for src_name, odds_arr in sources:
         if not odds_arr or len(odds_arr) < 3:
             continue
+        fair_arr = _fair_probs(odds_arr)
         for i, label in enumerate(LABELS):
             odds = odds_arr[i]
             prob = probs[i]
@@ -848,6 +887,8 @@ def _compute_value_bets(probs: list, comparison: dict = None, pin_comparison: di
             ev = round(prob * odds - 1, 4)
             # Edge = 模型概率 - 赔率隐含概率（过滤低概率高赔的虚假价值）
             edge = round(prob - 1 / odds, 4)
+            fair = fair_arr[i] if i < len(fair_arr) else None
+            true_edge = _true_edge_of(prob, fair) if fair else None
             kelly_raw = ev / (odds - 1) if ev > 0 else 0.0
             # Kelly上限25%（全Kelly太激进，用1/4 Kelly安全线）
             kelly = round(min(kelly_raw, 0.25), 4)
@@ -857,6 +898,8 @@ def _compute_value_bets(probs: list, comparison: dict = None, pin_comparison: di
                 'prob': round(prob, 4),
                 'ev': ev,
                 'edge': edge,
+                'fair': round(fair, 4) if fair else None,
+                'true_edge': true_edge,
                 'kelly': kelly,
                 'source': src_name,
             })
@@ -885,6 +928,40 @@ def _get_best_value(probs: list, comparison: dict = None, pin_comparison: dict =
                 'source': vb['source'],
             }
     return None
+
+
+def _get_true_value(probs: list, comparison: dict = None, pin_comparison: dict = None,
+                    ts_probs: list = None) -> dict:
+    """真 edge 选号 (2026-09-24 方案②): 真edge≥TRUE_EDGE_MIN 且方向与 TS 一致, 取真edge最大者
+
+    样本外基准: n=144 命中 68.8% 均赔 2.11 ROI +42.4% (无 TS 约束 +22.2%; TS 反向 −31.6%)
+    Returns: {outcome, odds, prob, fair, true_edge, ev, edge, kelly, source, ts_dir} or None
+    """
+    if not probs or not ts_probs:
+        return None
+    ts_dir = ['home', 'draw', 'away'][int(np.argmax(ts_probs))]
+    best = None
+    for vb in _compute_value_bets(probs, comparison, pin_comparison):
+        if vb.get('true_edge') is None or vb['outcome'] != ts_dir:
+            continue
+        if vb['true_edge'] < TRUE_EDGE_MIN:
+            continue
+        if best is None or vb['true_edge'] > best['true_edge']:
+            best = vb
+    if not best:
+        return None
+    return {
+        'outcome': best['outcome'],
+        'odds': best['odds'],
+        'prob': best['prob'],
+        'fair': best['fair'],
+        'true_edge': best['true_edge'],
+        'ev': best['ev'],
+        'edge': best['edge'],
+        'kelly': best['kelly'],
+        'source': best['source'],
+        'ts_dir': ts_dir,
+    }
 
 
 # ======================================================
@@ -1742,6 +1819,8 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
             # 价值投注检测
             'value_bets': _compute_value_bets(cal_probs if cal_probs else [lgbm_w, lgbm_d, lgbm_l], comparison, pin_comparison),
             'best_value': _get_best_value(cal_probs if cal_probs else [lgbm_w, lgbm_d, lgbm_l], comparison, pin_comparison),
+            # 真edge 选号 (2026-09-24 方案②): 去水+市场融合, 真edge≥0.03 ∧ TS同向
+            'true_value': _get_true_value(cal_probs if cal_probs else [lgbm_w, lgbm_d, lgbm_l], comparison, pin_comparison, ts_probs),
             # 亚盘
             'ah_open_home': ah.get('open_home_odds'),
             'ah_open_handicap': ah.get('open_handicap'),
