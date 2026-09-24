@@ -1143,8 +1143,9 @@ def build_team_strength_model(db_path: str = DB_PATH, before_date: str = None) -
                 'avg_conceded': round(avg_c, 3),
             }
 
-        logger.info(f"球队实力: {len(strengths)}队 (联赛场均{league_avg:.2f}球)")
-        return {'strengths': strengths, 'league_avg': round(league_avg, 4)}
+        logger.info(f"球队实力: {len(strengths)}队 (联赛场均{league_avg:.2f}球, 主{league_avg_h:.2f}/客{league_avg_a:.2f})")
+        return {'strengths': strengths, 'league_avg': round(league_avg, 4),
+                'league_avg_h': round(league_avg_h, 4), 'league_avg_a': round(league_avg_a, 4)}
     except Exception as e:
         logger.warning(f"球队实力模型失败: {e}")
         return None
@@ -1160,8 +1161,11 @@ def team_strength_prediction(model: Optional[Dict], home_team: str, away_team: s
     ha = s.get(home_team, {'attack': 1.0, 'defense': 1.0})
     aa = s.get(away_team, {'attack': 1.0, 'defense': 1.0})
 
-    exp_h = ha['attack'] * aa['defense'] * league_avg * home_adv
-    exp_a = aa['attack'] * ha['defense'] * league_avg
+    # 2026-09-25 修: 主/客各自基准 (旧写法用混合均值, 客队λ被抬高 ~10%, 主场优势被压缩 40%)
+    lv_h = model.get('league_avg_h') or league_avg * home_adv
+    lv_a = model.get('league_avg_a') or league_avg
+    exp_h = ha['attack'] * aa['defense'] * lv_h
+    exp_a = aa['attack'] * ha['defense'] * lv_a
     return _poisson_1x2(exp_h, exp_a)
 
 
@@ -1205,9 +1209,11 @@ def compute_ah_probs(team_model, home_team, away_team,
     ha = s.get(home_team, {'attack': 1.0, 'defense': 1.0, 'n': 0, 'avg_scored': 1.5, 'avg_conceded': 1.5})
     aa = s.get(away_team, {'attack': 1.0, 'defense': 1.0, 'n': 0, 'avg_scored': 1.5, 'avg_conceded': 1.5})
 
-    # 1. Base 入球期望 λ
-    exp_h = ha['attack'] * aa['defense'] * league_avg * home_adv
-    exp_a = aa['attack'] * ha['defense'] * league_avg
+    # 1. Base 入球期望 λ  (2026-09-25 修: 主/客各自基准, 同 team_strength_prediction)
+    lv_h = team_model.get('league_avg_h') or league_avg * home_adv
+    lv_a = team_model.get('league_avg_a') or league_avg
+    exp_h = ha['attack'] * aa['defense'] * lv_h
+    exp_a = aa['attack'] * ha['defense'] * lv_a
     if exp_h <= 0 or exp_a <= 0:
         return None
 
