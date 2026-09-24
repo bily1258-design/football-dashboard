@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-23 16:46:45",
+  "generated_at": "2026-09-24 16:37:03",
   "threshold": 1.14,
   "note": "⚡=importance_weight(联赛等级×紧迫). 历史场次紧迫系数跌至0.90, 仅临场窗口权重>=1.14. 逐轮记录攒样本.",
   "tracked": [
@@ -19287,6 +19287,36 @@
       "hit": true,
       "recorded_at": "2026-09-21 13:01:14",
       "updated_at": "2026-09-22 12:54:26"
+    },
+    {
+      "fid": "3024465",
+      "date": "2026-09-25",
+      "match_time": "2026-09-25 09:00",
+      "event": "墨西乙",
+      "home_team": "扎卡特卡斯",
+      "away_team": "皮拉塔斯",
+      "weight": 1.14,
+      "model_dir": "客",
+      "ts_dir": "主",
+      "same_dir": false,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-09-24 16:37:03"
+    },
+    {
+      "fid": "3024462",
+      "date": "2026-09-25",
+      "match_time": "2026-09-25 09:00",
+      "event": "墨西乙",
+      "home_team": "瓦哈卡",
+      "away_team": "拉巴斯競技",
+      "weight": 1.14,
+      "model_dir": "客",
+      "ts_dir": "客",
+      "same_dir": true,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-09-24 16:37:03"
     }
   ]
 }

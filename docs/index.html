@@ -7,8 +7,8 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>足彩价值投注看板</title>
-<link rel="stylesheet" href="style.css?v=20260924f">
-<script src="script.js?v=20260924f"></script>
+<link rel="stylesheet" href="style.css?v=20260922b">
+<script src="script.js?v=20260922b"></script>
 </head>
 <body>
 <div class="container">
@@ -46,9 +46,9 @@
         <option value="odds">按赔率</option>
       </select>
       <button id="refreshBtn" onclick="location.reload()">🔄 刷新</button>
-      <span id="warnToggle" class="warn-filter-btn" onclick="toggleWarnFilter()" title="仅显示 🔴避雷 场次 (LGBM<40%, 实测命中41.8%)">🔴 全部</span>
+      <span id="warnToggle" class="warn-filter-btn" onclick="toggleWarnFilter()" title="仅显示 LGBM 低置信(⚠️) 场次">⚠️ 全部</span>
       <span id="valueToggle" class="warn-filter-btn" onclick="toggleValueFilter()" title="仅显示有价值投注的比赛">💰 全部</span>
-      <span id="impToggle" class="warn-filter-btn" onclick="toggleImportantFilter()" title="仅显示 🟢强跟 场次 (LGBM≥53%且模型同向≥40%, 实测命中90.5%)">🟢 全部</span>
+      <span id="impToggle" class="warn-filter-btn" onclick="toggleImportantFilter()" title="仅显示高重要性比赛">⚡ 全部</span>
       <span id="hitRate" class="meta-hit"></span>
       <span id="valueStats"></span>
     </div>
