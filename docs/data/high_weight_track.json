@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-25 13:37:04",
+  "generated_at": "2026-09-25 17:44:11",
   "threshold": 1.14,
   "note": "⚡=importance_weight(联赛等级×紧迫). 历史场次紧迫系数跌至0.90, 仅临场窗口权重>=1.14. 逐轮记录攒样本.",
   "tracked": [
@@ -19334,6 +19334,21 @@
       "score": "",
       "hit": false,
       "recorded_at": "2026-09-25 13:37:04"
+    },
+    {
+      "fid": "2996476",
+      "date": "2026-09-26",
+      "match_time": "2026-09-26 03:00",
+      "event": "荷乙",
+      "home_team": "多德勒支",
+      "away_team": "阿爾梅勒城",
+      "weight": 1.14,
+      "model_dir": "客",
+      "ts_dir": "客",
+      "same_dir": true,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-09-25 17:44:11"
     }
   ]
 }
