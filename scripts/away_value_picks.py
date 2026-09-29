@@ -12,6 +12,7 @@
 用法: python3 scripts/away_value_picks.py [--all]  # --all 输出全部, 默认只输出窗口内及未来未开赛
 """
 import json
+import math
 import sys
 import datetime
 
@@ -27,6 +28,29 @@ def fmt3(arr):
 def argmax3(w, dr, l):
     m = max(w, dr, l)
     return '主' if m == w else ('平' if m == dr else '客')
+
+def ent3(w, dr, l):
+    """LGBM 三路概率的香农熵 -Σp·ln p (2026-09-29 低熵区标记用)
+
+    只读标记量, 不参与任何筛选/规则. 熵≤1.075 ⇔ LGBM 最大概率约 ≥0.45.
+    回测(results.json 1835场①池, HKJC赔口径): 低熵∧该方向赔≥1.8 = 47场 61.7% ROI+22.0%;
+    低熵∧赔<1.8 = 808场 71.0% ROI-6.3%(短赔被抽水吃掉). 故只作行内标记+汇总, 不改规则.
+    """
+    try:
+        s = 0.0
+        for p in (w, dr, l):
+            p = float(p or 0)
+            if p > 0:
+                s -= p * math.log(p)
+        return s
+    except Exception:
+        return None
+
+def hkjc_dir_odds(cur, d):
+    """HKJC即时三元组按方向(主/平/客)取赔率"""
+    if not cur or len(cur) < 3:
+        return None
+    return {'主': cur[0], '平': cur[1], '客': cur[2]}.get(d)
 
 def hkjc_cur(m):
     """HKJC即时赔率 [主,平,客]; 缺失返回 None"""
@@ -226,11 +250,15 @@ def main():
         tsd = argmax3(m.get('ts_win', 0), m.get('ts_draw', 0), m.get('ts_loss', 0))
         tsp = max(m.get('ts_win', 0), m.get('ts_draw', 0), m.get('ts_loss', 0))
         bv = m.get('best_value') or {}
+        # 📐低熵区(2026-09-29 用户指令): 只读标记, 不参与筛场
+        e = ent3(m.get('lgbm_win', 0), m.get('lgbm_draw', 0), m.get('lgbm_loss', 0))
+        o_dir = hkjc_dir_odds(cur, md)
         rows.append({
             'date': m.get('date', ''), 'mt': mt, 'league': t2s(m.get('event', '')),
             'home': t2s(m.get('home_team', '')), 'away': t2s(m.get('away_team', '')), 'no': no_tag(m),
             'odds': cur[2] if cur else None,
             'dir': md, 'model_prob': mv, 'lgbm_prob': lv, 'ev': bv.get('ev', 0),
+            'ent': e, 'dir_odds': o_dir,  # 📐低熵区: LGBM三路熵 + 该方向HKJC即时赔率
             # 参考赔率: 平博开/即, HKJC开/即 (均为 主/平/客 三元组)
             'pin_open': fmt3(comp.get('open')), 'pin_cur': fmt3(comp.get('current')),
             'hkjc_open': fmt3((m.get('pin_comparison') or {}).get('open')), 'hkjc_cur': fmt3(cur),
@@ -264,13 +292,31 @@ def main():
         if r.get('chance'):
             tag += ' 💡机会(edge≥15·TS同向)'  # 与 🚫 互斥(反向/同向), 可与 ⚠️⚡提示 并存
         print(f"{t} [{lg_tag(r['league'])}] {r['home']} vs {r['away']} →{r['dir']}{tag}{r.get('no', '')}")
-        print(f"   {r['dir']}概率: model {r['model_prob']*100:.0f}% | LGBM {r['lgbm_prob']*100:.0f}% | EV {r['ev']:.2f} | TS {r['ts_dir']}{r['ts_prob']*100:.0f}%")
+        ent = r.get('ent')
+        ltag = ''
+        if ent is not None:
+            ltag = f" | 熵{ent:.3f}"
+            if ent <= 1.075:
+                ltag += ' 📐低熵'
+                if r.get('dir_odds') and r['dir_odds'] >= 1.8:
+                    ltag += '核心(赔≥1.8)'
+        print(f"   {r['dir']}概率: model {r['model_prob']*100:.0f}% | LGBM {r['lgbm_prob']*100:.0f}% | EV {r['ev']:.2f} | TS {r['ts_dir']}{r['ts_prob']*100:.0f}%{ltag}")
         print(f"   平博 初/即: {r['pin_open']} → {r['pin_cur']} | HKJC 初/即: {r['hkjc_open']} → {r['hkjc_cur']}")
     if not rows:
         if show_all:
             print("(全部场次无符合条件者)")
         else:
             print(f"(今日窗口 {win_label} 内及未来无未开赛可投场次)")
+
+    # ===== 📐低熵区汇总 (2026-09-29 用户指令: 低熵区间的比赛标进每日清单) =====
+    # 只标只报, 不改任何筛场规则(① 仍然按 model=LGBM同向 且 >44.9% 出)
+    low = [r for r in rows if r.get('ent') is not None and r['ent'] <= 1.075]
+    core = [r for r in low if r.get('dir_odds') and r['dir_odds'] >= 1.8]
+    if low:
+        print("=" * 92)
+        print(f"📐低熵区(LGBM三路熵≤1.075, 即模型最大概率≳0.45): {len(low)}场"
+              + (f" | 其中核心(该方向HKJC即时≥1.8): {len(core)}场" if core else " | 本次无核心场(该方向赔<1.8)"))
+        print("   历史基准(results.json ①池1835场, HKJC赔口径): 低熵∧赔≥1.8 = 47场 61.7% ROI+22.0% (7/8月强、9月21场-8.4%, 样本薄) | 低熵∧赔<1.8 = 808场 71.0% ROI-6.3% (短赔被抽水吃光, 只观察不跟)")
 
     # 窗口内汇总(含已开赛, 供复盘)
     in_win = [r for r in rows if r['mt'] and win_start <= r['mt'] <= win_end]
