@@ -308,15 +308,14 @@ def main():
         else:
             print(f"(今日窗口 {win_label} 内及未来无未开赛可投场次)")
 
-    # ===== 📐低熵区汇总 (2026-09-29 用户指令: 低熵区间的比赛标进每日清单) =====
+    # ===== 📐低熵核心区: ①段末指针 (2026-09-29 用户拍板「单独出一段」→ 明细在清单末尾独立一段) =====
     # 只标只报, 不改任何筛场规则(① 仍然按 model=LGBM同向 且 >44.9% 出)
     low = [r for r in rows if r.get('ent') is not None and r['ent'] <= 1.075]
     core = [r for r in low if r.get('dir_odds') and r['dir_odds'] >= 1.8]
     if low:
         print("=" * 92)
-        print(f"📐低熵区(LGBM三路熵≤1.075, 即模型最大概率≳0.45): {len(low)}场"
-              + (f" | 其中核心(该方向HKJC即时≥1.8): {len(core)}场" if core else " | 本次无核心场(该方向赔<1.8)"))
-        print("   历史基准(results.json ①池1835场, HKJC赔口径): 低熵∧赔≥1.8 = 47场 61.7% ROI+22.0% (7/8月强、9月21场-8.4%, 样本薄) | 低熵∧赔<1.8 = 808场 71.0% ROI-6.3% (短赔被抽水吃光, 只观察不跟)")
+        print(f"📐低熵区: {len(low)}场(熵≤1.075) | 其中核心(该方向HKJC即时≥1.8) {len(core)}场"
+              f" → 明细见清单末尾「📐低熵核心区」独立一段(只跟踪)")
 
     # 窗口内汇总(含已开赛, 供复盘)
     in_win = [r for r in rows if r['mt'] and win_start <= r['mt'] <= win_end]
@@ -432,6 +431,35 @@ def main():
 
     # 2026-09-23 用户拍板: 撤销「避雷汇总」段
     # 避雷场次照推 —— 不再单独汇总/警示, 只在各档位明细行保留 🚫/⚠️⚡ 标记, 是否跟由用户自判
+
+    # ===== 📐低熵核心区: 独立一段 (2026-09-29 用户拍板「好 单独出一段。」) =====
+    # 口径: ① 的子集 —— 熵≤1.075(=该方向模型概率≳0.45, 三路不模糊) 且 该方向 HKJC 即时赔 ≥1.8
+    # 只展示/只跟踪: 不改任何筛场规则, 不重复计入投注簿与战绩(①里已有这些场次), 供逐周跟踪
+    core_rows = [r for r in rows
+                 if r.get('ent') is not None and r['ent'] <= 1.075
+                 and r.get('dir_odds') and r['dir_odds'] >= 1.8]
+    core_rows.sort(key=lambda x: (x['mt'] or datetime.datetime.max, -x['ev']))
+    print()
+    print(f"📐低熵核心区 (熵≤1.075 ∧ 该方向HKJC即时≥1.8 — ①的子集, 只跟踪): {len(core_rows)}场")
+    print("   规则不动: ①仍按 model=LGBM同向 且 >44.9% 出; 本段不重复计入战绩/投注簿(同场只记①那一条)")
+    print("   回测(results.json ①池1835场, HKJC赔口径): 47场 61.7% 均赔1.97 ROI+22.0% (7/8月强、9月21场-8.4%, 样本薄)")
+    print("=" * 92)
+    if not core_rows:
+        print("(今日无核心场: ①内无「熵≤1.075 且该方向赔≥1.8」的场次)")
+    for r in core_rows:
+        t = r['mt'].strftime('%m-%d %H:%M') if r['mt'] else r['date']
+        tag = ''
+        if r.get('av_reasons'):
+            tag = ' 🚫避雷(' + ','.join(r['av_reasons']) + ')'
+        elif r.get('avoid'):
+            tag = ' ⚠️⚡提示'
+        if r.get('chance'):
+            tag += ' 💡机会(edge≥15·TS同向)'
+        print(f"{t} [{lg_tag(r['league'])}] {r['home']} vs {r['away']} →{r['dir']}{tag}{r.get('no', '')}")
+        print(f"   {r['dir']}概率: model {r['model_prob']*100:.0f}% | LGBM {r['lgbm_prob']*100:.0f}%"
+              f" | EV {r['ev']:.2f} | TS {r['ts_dir']}{r['ts_prob']*100:.0f}%"
+              f" | 熵{r['ent']:.3f} 📐低熵 核心(赔{r['dir_odds']:.2f}≥1.8)")
+        print(f"   平博 初/即: {r['pin_open']} → {r['pin_cur']} | HKJC 初/即: {r['hkjc_open']} → {r['hkjc_cur']}")
 
     if md_file:
         sys.stdout.write("```\n")

@@ -146,6 +146,10 @@ def parse_md(path):
             cur_sec = [m_sec.group(1), s, []]
             sections.append(cur_sec)
             continue
+        if s.startswith('📐'):                  # 📐低熵核心区: ①的子集(只跟踪) → 不入本表, 防同场双计
+            flush_match()
+            cur_sec = None
+            continue
         if cur_sec and cur_sec[0] == '⚠️':      # ⚠️档内: 避雷明细行
             m = AVOID_ITEM_RE.match(s)
             if m:

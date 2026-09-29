@@ -69,6 +69,7 @@ def main():
     total = hit = 0
     pnl = 0.0
     has_pnl = 0
+    pend = 0  # 未收录场次(不含 📐低熵核心区段, 该段是①子集不重复计数)
     changed = 0
     lines = body.split('\n')
     # 2026-09-23 用户拍板(撤销避雷汇总): 复盘 md 不再照抄旧清单的「⚠️🚫 避雷汇总」段
@@ -85,9 +86,13 @@ def main():
         _i += 1
     lines = _clean
     sec = None  # 当前档位段: ②客客客无箭头隐含客, ③胜胜胜无箭头隐含主
+    lowsec = False  # 📐低熵核心区段(=①的子集): 回填比分但不重复计战绩/盈亏/未收录
     for i, line in enumerate(lines):
         if re.match(r'^[①②③]', line):
             sec = line[0]
+            lowsec = False
+        if line.startswith('📐'):
+            lowsec = True
         lc = re.sub(r'\s*#\S+\s*$', '', line)   # 去行尾编号标记(#北单74/周三017)后再解析
         mm = LINE_RE.match(lc)
         if mm:
@@ -102,12 +107,11 @@ def main():
                     h, a = int(sm.group(1)), int(sm.group(2))
                     actual = '主' if h > a else ('平' if h == a else '客')
                     ok = (actual == side)
-                    total += 1
-                    if ok:
-                        hit += 1
-                        mark = '✓'
-                    else:
-                        mark = '✘'
+                    if not lowsec:
+                        total += 1
+                        if ok:
+                            hit += 1
+                    mark = '✓' if ok else '✘'
                     # 盈亏: 取比赛行后 2 行内赔率（甜点/客客客: HKJC客胜; 高置信: HKJC 初/即 即赔方向）
                     odds = None
                     tail = '\n'.join(lines[i + 1:i + 3])
@@ -121,7 +125,7 @@ def main():
                             v = hm.group(idx + 1)
                             if v != '-':
                                 odds = float(v)
-                    if odds:
+                    if odds and not lowsec:
                         has_pnl += 1
                         pnl += (odds - 1.0) if ok else -1.0
                     out_lines.append(f"{line} | 实际: {sc} {mark}")
@@ -129,12 +133,14 @@ def main():
                     continue
             out_lines.append(f"{line} | ⏳ 未收录")
             changed += 1
+            if not lowsec:
+                pend += 1
         else:
             out_lines.append(line)
 
     pct = f"{hit / total * 100:.0f}%" if total else "0%"
     header = (f"# 📋 推荐清单 · 赛果回填复盘（{args.date}）\n\n"
-              f"> 清单: {args.picks} ｜ 完赛 {total}/{total + sum(1 for l in out_lines if '⏳' in l)}"
+              f"> 清单: {args.picks} ｜ 完赛 {total}/{total + pend}"
               f" · 命中 {hit}（{pct} 完赛场次）"
               f" ｜ 净盈亏 {pnl:+.2f}（{has_pnl} 场有赔率）\n\n```text\n")
     content = header + '\n'.join(out_lines) + '\n```\n'
