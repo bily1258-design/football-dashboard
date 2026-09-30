@@ -67,7 +67,7 @@ def build():
         tsd = argmax3(m.get('ts_win'), m.get('ts_draw'), m.get('ts_loss'))[0]
         cand = [(pin[k], DIRS[k]) for k in range(3) if pin[k] > 1]
         mkt = min(cand)[1] if cand else ''
-        recs.append(dict(o=o, md=md, is1=is1, ent=ent, tsd=tsd,
+        recs.append(dict(o=o, md=md, is1=is1, ent=ent, tsd=tsd, date=(m.get('date') or ''),
                          hk=(hk[idx] if hk and hk[idx] > 1 else None),
                          pin=(pin[idx] if pin[idx] > 1 else None),
                          ok=(md == o), mkt=mkt, mktok=(mkt == o), has_hk=(hk is not None)))
@@ -112,6 +112,54 @@ def main():
         rep(f'方向{d}', [r for r in ohk if r['md'] == d], 'hk')
     rep('熵≤1.075 ∧ 赔≥1.8 (📐低熵核心区)', [r for r in ohk if r['ent'] <= 1.075 and r['hk'] >= 1.8], 'hk')
     print('\n注: 熵越低的场次方向越明确但赔越低 → 命中高、ROI 薄; 反过来赔高的场次命中低。')
+
+    # ── 2026-09-30 续挖: 熵闸门的稳健性 ──────────────────────────────
+    print('\n== 续挖1: 熵闸门是否只是"赔率的代理"? 固定赔率带内再看熵 (①池, HKJC口径) ==')
+    print('   (若同一赔率带内低熵正/高熵负 → 熵是独立维度, 不是赔率代理)')
+    for lo, hi in [(1, 1.8), (1.8, 2.5), (2.5, 99)]:
+        band = [r for r in ohk if lo <= r['hk'] < hi]
+        if not band:
+            continue
+        print(f'   赔 {lo}~{hi} (n={len(band)}):')
+        for e0, e1 in [(0, 1.075), (1.075, 9)]:
+            sub = [r for r in band if e0 <= r['ent'] < e1]
+            if not sub:
+                continue
+            n = len(sub)
+            h = sum(1 for r in sub if r['ok'])
+            p = sum(((r['hk'] - 1) if r['ok'] else -1) for r in sub)
+            print(f'      熵 {e0}~{e1}: n={n:4d} 命中={h/n*100:5.1f}% 均赔={sum(r["hk"] for r in sub)/n:4.2f} ROI={p/n*100:+6.2f}%')
+
+    print('\n== 续挖2: 走前验证 — 按时间切段看闸门是否稳定 (①池, HKJC口径) ==')
+    qs = {}
+    for r in ohk:
+        d = r.get('date') or ''
+        qs.setdefault(d[:7], []).append(r)
+    print(f'   {"月份":8s}{"":4s}{"低熵组(n/命中/ROI)":34s}高熵组(n/命中/ROI)')
+    for mo in sorted(qs):
+        g = qs[mo]
+        cells = []
+        for e0, e1 in [(0, 1.075), (1.075, 9)]:
+            sub = [r for r in g if e0 <= r['ent'] < e1]
+            if not sub:
+                cells.append('n=0')
+                continue
+            n = len(sub)
+            h = sum(1 for r in sub if r['ok'])
+            p = sum(((r['hk'] - 1) if r['ok'] else -1) for r in sub)
+            cells.append(f'n={n:4d} {h/n*100:5.1f}% {p/n*100:+7.2f}%')
+        print(f'   {mo:8s}{"":4s}{cells[0]:34s}{cells[1]}')
+
+    print('\n== 续挖3: 阈值敏感性 (①池 熵≤X 全池, HKJC口径) ==')
+    for x in (1.055, 1.06, 1.065, 1.07, 1.075, 1.08, 1.085, 1.09, 1.10):
+        sub = [r for r in ohk if r['ent'] <= x]
+        if not sub:
+            continue
+        n = len(sub)
+        h = sum(1 for r in sub if r['ok'])
+        p = sum(((r['hk'] - 1) if r['ok'] else -1) for r in sub)
+        print(f'   熵≤{x:.3f}: n={n:5d} 命中={h/n*100:5.1f}% 均赔={sum(r["hk"] for r in sub)/n:4.2f} ROI={p/n*100:+6.2f}%')
+    print('   (①池整体 ROI 为负: 低赔被抽水吃掉 → 池内闸门只能"少亏", 增益要靠"低熵∧≥1.8"的高赔子集)')
 
 
 if __name__ == '__main__':

@@ -21,6 +21,7 @@
   python3 scripts/betting_ledger.py --stats    # 只显示统计
 """
 import json
+import math
 import os
 import sys
 from datetime import datetime
@@ -42,6 +43,18 @@ VALUE_ODDS_MAX = 5.0
 VALUE_ODDS_MAX_SIGNALS = ('value', 'ruleA')
 TOP_N_PER_DAY = 3      # 每日限额: 每天只记 EV 最高的 N 场 (2026-08-15 新增; 回测 top1 +4.94 / top3 -0.45, 取3均衡样本量)
 SAME_MATCH_KEEP = 'value'  # 同场双计修正: 同一 fid 同时有 weight(⚡大热)与 value(价值)时只记一条, 取哪侧 ('weight'|'value')
+
+# ── 熵闸门观察 (2026-09-30 立, 只观察不改选号) ──
+# 熵 = -Σ p·ln p (LGBM 三路概率, 即 away_value_picks.py:36 ent3), 越低成本模型方向越明确。
+# 依据(2026-09-30 全历史重算):
+#   · 本账本 1404 注: 熵≤1.075 → 333 注 命中 66.7% ROI +11.56%; 熵>1.075 → 逐档全负
+#     (1.075-1.085 -1.8% / 1.085-1.095 -12.9% / >1.095 -6.3%)
+#   · ①池全历史(HKJC 口径 2348 场): 全池 ROI -8.65%; 熵>1.075(1261 场) -12.23%
+#   · 走前验证按季度切 4 段: 高熵组 4/4 段为负或零, 低熵组 4/4 段命中 64~69%
+#   · 控制赔率后仍成立(同赔率带内低熵正/高熵负) → 熵不是赔率的代理, 是独立维度
+#   · 三个信号(⚡weight/value/truev)在熵≤1.075 内全部为正 → 闸门跨信号一致
+# 阈值 1.075 与「📐低熵核心区」口径保持一致(该方向 HKJC 即时赔≥1.8 才有正收益)。
+GATE_ENT_MAX = 1.075
 
 LABELS = {'home': '主胜', 'draw': '平局', 'away': '客胜'}
 
@@ -504,6 +517,45 @@ def main():
                     flag = '  ⚠️持续落后市场'
                 print(f"  {k:6s} {b['n']:4d}  {wr:5.1f}%  {100 / ao:7.1f}%  "
                       f"{mk_rate:7.1f}%  {roi:+7.1f}%  {b['p']:+8.2f}{flag}")
+
+    # ── 熵闸门观察 (2026-09-30 立): 按 LGBM 三路熵分组登记, 只观察、不改任何选号规则 ──
+    # 存量行没写 ent 字段 → 统计时从 results.json 按 fid 现场 join(只读, 不写回账本, 不动历史)。
+    if completed:
+        ent_of = {}
+        for m in matches:
+            e_ = m.get('lgbm_entropy')
+            if e_ is None:
+                ps = [m.get('lgbm_win') or 0, m.get('lgbm_draw') or 0, m.get('lgbm_loss') or 0]
+                if any(ps):
+                    e_ = -sum(p * math.log(p) for p in ps if p > 0)
+            try:
+                if e_ is not None:
+                    ent_of[str(m.get('fid'))] = float(e_)
+            except (TypeError, ValueError):
+                pass
+        gate = {}
+        for e in completed:
+            en = ent_of.get(str(e.get('fid')))
+            if en is None:
+                continue
+            k = 'low' if en <= GATE_ENT_MAX else 'high'
+            g = gate.setdefault(k, {'n': 0, 'w': 0, 'p': 0.0, 'so': 0.0})
+            g['n'] += 1
+            g['w'] += 1 if e['result'] == 'win' else 0
+            g['p'] += e.get('profit', 0)
+            g['so'] += e.get('odds') or 0
+        if gate:
+            covered = sum(g['n'] for g in gate.values())
+            print()
+            print(f'⛔熵闸门观察 (低熵=熵≤{GATE_ENT_MAX}, 只观察不改选号规则; '
+                  f'有熵值 {covered}/{len(completed)} 注):')
+            for k, lab in (('low', f'熵≤{GATE_ENT_MAX}'), ('high', f'熵>{GATE_ENT_MAX}')):
+                g = gate.get(k)
+                if not g or not g['n']:
+                    continue
+                ao = g['so'] / g['n']
+                print(f"  {lab:11s}{g['n']:5d}注  命中{g['w'] / g['n'] * 100:5.1f}%  "
+                      f"均赔{ao:5.2f}  ROI{g['p'] / g['n'] * 100:+7.2f}%  盈亏{g['p']:+8.2f}")
 
     print()
     print(f'账本文件: docs/data/betting_ledger.json')
