@@ -109,25 +109,29 @@ def arm_cols(arm_names):
     return cols
 
 
+ATTACK2_NAMES = [nm for nm in ATTACK_NAMES if nm != 'corner_diff_3']   # 角球全缺, 剔
+
 ARMS = [('A v11(39维)', []),
         ('B +11维 全量', FEATURE_NAMES),
         ('C +8维 阵容阵型', LINEUP_NAMES),
-        ('D +3维 攻防差', ATTACK_NAMES)]
+        ('D +3维 攻防差', ATTACK_NAMES),
+        ('E +2维 射门控球', ATTACK2_NAMES),
+        ('F +1维 仅射门差', ['shot_diff_3'])]
 
 
-def run_folds(Xb, y, F):
+def run_folds(X, y, F, min_test=15, min_train=40):
     """滚动扩展窗: 返回每折 (训练n, 测试n, 各变体 acc)"""
     n = len(y)
     out = []
     for k in range(F):
         tr = int(n * (k + 1) / (F + 1))
         te = int(n * (k + 2) / (F + 1)) if k + 1 < F else n
-        if te - tr < 15 or tr < 40:
+        if te - tr < min_test or tr < min_train:
             continue
         res = {}
         for label, names in ARMS:
-            _, acc, ll, _, _ = train_eval(Xb[np.ix_(range(tr), arm_cols(names))], y[:tr],
-                                          Xb[np.ix_(range(tr, te), arm_cols(names))], y[tr:te])
+            _, acc, ll, _, _ = train_eval(X[np.ix_(range(tr), arm_cols(names))], y[:tr],
+                                          X[np.ix_(range(tr, te), arm_cols(names))], y[tr:te])
             res[label] = (acc, ll)
         out.append((tr, te - tr, res))
     return out
@@ -137,6 +141,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--folds', type=int, default=4, help='滚动折数(扩展窗)')
     ap.add_argument('--full', action='store_true', help='追加全样本参考口径(安全参考, 非判定口径)')
+    ap.add_argument('--full-folds', type=int, default=0, help='全样本滚动折数(判攻防差信号, 0=跳过)')
     ap.add_argument('--write-candidate', action='store_true',
                     help='把候选写到 data/cache/ (不动生产)')
     args = ap.parse_args()
@@ -238,7 +243,23 @@ def main():
             _, acc, ll, _, _ = train_eval(Xsrc[np.ix_(range(cut2), cols)], ya[:cut2],
                                           Xsrc[np.ix_(range(cut2, len(ya)), cols)], ya[cut2:])
             print('  %-16s %.4f (ll %.4f)' % (label, acc, ll))
-        print('  生产 v11 记录值: 0.4995')
+        print('  生产 v11 记录值: 0.4995 (注意: 上方 A 也非生产实现, 只能同实现内互比)')
+
+        # 全样本滚动多折: 攻防差覆盖 ~99%, 样本大, 是判断该信号最有力的一档
+        if args.full_folds >= 2:
+            FF = args.full_folds
+            print('\n-- 全样本 滚动 %d 折 扩展窗 (判断攻防差信号; 训练只用过去) --' % FF)
+            ffull = run_folds(Xb, ya, FF, min_test=200, min_train=800)
+            for label, _ in ARMS:
+                accs = [f[2][label][0] for f in ffull]
+                lls = [f[2][label][1] for f in ffull]
+                wins = sum(1 for f in ffull
+                           if f[2][label][0] > f[2][ARMS[0][0]][0] + 1e-9)
+                print('  %-16s acc均值 %.4f | 各折 %s | ll均值 %.4f | 胜A %d/%d'
+                      % (label, np.mean(accs), ' '.join('%.3f' % a for a in accs),
+                         np.mean(lls), wins, len(ffull)))
+            tot = sum(f[1] for f in ffull)
+            print('  （合计测试 %d 场 → 1pp ≈ %.1f 场）' % (tot, tot / 100.0))
 
     if args.write_candidate:
         os.makedirs(CACHE, exist_ok=True)
