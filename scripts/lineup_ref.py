@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """清单「📋战术阵容参考」段: 只读展示, 不参与任何选号规则。
 
-数据来源(全部读库, 不发请求):
+数据来源(全部读库/读文件, 不发请求):
   match_formations / match_lineups  ← scripts/fetch_lineups.py 回填的 titan007 详情页数据
-  xg_features                       ← 近3/10场 射门/控球/角球/xG (已有)
-  match_analysis.h2h                ← 历史交手 (已有)
+  xg_features                       ← 近3/10场 射门/控球/角球/xG/进失球 (已有)
+  docs/data/results.json stats.h2h  ← 历史交手 (与 ai_analysis 同源; 不能用 match_analysis join, sid≠fid)
 
 口径说明:
   ① 阵容=抓取时刻页面上的预计/官方首发, U21 及低级别联赛常缺;
@@ -60,11 +60,21 @@ def collect(fids, max_rows=40):
     xg = {r['sid']: dict(r) for r in con.execute(
         f"SELECT * FROM xg_features WHERE sid IN ({q})", fids)}
     h2h = {}
-    for r in con.execute(f"SELECT sid,h2h FROM match_analysis WHERE sid IN ({q})", fids):
-        try:
-            h2h[r['sid']] = json.loads(r['h2h']) if r['h2h'] else None
-        except Exception:
-            h2h[r['sid']] = None
+    # 交手战绩取自 results.json 的 stats.h2h(与 ai_analysis 同源);
+    # ⚠️ match_analysis.sid 与 fid 不是同一命名空间(实测 fid 在 match_analysis 里 0 命中), 不能用它 join
+    try:
+        with open(os.path.join(BASE, 'docs', 'data', 'results.json'), encoding='utf-8') as _fh:
+            _rj = json.load(_fh)
+        for _m in (_rj if isinstance(_rj, list) else _rj.get('matches', [])):
+            _h = (_m.get('stats') or {}).get('h2h')
+            if not _h:
+                continue
+            try:
+                h2h[int(_m.get('fid'))] = _h
+            except (TypeError, ValueError):
+                continue
+    except Exception:
+        h2h = {}
 
     # 队名(抓取页为简体) → 历史场次索引: 供稳定度/延续计算
     hist = {}
@@ -116,6 +126,8 @@ def collect(fids, max_rows=40):
         co3, cco3 = g('home_corners_3', 'away_corners_3') if side == 'home' else g('away_corners_3', 'home_corners_3')
         x3, cx3 = g('xg_home_3', 'xg_away_3') if side == 'home' else g('xg_away_3', 'xg_home_3')
         x10, cx10 = g('xg_home_10', 'xg_away_10') if side == 'home' else g('xg_away_10', 'xg_home_10')
+        g10, cg10 = g('home_goals_10', 'away_goals_10') if side == 'home' else g('away_goals_10', 'home_goals_10')
+        a10, ca10 = g('home_conceded_10', 'away_conceded_10') if side == 'home' else g('away_conceded_10', 'home_conceded_10')
         def n(v):
             return '—' if v is None else (f'{v:.1f}' if isinstance(v, float) else str(v))
         def seg(label, a, b, suf=''):
@@ -124,8 +136,11 @@ def collect(fids, max_rows=40):
             return f"{label} {n(a)}{suf}/{n(b)}{suf}"
         parts = [x for x in (seg('射门', s3, c3), seg('控球', p3, cp3, '%'),
                              seg('角球', co3, cco3), seg('xG', x3, cx3)) if x]
-        tail = (f" | 近10场 xG {n(x10)}/{n(cx10)}"
-                if (x10 is not None or cx10 is not None) else '')
+        tail = ''
+        if g10 is not None or cg10 is not None:
+            tail = f" | 近10场 进/失 主{n(g10)}/{n(a10)} · 客{n(cg10)}/{n(ca10)}"
+        if x10 is not None or cx10 is not None:
+            tail += f" · xG {n(x10)}/{n(cx10)}"
         if not parts:
             return None
         return "近3场 " + " · ".join(parts) + tail
@@ -173,8 +188,33 @@ def collect(fids, max_rows=40):
         h = h2h.get(fid)
         hline = None
         if h:
-            hline = (f"交手 {h.get('total')}场 主{h.get('home_wins')}胜{h.get('draws')}平{h.get('away_wins')}负"
-                     f" · 场均总球 {h.get('avg_total_goals')}")
+            _ch, _ca = _norm(home_s), _norm(away_s)
+            _w = _d = _l = 0
+            _tg = 0.0
+            _n = 0
+            for _g in h:
+                try:
+                    _gh, _ga = int(_g.get('home_score')), int(_g.get('away_score'))
+                except (TypeError, ValueError):
+                    continue
+                _hm, _aw = _norm(_t2s(_g.get('home'))), _norm(_t2s(_g.get('away')))
+                if _hm == _ch and _aw == _ca:
+                    _hs, _as = _gh, _ga
+                elif _hm == _ca and _aw == _ch:
+                    _hs, _as = _ga, _gh
+                else:
+                    continue
+                _n += 1
+                _tg += _gh + _ga
+                if _hs > _as:
+                    _w += 1
+                elif _hs == _as:
+                    _d += 1
+                else:
+                    _l += 1
+            if _n:
+                hline = (f"交手(近{_n}次) 主{home_s} {_w}胜{_d}平{_l}负"
+                         f" · 场均总球 {_tg / _n:.2f}")
         body.append((f['date'] or '', fid, home, away, bits, b2, coaches, xline, hline))
         shown += 1
 

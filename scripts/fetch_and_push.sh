@@ -85,6 +85,11 @@ python3 scripts/gen_bjdc_pool.py || echo "  ⚠️ 北单全池表生成失败, 
 echo "[$(date '+%H:%M:%S')] 生成看板精简数据 (results_light.json)..."
 python3 scripts/gen_light_results.py
 
+# ========== 增量抓取首发阵容/阵型/主教练 (近3天; 只读参考段用, 不参与选号) ==========
+# 必须排在「生成清单」之前, 否则当天新场次的阵容赶不上当天清单
+echo "[$(date '+%H:%M:%S')] 增量抓取阵容(近3天)..."
+python3 scripts/fetch_lineups.py --days 3 --limit 200 --sleep 0.8 >> "$HOME/lineup_daily.log" 2>&1 || echo "⚠️ 阵容抓取失败(不影响主流程)"
+
 # 客胜价值投注清单 (回测验证: 客胜+EV>0.5+HKJC赔率3-6 唯一正期望; 供每日推送)
 # --md: 完整清单写入 docs/today_picks.md, GitHub Pages 渲染成网页, 微信只推摘要+链接(省限流)
 echo "[$(date '+%H:%M:%S')] 生成客胜价值投注清单(+今日推荐文档)..."
@@ -116,10 +121,6 @@ fi
 # ⚡高权重场次追踪 (⚡>=1.14 临场窗口记录, 验证顶级1.2 vs 次级1.14 开出规律; 逐轮攒样本)
 echo "[$(date '+%H:%M:%S')] 追踪⚡高权重场次..."
 python3 scripts/high_weight_tracker.py
-
-# ========== 增量抓取首发阵容/阵型/主教练 (近3天; 只读参考, 不参与选号) ==========
-echo "[$(date '+%H:%M:%S')] 增量抓取阵容(近3天)..."
-python3 scripts/fetch_lineups.py --days 3 --limit 200 --sleep 0.8 >> "$HOME/lineup_daily.log" 2>&1 || echo "⚠️ 阵容抓取失败(不影响主流程)"
 
 # ========== 抓取xG特征数据（历史趋势表） ==========
 python3 scripts/fetch_daily_xg.py
