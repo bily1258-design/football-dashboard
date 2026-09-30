@@ -101,6 +101,56 @@ def _ts_fallback(mt):
         d = max(probs, key=probs.get)
         return d, int(round(probs[d] * 100))
     return None, None
+
+_ENTCACHE = None
+def _ent_records():
+    """建索引 {(MM-DD HH:MM, 主队t2s, 客队t2s): lgbm_entropy} — 一次性, 避免逐行全表扫。"""
+    global _ENTCACHE
+    if _ENTCACHE is None:
+        try:
+            from opencc import OpenCC
+            _cc = OpenCC('t2s')
+            norm = lambda s: _cc.convert((s or '').strip())
+        except Exception:
+            norm = lambda s: (s or '').strip()
+        idx = {}
+        try:
+            with open(RESULTS_JSON, encoding='utf-8') as f:
+                data = json.load(f)
+            recs = data['matches'] if isinstance(data, dict) else data
+            for r in recs:
+                if r.get('lgbm_entropy') is None:
+                    continue
+                mt_ = r.get('match_time', '')
+                if len(mt_) < 16:
+                    continue
+                try:
+                    idx[(mt_[5:16], norm(r.get('home_team')), norm(r.get('away_team')))] = float(r['lgbm_entropy'])
+                except (TypeError, ValueError):
+                    continue
+        except Exception:
+            idx = {}
+        _ENTCACHE = idx
+    return _ENTCACHE
+
+def _ent_fallback(mt):
+    """旧清单无熵标记时回补: 按 match_time 前缀(MM-DD HH:MM)+队名(繁简归一化 t2s)
+    匹配 results.json, 返回 lgbm_entropy(float) 或 None。只展示, 不动选号。"""
+    idx = _ent_records()
+    if not idx:
+        return None
+    try:
+        from opencc import OpenCC
+        _cc = OpenCC('t2s')
+        norm = lambda s: _cc.convert((s or '').strip())
+    except Exception:
+        norm = lambda s: (s or '').strip()
+    want = f"{mt['date']} {mt['time']}"
+    try:
+        home, away = (norm(x) for x in mt['teams'].split(' vs '))
+    except ValueError:
+        return None
+    return idx.get((want, home, away))
 ODDS_RE = re.compile(
     r'^平博\s+初/即:\s*([\d./\-]+)\s*→\s*([\d./\-]+)\s*\|\s*HKJC\s+初/即:\s*([\d./\-]+)\s*→\s*([\d./\-]+)')
 RESULT_RE = re.compile(r'\|\s*实际:\s*(\d+)[-:](\d+)\s*(✓|✘)\s*$')
@@ -282,6 +332,19 @@ def build_rows(sections):
                         ent = f"{m_ent.group(1)} 📐核心"
                     else:
                         ent = f"{m_ent.group(1)} 📐低熵"
+            if not ent:                               # 2026-09-30: 旧清单无熵标记 → 按 时间+队名 回补 results.json
+                _e = _ent_fallback(mt)
+                if _e is not None:
+                    try:
+                        _core = float(hk_odds) >= 1.8
+                    except (TypeError, ValueError):
+                        _core = False
+                    if _e > 1.075:
+                        ent = f"{_e:.3f} ⛔高熵"
+                    elif _core:
+                        ent = f"{_e:.3f} 📐核心"
+                    else:
+                        ent = f"{_e:.3f} 📐低熵"
             p0 = p1 = h0 = h1 = ''
             if mt['odds_line']:
                 m = ODDS_RE.search(mt['odds_line'])
