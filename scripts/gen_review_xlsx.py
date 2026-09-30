@@ -146,8 +146,12 @@ def _ent_fallback(mt):
     except Exception:
         norm = lambda s: (s or '').strip()
     want = f"{mt['date']} {mt['time']}"
+    _t = mt['teams']
+    for _sep in ('→', '#', '💡', '⏳', '｜', '|'):    # 清单行尾可能带方向/机会标记/北单编号
+        _t = _t.split(_sep)[0]
+    _t = _t.strip()
     try:
-        home, away = (norm(x) for x in mt['teams'].split(' vs '))
+        home, away = (norm(x) for x in _t.split(' vs '))
     except ValueError:
         return None
     return idx.get((want, home, away))
