@@ -117,6 +117,10 @@ fi
 echo "[$(date '+%H:%M:%S')] 追踪⚡高权重场次..."
 python3 scripts/high_weight_tracker.py
 
+# ========== 增量抓取首发阵容/阵型/主教练 (近3天; 只读参考, 不参与选号) ==========
+echo "[$(date '+%H:%M:%S')] 增量抓取阵容(近3天)..."
+python3 scripts/fetch_lineups.py --days 3 --limit 200 --sleep 0.8 >> "$HOME/lineup_daily.log" 2>&1 || echo "⚠️ 阵容抓取失败(不影响主流程)"
+
 # ========== 抓取xG特征数据（历史趋势表） ==========
 python3 scripts/fetch_daily_xg.py
 

@@ -25,7 +25,11 @@ def fmt3(arr):
         return '-'
     return f"{arr[0]}/{arr[1]}/{arr[2]}"
 
+def _num3(a, b, c):
+    return tuple((x if isinstance(x, (int, float)) else 0) for x in (a, b, c))
+
 def argmax3(w, dr, l):
+    w, dr, l = _num3(w, dr, l)
     m = max(w, dr, l)
     return '主' if m == w else ('平' if m == dr else '客')
 
@@ -248,7 +252,7 @@ def main():
         mt = parse_dt(m.get('match_time') or m.get('date'))
         comp = m.get('comparison') or {}  # 平博 Pinnacle
         tsd = argmax3(m.get('ts_win', 0), m.get('ts_draw', 0), m.get('ts_loss', 0))
-        tsp = max(m.get('ts_win', 0), m.get('ts_draw', 0), m.get('ts_loss', 0))
+        tsp = max(*_num3(m.get('ts_win', 0), m.get('ts_draw', 0), m.get('ts_loss', 0)))
         bv = m.get('best_value') or {}
         # 📐低熵区(2026-09-29 用户指令): 只读标记, 不参与筛场
         e = ent3(m.get('lgbm_win', 0), m.get('lgbm_draw', 0), m.get('lgbm_loss', 0))
@@ -256,6 +260,7 @@ def main():
         rows.append({
             'date': m.get('date', ''), 'mt': mt, 'league': t2s(m.get('event', '')),
             'home': t2s(m.get('home_team', '')), 'away': t2s(m.get('away_team', '')), 'no': no_tag(m),
+            'fid': m.get('fid'),
             'odds': cur[2] if cur else None,
             'dir': md, 'model_prob': mv, 'lgbm_prob': lv, 'ev': bv.get('ev', 0),
             'ent': e, 'dir_odds': o_dir,  # 📐低熵区: LGBM三路熵 + 该方向HKJC即时赔率
@@ -337,20 +342,21 @@ def main():
         if not cur:
             continue
         mt = parse_dt(m.get('match_time') or m.get('date'))
-        ts_draw = m.get('ts_draw', 0)
+        ts_draw = m.get('ts_draw') or 0
         is_fill = abs(ts_draw - 0.241) < 0.001  # TS填充值污染剔除
         # 2026-09-01 用户拍板: ★门限 TS平<25% 收紧到 <22% (回测: 命中率83% vs 25%的75.8%, 单注EV更高)
         star = (cur[2] < 2.0 and ts_draw < 0.22 and not is_fill)
         comp = m.get('comparison') or {}
-        tsp = max(m.get('ts_win', 0), m.get('ts_draw', 0), m.get('ts_loss', 0))
+        tsp = max(*_num3(m.get('ts_win', 0), m.get('ts_draw', 0), m.get('ts_loss', 0)))
         rows_b.append({
             'date': m.get('date', ''), 'mt': mt, 'league': t2s(m.get('event', '')),
             'home': t2s(m.get('home_team', '')), 'away': t2s(m.get('away_team', '')), 'no': no_tag(m),
+            'fid': m.get('fid'),
             'odds': cur[2], 'ts_draw': ts_draw, 'star': star,
             'ts_dir': tsd, 'ts_prob': tsp,  # TS最大概率方向及概率
             'model_prob': m.get('model_loss', 0),  # 客客客: 模型指客概率
             'ev': (m.get('best_value') or {}).get('ev', 0),
-            'lgbm_prob': max(m.get('lgbm_win', 0), m.get('lgbm_draw', 0), m.get('lgbm_loss', 0)),
+            'lgbm_prob': max(*_num3(m.get('lgbm_win', 0), m.get('lgbm_draw', 0), m.get('lgbm_loss', 0))),
             'pin_open': fmt3(comp.get('open')), 'pin_cur': fmt3(comp.get('current')),
             'hkjc_open': fmt3((m.get('pin_comparison') or {}).get('open')), 'hkjc_cur': fmt3(cur),
             'avoid': is_hw_avoid(m),  # ⚡高权重弱提示(2026-09-24 降级)
@@ -390,20 +396,21 @@ def main():
         if not cur:
             continue
         mt = parse_dt(m.get('match_time') or m.get('date'))
-        ts_draw = m.get('ts_draw', 0)
+        ts_draw = m.get('ts_draw') or 0
         is_fill = abs(ts_draw - 0.241) < 0.001  # TS填充值污染剔除
         # 2026-09-01 用户拍板: ★门限 TS平<25% 收紧到 <22% (回测: 命中率83% vs 25%的75.8%, 单注EV更高)
         star = (cur[0] < 2.0 and ts_draw < 0.22 and not is_fill)  # 主赔<2.0
         comp = m.get('comparison') or {}
-        tsp = max(m.get('ts_win', 0), m.get('ts_draw', 0), m.get('ts_loss', 0))
+        tsp = max(*_num3(m.get('ts_win', 0), m.get('ts_draw', 0), m.get('ts_loss', 0)))
         rows_d.append({
             'date': m.get('date', ''), 'mt': mt, 'league': t2s(m.get('event', '')),
             'home': t2s(m.get('home_team', '')), 'away': t2s(m.get('away_team', '')), 'no': no_tag(m),
+            'fid': m.get('fid'),
             'odds': cur[0], 'ts_draw': ts_draw, 'star': star,
             'ts_dir': tsd, 'ts_prob': tsp,  # TS最大概率方向及概率
             'model_prob': m.get('model_win', 0),  # 胜胜胜: 模型指主概率
             'ev': (m.get('best_value') or {}).get('ev', 0),
-            'lgbm_prob': max(m.get('lgbm_win', 0), m.get('lgbm_draw', 0), m.get('lgbm_loss', 0)),
+            'lgbm_prob': max(*_num3(m.get('lgbm_win', 0), m.get('lgbm_draw', 0), m.get('lgbm_loss', 0))),
             'pin_open': fmt3(comp.get('open')), 'pin_cur': fmt3(comp.get('current')),
             'hkjc_open': fmt3((m.get('pin_comparison') or {}).get('open')), 'hkjc_cur': fmt3(cur),
             'avoid': is_hw_avoid(m),  # ⚡高权重弱提示(2026-09-24 降级)
@@ -460,6 +467,29 @@ def main():
               f" | EV {r['ev']:.2f} | TS {r['ts_dir']}{r['ts_prob']*100:.0f}%"
               f" | 熵{r['ent']:.3f} 📐低熵 核心(赔{r['dir_odds']:.2f}≥1.8)")
         print(f"   平博 初/即: {r['pin_open']} → {r['pin_cur']} | HKJC 初/即: {r['hkjc_open']} → {r['hkjc_cur']}")
+
+    # ===== 📋战术阵容参考: 只读展示 (2026-09-30 用户拍板 A档) =====
+    # 数据: match_formations/match_lineups(fetch_lineups.py 回填) + xg_features + match_analysis.h2h
+    # 规则不动: 不参与①入选, 不动 LGBM/泊松/EV/避雷; 段头用 📋 打头(非①②③), 三解析器天然不计入
+    try:
+        import os as _os_, sys as _sys_
+        _sys_.path.insert(0, _os_.path.dirname(_os_.path.abspath(__file__)))
+        import lineup_ref
+        _seen = []
+        for _r in rows + rows_b + rows_d:
+            _f = _r.get('fid')
+            if _f and _f not in _seen:
+                _seen.append(_f)
+        _ref = lineup_ref.collect(_seen, max_rows=40)
+    except Exception as _ex:
+        _ref = []
+        print(f"(📋战术阵容参考生成跳过: {_ex})")
+    print()
+    if _ref:
+        for _l in _ref:
+            print(_l)
+    else:
+        print("▫️战术阵容参考: 今日窗口内无阵容数据 (titan007 详情页未出阵容/未回填; U21与低级别联赛常见)")
 
     if md_file:
         sys.stdout.write("```\n")
