@@ -271,6 +271,17 @@ def build_rows(sections):
                     d, mdl, lgbm, ev, tsd, tsp = (m.group(1), m.group(2),
                                                   m.group(3), m.group(4) or '',
                                                   m.group(5) or '', m.group(6) or '')
+            # 2026-09-30: 熵/段 (只展示) — 从清单概率行尾部 ltag 提取
+            ent = ''
+            if mt['prob_line']:
+                m_ent = re.search(r'熵([\d.]+)', mt['prob_line'])
+                if m_ent:
+                    if '⛔' in mt['prob_line']:
+                        ent = f"{m_ent.group(1)} ⛔高熵"
+                    elif '核心' in mt['prob_line']:
+                        ent = f"{m_ent.group(1)} 📐核心"
+                    else:
+                        ent = f"{m_ent.group(1)} 📐低熵"
             p0 = p1 = h0 = h1 = ''
             if mt['odds_line']:
                 m = ODDS_RE.search(mt['odds_line'])
@@ -319,6 +330,7 @@ def build_rows(sections):
                 'h_odds': f"{h0} → {h1}" if h0 else '',
                 'avoid': mt['avoid'].replace('🚫避雷', '🚫').replace('⚠️⚡避雷', '⚠️⚡') if mt['avoid'] else '',
                 'pnl': pnl,
+                'ent': ent,
             })
     return rows
 
@@ -343,8 +355,8 @@ def main():
 
     headers = ['档位', '日期', '时间', '联赛', '对阵', '方向', '清单★', '星级',
                '比分', '结果', 'Model%', 'LGBM%', 'EV', 'TS', 'HKJC赔率',
-               '平博 初→即', 'HKJC 初→即', '避雷', '盈亏']
-    widths = [7, 8, 8, 13, 30, 8, 8, 9, 8, 7, 7, 7, 7, 11, 9, 26, 26, 22, 8]
+               '平博 初→即', 'HKJC 初→即', '避雷', '盈亏', '熵/段']
+    widths = [7, 8, 8, 13, 30, 8, 8, 9, 8, 7, 7, 7, 7, 11, 9, 26, 26, 22, 8, 12]
     SEC_FILL = {'①': SWEET_FILL, '②': CONF_FILL, '③': KKK_FILL}
     MARK_FONT = {'✓': HIT_FONT, '✘': MISS_FONT, '⏳': PEND_FONT}
 
@@ -370,7 +382,7 @@ def main():
             vals = [idx, r['date'], r['time'], r['league'], r['teams'], r['dir'],
                     r['star'], r['stars'], r['score'], r['mark'], r['mdl'], r['lgbm'],
                     r['ev'], r['ts'], r['hk_odds'], r['p_odds'], r['h_odds'],
-                    ' '.join(x for x in (r['avoid'], r['red']) if x), r['pnl']]
+                    ' '.join(x for x in (r['avoid'], r['red']) if x), r['pnl'], r['ent']]
             for ci, v in enumerate(vals, 1):
                 cell = ws.cell(row=row, column=ci, value=v)
                 cell.border = BORDER
@@ -386,7 +398,14 @@ def main():
                     cell.font = STAR_FONT
                 if ci == 10 and r['mark']:                         # 结果列 ✓绿 ✘红 ⏳灰
                     cell.font = MARK_FONT.get(r['mark'], PEND_FONT)
-                if ci in (1, 2, 3, 6, 7, 8, 9, 10, 12, 13, 19):
+                if ci == 20 and r['ent']:                          # 熵/段: ⛔红 📐核心绿 📐低熵灰
+                    if '⛔' in r['ent']:
+                        cell.font = Font(color='C00000', bold=True)
+                    elif '核心' in r['ent']:
+                        cell.font = Font(color='006100', bold=True)
+                    else:
+                        cell.font = Font(color='808080')
+                if ci in (1, 2, 3, 6, 7, 8, 9, 10, 12, 13, 19, 20):
                     cell.alignment = Alignment(horizontal='center')
             n_total += 1
             st['n'] += 1

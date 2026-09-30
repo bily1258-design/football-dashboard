@@ -224,6 +224,18 @@ def build_rows(sections):
             league = mt['league'].replace('🟢', '')
             stars_str, red = calc_stars(d, p0, p1, h0, h1, star, league)
             avoid = _fmt_avoid(mt['avoid'])
+            # 2026-09-30: 熵/段 列(只展示, 不筛场) — 来自清单概率行尾部 ltag
+            #   熵>1.075 ⛔高熵(负期望段) / 熵≤1.075 📐低熵 / 📐且该方向赔≥1.8 为核心
+            ent = ''
+            if mt['prob_line']:
+                m_ent = re.search(r'熵([\d.]+)', mt['prob_line'])
+                if m_ent:
+                    if '⛔' in mt['prob_line']:
+                        ent = f"{m_ent.group(1)} ⛔高熵"
+                    elif '核心' in mt['prob_line']:
+                        ent = f"{m_ent.group(1)} 📐核心"
+                    else:
+                        ent = f"{m_ent.group(1)} 📐低熵"
             # 2026-09-01 用户拍板: ★场次豁免过滤(★=方向高置信), 带★即使有red也保留
             # 2026-09-23 用户拍板: 撤销避雷汇总 → 🚫避雷/⚠️⚡提示 不再过滤, 避雷场次照推(避雷列保留标记);
             # 仅保留 HKJC升水(red) 红线过滤(历史命中率7.9%)
@@ -238,6 +250,7 @@ def build_rows(sections):
                 'mdl': int(mdl) if mdl else '',
                 'lgbm': int(lgbm) if lgbm else '',
                 'ev': float(ev) if ev else '',
+                'ent': ent,
                 'ts': f"{tsd}{tsp}%" if tsd else '',
                 'hk_odds': float(hk_odds) if hk_odds else '',
                 'p_odds': f"{p0} → {p1}" if p0 else '',
@@ -266,9 +279,9 @@ def main():
                 % datetime.now().strftime('%Y-%m-%d %H:%M'))
     ws['A2'].font = Font(size=10, color='808080')
 
-    headers = ['档位', '日期', '时间', '联赛', '对阵', '方向', '清单★', '星级', 'Model%', 'LGBM%', 'EV',
+    headers = ['档位', '日期', '时间', '联赛', '对阵', '方向', '清单★', '星级', 'Model%', 'LGBM%', 'EV', '熵/段',
                'TS', 'HKJC赔率', '平博 初→即', 'HKJC 初→即', '避雷', '编号']
-    widths = [7, 8, 8, 13, 30, 8, 8, 9, 7, 7, 7, 11, 9, 26, 26, 22, 16]
+    widths = [7, 8, 8, 13, 30, 8, 8, 9, 7, 7, 7, 12, 11, 9, 26, 26, 22, 16]
     SEC_FILL = {'①': CONF_FILL, '②': KKK_FILL, '③': KKK_FILL}
     n_secs = 0
     for idx, title, matches in sections:
@@ -292,7 +305,7 @@ def main():
         fill = SEC_FILL.get(idx)
         for r in [r for r in rows if r['sec'] == idx]:
             vals = [idx, r['date'], r['time'], r['league'], r['teams'], r['dir'],
-                    r['star'], r['stars'], r['mdl'], r['lgbm'], r['ev'], r['ts'],
+                    r['star'], r['stars'], r['mdl'], r['lgbm'], r['ev'], r['ent'], r['ts'],
                     r['hk_odds'], r['p_odds'], r['h_odds'],
                     ' '.join(x for x in (r['avoid'], r['red']) if x),
                     r.get('no', '')]
@@ -301,13 +314,20 @@ def main():
                 cell.border = BORDER
                 if fill and not r['avoid']:
                     cell.fill = fill
-                if ci == 16 and r['avoid']:                        # 标记列: 🚫/⚠️⚡ 红, 纯💡机会 绿
+                if ci == 17 and r['avoid']:                        # 标记列: 🚫/⚠️⚡ 红, 纯💡机会 绿
                     if '💡' in r['avoid'] and not any(x in r['avoid'] for x in ('🚫', '⚠️')):
                         cell.fill = PatternFill('solid', fgColor='C6EFCE')
                         cell.font = Font(color='006100', bold=True)
                     else:
                         cell.fill = AVOID_FILL
                         cell.font = AVOID_FONT
+                if ci == 12 and r['ent']:                          # 熵/段列: ⛔红 📐核心绿 📐低熵灰
+                    if '⛔' in r['ent']:
+                        cell.font = Font(color='C00000', bold=True)
+                    elif '核心' in r['ent']:
+                        cell.font = Font(color='006100', bold=True)
+                    else:
+                        cell.font = Font(color='808080')
                 if ci == 4 and r['league'] in HIGH_HIT_LEAGUES:   # 高命中率联赛 绿字加粗
                     cell.font = HIGH_HIT_FONT
                 if ci == 7 and r['star']:                          # 清单★ 深红加粗(豁免标记)
@@ -316,7 +336,7 @@ def main():
                     cell.font = RED_FONT
                 if ci == 8 and r['stars'] and not r['red']:        # 星级 橙色
                     cell.font = STAR_FONT
-                if ci in (1, 2, 3, 6, 7, 8, 9, 10, 11, 12):
+                if ci in (1, 2, 3, 6, 7, 8, 9, 10, 11, 12, 13):
                     cell.alignment = Alignment(horizontal='center')
             row += 1
         row += 1
