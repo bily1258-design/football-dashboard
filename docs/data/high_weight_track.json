@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-07 12:51:32",
+  "generated_at": "2026-10-07 17:06:46",
   "threshold": 1.14,
   "note": "⚡=importance_weight(联赛等级×紧迫). 历史场次紧迫系数跌至0.90, 仅临场窗口权重>=1.14. 逐轮记录攒样本.",
   "tracked": [
@@ -20297,6 +20297,81 @@
       "hit": false,
       "recorded_at": "2026-10-05 12:44:08",
       "updated_at": "2026-10-06 12:44:52"
+    },
+    {
+      "fid": "2910909",
+      "date": "2026-10-08",
+      "match_time": "2026-10-08 06:30",
+      "event": "巴西甲",
+      "home_team": "布拉幹蒂諾RB",
+      "away_team": "米拉索",
+      "weight": 1.14,
+      "model_dir": "主",
+      "ts_dir": "主",
+      "same_dir": true,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-10-07 17:06:46"
+    },
+    {
+      "fid": "2910914",
+      "date": "2026-10-08",
+      "match_time": "2026-10-08 06:30",
+      "event": "巴西甲",
+      "home_team": "瑞模貝雷",
+      "away_team": "格雷米奧",
+      "weight": 1.14,
+      "model_dir": "主",
+      "ts_dir": "客",
+      "same_dir": false,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-10-07 17:06:46"
+    },
+    {
+      "fid": "2910916",
+      "date": "2026-10-08",
+      "match_time": "2026-10-08 07:00",
+      "event": "巴西甲",
+      "home_team": "維多利亞",
+      "away_team": "沙佩科恩斯",
+      "weight": 1.14,
+      "model_dir": "主",
+      "ts_dir": "主",
+      "same_dir": true,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-10-07 17:06:46"
+    },
+    {
+      "fid": "2910908",
+      "date": "2026-10-08",
+      "match_time": "2026-10-08 07:30",
+      "event": "巴西甲",
+      "home_team": "博塔弗戈",
+      "away_team": "瓦斯科達伽馬",
+      "weight": 1.14,
+      "model_dir": "客",
+      "ts_dir": "客",
+      "same_dir": true,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-10-07 17:06:46"
+    },
+    {
+      "fid": "2910910",
+      "date": "2026-10-08",
+      "match_time": "2026-10-08 08:30",
+      "event": "巴西甲",
+      "home_team": "克魯塞羅",
+      "away_team": "聖保羅",
+      "weight": 1.14,
+      "model_dir": "主",
+      "ts_dir": "主",
+      "same_dir": true,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-10-07 17:06:46"
     }
   ]
 }
