@@ -44,6 +44,18 @@ def main():
     
     conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()
+
+    # 2026-10-07: 本表长期缺少 match_id 唯一约束 → 下面的 INSERT OR IGNORE 形同虚设，
+    # 每次 rebuild/backfill 都整批追加副本（历史积压 176 行重复）。
+    # 在建索引前自愈：先建部分唯一索引，建不上说明库里有历史重复，提示去重。
+    try:
+        cur.execute("""CREATE UNIQUE INDEX IF NOT EXISTS idx_pp_match_id
+                       ON poisson_predictions(match_id)
+                       WHERE match_id IS NOT NULL AND match_id <> ''""")
+    except sqlite3.IntegrityError:
+        print('⚠️ poisson_predictions 存在历史重复 match_id，索引未建立。'
+              '请先跑 python3 scripts/dedupe_poisson_predictions.py --apply')
+
     
     # 获取已在 poisson_predictions 中的 match_id 集合
     existing = set(row[0] for row in cur.execute(
