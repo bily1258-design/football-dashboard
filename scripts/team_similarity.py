@@ -370,55 +370,6 @@ def enrich_matches_with_rolling(matches: list, db_path: str, last_n: int = 10) -
     return matches
 
 
-def _resolve_team_name(name: str, known_teams: set) -> str:
-    """
-    队伍名模糊匹配：
-    1. 完全匹配优先
-    2. 尝试子串匹配（中文 >= 3 字符同时出现）
-    3. 尝试去除 FC/SC/IFK 等前缀后匹配
-    """
-    if name in known_teams:
-        return name
-
-    # 去掉常见前缀再试
-    prefixes = ['FC ', 'SC ', 'IFK ', 'BK ', 'FK ', 'SK ', 'AS ', 'AC ', 'SS ']
-    clean = name
-    for p in prefixes:
-        if clean.startswith(p):
-            clean = clean[len(p):]
-            if clean in known_teams:
-                return clean
-            break
-
-    # 反过来：去掉常见后缀
-    suffixes = [' FC', ' SC', ' IFK', ' BK', ' FK', ' SK']
-    clean2 = name
-    for s in suffixes:
-        if clean2.endswith(s):
-            clean2 = clean2[:-len(s)]
-            if clean2 in known_teams:
-                return clean2
-            break
-
-    # 中文子串匹配：找最长公共子串包含
-    if len(name) >= MIN_CHAR_MATCH:
-        candidates = []
-        for kt in known_teams:
-            # 所有中文字符
-            shared = sum(1 for c in name if c in kt)
-            if shared >= MIN_CHAR_MATCH:
-                # 相似度 = 共享字符数 / 较长名字长度
-                ratio = shared / max(len(name), len(kt))
-                candidates.append((ratio, kt))
-        if candidates:
-            best = max(candidates, key=lambda x: x[0])
-            # 至少40%字符重叠才算匹配
-            if best[0] >= 0.4:
-                return best[1]
-
-    return name  # 返回原名（无法解析）
-
-
 # 常见中文队名别名映射
 TEAM_ALIAS: dict = {
     '云达不莱梅': '不来梅',
