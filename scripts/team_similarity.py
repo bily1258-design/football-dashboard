@@ -302,10 +302,10 @@ def _pre_match_rolling(team: str, cutoff: str, team_home: dict, team_away: dict,
 
     # 限 last_n 场
     if len(prev_home) > last_n:
-        recent_h = [s for _, s in prev_home[-last_n:]]
+        recent_h = prev_home[-last_n:]
         home_self = [sum(c)/len(c) for c in zip(*recent_h)]
     if len(prev_away) > last_n:
-        recent_a = [s for _, s in prev_away[-last_n:]]
+        recent_a = prev_away[-last_n:]
         away_self = [sum(c)/len(c) for c in zip(*recent_a)]
 
     # 球队自身统计 4维 + 对手统计 4维（球队在主场面对对手的表现 = 对手的客场表现）
