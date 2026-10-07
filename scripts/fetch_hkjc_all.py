@@ -360,15 +360,57 @@ def get_scores_from_over_page(date_str):
         
         # 2. 推迟比赛: <tr ... sId='...' ...>
         #    <td class=style1>推迟</td>  （无onclick、无比分单元格）
-        for m in re.finditer(
-            r"sId='(\d+)'.*?<td\s+class=style1[^>]*>(?:推迟|延期|取消)</td>",
-            html, re.DOTALL):
-            postponed_sids.add(m.group(1))
+        #    ⚠️ 必须逐 <tr> 内匹配: 跨行非贪婪(sId='..'.*?<td..>推迟)会把「推迟」归给
+        #    前面某个无关 sId —— 既误标无关场次, 又漏掉真正的推迟场次。
+        for row in re.finditer(r"<tr\b[^>]*>.*?</tr>", html, re.DOTALL | re.IGNORECASE):
+            r = row.group()
+            sid_m = re.search(r"sId='(\d+)'", r)
+            if not sid_m:
+                continue
+            if re.search(r"<td\s+class=style1[^>]*>(?:推迟|延期|取消)</td>", r):
+                postponed_sids.add(sid_m.group(1))
         
         return scores, postponed_sids
     except Exception as e:
         print(f'[WARN] Over页面抓取失败（SID匹配）: {e}')
         return {}, {}
+
+
+STALE_MAX_AGE_DAYS = 10
+
+
+def clean_day_matches(matches, date_str, max_age_days=STALE_MAX_AGE_DAYS):
+    """清洗当日抓取结果：剔除源页残留 + 同 fid 去重。
+
+    titan007 港彩页会长期回带一批「未结算」的历史场次(比分恒为空)，
+    若不剔除则会被原样写入当日档，并经 ai_analysis 全量重写累积进 results.json(永不结算)。
+    规则：比赛日期早于抓取日 max_age_days 天 **且** score 为空 → 判为残留丢弃。
+    score='推迟' 属正常标记，保留。
+    """
+    try:
+        base = datetime.strptime(str(date_str)[:10], '%Y-%m-%d')
+    except Exception:
+        base = None
+
+    kept, dropped, dups = [], [], []
+    seen = set()
+    for m in matches:
+        md = str(m.get('date') or m.get('match_time') or '')[:10]
+        if base is not None and md:
+            try:
+                d = datetime.strptime(md, '%Y-%m-%d')
+                if (m.get('score') or '').strip() == '' and (base - d).days > max_age_days:
+                    dropped.append(m)
+                    continue
+            except Exception:
+                pass
+        key = str(m.get('fid') or '') or (m.get('home_team', ''), m.get('away_team', ''), m.get('date', ''))
+        if key in seen:
+            dups.append(m)
+            continue
+        seen.add(key)
+        kept.append(m)
+    return kept, dropped, dups
 
 
 def do_backfill(fpath, date_str):
@@ -616,6 +658,14 @@ def main():
     
     # 正常抓取
     hkjc_matches = fetch_hkjc_matches(date_str, args.max, args.delay, args.parallel)
+
+    # 剔除源页残留(历史未结算场次) + 同 fid 去重
+    hkjc_matches, _stale, _dup = clean_day_matches(hkjc_matches, date_str)
+    if _stale:
+        _names = ', '.join(f"{m.get('home_team','')}-{m.get('away_team','')}({str(m.get('date'))[:10]})" for m in _stale[:6])
+        print(f'[FILTER] 丢弃源页残留 {len(_stale)} 场(早于{date_str}超{STALE_MAX_AGE_DAYS}天且无比分): {_names}' + (' ...' if len(_stale) > 6 else ''))
+    if _dup:
+        print(f'[FILTER] 同 fid 重复 {len(_dup)} 场已去重')
     
     # 输出
     out = {
@@ -653,6 +703,8 @@ def main():
             existing = {'matches': [], 'generated_at': '', 'total_matches': 0, 'date_range': '', 'daily_stats': []}
         
         existing_keys = {(m.get('home_team',''), m.get('away_team',''), m.get('date','')) for m in existing_matches}
+        # fid 优先：同一场次在两个来源下队名简繁不同(如 法国/法國)，仅靠队名去重会重复累积
+        existing_fids = {str(m.get('fid')) for m in existing_matches if m.get('fid')}
         
         # 归一化已有的联赛名（旧数据可能存在未归一化的）
         for m in existing_matches:
@@ -665,9 +717,14 @@ def main():
             ev = m.get('event', '')
             m['event'] = _normalize_league(ev)
             key = (m.get('home_team',''), m.get('away_team',''), m.get('date',''))
-            if key not in existing_keys:
-                existing_matches.append(m)
-                new_count += 1
+            fid = str(m.get('fid') or '')
+            if (fid and fid in existing_fids) or key in existing_keys:
+                continue
+            existing_matches.append(m)
+            if fid:
+                existing_fids.add(fid)
+            existing_keys.add(key)
+            new_count += 1
         
         existing['matches'] = existing_matches
         existing['total_matches'] = len(existing_matches)

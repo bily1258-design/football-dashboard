@@ -366,7 +366,9 @@ def fetch_odds(matches, delay=0.3, workers=3):
 def get_scores_from_over_page(date_str):
     """从titan007 Over_日期.htm 获取当天所有完场比分
     
-    返回: { (home_team, away_team): score_str }
+    返回: (scores, postponed_pairs)
+        scores: { (home_team, away_team): score_str }
+        postponed_pairs: { (home_team, away_team) } —— 源页比分位标示 推迟/延期/取消 的场次
     """
     try:
         url = f'https://bf.titan007.com/football/Over_{date_str.replace("-", "")}.htm'
@@ -376,6 +378,7 @@ def get_scores_from_over_page(date_str):
         html = raw.decode('gb2312', errors='replace')
 
         scores = {}
+        postponed = set()
         rows = re.findall(r'<tr[^>]*>.*?</tr>', html, re.DOTALL | re.IGNORECASE)
         for row in rows:
             tds = re.findall(r'<td[^>]*>(.*?)</td>', row, re.DOTALL | re.IGNORECASE)
@@ -388,16 +391,27 @@ def get_scores_from_over_page(date_str):
                 home = tds_clean[3].strip()
                 score = tds_clean[4].strip()
                 away = tds_clean[5].strip()
+                # 推迟/延期/取消: 比分位无数字，源页在状态位列示字（如 tds[2]='推迟'）
+                if score in ('推迟', '延期', '取消') or any(
+                        t in ('推迟', '延期', '取消') for t in tds_clean[:3]):
+                    home_clean = re.sub(r'\s*\[[^\]]*\]', '', home).strip()
+                    away_clean = re.sub(r'\s*\[[^\]]*\]', '', away).strip()
+                    home_clean = re.sub(r'\([^)]*\)', '', home_clean).strip()
+                    away_clean = re.sub(r'\([^)]*\)', '', away_clean).strip()
+                    if home_clean and away_clean:
+                        # 源页为简体/繁体不一，两种形态都存（与 scores 的 key 同口径）
+                        postponed.add((home_clean, away_clean))
+                        postponed.add((_s2t.convert(home_clean), _s2t.convert(away_clean)))
                 if re.match(r'^\d+\s*-\s*\d+$', score):
                     home_clean = re.sub(r'\s*\[[^\]]*\]', '', home).strip()
                     away_clean = re.sub(r'\s*\[[^\]]*\]', '', away).strip()
                     home_clean = re.sub(r'\([^)]*\)', '', home_clean).strip()
                     away_clean = re.sub(r'\([^)]*\)', '', away_clean).strip()
                     scores[(_s2t.convert(home_clean), _s2t.convert(away_clean))] = score
-        return scores
+        return scores, postponed
     except Exception as e:
         print(f'[WARN] Over页面抓取失败: {e}')
-        return {}
+        return {}, set()
 
 
 def do_backfill(fpath, date_str):
@@ -427,7 +441,7 @@ def do_backfill(fpath, date_str):
                 pass
         unscored.append((fid, m))
     if unscored:
-        scores = get_scores_from_over_page(date_str)
+        scores, postponed = get_scores_from_over_page(date_str)
 
         # 匹配key: 与 get_scores_from_over_page 相同的清理(去[]与()标记, 简转繁)
         def _clean_keys(name):
@@ -479,13 +493,33 @@ def do_backfill(fpath, date_str):
                 alt_date_fmt = f'{alt_date[:4]}-{alt_date[4:6]}-{alt_date[6:]}'
                 if alt_date_fmt == date_str:
                     continue  # 已尝试过
-                alt_scores = get_scores_from_over_page(alt_date)
+                alt_scores, alt_postponed = get_scores_from_over_page(alt_date)
+                postponed |= alt_postponed
                 if alt_scores:
                     more, unmatched = _try_match(alt_scores, unmatched)
                     matched.extend(more)
                     print(f'[BACKFILL] 从备选日期 {alt_date} 补匹配 {len(more)} 场')
                 if not unmatched:
                     break
+
+        # 推迟场次: 源页比分位示「推迟/延期/取消」→ 同位置落 '推迟' 字样（只标不筛）
+        if unmatched and postponed:
+            pdone, left = [], []
+            for fid, m in unmatched:
+                hk = _clean_keys(m.get('home_team', ''))
+                ak = _clean_keys(m.get('away_team', ''))
+                hit = any((h, a) in postponed or (a, h) in postponed
+                          for h in hk for a in ak)
+                if hit:
+                    m['postponed'] = True
+                    m['score'] = '推迟'
+                    pdone.append((fid, m))
+                else:
+                    left.append((fid, m))
+            if pdone:
+                print(f'[BACKFILL] 源页标示推迟 → {len(pdone)} 场已标注')
+                matched.extend(pdone)
+                unmatched = left
 
         if matched:
             over_ok = len(matched)
