@@ -218,10 +218,28 @@ def decode_gbk(raw):
     return raw.decode('utf-8', errors='replace')
 
 
+def fetch_raw(url, timeout=10, headers=None, retries=3, backoff=1.2):
+    """原始字节抓取 + 瞬时网络错误重试。
+
+    Termux/移动网络下 titan007 偶发 "No address associated with hostname"(DNS)
+    与 "_ssl.c: The handshake operation timed out"(SSL握手超时)，单次失败会让
+    整轮抓取白跑(比分/赔率全空)，故对这些瞬时错误重试，全失败才抛异常。
+    """
+    last = None
+    for i in range(max(1, retries)):
+        try:
+            req = urllib.request.Request(url, headers=headers or HEADERS)
+            return urllib.request.urlopen(req, timeout=timeout).read()
+        except Exception as e:
+            last = e
+            if i + 1 < retries:
+                time.sleep(backoff * (i + 1))
+    raise last
+
+
 def fetch_url(url, encoding=None, timeout=15):
-    """通用抓取"""
-    req = urllib.request.Request(url, headers=HEADERS)
-    raw = urllib.request.urlopen(req, timeout=timeout).read()
+    """通用抓取（含瞬时网络错误重试）"""
+    raw = fetch_raw(url, timeout=timeout)
     if encoding:
         return raw.decode(encoding, errors='replace')
     return decode_gbk(raw)

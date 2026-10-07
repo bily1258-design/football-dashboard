@@ -32,7 +32,7 @@ DATA_DIR = os.path.join(os.path.dirname(SCRIPT_DIR), "data")
 sys.path.insert(0, SCRIPT_DIR)
 
 # ─────── 1x2d 赔率接口（从titan007_utils导入） ───────
-from titan007_utils import fetch_1x2d_odds, f_float
+from titan007_utils import fetch_1x2d_odds, f_float, fetch_raw
 
 
 # ─────── bfdata_ut.js ───────
@@ -44,14 +44,12 @@ def fetch_bfdata():
     """
     ts = int(time.time() * 1000)
     url = f'https://livestatic.titan007.com/vbsxml/bfdata_ut.js?r=007{ts}'
-    req = urllib.request.Request(url, headers={
-        'User-Agent': 'Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.6099.230 Mobile Safari/537.36',
-        'Referer': 'https://live.titan007.com/',
-        'Cookie': 'user=""; undefined=""',
-    })
     try:
-        resp = urllib.request.urlopen(req, timeout=10)
-        raw = resp.read()
+        raw = fetch_raw(url, timeout=10, headers={
+            'User-Agent': 'Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.6099.230 Mobile Safari/537.36',
+            'Referer': 'https://live.titan007.com/',
+            'Cookie': 'user=""; undefined=""',
+        })
     except Exception as e:
         print(f'[WARN] bfdata_ut.js 抓取失败: {e}')
         return []
@@ -372,11 +370,9 @@ def get_scores_from_over_page(date_str):
     """
     try:
         url = f'https://bf.titan007.com/football/Over_{date_str.replace("-", "")}.htm'
-        req = urllib.request.Request(url, headers={
+        raw = fetch_raw(url, timeout=10, headers={
             'User-Agent': 'Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36',
         })
-        resp = urllib.request.urlopen(req, timeout=10)
-        raw = resp.read()
         html = raw.decode('gb2312', errors='replace')
 
         scores = {}

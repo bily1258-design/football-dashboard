@@ -23,7 +23,7 @@ DOCS_DATA_DIR = os.path.join(os.path.dirname(SCRIPT_DIR), "docs", "data")
 
 # 导入titan007工具
 sys.path.insert(0, SCRIPT_DIR)
-from titan007_utils import get_match_list, get_odds_history, fetch_url, translate_team_name, fetch_1x2d_odds, _normalize_league, _is_ascii
+from titan007_utils import get_match_list, get_odds_history, fetch_url, fetch_raw, translate_team_name, fetch_1x2d_odds, _normalize_league, _is_ascii
 
 # titan007 cid映射: 177=平博, 432=HKJC
 CID_PINNACLE = '177'  # 平博(Pinnacle)
@@ -340,9 +340,7 @@ def get_scores_from_over_page(date_str):
     import re, urllib.request
     try:
         url = f'https://bf.titan007.com/football/Over_{date_str.replace("-", "")}.htm'
-        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-        resp = urllib.request.urlopen(req, timeout=10)
-        raw = resp.read()
+        raw = fetch_raw(url, timeout=10, headers={'User-Agent': 'Mozilla/5.0'})
         html = raw.decode('gb2312', errors='replace')
         
         scores = {}
