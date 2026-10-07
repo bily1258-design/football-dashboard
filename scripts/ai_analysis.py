@@ -379,6 +379,14 @@ def max_direction(mw: float, md: float, ml: float) -> Tuple[str, str, float]:
 def load_raw_matches() -> List[Dict]:
     """从 data/matches_*.json 加载原始比赛数据"""
     all_ms = []
+    # 屏蔽名单: 比分源不覆盖、永远空比分的场次 → 组装结果库时直接跳过
+    # (名单见 data/excluded_fids.json, 由 scripts/exclude_scoreless_matches.py 生成; 文件缺失则不过滤)
+    try:
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        from fid_blocklist import load_excluded_fids
+        _blocked = load_excluded_fids()
+    except Exception:
+        _blocked = set()
     files = sorted(glob.glob(os.path.join(DATA_DIR, "matches_*.json")))
     if not files:
         logger.warning("未找到 data/matches_*.json 文件")
@@ -393,6 +401,11 @@ def load_raw_matches() -> List[Dict]:
                 logger.debug(f"  {os.path.basename(fp)}: {len(ms)} 场")
         except Exception as e:
             logger.warning(f"读取 {fp} 失败: {e}")
+    if _blocked:
+        _before = len(all_ms)
+        all_ms = [m for m in all_ms if str(m.get('fid') or m.get('id') or '') not in _blocked]
+        if _before != len(all_ms):
+            logger.info(f"屏蔽名单剔除 {_before - len(all_ms)} 场(比分源无覆盖)")
     # 去重 (按 fid 优先, 保留数据更全的)
     seen = {}
     deduped = []
