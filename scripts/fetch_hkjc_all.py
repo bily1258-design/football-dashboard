@@ -23,7 +23,7 @@ DOCS_DATA_DIR = os.path.join(os.path.dirname(SCRIPT_DIR), "docs", "data")
 
 # 导入titan007工具
 sys.path.insert(0, SCRIPT_DIR)
-from titan007_utils import get_match_list, get_odds_history, fetch_url, fetch_raw, translate_team_name, fetch_1x2d_odds, _normalize_league, _is_ascii
+from titan007_utils import get_match_list, get_odds_history, fetch_url, fetch_raw, translate_team_name, fetch_1x2d_odds, _normalize_league, _is_ascii, canon_team_name
 
 # titan007 cid映射: 177=平博, 432=HKJC
 CID_PINNACLE = '177'  # 平博(Pinnacle)
@@ -101,7 +101,7 @@ def _get_cn_from_1x2d(sid):
     h_cn = decode(re.search(rb'var hometeam_cn="([^"]*)"', raw))
     a_cn = decode(re.search(rb'var guestteam_cn="([^"]*)"', raw))
     if h_cn and a_cn:
-        return (_s2t.convert(h_cn.strip()), _s2t.convert(a_cn.strip()))
+        return (canon_team_name(h_cn.strip()), canon_team_name(a_cn.strip()))
     return None
 
 

@@ -190,6 +190,16 @@ try:
 except Exception:                                     # opencc 缺失时退化为原文比较
     _CC = _CC2 = None
 
+# 队名规范形态统一走 titan007_utils.canon_team_name() = s2t(t2s(x))。
+# 只用 s2t 会把繁体正字「里/干/托」误转成異体「裏/幹/託」，500.com 简体名与我方
+# 规范名对齐时就会假不匹配，故与写入口保持同一形态。
+try:
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    from titan007_utils import canon_team_name
+except Exception:                                     # titan007_utils/opencc 不可用时退化
+    def canon_team_name(x):
+        return _CC.convert(x) if _CC else x
+
 
 # 译名别名: 500.com 用简体短名/亚运代称, 我方用繁体全名; 只收已逐条核对是同一场的对
 # 键/值都是 _norm 之后的形式 (s2t + 去空格标点 + 去 FC/队/隊/U23/女足)
@@ -212,7 +222,7 @@ NAME_ALIAS = {
 
 
 def _norm(s):
-    s = _CC.convert(s or '') if _CC else (s or '')
+    s = canon_team_name(s or '')
     s = re.sub(r'[\s\(\)（）·.\-]|FC|fc|队|隊|U23|女足', '', s)
     return NAME_ALIAS.get(s, s)
 

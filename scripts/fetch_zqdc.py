@@ -32,7 +32,7 @@ DATA_DIR = os.path.join(os.path.dirname(SCRIPT_DIR), "data")
 sys.path.insert(0, SCRIPT_DIR)
 
 # ─────── 1x2d 赔率接口（从titan007_utils导入） ───────
-from titan007_utils import fetch_1x2d_odds, f_float, fetch_raw
+from titan007_utils import fetch_1x2d_odds, f_float, fetch_raw, canon_team_name
 
 
 # ─────── bfdata_ut.js ───────
@@ -70,8 +70,8 @@ def fetch_bfdata():
             matches.append({
                 'sid': fields[0],
                 'league': _normalize_league(_s2t.convert(re.sub(r'<[^>]+>', '', fields[2]))),
-                'hometeam': _s2t.convert(re.sub(r'<[^>]+>', '', fields[5])) if len(fields) > 5 else '',
-                'awayteam': _s2t.convert(re.sub(r'<[^>]+>', '', fields[8])) if len(fields) > 8 else '',
+                'hometeam': canon_team_name(re.sub(r'<[^>]+>', '', fields[5])) if len(fields) > 5 else '',
+                'awayteam': canon_team_name(re.sub(r'<[^>]+>', '', fields[8])) if len(fields) > 8 else '',
                 'time': fields[12] if len(fields) > 12 else '',
                 'display_time': fields[11] if len(fields) > 11 else '',
                 'fields': fields,
@@ -401,13 +401,13 @@ def get_scores_from_over_page(date_str):
                     if home_clean and away_clean:
                         # 源页为简体/繁体不一，两种形态都存（与 scores 的 key 同口径）
                         postponed.add((home_clean, away_clean))
-                        postponed.add((_s2t.convert(home_clean), _s2t.convert(away_clean)))
+                        postponed.add((canon_team_name(home_clean), canon_team_name(away_clean)))
                 if re.match(r'^\d+\s*-\s*\d+$', score):
                     home_clean = re.sub(r'\s*\[[^\]]*\]', '', home).strip()
                     away_clean = re.sub(r'\s*\[[^\]]*\]', '', away).strip()
                     home_clean = re.sub(r'\([^)]*\)', '', home_clean).strip()
                     away_clean = re.sub(r'\([^)]*\)', '', away_clean).strip()
-                    scores[(_s2t.convert(home_clean), _s2t.convert(away_clean))] = score
+                    scores[(canon_team_name(home_clean), canon_team_name(away_clean))] = score
         return scores, postponed
     except Exception as e:
         print(f'[WARN] Over页面抓取失败: {e}')

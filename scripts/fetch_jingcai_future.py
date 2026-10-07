@@ -26,7 +26,8 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from fetch_zqdc import fetch_odds, _s2t  # noqa: E402
+from fetch_zqdc import fetch_odds  # noqa: E402
+from titan007_utils import canon_team_name  # noqa: E402
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ONSALE = os.path.join(REPO, 'docs', 'data', 'jingcai_onsale.json')
@@ -45,8 +46,8 @@ def build(m, today=None):
     return {
         'sid': m['sid'],
         'league': m.get('league', ''),
-        'home_team': _s2t.convert(m.get('home', '') or ''),
-        'away_team': _s2t.convert(m.get('away', '') or ''),
+        'home_team': canon_team_name(m.get('home', '') or ''),
+        'away_team': canon_team_name(m.get('away', '') or ''),
         'display_time': kickoff,
         'match_time': kickoff,
         'date': date,

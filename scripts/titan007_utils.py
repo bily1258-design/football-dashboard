@@ -13,6 +13,22 @@ import re, json, time, urllib.request, ssl, opencc
 from datetime import datetime
 
 _s2t = opencc.OpenCC('s2t')  # 简体→繁体转换，用于统一队名匹配
+_t2s = opencc.OpenCC('t2s')
+
+
+def canon_team_name(name):
+    """队名规范形态（繁体正字）＝ s2t(t2s(x))。**所有写入口都必须走这里。**
+
+    为什么不能只用 s2t: opencc s2t 会把繁体正字「里/干/托」误转成異体
+    「裏/幹/託」(U+91CC→U+88E1)，同一支球队因此在库里裂成两个名字
+    （「里加足球學院」vs「裏加足球學院」），λ 取数/历史相似度只吃到一半样本。
+    s2t(t2s(x)) 同时满足：简体「智利天主大学」→「智利天主大學」；
+    已是正字「瓦爾貝里」原样保留；異体「蘇裏南」→还原「蘇里南」。幂等。
+    历史残留统一脚本: scripts/unify_team_names.py（默认 dry-run，--apply 写盘）。
+    """
+    if not isinstance(name, str) or not name:
+        return name
+    return _s2t.convert(_t2s.convert(name))
 
 # 联赛名归一化：球探同一联赛偶尔缩写不同
 LEAGUE_NORMALIZE = {
@@ -1075,9 +1091,9 @@ def translate_match_list(matches):
     """将全英文队名的 match list 转为中文（繁体）"""
     for m in matches:
         if 'home_team' in m and all(ord(c) < 128 for c in m['home_team']):
-            m['home_team'] = _s2t.convert(translate_team_name(m['home_team']))
+            m['home_team'] = canon_team_name(translate_team_name(m['home_team']))
         if 'away_team' in m and all(ord(c) < 128 for c in m['away_team']):
-            m['away_team'] = _s2t.convert(translate_team_name(m['away_team']))
+            m['away_team'] = canon_team_name(translate_team_name(m['away_team']))
         # 联赛名也翻译
         if 'league' in m:
             league_cn = {
