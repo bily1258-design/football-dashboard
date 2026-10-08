@@ -128,6 +128,23 @@ python3 scripts/fetch_daily_xg.py
 echo "[$(date '+%H:%M:%S')] 推送至GitHub..."
 git add -A
 git commit -m "数据+分析 $DATE" || echo "无新数据"
-git push origin main
+
+# 2026-10-08 加护: 手机网络/ssh 抖动会让单次 push 以 rc=128 中断 (10-07、10-08 连续两次同因:
+# "Connection to ssh.github.com closed by remote host"), 而此前 30 分钟的抓取/分析产物已全部生成完毕,
+# 白白让整轮报 failed 且清单没上 Pages。此处只重试推送(不重跑抓取), 三次仍失败才置非零退出码告警。
+PUSH_OK=0
+for i in 1 2 3; do
+    if git push origin main; then PUSH_OK=1; break; fi
+    if [ "$i" -lt 3 ]; then
+        echo "[$(date '+%H:%M:%S')] ⚠️ push 第 $i 次失败(多为 ssh.github.com 连接被远端断开), 20s 后重试..."
+        sleep 20
+    else
+        echo "[$(date '+%H:%M:%S')] ⚠️ push 第 $i 次失败"
+    fi
+done
+if [ "$PUSH_OK" -ne 1 ]; then
+    echo "[$(date '+%H:%M:%S')] ❌ push 3 次均失败: 产物已本地 commit, 未推远端; 下次运行会自动补推(不需重跑抓取)"
+    exit 1
+fi
 
 echo "[$(date '+%H:%M:%S')] ✅ 完成"
