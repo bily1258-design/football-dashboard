@@ -1,4 +1,4 @@
-// script.js — 足彩价值投注看板 v5
+// script.js — 足彩价值看板 v5
 var allData = null;
 var allMatches = [];
 
@@ -336,18 +336,6 @@ function renderTable(matches){
   nextChunk();
 }
 
-function renderStats(data){
-  var bar = document.getElementById('stats-bar');
-  bar.innerHTML = '';
-  if(!data.daily_stats) return;
-  data.daily_stats.forEach(function(ds){
-    var card = document.createElement('div');
-    card.className = 'stat-card';
-    card.innerHTML = '<div class="stat-val">'+ds.count+'</div><div class="stat-label">'+ds.date+'</div>';
-    bar.appendChild(card);
-  });
-}
-
 // 加载 (results_light.json: 精简版, 12.7MB→1.6MB; cache:'no-cache' 走 ETag 条件请求, 数据未变 304 秒回)
 fetch('data/results_light.json', {cache:'no-cache'})
   .then(function(r){return r.json()})
@@ -361,7 +349,6 @@ fetch('data/results_light.json', {cache:'no-cache'})
     document.getElementById('loading').style.display='none';
     document.getElementById('table-wrap').style.display='block';
     document.getElementById('updateTime').textContent = '🕐 '+data.generated_at;
-    document.getElementById('dateRange').textContent = data.date_range;
     document.getElementById('matchCount').textContent = data.total_matches+' 场';
     document.getElementById('hitRate').textContent = '🎯 '+data.hit_count+'/'+data.total_scored+' ('+fmtPct(data.hit_rate)+')';
     document.getElementById('valueStats').textContent = '💰 价值: '+valueCount+' 场';
@@ -371,7 +358,7 @@ fetch('data/results_light.json', {cache:'no-cache'})
     var recent = (data.daily_stats||[]).slice(0,14);
     recent.forEach(function(ds){
       var opt = document.createElement('option');
-      opt.value = ds.date; opt.textContent = ds.date+' ('+ds.count+')';
+      opt.value = ds.date; opt.textContent = ds.date;
       sel.appendChild(opt);
     });
     var today = new Date().toISOString().slice(0,10);
@@ -381,7 +368,6 @@ fetch('data/results_light.json', {cache:'no-cache'})
       // 今天无比赛: 默认选最近有数据的日期 (而非 all 全量渲染)
       sel.value = recent[0].date;
     }
-    renderStats(data);
     renderBetSummary();
     renderBetTable();
     // 有投注记录时显示追踪器

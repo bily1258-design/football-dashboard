@@ -2143,18 +2143,17 @@ def generate_frontend(results: List[Dict]):
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>足彩价值投注看板</title>
-<link rel="stylesheet" href="style.css?v=20260922b">
-<script src="script.js?v=20260922b"></script>
+<title>足彩价值看板</title>
+<link rel="stylesheet" href="style.css?v=20261008c">
+<script src="script.js?v=20261008c"></script>
 </head>
 <body>
 <div class="container">
   <header>
-    <h1>⚽ 足彩价值投注看板</h1>
+    <h1>⚽ 足彩价值看板</h1>
     <div class="meta">
       <span id="updateTime">加载中...</span>
       <span id="matchCount">—</span>
-      <span id="dateRange">—</span>
     </div>
     <div class="controls">
       <select id="dateFilter" onchange="applyFilters()">
@@ -2190,7 +2189,6 @@ def generate_frontend(results: List[Dict]):
       <span id="valueStats"></span>
     </div>
   </header>
-  <div id="stats-bar"></div>
   <div id="loading">加载中...</div>
   <div id="table-wrap" style="display:none">
     <table id="matchTable">
@@ -2257,10 +2255,6 @@ h1{font-size:22px;color:#fff;margin-bottom:8px}
 .controls button{background:#2563eb;border-color:#2563eb;color:#fff;font-weight:600}
 .controls button:hover{background:#1d4ed8}
 .meta-hit{background:#fff;border:1px solid #d0d4dc;border-radius:6px;padding:6px 12px;font-size:13px;color:#2563eb;font-weight:600}
-#stats-bar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
-.stat-card{background:#fff;border:1px solid #d0d4dc;border-radius:8px;padding:8px 14px;text-align:center;min-width:80px}
-.stat-card .stat-val{font-size:18px;font-weight:700;color:#2563eb}
-.stat-card .stat-label{font-size:11px;color:#667788;margin-top:2px}
 #loading{text-align:center;padding:40px;color:#667788;font-size:16px}
 #table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 #table-wrap::before{content:'← 左右滑动查看更多 →';display:block;text-align:center;font-size:11px;color:#8899aa;padding:4px 0}
