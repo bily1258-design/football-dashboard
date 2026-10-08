@@ -579,7 +579,6 @@ def do_backfill(fpath, date_str):
         for fid, m in unscored:
             try:
                 from titan007_utils import fetch_url
-                import re
                 html = fetch_url(f'https://zq.titan007.com/Analysis/{fid}.htm', timeout=8)
                 home_m = re.search(r'var\s+homeScoreStr\s*=\s*\["(\d+)"\]', html)
                 guest_m = re.search(r'var\s+guestScoreStr\s*=\s*\["(\d+)"\]', html)
