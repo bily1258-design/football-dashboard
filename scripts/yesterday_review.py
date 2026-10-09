@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
-"""昨日客胜价值清单复盘生成器
+"""昨日复盘: 「客胜价值」口径(客胜 + EV>0.5 + HKJC客赔 3-6)场次命中表
 输出: 昨日窗口(昨天12:00 → 今天11:59)符合条件场次的命中复盘表 + 平博/HKJC初即盘明细
-规则与 away_value_picks.py 一致: best_value.outcome==away 且 EV>0.5 且 HKJC客胜赔率 3-6
+口径: best_value.outcome==away 且 EV>0.5 且 HKJC客胜赔率 3-6 (与 away_value_picks.py 现行①档无关, ①档是 model=LGBM同向 且 >44.9%, 不看 EV)
+⚠️ 命名易混(2026-10-09 明确): 本口径 ≠ 🎯甜点区(客胜 + 客赔2.5-4 + 0<EV<0.5 + edge<0.10, 2026-08-20 已取消)
+   ≠ 投注簿 🍬甜点区(双模型同向 + 方向赔率≥2.0 + M概率≥45%, 2026-08-16 已砍)。三者 EV/赔率区间不同, 不可互换称呼。
 用法: python3 scripts/yesterday_review.py
 """
 import json

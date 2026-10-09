@@ -90,9 +90,10 @@ python3 scripts/gen_light_results.py
 echo "[$(date '+%H:%M:%S')] 增量抓取阵容(近3天)..."
 python3 scripts/fetch_lineups.py --days 3 --limit 200 --sleep 0.8 >> "$HOME/lineup_daily.log" 2>&1 || echo "⚠️ 阵容抓取失败(不影响主流程)"
 
-# 客胜价值投注清单 (回测验证: 客胜+EV>0.5+HKJC赔率3-6 唯一正期望; 供每日推送)
+# 今日推荐清单 (①高置信方向投注=model/LGBM同向且>44.9% / ②客客客 / ③胜胜胜 / 📐低熵核心区 / 📋战术阵容参考)
+# 注: 老注释「客胜价值投注清单 = 客胜+EV>0.5+HKJC赔率3-6」已过时 —— 该口径现在只由 yesterday_review.py 复盘统计, 不在清单里选号
 # --md: 完整清单写入 docs/today_picks.md, GitHub Pages 渲染成网页, 微信只推摘要+链接(省限流)
-echo "[$(date '+%H:%M:%S')] 生成客胜价值投注清单(+今日推荐文档)..."
+echo "[$(date '+%H:%M:%S')] 生成今日推荐清单(+今日推荐文档)..."
 python3 scripts/away_value_picks.py --md docs/today_picks.md
 
 # ========== 昨日清单赛果回填复盘（固定文件名, Pages 可看） ==========
