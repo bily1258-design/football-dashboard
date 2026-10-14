@@ -17,11 +17,30 @@ UA = ('Mozilla/5.0 (Linux; Android 13; Mi 11 Lite) AppleWebKit/537.36 '
       '(KHTML, like Gecko) Chrome/124.0 Mobile Safari/537.36')
 
 
-def get(url):
-    req = urllib.request.Request(url, headers={'User-Agent': UA,
-                                               'Referer': 'https://trade.500.com/'})
-    with urllib.request.urlopen(req, timeout=45) as r:
-        raw = r.read()
+def get(url, retries=4, backoff=3.0):
+    """抓 500.com 页面。
+
+    2026-10-14 加固: 本机 resolver 会间歇性抽风(Errno 7 No address associated with
+    hostname), 单次解析失败过去会直接把整条 fetch_and_push 链子带崩(清单/看板都不产出)。
+    这里对 DNS/网络类错误做 4 次退避重试。
+    """
+    import socket, time
+    last = None
+    for i in range(1, retries + 1):
+        req = urllib.request.Request(url, headers={'User-Agent': UA,
+                                                  'Referer': 'https://trade.500.com/'})
+        try:
+            with urllib.request.urlopen(req, timeout=45) as r:
+                raw = r.read()
+            last = None
+            break
+        except (urllib.error.URLError, socket.gaierror, OSError) as e:
+            last = e
+            if i < retries:
+                print(f'  ⚠️ 500.com 抓取失败({i}/{retries}): {e}; {backoff:.0f}s 后重试', flush=True)
+                time.sleep(backoff)
+    if last is not None:
+        raise last
     if raw[:2] == b'\x1f\x8b':
         raw = gzip.decompress(raw)
     try:

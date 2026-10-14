@@ -5,7 +5,8 @@ import sqlite3, os, re, sys
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DB_PATH = os.path.join(PROJECT_DIR, 'data', 'football.db')
 
-conn = sqlite3.connect(DB_PATH)
+conn = sqlite3.connect(DB_PATH, timeout=60)  # 2026-10-14: 并发写时曾报 database is locked
+conn.execute('PRAGMA busy_timeout=60000')
 cur = conn.cursor()
 
 # 1. 从 actual_outcome 提取比分到 reference_score

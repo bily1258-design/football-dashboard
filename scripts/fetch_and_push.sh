@@ -57,7 +57,8 @@ python3 scripts/sync_scores_and_lambdas.py
 
 # ========== 香港马会赔率全量抓取（今天） ==========
 echo "[$(date '+%H:%M:%S')] 抓取 $DATE 香港马会比赛..."
-python3 scripts/fetch_hkjc_all.py --date "$DATE" --parallel 8 --delay 0.15
+# HKJC 是次要数据源(DNS 抽风时解析失败), 不能因它把今日清单/看板推送整条带崩
+python3 scripts/fetch_hkjc_all.py --date "$DATE" --parallel 8 --delay 0.15 || echo "  ⚠️ HKJC抓取失败, 沿用上一轮数据继续"
 
 echo "[$(date '+%H:%M:%S')] 分析 $DATE ..."
 python3 scripts/ai_analysis.py
@@ -69,7 +70,8 @@ python3 scripts/backfill_ah_probs.py
 # 500.com 北单双玩法: 让球胜平负→亚初行, 胜负过关→亚即行 (写 ahbd_* 字段, 不参与规则)
 # 放在 backfill_ah_probs 之后: 真亚盘概率只由 titan007 计算, 免得 500.com 数据污染
 echo "[$(date '+%H:%M:%S')] 补 500.com 北单让球 (亚初/亚即兜底)..."
-python3 scripts/fetch_500_bjdc.py --write
+# 非致命: 500.com 是次要数据源(DNS 抽风时解析失败), 不能因它把今日清单/看板推送整条带崩
+python3 scripts/fetch_500_bjdc.py --write || echo "  ⚠️ 北单(500.com)抓取失败, 沿用上一份 ahbd_* 数据继续"
 
 # 北单「胜负过关」盘口赢盘概率 (命中列 上/下 方向 + ahbd_pred_desc)
 # 必须跑在 fetch_500_bjdc.py 之后: 让球数 ahbd_cur_handicap 那时才写进 results.json
