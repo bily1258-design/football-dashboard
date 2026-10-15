@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-15 12:43:14",
+  "generated_at": "2026-10-15 16:54:43",
   "threshold": 1.14,
   "note": "⚡=importance_weight(联赛等级×紧迫). 历史场次紧迫系数跌至0.90, 仅临场窗口权重>=1.14. 逐轮记录攒样本.",
   "tracked": [
@@ -1157,6 +1157,21 @@
       "recorded_at": "2026-08-15 22:28:33"
     },
     {
+      "fid": "2912242",
+      "date": "2026-08-15",
+      "match_time": "2026-08-15 21:00",
+      "event": "瑞典超",
+      "home_team": "米亞爾比",
+      "away_team": "天狼星",
+      "weight": 1.14,
+      "model_dir": "主",
+      "ts_dir": "主",
+      "same_dir": true,
+      "score": "2-3",
+      "hit": false,
+      "recorded_at": "2026-08-15 22:28:33"
+    },
+    {
       "fid": "3012260",
       "date": "2026-08-15",
       "match_time": "2026-08-15 21:15",
@@ -1273,21 +1288,6 @@
       "ts_dir": "客",
       "same_dir": true,
       "score": "",
-      "hit": false,
-      "recorded_at": "2026-08-15 22:28:33"
-    },
-    {
-      "fid": "2912242",
-      "date": "2026-08-15",
-      "match_time": "2026-08-15 21:00",
-      "event": "瑞典超",
-      "home_team": "米亞爾比",
-      "away_team": "天狼星",
-      "weight": 1.14,
-      "model_dir": "主",
-      "ts_dir": "主",
-      "same_dir": true,
-      "score": "2-3",
       "hit": false,
       "recorded_at": "2026-08-15 22:28:33"
     },
@@ -23040,8 +23040,9 @@
       "ts_dir": "客",
       "same_dir": true,
       "score": "0 - 1",
-      "hit": true,
-      "recorded_at": "2026-10-15 12:43:14"
+      "hit": false,
+      "recorded_at": "2026-10-15 12:43:14",
+      "updated_at": "2026-10-15 16:54:43"
     },
     {
       "fid": "3008270",
