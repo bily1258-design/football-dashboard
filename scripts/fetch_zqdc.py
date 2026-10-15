@@ -125,6 +125,31 @@ def parse_time(fields):
     return ''
 
 
+def parse_kickoff_time(fields):
+    """开赛时间 = f[12]的日期 + f[11]的开赛时刻(HH:MM)
+
+    ⚠ f[12] 完整值是"数据最后更新时刻"(≈开赛+60~75分钟), 不是开赛时间;
+    拿它当开赛时间会让看板显示成 11:41 之类的抓取时刻, 也会让
+    match_finished 的 2.5h 完场门槛整体后移。真开赛时刻在 f[11]。
+    跨日守卫: 若 "日期+f[11]" 晚于 f[12] 完整时刻, 说明是凌晨跨日场, 日期回退一天。
+    """
+    base = parse_time(fields)
+    try:
+        hhmm = (fields[11] or '').strip()
+    except IndexError:
+        return base
+    if not hhmm or ':' not in hhmm or len(base) < 16 or base.startswith('0000'):
+        return base
+    cand = f'{base[:10]} {hhmm}'
+    try:
+        _cand = datetime.strptime(cand, '%Y-%m-%d %H:%M')
+        if _cand > datetime.strptime(base, '%Y-%m-%d %H:%M'):
+            cand = (_cand - timedelta(days=1)).strftime('%Y-%m-%d %H:%M')
+    except ValueError:
+        return base
+    return cand
+
+
 def _fix_month(match_time, date_str):
     """bfdata_ut.js的f[12]月份有时错位(6月但实际是7月), 只修月份, 保留日和时间
     注意: 直接用strptime校验可能失败(如6月31日不存在), 改为解析整数组件比较"""
@@ -188,8 +213,12 @@ def fetch_all_matches(date_str, max_matches=0):
         if t:
             t_parts = t.split(',')
             if len(t_parts) >= 3:
-                md = f'{t_parts[0]}{int(t_parts[1]):02d}{int(t_parts[2]):02d}'
-                if md == date_compact or md == date_compact_tomorrow:
+                # ⚠ 源的月份是 0基(month-1, 如10月写成9); 若只按原值比会永远匹配不上,
+                #    每次退化成下面的"取全部"分支 → 单日窗口失效。两种编码都接受。
+                _mo = int(t_parts[1])
+                _d = int(t_parts[2])
+                md_set = {f'{t_parts[0]}{_mo:02d}{_d:02d}', f'{t_parts[0]}{_mo + 1:02d}{_d:02d}'}
+                if md_set & {date_compact, date_compact_tomorrow}:
                     filtered.append(m)
 
     # 如果两天都没有匹配的, 放宽到所有北单
@@ -222,7 +251,7 @@ def fetch_all_matches(date_str, max_matches=0):
                 hs = int(f[14])
                 aas = int(f[15])
                 # 只有 -1 是完场; 3=下半场, 必须以开球时间二次确认, 否则进行中的比分会被当终场写死
-                if status == -1 or (status == 3 and match_finished(_fix_month(parse_time(f), date_str))):
+                if status == -1 or (status == 3 and match_finished(_fix_month(parse_kickoff_time(f), date_str))):
                     score = f"{hs}-{aas}"
             except (ValueError, IndexError):
                 pass
@@ -231,7 +260,7 @@ def fetch_all_matches(date_str, max_matches=0):
             src = 'beidan_jingcai'
         else:
             src = 'beidan'
-        parsed_time = _fix_month(parse_time(f), date_str)
+        parsed_time = _fix_month(parse_kickoff_time(f), date_str)
         actual_date = parsed_time[:10] if parsed_time and len(parsed_time) >= 10 else date_str
         result.append({
             'sid': m['sid'],
@@ -261,11 +290,11 @@ def fetch_all_matches(date_str, max_matches=0):
                     hs = int(f[14])
                     aas = int(f[15])
                     # 同上: status==3(下半场) 须开球时间+150分钟确认
-                    if status == -1 or (status == 3 and match_finished(_fix_month(parse_time(f), date_str))):
+                    if status == -1 or (status == 3 and match_finished(_fix_month(parse_kickoff_time(f), date_str))):
                         score = f"{hs}-{aas}"
                 except (ValueError, IndexError):
                     pass
-            parsed_time = _fix_month(parse_time(f), date_str)
+            parsed_time = _fix_month(parse_kickoff_time(f), date_str)
             actual_date = parsed_time[:10] if parsed_time and len(parsed_time) >= 10 else date_str
             result.append({
                 'sid': m['sid'],

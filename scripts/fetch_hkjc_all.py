@@ -62,17 +62,12 @@ def fetch_bfdata_cn_map():
                     score = f"{hs}-{aas}"
             except (ValueError, IndexError):
                 pass
-        # bfdata中的比赛时间（月份可能错位，6月实际为7月）
-        bf_time = m.get('time', '')
+        # 开赛时间: f[12]的日期 + f[11]的开赛时刻(月份0基问题由_fix_month修)
+        # ⚠ f[12]完整值是"数据最后更新时刻"(≈开赛+60~75分), 不可当开赛时间
         match_time = ''
-        if bf_time:
-            parts = bf_time.split(',')
-            if len(parts) >= 5:
-                y, mo, d, hh, mi = parts[0], parts[1], parts[2], parts[3], parts[4]
-                raw_mt = f'{y}-{mo.zfill(2)}-{d.zfill(2)} {hh.zfill(2)}:{mi.zfill(2)}'
-                # 用修正后的_fix_month修复月份错位（只修月份，保留日和时间）
-                from fetch_zqdc import _fix_month
-                match_time = _fix_month(raw_mt, date.today().isoformat())
+        if m.get('fields'):
+            from fetch_zqdc import _fix_month, parse_kickoff_time
+            match_time = _fix_month(parse_kickoff_time(m['fields']), date.today().isoformat())
         if sid and h and a:
             result[sid] = (h, a, score, match_time)  # (主队, 客队, 比分, 比赛时间)
     return result
