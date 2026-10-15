@@ -16,6 +16,37 @@ _s2t = opencc.OpenCC('s2t')  # 简体→繁体转换，用于统一队名匹配
 _t2s = opencc.OpenCC('t2s')
 
 
+def match_finished(match_time_str, grace_min=150, now=None):
+    """比赛是否已完场：开球时间 + grace_min(默认150分钟) <= 当前时间。
+
+    bfdata_ut.js 的 fields[13] 状态码：-1=完场, 0=未开始, 1=上半场, 2=中场, 3=下半场。
+    历史 bug：把 3 当成"完场/其他"，于是抓取时正好落在下半场的比赛会把当时的比分
+    当作终场比分写死；而回填逻辑只补空档(if not match['score'])，永远不会修正。
+    故 status==3 必须再用开球时间二次确认。150 分钟与 fetch_hkjc_all._filter_unscored
+    的 2.5 小时门槛保持一致。
+    时间缺失/无法解析 → False（宁缺毋滥，交给后续回填补齐）。
+    """
+    from datetime import datetime, timedelta
+    import re as _re
+    if not match_time_str:
+        return False
+    now = now or datetime.now()
+    s = str(match_time_str).strip().replace('/', '-').replace('T', ' ')
+    s = _re.sub(r'^周[一二三四五六日]\s*', '', s)
+    partial = bool(_re.match(r'^\d{2}-\d{2}\s+\d{2}:\d{2}', s))   # 非完整日期(MM-DD)
+    if partial:
+        s = f'{now.year}-{s}'
+    if len(s) >= 16 and s[16:17] != ':':
+        s = s[:16] + ':00' + s[16:]
+    try:
+        t = datetime.strptime(s[:19], '%Y-%m-%d %H:%M:%S')
+    except ValueError:
+        return False
+    if partial and t > now + timedelta(days=1):   # 跨年: 12-31 在 1 月看到 → 属上一年
+        t = t.replace(year=t.year - 1)
+    return now >= t + timedelta(minutes=grace_min)
+
+
 def canon_team_name(name):
     """队名规范形态（繁体正字）＝ s2t(t2s(x))。**所有写入口都必须走这里。**
 

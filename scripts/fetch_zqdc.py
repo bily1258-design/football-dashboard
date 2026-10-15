@@ -32,7 +32,7 @@ DATA_DIR = os.path.join(os.path.dirname(SCRIPT_DIR), "data")
 sys.path.insert(0, SCRIPT_DIR)
 
 # ─────── 1x2d 赔率接口（从titan007_utils导入） ───────
-from titan007_utils import fetch_1x2d_odds, f_float, fetch_raw, canon_team_name
+from titan007_utils import fetch_1x2d_odds, f_float, fetch_raw, canon_team_name, match_finished
 
 
 # ─────── bfdata_ut.js ───────
@@ -221,7 +221,8 @@ def fetch_all_matches(date_str, max_matches=0):
                 status = int(f[13])
                 hs = int(f[14])
                 aas = int(f[15])
-                if status in (-1, 3):  # 完场
+                # 只有 -1 是完场; 3=下半场, 必须以开球时间二次确认, 否则进行中的比分会被当终场写死
+                if status == -1 or (status == 3 and match_finished(_fix_month(parse_time(f), date_str))):
                     score = f"{hs}-{aas}"
             except (ValueError, IndexError):
                 pass
@@ -259,7 +260,8 @@ def fetch_all_matches(date_str, max_matches=0):
                     status = int(f[13])
                     hs = int(f[14])
                     aas = int(f[15])
-                    if status in (-1, 3):
+                    # 同上: status==3(下半场) 须开球时间+150分钟确认
+                    if status == -1 or (status == 3 and match_finished(_fix_month(parse_time(f), date_str))):
                         score = f"{hs}-{aas}"
                 except (ValueError, IndexError):
                     pass

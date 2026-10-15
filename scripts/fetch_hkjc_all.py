@@ -23,7 +23,7 @@ DOCS_DATA_DIR = os.path.join(os.path.dirname(SCRIPT_DIR), "docs", "data")
 
 # 导入titan007工具
 sys.path.insert(0, SCRIPT_DIR)
-from titan007_utils import get_match_list, get_odds_history, fetch_url, fetch_raw, translate_team_name, fetch_1x2d_odds, _normalize_league, _is_ascii, canon_team_name
+from titan007_utils import get_match_list, get_odds_history, fetch_url, fetch_raw, translate_team_name, fetch_1x2d_odds, _normalize_league, _is_ascii, canon_team_name, match_finished
 
 # titan007 cid映射: 177=平博, 432=HKJC
 CID_PINNACLE = '177'  # 平博(Pinnacle)
@@ -57,7 +57,8 @@ def fetch_bfdata_cn_map():
                 status = int(f[13])
                 hs = int(f[14])
                 aas = int(f[15])
-                if status in (-1, 3):
+                # 仅 -1(完场) 取分; 3=下半场, 抓取时会把进行中的比分当终场写死, 交给回填阶段(2.5h门槛)补
+                if status == -1:
                     score = f"{hs}-{aas}"
             except (ValueError, IndexError):
                 pass
@@ -265,7 +266,8 @@ def fetch_hkjc_matches(date_str, max_matches=0, delay=0.3, workers=3):
             match['odds_pinnacle_company'] = 'Pinnacle'
         
         # 4. 比分兜底：bfdata无分时查分析页 JavaScript 变量
-        if not match['score']:
+        # 分析页变量是"当前比分", 未完场时会写入进行中的比分 → 必须过完场门槛(开球+150分钟)
+        if not match['score'] and mt_time and not mt_time.endswith(' 00:00') and match_finished(mt_time):
             try:
                 analysis_score = get_score_from_titan007(sid)
                 if analysis_score:
@@ -433,6 +435,29 @@ def do_backfill(fpath, date_str):
             return
     
     existing_matches = {m['fid']: m for m in existing.get('matches', [])}
+
+    def _repair_finished(bf_scores):
+        """终场修正: bfdata status==-1(真终场) 与已存比分不一致时以 bfdata 覆盖。
+        旧版把 status==3(下半场) 读成完场, 会把进行中的比分当终场写死; 且回填只补空档,
+        写错就永久留存 —— 靠这里自愈。不受 <=2.5h 门槛限制(比对的是终场值)。"""
+        fixed = []
+        for fid, m in existing_matches.items():
+            truth = bf_scores.get(str(fid))
+            if not truth or not re.match(r'^\d+-\d+$', truth):
+                continue
+            cur = str(m.get('score') or '').strip()
+            if cur and cur != '推迟' and cur.replace(' ', '') != truth:
+                m['score'] = truth
+                fixed.append((fid, cur, truth, m.get('home_team', ''), m.get('away_team', '')))
+        if fixed:
+            existing['matches'] = list(existing_matches.values())
+            existing['fetched_at'] = datetime.now().isoformat()
+            with open(fpath, 'w', encoding='utf-8') as f:
+                json.dump(existing, f, ensure_ascii=False, indent=2)
+            print(f'[BACKFILL] 终场修正(覆盖旧错分) → {len(fixed)} 场')
+            for fid, cur, truth, h, a in fixed[:8]:
+                print(f'  ~ {h} vs {a} (fid={fid}) {cur} → {truth}')
+        return fixed
     
     def _filter_unscored():
         """当天比赛只取2.5小时前的，防止回填进行中的比赛"""
@@ -454,40 +479,39 @@ def do_backfill(fpath, date_str):
     
     # 0. bfdata_ut.js 按SID直接抓比分（最可靠，无需队名匹配）
     unscored = _filter_unscored()
-    if unscored:
-        try:
-            from fetch_zqdc import fetch_bfdata
-            bf_matches = fetch_bfdata()
-            bf_scores = {}
-            for bm in bf_matches:
-                sid = bm.get('sid', '')
-                f = bm.get('fields', [])
-                if len(f) > 15:
-                    try:
-                        status = int(f[13])
-                        if status in (-1, 3):
-                            hs = int(f[14])
-                            aas = int(f[15])
-                            bf_scores[sid] = f"{hs}-{aas}"
-                    except (ValueError, IndexError):
-                        pass
-            bf_ok = 0
-            for fid, m in unscored:
-                if fid in bf_scores:
-                    m['score'] = bf_scores[fid]
-                    bf_ok += 1
-            if bf_ok:
-                existing['matches'] = list(existing_matches.values())
-                existing['fetched_at'] = datetime.now().isoformat()
-                with open(fpath, 'w', encoding='utf-8') as f:
-                    json.dump(existing, f, ensure_ascii=False, indent=2)
-                print(f'[BACKFILL] bfdata_ut.js按SID → {bf_ok}/{len(unscored)} 场')
-                # 重新计算unscored（已补的跳过后续步骤）
-                unscored = _filter_unscored()
-                if not unscored:
-                    return
-        except Exception as e:
-            print(f'[BACKFILL] bfdata_ut.js抓取失败: {e}')
+    bf_scores = {}
+    try:
+        from fetch_zqdc import fetch_bfdata
+        for bm in fetch_bfdata():
+            sid = bm.get('sid', '')
+            f = bm.get('fields', [])
+            if len(f) > 15:
+                try:
+                    # 只有 -1 是完场; 3=下半场进行中, 曾把进行中比分当终场写死
+                    if int(f[13]) == -1:
+                        bf_scores[sid] = f"{int(f[14])}-{int(f[15])}"
+                except (ValueError, IndexError):
+                    pass
+    except Exception as e:
+        print(f'[BACKFILL] bfdata_ut.js抓取失败: {e}')
+    if bf_scores:
+        _repair_finished(bf_scores)   # 已存错分以终场真值覆盖(自愈, 不受2.5h门槛限制)
+    if unscored and bf_scores:
+        bf_ok = 0
+        for fid, m in unscored:
+            if fid in bf_scores:
+                m['score'] = bf_scores[fid]
+                bf_ok += 1
+        if bf_ok:
+            existing['matches'] = list(existing_matches.values())
+            existing['fetched_at'] = datetime.now().isoformat()
+            with open(fpath, 'w', encoding='utf-8') as f:
+                json.dump(existing, f, ensure_ascii=False, indent=2)
+            print(f'[BACKFILL] bfdata_ut.js按SID → {bf_ok}/{len(unscored)} 场')
+            # 重新计算unscored（已补的跳过后续步骤）
+            unscored = _filter_unscored()
+            if not unscored:
+                return
     
     # 1. titan007 Over页完整比分表 — 按SID直接匹配（无需队名翻译对齐）
     if unscored:
@@ -577,6 +601,10 @@ def do_backfill(fpath, date_str):
         print(f'[BACKFILL] Analysis页抓比分: {len(unscored)} 场待补…')
         ana_ok = 0
         for fid, m in unscored:
+            # 未完赛的不能当终场: 分析页的 homeScoreStr/guestScoreStr 是「当前」比分
+            mt = m.get('match_time', '')
+            if mt and not match_finished(mt):
+                continue
             try:
                 from titan007_utils import fetch_url
                 html = fetch_url(f'https://zq.titan007.com/Analysis/{fid}.htm', timeout=8)
