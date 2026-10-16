@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-16 13:27:21",
+  "generated_at": "2026-10-16 17:16:01",
   "threshold": 1.14,
   "note": "⚡=importance_weight(联赛等级×紧迫). 历史场次紧迫系数跌至0.90, 仅临场窗口权重>=1.14. 逐轮记录攒样本.",
   "tracked": [
@@ -23573,6 +23573,21 @@
       "score": "",
       "hit": false,
       "recorded_at": "2026-10-16 13:27:21"
+    },
+    {
+      "fid": "3094198",
+      "date": "2026-10-17",
+      "match_time": "2026-10-17 08:00",
+      "event": "女解放者杯",
+      "home_team": "高士路MG女足",
+      "away_team": "基多女足",
+      "weight": 1.14,
+      "model_dir": "主",
+      "ts_dir": "客",
+      "same_dir": false,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-10-16 17:16:01"
     },
     {
       "fid": "2962686",
