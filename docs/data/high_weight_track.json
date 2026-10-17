@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-17 12:50:53",
+  "generated_at": "2026-10-17 16:52:01",
   "threshold": 1.14,
   "note": "⚡=importance_weight(联赛等级×紧迫). 历史场次紧迫系数跌至0.90, 仅临场窗口权重>=1.14. 逐轮记录攒样本.",
   "tracked": [
@@ -23418,9 +23418,9 @@
       "ts_dir": "客",
       "same_dir": true,
       "score": "0-1",
-      "hit": false,
+      "hit": true,
       "recorded_at": "2026-10-16 13:27:21",
-      "updated_at": "2026-10-17 12:50:53"
+      "updated_at": "2026-10-17 16:52:01"
     },
     {
       "fid": "3018834",
@@ -23641,9 +23641,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
+      "score": "2-2",
       "hit": false,
-      "recorded_at": "2026-10-16 13:27:21"
+      "recorded_at": "2026-10-16 13:27:21",
+      "updated_at": "2026-10-17 16:52:01"
     },
     {
       "fid": "3019157",
