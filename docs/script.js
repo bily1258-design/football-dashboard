@@ -9,8 +9,15 @@ function fmtTime(t){if(!t)return'';var m=t.match(/^(?:\d{4}-)?(\d{2})-(\d{2})\s+
 function dirClass(d){return d==='home'?'dir-home':d==='draw'?'dir-draw':d==='away'?'dir-away':'dir-wait'}
 function dirText(d){return d==='home'?'主胜':d==='draw'?'平局':d==='away'?'客胜':'观望'}
 function dirZh(d){return d==='home'?'主':d==='draw'?'平':d==='away'?'客':'?'}
-// 方向组合 9 格 (2026-10-18): 取 (model_prediction × lgbm_prediction) 做展示分组; 不统计场次/命中率
-var COMBO_ORDER=['home-home','draw-draw','away-away','home-draw','draw-home','home-away','away-home','away-draw','draw-away'];
+// 方向组合 (2026-10-18): 9 格 = model_prediction × lgbm_prediction, 下拉按 4 组归并
+var COMBO_GROUPS=[
+  {v:'all', t:'全部方向组合', keys:[]},
+  {v:'consistent', t:'主主 · 和和 · 客客', keys:['home-home','draw-draw','away-away']},
+  {v:'hd', t:'主和 · 和主', keys:['home-draw','draw-home']},
+  {v:'ha', t:'主客 · 客主', keys:['home-away','away-home']},
+  {v:'ad', t:'客和 · 和客', keys:['away-draw','draw-away']}
+];
+function comboGroupKeys(v){for(var i=0;i<COMBO_GROUPS.length;i++)if(COMBO_GROUPS[i].v===v)return COMBO_GROUPS[i].keys;return [];}
 function comboKey(m){return (m.model_prediction||'')+'-'+(m.lgbm_prediction||'');}
 function comboZh(k){var p=(k||'').split('-');
   function one(d){return d==='home'?'主':(d==='draw'?'和':(d==='away'?'客':'?'));}
@@ -21,12 +28,15 @@ function comboBadge(m){
 }
 function buildComboFilter(){
   var sel=document.getElementById('dirFilter');if(!sel)return;
-  while(sel.options.length>1)sel.remove(1);
-  COMBO_ORDER.forEach(function(k){
+  var keep=sel.value;
+  while(sel.options.length)sel.remove(0);
+  COMBO_GROUPS.forEach(function(g){
     var opt=document.createElement('option');
-    opt.value=k;opt.textContent=comboZh(k);
+    opt.value=g.v;opt.textContent=g.t;
     sel.appendChild(opt);
   });
+  var ok=false;COMBO_GROUPS.forEach(function(g){if(g.v===keep)ok=true;});
+  sel.value=ok?keep:'all';
 }
 function noText(m){if(!m.beidan_no&&!m.jingcai_no)return '';return (m.beidan_no?'北单'+m.beidan_no:'')+(m.jingcai_no?(m.beidan_no?'<br>':'')+m.jingcai_no:'')}
 function bdLine(m){ // 北单让球行: 「过」(胜负过关)优先, 「让」(让球胜平负)兜底; 正=主队受让, 负=主队让球
@@ -275,8 +285,7 @@ function applyFilters(){
     if(dateVal!=='all' && m.date!==dateVal) return false;
     if(srcVal!=='all' && m.source.indexOf(srcVal)===-1) return false;
     if(dirVal!=='all'){
-      var comb = (m.model_prediction||'')+'-'+(m.lgbm_prediction||'');
-      if(comb!==dirVal) return false;
+      if(comboGroupKeys(dirVal).indexOf(comboKey(m))<0) return false;
     }
     if(showWarnedOnly && matchTier(m)!=='weak') return false;
     if(showValueOnly && (!m.best_value||m.best_value.ev<=0.05)) return false;
