@@ -45,8 +45,11 @@ function comboBadge(m){
 }
 function buildComboFilter(){
   var sel=document.getElementById('dirFilter');if(!sel)return;
-  var arr=Object.keys(comboStats).map(function(k){return {k:k,s:comboStats[k]};});
-  arr.sort(function(a,b){return b.s.n-a.s.n;});
+  // 固定顺序(用户 2026-10-18 定): 一致格 + 对称对(主和/和主、主客/客主、客和/和客)交替, 不按样本量排
+  var ORDER=['home-home','home-draw','draw-home','home-away','away-home','draw-draw','away-draw','draw-away','away-away'];
+  var keys=ORDER.filter(function(k){return comboStats[k];});
+  Object.keys(comboStats).forEach(function(k){if(keys.indexOf(k)<0)keys.push(k);});
+  var arr=keys.map(function(k){return {k:k,s:comboStats[k]};});
   while(sel.options.length>1)sel.remove(1);
   arr.forEach(function(o){
     var s=o.s,hr=s.scored?(s.hit/s.scored*100):0;
