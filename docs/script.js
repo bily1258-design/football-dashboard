@@ -19,13 +19,6 @@ var COMBO_GROUPS=[
 ];
 function comboGroupKeys(v){for(var i=0;i<COMBO_GROUPS.length;i++)if(COMBO_GROUPS[i].v===v)return COMBO_GROUPS[i].keys;return [];}
 function comboKey(m){return (m.model_prediction||'')+'-'+(m.lgbm_prediction||'');}
-function comboZh(k){var p=(k||'').split('-');
-  function one(d){return d==='home'?'主':(d==='draw'?'和':(d==='away'?'客':'?'));}
-  return one(p[0])+one(p[1]);}
-function comboBadge(m){
-  if(!m.model_prediction||!m.lgbm_prediction)return '<span class="dir-wait">?-?</span>';
-  return '<span class="combo-badge" title="模型'+dirText(m.model_prediction)+' × LGBM'+dirText(m.lgbm_prediction)+'">'+comboZh(comboKey(m))+'</span>';
-}
 function buildComboFilter(){
   var sel=document.getElementById('dirFilter');if(!sel)return;
   var keep=sel.value;
@@ -332,7 +325,7 @@ function renderTable(matches){
       '<td class="score-cell"><span>'+(m.score||(m.postponed?'推迟':'-'))+'</span></td>'+
       '<td class="team-name">'+m.away_team+'</td>'+
       '<td class="sim-cell">'+renderSimilarMatches(m)+'</td>'+
-      '<td>'+comboBadge(m)+'<br><span class="'+dirClass(m.lgbm_prediction)+'" style="font-size:11px">'+dirText(m.lgbm_prediction)+'</span> <span style="font-size:11px;color:#999">'+dirText(m.model_prediction)+(bdPick(m)?' <span class="ah-pred-inline">('+bdPick(m)+')</span>':'')+'</span><br><span class="weight-badge" title="权重 '+m.importance_weight.toFixed(2)+'">⚡'+m.importance_weight.toFixed(2)+'</span><br>'+vbHtml+'</td>'+
+      '<td><span class="'+dirClass(m.lgbm_prediction)+'" style="font-size:11px">'+dirText(m.lgbm_prediction)+'</span> <span style="font-size:11px;color:#999">'+dirText(m.model_prediction)+(bdPick(m)?' <span class="ah-pred-inline">('+bdPick(m)+')</span>':'')+'</span><br><span class="weight-badge" title="权重 '+m.importance_weight.toFixed(2)+'">⚡'+m.importance_weight.toFixed(2)+'</span><br>'+vbHtml+'</td>'+
 
       '<td class="'+hc+'">'+(hitTxt?hitTxt+'<br>':'')+(ahTxt?'<span class="ah-hit-dir">'+ahTxt+'</span>':'')+'</td>'+
       '<td class="odds-cell">'+renderOdds(m.comparison, m.pin_comparison, m)+'</td>'+
