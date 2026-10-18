@@ -117,3 +117,9 @@ tr:hover{background:#f0f6ff}
 .lp-row{opacity:0.55}
 .lp-row:hover{opacity:0.85}
 .no-cell{font-size:12px;color:#888;white-space:nowrap;text-align:center}
+
+/* 方向组合徽标 (2026-10-18): 模型方向 × LGBM方向 9 格; 配色按该格历史命中率分档 */
+.combo-badge{display:inline-block;min-width:34px;text-align:center;padding:1px 6px;border-radius:4px;font-weight:700;font-size:13px;letter-spacing:1px;background:#f0f1f3;color:#444;cursor:help}
+.combo-badge.cb-hi{background:#e6f4ea;color:#1e7b34}
+.combo-badge.cb-mid{background:#f2f3f5;color:#555}
+.combo-badge.cb-lo{background:#fdecea;color:#c0392b}

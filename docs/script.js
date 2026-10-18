@@ -9,6 +9,52 @@ function fmtTime(t){if(!t)return'';var m=t.match(/^(?:\d{4}-)?(\d{2})-(\d{2})\s+
 function dirClass(d){return d==='home'?'dir-home':d==='draw'?'dir-draw':d==='away'?'dir-away':'dir-wait'}
 function dirText(d){return d==='home'?'主胜':d==='draw'?'平局':d==='away'?'客胜':'观望'}
 function dirZh(d){return d==='home'?'主':d==='draw'?'平':d==='away'?'客':'?'}
+function comboKey(m){return (m.model_prediction||'')+'-'+(m.lgbm_prediction||'');}
+function actualDir(m){if(!m.score)return '';var t=String(m.score).split('-');if(t.length<2)return '';
+  var h=parseInt(t[0],10),a=parseInt(t[1],10);if(isNaN(h)||isNaN(a))return '';return h>a?'home':(h===a?'draw':'away');}
+function comboZh(k){var p=(k||'').split('-');
+  function one(d){return d==='home'?'主':(d==='draw'?'和':(d==='away'?'客':'?'));}
+  return one(p[0])+one(p[1]);}
+function oddsOfDir(m,d){if(d==='home')return m.odds_win;if(d==='draw')return m.odds_draw;if(d==='away')return m.odds_loss;return null;}
+// 方向组合统计 (2026-10-18): 9 格 = 模型方向 × LGBM方向; 命中按模型方向判定
+var comboStats={};
+function buildComboStats(){
+  comboStats={};
+  allMatches.forEach(function(m){
+    if(!m.model_prediction||!m.lgbm_prediction)return;
+    var k=comboKey(m);
+    var s=comboStats[k]||(comboStats[k]={n:0,scored:0,hit:0,stake:0,ret:0});
+    s.n++;
+    var a=actualDir(m);if(!a)return;
+    s.scored++;
+    var win=(m.model_prediction===a);
+    if(win)s.hit++;
+    var od=oddsOfDir(m,m.model_prediction);
+    if(od){s.stake++;s.ret+=(win?(od-1):-1);}
+  });
+}
+function comboBadge(m){
+  if(!m.model_prediction||!m.lgbm_prediction)return '<span class="dir-wait">?-?</span>';
+  var k=comboKey(m),s=comboStats[k],hr=null,roi=null;
+  if(s&&s.scored){hr=s.hit/s.scored*100;}
+  if(s&&s.stake){roi=s.ret/s.stake*100;}
+  var t='组合 '+comboZh(k)+' (模型'+dirText(m.model_prediction)+' × LGBM'+dirText(m.lgbm_prediction)+')'
+    +(s?(' · 历史 '+s.n+'场'+(hr!=null?(' 命中'+hr.toFixed(1)+'%'):'')):'');
+  var tone=(hr==null)?'':(hr>=55?'hi':(hr<40?'lo':'mid'));
+  return '<span class="combo-badge'+(tone?' cb-'+tone:'')+'" title="'+t+'">'+comboZh(k)+'</span>';
+}
+function buildComboFilter(){
+  var sel=document.getElementById('dirFilter');if(!sel)return;
+  var arr=Object.keys(comboStats).map(function(k){return {k:k,s:comboStats[k]};});
+  arr.sort(function(a,b){return b.s.n-a.s.n;});
+  while(sel.options.length>1)sel.remove(1);
+  arr.forEach(function(o){
+    var s=o.s,hr=s.scored?(s.hit/s.scored*100):0;
+    var opt=document.createElement('option');
+    opt.value=o.k;opt.textContent=comboZh(o.k)+'  '+s.n+'场 · 命中'+hr.toFixed(1)+'%';
+    sel.appendChild(opt);
+  });
+}
 function noText(m){if(!m.beidan_no&&!m.jingcai_no)return '';return (m.beidan_no?'北单'+m.beidan_no:'')+(m.jingcai_no?(m.beidan_no?'<br>':'')+m.jingcai_no:'')}
 function bdLine(m){ // 北单让球行: 「过」(胜负过关)优先, 「让」(让球胜平负)兜底; 正=主队受让, 负=主队让球
   var v=m.ahbd_cur_handicap;if(v==null||v==='')v=m.ahbd_open_handicap;
@@ -304,7 +350,7 @@ function renderTable(matches){
       '<td class="score-cell"><span>'+(m.score||(m.postponed?'推迟':'-'))+'</span></td>'+
       '<td class="team-name">'+m.away_team+'</td>'+
       '<td class="sim-cell">'+renderSimilarMatches(m)+'</td>'+
-      '<td><span class="'+dirClass(m.lgbm_prediction)+'">'+dirText(m.lgbm_prediction)+'</span> <span style="font-size:11px;color:#999">'+dirText(m.model_prediction)+(bdPick(m)?' <span class="ah-pred-inline">('+bdPick(m)+')</span>':'')+'</span><br><span class="weight-badge" title="权重 '+m.importance_weight.toFixed(2)+'">⚡'+m.importance_weight.toFixed(2)+'</span><br>'+vbHtml+'</td>'+
+      '<td>'+comboBadge(m)+'<br><span class="'+dirClass(m.lgbm_prediction)+'" style="font-size:11px">'+dirText(m.lgbm_prediction)+'</span> <span style="font-size:11px;color:#999">'+dirText(m.model_prediction)+(bdPick(m)?' <span class="ah-pred-inline">('+bdPick(m)+')</span>':'')+'</span><br><span class="weight-badge" title="权重 '+m.importance_weight.toFixed(2)+'">⚡'+m.importance_weight.toFixed(2)+'</span><br>'+vbHtml+'</td>'+
 
       '<td class="'+hc+'">'+(hitTxt?hitTxt+'<br>':'')+(ahTxt?'<span class="ah-hit-dir">'+ahTxt+'</span>':'')+'</td>'+
       '<td class="odds-cell">'+renderOdds(m.comparison, m.pin_comparison, m)+'</td>'+
@@ -368,6 +414,8 @@ fetch('data/results_light.json', {cache:'no-cache'})
       // 今天无比赛: 默认选最近有数据的日期 (而非 all 全量渲染)
       sel.value = recent[0].date;
     }
+    buildComboStats();
+    buildComboFilter();
     renderBetSummary();
     renderBetTable();
     // 有投注记录时显示追踪器
