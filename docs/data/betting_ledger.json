@@ -31163,7 +31163,7 @@
     "fid": "3101693",
     "teams": "卡拉卡斯女足 vs 聖塔菲女足",
     "match_time": "2026-10-16 08:00",
-    "score": "",
+    "score": "2-3",
     "signal": "weight",
     "signal_cn": "⚡高权重",
     "outcome": "away",
@@ -31172,7 +31172,10 @@
     "edge": 0,
     "kelly": 0,
     "weight": 1.14,
-    "same_dir": false
+    "same_dir": false,
+    "result": "win",
+    "profit": 0.16,
+    "settled_at": "2026-10-17T17:31:57.338429"
   },
   {
     "fid": "3097199",
@@ -31754,7 +31757,7 @@
     "fid": "3024489",
     "teams": "拉巴斯競技 vs 特拉斯卡拉",
     "match_time": "2026-10-17 11:00",
-    "score": "",
+    "score": "2-2",
     "signal": "weight",
     "signal_cn": "⚡高权重",
     "outcome": "home",
@@ -31763,7 +31766,10 @@
     "edge": 0,
     "kelly": 0,
     "weight": 1.14,
-    "same_dir": true
+    "same_dir": true,
+    "result": "loss",
+    "profit": -1.0,
+    "settled_at": "2026-10-17T17:31:57.338446"
   },
   {
     "fid": "3094203",
@@ -32633,7 +32639,7 @@
     "fid": "2997440",
     "teams": "蒂華納 vs 普埃布拉",
     "match_time": "2026-10-17 11:00",
-    "score": "",
+    "score": "0-0",
     "signal": "truev",
     "signal_cn": "真价值",
     "outcome": "home",
@@ -32642,7 +32648,10 @@
     "edge": 0.031,
     "true_edge": 0.031,
     "fair": 0.5246,
-    "kelly": 0.0
+    "kelly": 0.0,
+    "result": "loss",
+    "profit": -1.0,
+    "settled_at": "2026-10-17T17:31:57.338462"
   },
   {
     "fid": "3010648",
@@ -33078,5 +33087,59 @@
     "kelly": 0,
     "weight": 1.14,
     "same_dir": true
+  },
+  {
+    "fid": "3089299",
+    "teams": "庫拉提爾特 vs 威柯拉",
+    "match_time": "2026-09-28 23:00",
+    "score": "1-1",
+    "signal": "truev",
+    "signal_cn": "真价值",
+    "outcome": "home",
+    "odds": 3.22,
+    "ev": 0.2696,
+    "edge": 0.0305,
+    "true_edge": 0.0305,
+    "fair": 0.2809,
+    "kelly": 0.1214,
+    "result": "loss",
+    "profit": -1.0,
+    "settled_at": "2026-10-17T17:31:57.337921"
+  },
+  {
+    "fid": "3089303",
+    "teams": "艾馬希亞 vs 多哈國民",
+    "match_time": "2026-09-30 01:15",
+    "score": "1-1",
+    "signal": "truev",
+    "signal_cn": "真价值",
+    "outcome": "home",
+    "odds": 2.73,
+    "ev": 0.1062,
+    "edge": 0.031,
+    "true_edge": 0.031,
+    "fair": 0.3313,
+    "kelly": 0.0614,
+    "result": "loss",
+    "profit": -1.0,
+    "settled_at": "2026-10-17T17:31:57.337961"
+  },
+  {
+    "fid": "3017920",
+    "teams": "維也納迅速青年隊 vs 瓦克蒂羅爾",
+    "match_time": "2026-10-10 21:30",
+    "score": "1 - 2",
+    "signal": "truev",
+    "signal_cn": "真价值",
+    "outcome": "away",
+    "odds": 1.91,
+    "ev": -0.1352,
+    "edge": 0.0345,
+    "true_edge": 0.0345,
+    "fair": 0.498,
+    "kelly": 0.0,
+    "result": "win",
+    "profit": 0.91,
+    "settled_at": "2026-10-17T17:31:57.338012"
   }
 ]
