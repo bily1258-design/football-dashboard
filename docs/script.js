@@ -46,7 +46,7 @@ function comboBadge(m){
 function buildComboFilter(){
   var sel=document.getElementById('dirFilter');if(!sel)return;
   // 固定顺序(用户 2026-10-18 定): 一致格 + 对称对(主和/和主、主客/客主、客和/和客)交替, 不按样本量排
-  var ORDER=['home-home','home-draw','draw-home','home-away','away-home','draw-draw','away-draw','draw-away','away-away'];
+  var ORDER=['home-home','draw-draw','away-away','home-draw','draw-home','home-away','away-home','away-draw','draw-away'];
   var keys=ORDER.filter(function(k){return comboStats[k];});
   Object.keys(comboStats).forEach(function(k){if(keys.indexOf(k)<0)keys.push(k);});
   var arr=keys.map(function(k){return {k:k,s:comboStats[k]};});
