@@ -9,52 +9,22 @@ function fmtTime(t){if(!t)return'';var m=t.match(/^(?:\d{4}-)?(\d{2})-(\d{2})\s+
 function dirClass(d){return d==='home'?'dir-home':d==='draw'?'dir-draw':d==='away'?'dir-away':'dir-wait'}
 function dirText(d){return d==='home'?'主胜':d==='draw'?'平局':d==='away'?'客胜':'观望'}
 function dirZh(d){return d==='home'?'主':d==='draw'?'平':d==='away'?'客':'?'}
+// 方向组合 9 格 (2026-10-18): 取 (model_prediction × lgbm_prediction) 做展示分组; 不统计场次/命中率
+var COMBO_ORDER=['home-home','draw-draw','away-away','home-draw','draw-home','home-away','away-home','away-draw','draw-away'];
 function comboKey(m){return (m.model_prediction||'')+'-'+(m.lgbm_prediction||'');}
-function actualDir(m){if(!m.score)return '';var t=String(m.score).split('-');if(t.length<2)return '';
-  var h=parseInt(t[0],10),a=parseInt(t[1],10);if(isNaN(h)||isNaN(a))return '';return h>a?'home':(h===a?'draw':'away');}
 function comboZh(k){var p=(k||'').split('-');
   function one(d){return d==='home'?'主':(d==='draw'?'和':(d==='away'?'客':'?'));}
   return one(p[0])+one(p[1]);}
-function oddsOfDir(m,d){if(d==='home')return m.odds_win;if(d==='draw')return m.odds_draw;if(d==='away')return m.odds_loss;return null;}
-// 方向组合统计 (2026-10-18): 9 格 = 模型方向 × LGBM方向; 命中按模型方向判定
-var comboStats={};
-function buildComboStats(){
-  comboStats={};
-  allMatches.forEach(function(m){
-    if(!m.model_prediction||!m.lgbm_prediction)return;
-    var k=comboKey(m);
-    var s=comboStats[k]||(comboStats[k]={n:0,scored:0,hit:0,stake:0,ret:0});
-    s.n++;
-    var a=actualDir(m);if(!a)return;
-    s.scored++;
-    var win=(m.model_prediction===a);
-    if(win)s.hit++;
-    var od=oddsOfDir(m,m.model_prediction);
-    if(od){s.stake++;s.ret+=(win?(od-1):-1);}
-  });
-}
 function comboBadge(m){
   if(!m.model_prediction||!m.lgbm_prediction)return '<span class="dir-wait">?-?</span>';
-  var k=comboKey(m),s=comboStats[k],hr=null,roi=null;
-  if(s&&s.scored){hr=s.hit/s.scored*100;}
-  if(s&&s.stake){roi=s.ret/s.stake*100;}
-  var t='组合 '+comboZh(k)+' (模型'+dirText(m.model_prediction)+' × LGBM'+dirText(m.lgbm_prediction)+')'
-    +(s?(' · 历史 '+s.n+'场'+(hr!=null?(' 命中'+hr.toFixed(1)+'%'):'')):'');
-  var tone=(hr==null)?'':(hr>=55?'hi':(hr<40?'lo':'mid'));
-  return '<span class="combo-badge'+(tone?' cb-'+tone:'')+'" title="'+t+'">'+comboZh(k)+'</span>';
+  return '<span class="combo-badge" title="模型'+dirText(m.model_prediction)+' × LGBM'+dirText(m.lgbm_prediction)+'">'+comboZh(comboKey(m))+'</span>';
 }
 function buildComboFilter(){
   var sel=document.getElementById('dirFilter');if(!sel)return;
-  // 固定顺序(用户 2026-10-18 定): 一致格 + 对称对(主和/和主、主客/客主、客和/和客)交替, 不按样本量排
-  var ORDER=['home-home','draw-draw','away-away','home-draw','draw-home','home-away','away-home','away-draw','draw-away'];
-  var keys=ORDER.filter(function(k){return comboStats[k];});
-  Object.keys(comboStats).forEach(function(k){if(keys.indexOf(k)<0)keys.push(k);});
-  var arr=keys.map(function(k){return {k:k,s:comboStats[k]};});
   while(sel.options.length>1)sel.remove(1);
-  arr.forEach(function(o){
-    var s=o.s,hr=s.scored?(s.hit/s.scored*100):0;
+  COMBO_ORDER.forEach(function(k){
     var opt=document.createElement('option');
-    opt.value=o.k;opt.textContent=comboZh(o.k)+'  '+s.n+'场 · 命中'+hr.toFixed(1)+'%';
+    opt.value=k;opt.textContent=comboZh(k);
     sel.appendChild(opt);
   });
 }
@@ -417,7 +387,6 @@ fetch('data/results_light.json', {cache:'no-cache'})
       // 今天无比赛: 默认选最近有数据的日期 (而非 all 全量渲染)
       sel.value = recent[0].date;
     }
-    buildComboStats();
     buildComboFilter();
     renderBetSummary();
     renderBetTable();
