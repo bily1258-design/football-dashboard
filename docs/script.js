@@ -9,28 +9,6 @@ function fmtTime(t){if(!t)return'';var m=t.match(/^(?:\d{4}-)?(\d{2})-(\d{2})\s+
 function dirClass(d){return d==='home'?'dir-home':d==='draw'?'dir-draw':d==='away'?'dir-away':'dir-wait'}
 function dirText(d){return d==='home'?'主胜':d==='draw'?'平局':d==='away'?'客胜':'观望'}
 function dirZh(d){return d==='home'?'主':d==='draw'?'平':d==='away'?'客':'?'}
-// 方向组合 (2026-10-18): 9 格 = model_prediction × lgbm_prediction, 下拉按 4 组归并
-var COMBO_GROUPS=[
-  {v:'all', t:'全部方向组合', keys:[]},
-  {v:'consistent', t:'主主 · 和和 · 客客', keys:['home-home','draw-draw','away-away']},
-  {v:'hd', t:'主和 · 和主', keys:['home-draw','draw-home']},
-  {v:'ha', t:'主客 · 客主', keys:['home-away','away-home']},
-  {v:'ad', t:'客和 · 和客', keys:['away-draw','draw-away']}
-];
-function comboGroupKeys(v){for(var i=0;i<COMBO_GROUPS.length;i++)if(COMBO_GROUPS[i].v===v)return COMBO_GROUPS[i].keys;return [];}
-function comboKey(m){return (m.model_prediction||'')+'-'+(m.lgbm_prediction||'');}
-function buildComboFilter(){
-  var sel=document.getElementById('dirFilter');if(!sel)return;
-  var keep=sel.value;
-  while(sel.options.length)sel.remove(0);
-  COMBO_GROUPS.forEach(function(g){
-    var opt=document.createElement('option');
-    opt.value=g.v;opt.textContent=g.t;
-    sel.appendChild(opt);
-  });
-  var ok=false;COMBO_GROUPS.forEach(function(g){if(g.v===keep)ok=true;});
-  sel.value=ok?keep:'all';
-}
 function noText(m){if(!m.beidan_no&&!m.jingcai_no)return '';return (m.beidan_no?'北单'+m.beidan_no:'')+(m.jingcai_no?(m.beidan_no?'<br>':'')+m.jingcai_no:'')}
 function bdLine(m){ // 北单让球行: 「过」(胜负过关)优先, 「让」(让球胜平负)兜底; 正=主队受让, 负=主队让球
   var v=m.ahbd_cur_handicap;if(v==null||v==='')v=m.ahbd_open_handicap;
@@ -278,7 +256,8 @@ function applyFilters(){
     if(dateVal!=='all' && m.date!==dateVal) return false;
     if(srcVal!=='all' && m.source.indexOf(srcVal)===-1) return false;
     if(dirVal!=='all'){
-      if(comboGroupKeys(dirVal).indexOf(comboKey(m))<0) return false;
+      var comb = (m.model_prediction||'')+'-'+(m.lgbm_prediction||'');
+      if(comb!==dirVal) return false;
     }
     if(showWarnedOnly && matchTier(m)!=='weak') return false;
     if(showValueOnly && (!m.best_value||m.best_value.ev<=0.05)) return false;
@@ -325,7 +304,7 @@ function renderTable(matches){
       '<td class="score-cell"><span>'+(m.score||(m.postponed?'推迟':'-'))+'</span></td>'+
       '<td class="team-name">'+m.away_team+'</td>'+
       '<td class="sim-cell">'+renderSimilarMatches(m)+'</td>'+
-      '<td><span class="'+dirClass(m.lgbm_prediction)+'" style="font-size:11px">'+dirText(m.lgbm_prediction)+'</span> <span style="font-size:11px;color:#999">'+dirText(m.model_prediction)+(bdPick(m)?' <span class="ah-pred-inline">('+bdPick(m)+')</span>':'')+'</span><br><span class="weight-badge" title="权重 '+m.importance_weight.toFixed(2)+'">⚡'+m.importance_weight.toFixed(2)+'</span><br>'+vbHtml+'</td>'+
+      '<td><span class="'+dirClass(m.lgbm_prediction)+'">'+dirText(m.lgbm_prediction)+'</span> <span style="font-size:11px;color:#999">'+dirText(m.model_prediction)+(bdPick(m)?' <span class="ah-pred-inline">('+bdPick(m)+')</span>':'')+'</span><br><span class="weight-badge" title="权重 '+m.importance_weight.toFixed(2)+'">⚡'+m.importance_weight.toFixed(2)+'</span><br>'+vbHtml+'</td>'+
 
       '<td class="'+hc+'">'+(hitTxt?hitTxt+'<br>':'')+(ahTxt?'<span class="ah-hit-dir">'+ahTxt+'</span>':'')+'</td>'+
       '<td class="odds-cell">'+renderOdds(m.comparison, m.pin_comparison, m)+'</td>'+
@@ -389,7 +368,6 @@ fetch('data/results_light.json', {cache:'no-cache'})
       // 今天无比赛: 默认选最近有数据的日期 (而非 all 全量渲染)
       sel.value = recent[0].date;
     }
-    buildComboFilter();
     renderBetSummary();
     renderBetTable();
     // 有投注记录时显示追踪器
