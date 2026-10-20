@@ -27667,7 +27667,9 @@
     "same_dir": false,
     "result": "loss",
     "profit": -1.0,
-    "settled_at": "2026-10-10T13:12:13.227265"
+    "settled_at": "2026-10-10T13:12:13.227265",
+    "dedup_same_match": true,
+    "dedup_kept": "value"
   },
   {
     "fid": "3008256",
@@ -35250,7 +35252,7 @@
     "fid": "2993820",
     "teams": "蒙扎 vs 卡利亞里",
     "match_time": "2026-10-20 00:30",
-    "score": "",
+    "score": "4-0",
     "signal": "weight",
     "signal_cn": "⚡高权重",
     "outcome": "home",
@@ -35259,13 +35261,16 @@
     "edge": 0,
     "kelly": 0,
     "weight": 1.2,
-    "same_dir": false
+    "same_dir": false,
+    "result": "win",
+    "profit": 1.51,
+    "settled_at": "2026-10-20T13:01:30.957799"
   },
   {
     "fid": "2912293",
     "teams": "代格福什 vs 卡爾馬",
     "match_time": "2026-10-20 01:00",
-    "score": "",
+    "score": "1-2",
     "signal": "weight",
     "signal_cn": "⚡高权重",
     "outcome": "away",
@@ -35274,13 +35279,16 @@
     "edge": 0,
     "kelly": 0,
     "weight": 1.14,
-    "same_dir": false
+    "same_dir": false,
+    "result": "win",
+    "profit": 1.47,
+    "settled_at": "2026-10-20T13:01:30.957815"
   },
   {
     "fid": "2996511",
     "teams": "阿賈克斯青年隊 vs 格拉夫夏普",
     "match_time": "2026-10-20 02:00",
-    "score": "",
+    "score": "2-1",
     "signal": "weight",
     "signal_cn": "⚡高权重",
     "outcome": "home",
@@ -35289,13 +35297,16 @@
     "edge": 0,
     "kelly": 0,
     "weight": 1.14,
-    "same_dir": true
+    "same_dir": true,
+    "result": "win",
+    "profit": 1.57,
+    "settled_at": "2026-10-20T13:01:30.957824"
   },
   {
     "fid": "2996513",
     "teams": "烏德勒支青年隊 vs 羅達JC",
     "match_time": "2026-10-20 02:00",
-    "score": "",
+    "score": "1-2",
     "signal": "weight",
     "signal_cn": "⚡高权重",
     "outcome": "away",
@@ -35304,13 +35315,16 @@
     "edge": 0,
     "kelly": 0,
     "weight": 1.14,
-    "same_dir": false
+    "same_dir": false,
+    "result": "win",
+    "profit": 0.87,
+    "settled_at": "2026-10-20T13:01:30.957832"
   },
   {
     "fid": "2996512",
     "teams": "埃因霍溫青年隊 vs 多德勒支",
     "match_time": "2026-10-20 02:00",
-    "score": "",
+    "score": "0 - 1",
     "signal": "weight",
     "signal_cn": "⚡高权重",
     "outcome": "home",
@@ -35319,13 +35333,16 @@
     "edge": 0,
     "kelly": 0,
     "weight": 1.14,
-    "same_dir": true
+    "same_dir": true,
+    "result": "loss",
+    "profit": -1.0,
+    "settled_at": "2026-10-20T13:01:30.957840"
   },
   {
     "fid": "3014122",
     "teams": "塞爾塔B隊 vs 特內里費",
     "match_time": "2026-10-20 02:30",
-    "score": "",
+    "score": "1 - 1",
     "signal": "weight",
     "signal_cn": "⚡高权重",
     "outcome": "away",
@@ -35334,13 +35351,16 @@
     "edge": 0,
     "kelly": 0,
     "weight": 1.14,
-    "same_dir": false
+    "same_dir": false,
+    "result": "loss",
+    "profit": -1.0,
+    "settled_at": "2026-10-20T13:01:30.957847"
   },
   {
     "fid": "2993821",
     "teams": "帕爾馬 vs 都靈",
     "match_time": "2026-10-20 02:45",
-    "score": "",
+    "score": "0 - 3",
     "signal": "weight",
     "signal_cn": "⚡高权重",
     "outcome": "draw",
@@ -35349,13 +35369,16 @@
     "edge": 0,
     "kelly": 0,
     "weight": 1.2,
-    "same_dir": false
+    "same_dir": false,
+    "result": "loss",
+    "profit": -1.0,
+    "settled_at": "2026-10-20T13:01:30.957854"
   },
   {
     "fid": "2997752",
     "teams": "羅德茲 vs 蒙彼利埃",
     "match_time": "2026-10-20 02:45",
-    "score": "",
+    "score": "0 - 3",
     "signal": "weight",
     "signal_cn": "⚡高权重",
     "outcome": "away",
@@ -35364,13 +35387,16 @@
     "edge": 0,
     "kelly": 0,
     "weight": 1.14,
-    "same_dir": true
+    "same_dir": true,
+    "result": "win",
+    "profit": 1.44,
+    "settled_at": "2026-10-20T13:01:30.957862"
   },
   {
     "fid": "3003918",
     "teams": "托特納姆熱刺 vs 考文垂",
     "match_time": "2026-10-20 03:00",
-    "score": "",
+    "score": "3 - 1",
     "signal": "weight",
     "signal_cn": "⚡高权重",
     "outcome": "home",
@@ -35379,13 +35405,16 @@
     "edge": 0,
     "kelly": 0,
     "weight": 1.2,
-    "same_dir": true
+    "same_dir": true,
+    "result": "win",
+    "profit": 0.51,
+    "settled_at": "2026-10-20T13:01:30.957869"
   },
   {
     "fid": "3013726",
     "teams": "赫塔菲 vs 巴列卡諾",
     "match_time": "2026-10-20 03:00",
-    "score": "",
+    "score": "1 - 1",
     "signal": "weight",
     "signal_cn": "⚡高权重",
     "outcome": "draw",
@@ -35394,13 +35423,16 @@
     "edge": 0,
     "kelly": 0,
     "weight": 1.2,
-    "same_dir": false
+    "same_dir": false,
+    "result": "win",
+    "profit": 1.94,
+    "settled_at": "2026-10-20T13:01:30.957877"
   },
   {
     "fid": "2962693",
     "teams": "紐維爾老男孩 vs 科爾多瓦中央SDE",
     "match_time": "2026-10-20 06:00",
-    "score": "",
+    "score": "2 - 1",
     "signal": "weight",
     "signal_cn": "⚡高权重",
     "outcome": "home",
@@ -35409,13 +35441,16 @@
     "edge": 0,
     "kelly": 0,
     "weight": 1.14,
-    "same_dir": true
+    "same_dir": true,
+    "result": "win",
+    "profit": 0.88,
+    "settled_at": "2026-10-20T13:01:30.957884"
   },
   {
     "fid": "2962696",
     "teams": "薩爾米安杜 vs 巴拉卡斯中央隊",
     "match_time": "2026-10-20 06:00",
-    "score": "",
+    "score": "1 - 1",
     "signal": "weight",
     "signal_cn": "⚡高权重",
     "outcome": "home",
@@ -35424,13 +35459,16 @@
     "edge": 0,
     "kelly": 0,
     "weight": 1.14,
-    "same_dir": true
+    "same_dir": true,
+    "result": "loss",
+    "profit": -1.0,
+    "settled_at": "2026-10-20T13:01:30.957891"
   },
   {
     "fid": "2910931",
     "teams": "科林蒂安 vs 維多利亞",
     "match_time": "2026-10-20 07:00",
-    "score": "",
+    "score": "1 - 1",
     "signal": "weight",
     "signal_cn": "⚡高权重",
     "outcome": "home",
@@ -35439,13 +35477,16 @@
     "edge": 0,
     "kelly": 0,
     "weight": 1.14,
-    "same_dir": true
+    "same_dir": true,
+    "result": "loss",
+    "profit": -1.0,
+    "settled_at": "2026-10-20T13:01:30.957898"
   },
   {
     "fid": "2962688",
     "teams": "利斯特雷 vs 聖塔菲聯",
     "match_time": "2026-10-20 08:15",
-    "score": "",
+    "score": "1 - 1",
     "signal": "weight",
     "signal_cn": "⚡高权重",
     "outcome": "home",
@@ -35454,13 +35495,16 @@
     "edge": 0,
     "kelly": 0,
     "weight": 1.14,
-    "same_dir": true
+    "same_dir": true,
+    "result": "loss",
+    "profit": -1.0,
+    "settled_at": "2026-10-20T13:01:30.957905"
   },
   {
     "fid": "3094199",
     "teams": "高士路MG女足 vs 玻利瓦爾女足",
     "match_time": "2026-10-20 04:00",
-    "score": "",
+    "score": "3-0",
     "signal": "weight",
     "signal_cn": "⚡高权重",
     "outcome": "home",
@@ -35469,13 +35513,16 @@
     "edge": 0,
     "kelly": 0,
     "weight": 1.14,
-    "same_dir": true
+    "same_dir": true,
+    "result": "win",
+    "profit": 0.03,
+    "settled_at": "2026-10-20T13:01:30.957913"
   },
   {
     "fid": "3094200",
     "teams": "基多女足 vs 奧林匹亞女足",
     "match_time": "2026-10-20 08:00",
-    "score": "",
+    "score": "0-1",
     "signal": "weight",
     "signal_cn": "⚡高权重",
     "outcome": "home",
@@ -35484,13 +35531,16 @@
     "edge": 0,
     "kelly": 0,
     "weight": 1.14,
-    "same_dir": true
+    "same_dir": true,
+    "result": "loss",
+    "profit": -1.0,
+    "settled_at": "2026-10-20T13:01:30.957920"
   },
   {
     "fid": "3101697",
     "teams": "卡利體育會女足 vs 烏拉圭民族女足",
     "match_time": "2026-10-20 04:00",
-    "score": "",
+    "score": "2-0",
     "signal": "weight",
     "signal_cn": "⚡高权重",
     "outcome": "home",
@@ -35499,7 +35549,10 @@
     "edge": 0,
     "kelly": 0,
     "weight": 1.14,
-    "same_dir": true
+    "same_dir": true,
+    "result": "win",
+    "profit": 0.36,
+    "settled_at": "2026-10-20T13:01:30.957927"
   },
   {
     "fid": "3000474",
@@ -35595,7 +35648,7 @@
     "fid": "3094204",
     "teams": "林伯奧體育女足 vs 智利大學女足",
     "match_time": "2026-10-20 08:00",
-    "score": "",
+    "score": "2-1",
     "signal": "weight",
     "signal_cn": "⚡高权重",
     "outcome": "away",
@@ -35604,6 +35657,93 @@
     "edge": 0,
     "kelly": 0,
     "weight": 1.14,
-    "same_dir": false
+    "same_dir": false,
+    "result": "loss",
+    "profit": -1.0,
+    "settled_at": "2026-10-20T13:01:30.957935"
+  },
+  {
+    "fid": "3010438",
+    "teams": "博託沙尼 vs 阿拉德聯隊",
+    "match_time": "2026-10-10 22:15",
+    "score": "2 - 0",
+    "signal": "truev",
+    "signal_cn": "真价值",
+    "outcome": "home",
+    "odds": 2.42,
+    "ev": 0.0094,
+    "edge": 0.0302,
+    "true_edge": 0.0302,
+    "fair": 0.3945,
+    "kelly": 0.0066,
+    "result": "win",
+    "profit": 1.42,
+    "settled_at": "2026-10-20T13:01:30.957418"
+  },
+  {
+    "fid": "3003169",
+    "teams": "KS莫摩斯 vs 華沙普洛克",
+    "match_time": "2026-10-10 00:00",
+    "score": "3 - 0",
+    "signal": "truev",
+    "signal_cn": "真价值",
+    "outcome": "home",
+    "odds": 2.18,
+    "ev": -0.0665,
+    "edge": 0.0301,
+    "true_edge": 0.0301,
+    "fair": 0.4413,
+    "kelly": 0.0,
+    "result": "win",
+    "profit": 1.18,
+    "settled_at": "2026-10-20T13:01:30.957457"
+  },
+  {
+    "fid": "2995354",
+    "teams": "朗斯 vs 里昂",
+    "match_time": "2026-10-10 02:45",
+    "score": "2 - 1",
+    "signal": "truev",
+    "signal_cn": "真价值",
+    "outcome": "home",
+    "odds": 2.18,
+    "ev": -0.077,
+    "edge": 0.032,
+    "true_edge": 0.032,
+    "fair": 0.4048,
+    "kelly": 0.0,
+    "result": "win",
+    "profit": 1.18,
+    "settled_at": "2026-10-20T13:01:30.957475"
+  },
+  {
+    "fid": "3008217",
+    "teams": "狼隊 vs 朴茨茅斯",
+    "match_time": "2026-10-21 02:45",
+    "score": "",
+    "signal": "weight",
+    "signal_cn": "⚡高权重",
+    "outcome": "home",
+    "odds": 1.6,
+    "ev": 0,
+    "edge": 0,
+    "kelly": 0,
+    "weight": 1.14,
+    "same_dir": true
+  },
+  {
+    "fid": "3092422",
+    "teams": "瓦斯科達伽馬 vs 博卡青年",
+    "match_time": "2026-10-21 08:30",
+    "score": "",
+    "signal": "weight",
+    "signal_cn": "⚡高权重",
+    "outcome": "home",
+    "odds": 2.63,
+    "ev": 0,
+    "edge": 0,
+    "kelly": 0,
+    "weight": 1.14,
+    "same_dir": true
   }
 ]
