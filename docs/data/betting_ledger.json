@@ -33698,7 +33698,7 @@
     "fid": "3039913",
     "teams": "斯洛瓦科 vs 布爾諾",
     "match_time": "2026-10-18 19:00",
-    "score": "",
+    "score": "1 - 2",
     "signal": "weight",
     "signal_cn": "⚡高权重",
     "outcome": "away",
@@ -33707,7 +33707,10 @@
     "edge": 0,
     "kelly": 0,
     "weight": 1.14,
-    "same_dir": false
+    "same_dir": false,
+    "result": "win",
+    "profit": 1.78,
+    "settled_at": "2026-10-19T17:30:42.732598"
   },
   {
     "fid": "3019155",
@@ -33767,7 +33770,7 @@
     "fid": "3014123",
     "teams": "休達 vs 皇家奧維耶多",
     "match_time": "2026-10-18 20:00",
-    "score": "",
+    "score": "1 - 2",
     "signal": "weight",
     "signal_cn": "⚡高权重",
     "outcome": "away",
@@ -33776,7 +33779,10 @@
     "edge": 0,
     "kelly": 0,
     "weight": 1.14,
-    "same_dir": true
+    "same_dir": true,
+    "result": "win",
+    "profit": 1.34,
+    "settled_at": "2026-10-19T17:30:42.732613"
   },
   {
     "fid": "2912297",
@@ -33890,7 +33896,7 @@
     "fid": "3040769",
     "teams": "史泰比亞 vs 南蒂羅爾",
     "match_time": "2026-10-18 21:00",
-    "score": "",
+    "score": "3 - 0",
     "signal": "weight",
     "signal_cn": "⚡高权重",
     "outcome": "home",
@@ -33899,7 +33905,10 @@
     "edge": 0,
     "kelly": 0,
     "weight": 1.14,
-    "same_dir": false
+    "same_dir": false,
+    "result": "win",
+    "profit": 1.17,
+    "settled_at": "2026-10-19T17:30:42.732623"
   },
   {
     "fid": "2993817",
@@ -33959,7 +33968,7 @@
     "fid": "3039910",
     "teams": "俄斯特拉發 vs 布拉格斯巴達",
     "match_time": "2026-10-18 21:00",
-    "score": "",
+    "score": "0 - 0",
     "signal": "weight",
     "signal_cn": "⚡高权重",
     "outcome": "away",
@@ -33968,7 +33977,10 @@
     "edge": 0,
     "kelly": 0,
     "weight": 1.14,
-    "same_dir": true
+    "same_dir": true,
+    "result": "loss",
+    "profit": -1.0,
+    "settled_at": "2026-10-19T17:30:42.732630"
   },
   {
     "fid": "3018831",
@@ -34228,7 +34240,7 @@
     "fid": "3040768",
     "teams": "切塞納 vs 阿維利諾",
     "match_time": "2026-10-18 23:15",
-    "score": "",
+    "score": "1 - 1",
     "signal": "weight",
     "signal_cn": "⚡高权重",
     "outcome": "home",
@@ -34237,7 +34249,10 @@
     "edge": 0,
     "kelly": 0,
     "weight": 1.14,
-    "same_dir": false
+    "same_dir": false,
+    "result": "loss",
+    "profit": -1.0,
+    "settled_at": "2026-10-19T17:30:42.732640"
   },
   {
     "fid": "3018833",
@@ -34363,7 +34378,9 @@
     "same_dir": false,
     "result": "loss",
     "profit": -1.0,
-    "settled_at": "2026-10-19T13:00:43.054359"
+    "settled_at": "2026-10-19T13:00:43.054359",
+    "dedup_same_match": true,
+    "dedup_kept": "value"
   },
   {
     "fid": "3012321",
@@ -34423,7 +34440,7 @@
     "fid": "3039907",
     "teams": "亞布洛內茨 vs 比爾森勝利",
     "match_time": "2026-10-19 00:00",
-    "score": "",
+    "score": "2 - 3",
     "signal": "weight",
     "signal_cn": "⚡高权重",
     "outcome": "home",
@@ -34432,7 +34449,10 @@
     "edge": 0,
     "kelly": 0,
     "weight": 1.14,
-    "same_dir": true
+    "same_dir": true,
+    "result": "loss",
+    "profit": -1.0,
+    "settled_at": "2026-10-19T17:30:42.732648"
   },
   {
     "fid": "2993824",
@@ -34528,7 +34548,7 @@
     "fid": "3040773",
     "teams": "桑普多利亞 vs 阿雷佐",
     "match_time": "2026-10-19 01:30",
-    "score": "",
+    "score": "1 - 2",
     "signal": "weight",
     "signal_cn": "⚡高权重",
     "outcome": "home",
@@ -34537,7 +34557,10 @@
     "edge": 0,
     "kelly": 0,
     "weight": 1.14,
-    "same_dir": true
+    "same_dir": true,
+    "result": "loss",
+    "profit": -1.0,
+    "settled_at": "2026-10-19T17:30:42.732655"
   },
   {
     "fid": "2962695",
@@ -35477,5 +35500,110 @@
     "kelly": 0,
     "weight": 1.14,
     "same_dir": true
+  },
+  {
+    "fid": "3000474",
+    "teams": "大阪櫻花 vs 橫濱水手",
+    "match_time": "2026-10-10 13:00",
+    "score": "0-0",
+    "signal": "truev",
+    "signal_cn": "真价值",
+    "outcome": "home",
+    "odds": 2.2,
+    "ev": -0.0797,
+    "edge": 0.03,
+    "true_edge": 0.03,
+    "fair": 0.4014,
+    "kelly": 0.0,
+    "result": "loss",
+    "profit": -1.0,
+    "settled_at": "2026-10-19T17:30:42.732211"
+  },
+  {
+    "fid": "3073199",
+    "teams": "費耶諾德 vs 科莫",
+    "match_time": "2026-10-15 00:45",
+    "score": "3 - 2",
+    "signal": "truev",
+    "signal_cn": "真价值",
+    "outcome": "home",
+    "odds": 2.87,
+    "ev": 0.1707,
+    "edge": 0.0341,
+    "true_edge": 0.0341,
+    "fair": 0.3089,
+    "kelly": 0.0913,
+    "result": "win",
+    "profit": 1.87,
+    "settled_at": "2026-10-19T17:30:42.732269"
+  },
+  {
+    "fid": "3037811",
+    "teams": "薩德 vs 杜海勒",
+    "match_time": "2026-10-18 22:30",
+    "score": "2-3",
+    "signal": "truev",
+    "signal_cn": "真价值",
+    "outcome": "away",
+    "odds": 3.4,
+    "ev": 0.4042,
+    "edge": 0.0393,
+    "true_edge": 0.0393,
+    "fair": 0.2596,
+    "kelly": 0.1684,
+    "result": "win",
+    "profit": 2.4,
+    "settled_at": "2026-10-19T17:30:42.732299"
+  },
+  {
+    "fid": "2998263",
+    "teams": "歐登塞 vs 布隆德比",
+    "match_time": "2026-10-18 22:00",
+    "score": "2 - 1",
+    "signal": "truev",
+    "signal_cn": "真价值",
+    "outcome": "home",
+    "odds": 2.95,
+    "ev": 0.206,
+    "edge": 0.0352,
+    "true_edge": 0.0352,
+    "fair": 0.2994,
+    "kelly": 0.1056,
+    "result": "win",
+    "profit": 1.95,
+    "settled_at": "2026-10-19T17:30:42.732310"
+  },
+  {
+    "fid": "3012317",
+    "teams": "莫斯科迪納摩 vs 莫斯科中央陸軍",
+    "match_time": "2026-10-18 21:15",
+    "score": "3-1",
+    "signal": "truev",
+    "signal_cn": "真价值",
+    "outcome": "home",
+    "odds": 1.9,
+    "ev": -0.1724,
+    "edge": 0.0307,
+    "true_edge": 0.0307,
+    "fair": 0.4646,
+    "kelly": 0.0,
+    "result": "win",
+    "profit": 0.9,
+    "settled_at": "2026-10-19T17:30:42.732322"
+  },
+  {
+    "fid": "3094204",
+    "teams": "林伯奧體育女足 vs 智利大學女足",
+    "match_time": "2026-10-20 08:00",
+    "score": "",
+    "signal": "weight",
+    "signal_cn": "⚡高权重",
+    "outcome": "away",
+    "odds": 2.13,
+    "ev": 0,
+    "edge": 0,
+    "kelly": 0,
+    "weight": 1.14,
+    "same_dir": false
   }
 ]
