@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-20 16:43:24",
+  "generated_at": "2026-10-21 12:40:33",
   "threshold": 1.14,
   "note": "⚡=importance_weight(联赛等级×紧迫). 历史场次紧迫系数跌至0.90, 仅临场窗口权重>=1.14. 逐轮记录攒样本.",
   "tracked": [
@@ -26111,9 +26111,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
+      "score": "1 - 1",
       "hit": false,
-      "recorded_at": "2026-10-20 12:40:15"
+      "recorded_at": "2026-10-20 12:40:15",
+      "updated_at": "2026-10-21 12:40:33"
     },
     {
       "fid": "3092422",
@@ -26126,9 +26127,55 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
+      "score": "1 - 3",
+      "hit": true,
+      "recorded_at": "2026-10-20 12:40:15",
+      "updated_at": "2026-10-21 12:40:33"
+    },
+    {
+      "fid": "3101695",
+      "date": "2026-10-22",
+      "match_time": "2026-10-22 04:00",
+      "event": "女解放者杯",
+      "home_team": "聖塔菲女足",
+      "away_team": "科林蒂安女足",
+      "weight": 1.14,
+      "model_dir": "客",
+      "ts_dir": "客",
+      "same_dir": true,
       "score": "",
       "hit": false,
-      "recorded_at": "2026-10-20 12:40:15"
+      "recorded_at": "2026-10-21 12:40:33"
+    },
+    {
+      "fid": "3092423",
+      "date": "2026-10-22",
+      "match_time": "2026-10-22 06:00",
+      "event": "南美杯",
+      "home_team": "圖爾克(中)",
+      "away_team": "米內羅競技",
+      "weight": 1.14,
+      "model_dir": "客",
+      "ts_dir": "客",
+      "same_dir": true,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-10-21 12:40:33"
+    },
+    {
+      "fid": "3092418",
+      "date": "2026-10-22",
+      "match_time": "2026-10-22 08:30",
+      "event": "解放者杯",
+      "home_team": "帕爾梅拉斯",
+      "away_team": "弗魯米嫩塞",
+      "weight": 1.14,
+      "model_dir": "主",
+      "ts_dir": "主",
+      "same_dir": true,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-10-21 12:40:33"
     }
   ]
 }
