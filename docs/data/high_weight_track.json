@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-21 17:34:44",
+  "generated_at": "2026-10-22 12:52:40",
   "threshold": 1.14,
   "note": "⚡=importance_weight(联赛等级×紧迫). 历史场次紧迫系数跌至0.90, 仅临场窗口权重>=1.14. 逐轮记录攒样本.",
   "tracked": [
@@ -26143,9 +26143,10 @@
       "model_dir": "客",
       "ts_dir": "客",
       "same_dir": true,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-10-21 12:40:33"
+      "score": "1-5",
+      "hit": true,
+      "recorded_at": "2026-10-21 12:40:33",
+      "updated_at": "2026-10-22 12:52:40"
     },
     {
       "fid": "3092423",
@@ -26158,9 +26159,25 @@
       "model_dir": "客",
       "ts_dir": "客",
       "same_dir": true,
-      "score": "",
+      "score": "2 - 0",
       "hit": false,
-      "recorded_at": "2026-10-21 12:40:33"
+      "recorded_at": "2026-10-21 12:40:33",
+      "updated_at": "2026-10-22 12:52:40"
+    },
+    {
+      "fid": "3094196",
+      "date": "2026-10-22",
+      "match_time": "2026-10-22 08:00",
+      "event": "女解放者杯",
+      "home_team": "帕爾梅拉斯女足",
+      "away_team": "約森獨立隊女足",
+      "weight": 1.14,
+      "model_dir": "主",
+      "ts_dir": "主",
+      "same_dir": true,
+      "score": "1-1",
+      "hit": false,
+      "recorded_at": "2026-10-22 12:52:40"
     },
     {
       "fid": "3092418",
@@ -26173,9 +26190,70 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
+      "score": "0 - 1",
+      "hit": false,
+      "recorded_at": "2026-10-21 12:40:33",
+      "updated_at": "2026-10-22 12:52:40"
+    },
+    {
+      "fid": "3094205",
+      "date": "2026-10-23",
+      "match_time": "2026-10-23 04:00",
+      "event": "女解放者杯",
+      "home_team": "林伯奧體育女足",
+      "away_team": "烏拉圭民族女足",
+      "weight": 1.14,
+      "model_dir": "主",
+      "ts_dir": "主",
+      "same_dir": true,
       "score": "",
       "hit": false,
-      "recorded_at": "2026-10-21 12:40:33"
+      "recorded_at": "2026-10-22 12:52:40"
+    },
+    {
+      "fid": "3101698",
+      "date": "2026-10-23",
+      "match_time": "2026-10-23 04:00",
+      "event": "女解放者杯",
+      "home_team": "智利大學女足",
+      "away_team": "卡利體育會女足",
+      "weight": 1.14,
+      "model_dir": "客",
+      "ts_dir": "主",
+      "same_dir": false,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-10-22 12:52:40"
+    },
+    {
+      "fid": "3092419",
+      "date": "2026-10-23",
+      "match_time": "2026-10-23 08:30",
+      "event": "解放者杯",
+      "home_team": "弗拉門戈",
+      "away_team": "拉普拉塔大學生",
+      "weight": 1.14,
+      "model_dir": "主",
+      "ts_dir": "主",
+      "same_dir": true,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-10-22 12:52:40"
+    },
+    {
+      "fid": "3024493",
+      "date": "2026-10-23",
+      "match_time": "2026-10-23 09:00",
+      "event": "墨西乙",
+      "home_team": "瓦哈卡",
+      "away_team": "海德爾格",
+      "weight": 1.14,
+      "model_dir": "客",
+      "ts_dir": "主",
+      "same_dir": false,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-10-22 12:52:40"
     }
   ]
 }
