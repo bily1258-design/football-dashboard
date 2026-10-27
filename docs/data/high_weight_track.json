@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-26 16:38:49",
+  "generated_at": "2026-10-27 13:17:14",
   "threshold": 1.14,
   "note": "⚡=importance_weight(联赛等级×紧迫). 历史场次紧迫系数跌至0.90, 仅临场窗口权重>=1.14. 逐轮记录攒样本.",
   "tracked": [
@@ -29254,9 +29254,10 @@
       "model_dir": "客",
       "ts_dir": "客",
       "same_dir": true,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-10-26 12:56:43"
+      "score": "1 - 2",
+      "hit": true,
+      "recorded_at": "2026-10-26 12:56:43",
+      "updated_at": "2026-10-27 13:17:14"
     },
     {
       "fid": "3014142",
@@ -29269,9 +29270,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
+      "score": "2 - 3",
       "hit": false,
-      "recorded_at": "2026-10-26 12:56:43"
+      "recorded_at": "2026-10-26 12:56:43",
+      "updated_at": "2026-10-27 13:17:14"
     },
     {
       "fid": "2995379",
@@ -29284,9 +29286,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-10-26 12:56:43"
+      "score": "2 - 0",
+      "hit": true,
+      "recorded_at": "2026-10-26 12:56:43",
+      "updated_at": "2026-10-27 13:17:14"
     },
     {
       "fid": "2997753",
@@ -29299,9 +29302,10 @@
       "model_dir": "平",
       "ts_dir": "客",
       "same_dir": false,
-      "score": "",
+      "score": "1 - 1",
       "hit": false,
-      "recorded_at": "2026-10-26 12:56:43"
+      "recorded_at": "2026-10-26 12:56:43",
+      "updated_at": "2026-10-27 13:17:14"
     },
     {
       "fid": "2997757",
@@ -29314,9 +29318,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-10-26 12:56:43"
+      "score": "2 - 1",
+      "hit": true,
+      "recorded_at": "2026-10-26 12:56:43",
+      "updated_at": "2026-10-27 13:17:14"
     },
     {
       "fid": "3013740",
@@ -29329,9 +29334,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-10-26 12:56:43"
+      "score": "2 - 0",
+      "hit": true,
+      "recorded_at": "2026-10-26 12:56:43",
+      "updated_at": "2026-10-27 13:17:14"
     },
     {
       "fid": "2962712",
@@ -29344,9 +29350,10 @@
       "model_dir": "主",
       "ts_dir": "客",
       "same_dir": false,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-10-26 12:56:43"
+      "score": "3 - 1",
+      "hit": true,
+      "recorded_at": "2026-10-26 12:56:43",
+      "updated_at": "2026-10-27 13:17:14"
     },
     {
       "fid": "2910938",
@@ -29359,9 +29366,10 @@
       "model_dir": "主",
       "ts_dir": "客",
       "same_dir": false,
-      "score": "",
+      "score": "0 - 1",
       "hit": false,
-      "recorded_at": "2026-10-26 12:56:43"
+      "recorded_at": "2026-10-26 12:56:43",
+      "updated_at": "2026-10-27 13:17:14"
     },
     {
       "fid": "2910940",
@@ -29374,9 +29382,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-10-26 12:56:43"
+      "score": "3 - 2",
+      "hit": true,
+      "recorded_at": "2026-10-26 12:56:43",
+      "updated_at": "2026-10-27 13:17:14"
     },
     {
       "fid": "2962706",
@@ -29389,9 +29398,190 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
+      "score": "1 - 0",
+      "hit": true,
+      "recorded_at": "2026-10-26 12:56:43",
+      "updated_at": "2026-10-27 13:17:14"
+    },
+    {
+      "fid": "2993842",
+      "date": "2026-10-28",
+      "match_time": "2026-10-28 01:30",
+      "event": "意甲",
+      "home_team": "薩索洛",
+      "away_team": "拉齊奧",
+      "weight": 1.2,
+      "model_dir": "客",
+      "ts_dir": "客",
+      "same_dir": true,
       "score": "",
       "hit": false,
-      "recorded_at": "2026-10-26 12:56:43"
+      "recorded_at": "2026-10-27 13:17:14"
+    },
+    {
+      "fid": "3040786",
+      "date": "2026-10-28",
+      "match_time": "2026-10-28 02:00",
+      "event": "意乙",
+      "home_team": "貝內文託",
+      "away_team": "卡坦薩羅",
+      "weight": 1.14,
+      "model_dir": "主",
+      "ts_dir": "主",
+      "same_dir": true,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-10-27 13:17:14"
+    },
+    {
+      "fid": "2912307",
+      "date": "2026-10-28",
+      "match_time": "2026-10-28 02:00",
+      "event": "瑞典超",
+      "home_team": "索爾納",
+      "away_team": "埃爾夫斯堡",
+      "weight": 1.14,
+      "model_dir": "客",
+      "ts_dir": "主",
+      "same_dir": false,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-10-27 13:17:14"
+    },
+    {
+      "fid": "3040785",
+      "date": "2026-10-28",
+      "match_time": "2026-10-28 03:00",
+      "event": "意乙",
+      "home_team": "阿斯科利",
+      "away_team": "桑普多利亞",
+      "weight": 1.14,
+      "model_dir": "主",
+      "ts_dir": "主",
+      "same_dir": true,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-10-27 13:17:14"
+    },
+    {
+      "fid": "3040789",
+      "date": "2026-10-28",
+      "match_time": "2026-10-28 03:00",
+      "event": "意乙",
+      "home_team": "恩特拉",
+      "away_team": "阿維利諾",
+      "weight": 1.14,
+      "model_dir": "平",
+      "ts_dir": "主",
+      "same_dir": false,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-10-27 13:17:14"
+    },
+    {
+      "fid": "3040788",
+      "date": "2026-10-28",
+      "match_time": "2026-10-28 03:00",
+      "event": "意乙",
+      "home_team": "切塞納",
+      "away_team": "恩波利",
+      "weight": 1.14,
+      "model_dir": "客",
+      "ts_dir": "主",
+      "same_dir": false,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-10-27 13:17:14"
+    },
+    {
+      "fid": "3040791",
+      "date": "2026-10-28",
+      "match_time": "2026-10-28 03:00",
+      "event": "意乙",
+      "home_team": "維琴察",
+      "away_team": "摩德納",
+      "weight": 1.14,
+      "model_dir": "客",
+      "ts_dir": "客",
+      "same_dir": true,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-10-27 13:17:14"
+    },
+    {
+      "fid": "3040792",
+      "date": "2026-10-28",
+      "match_time": "2026-10-28 03:00",
+      "event": "意乙",
+      "home_team": "曼託瓦",
+      "away_team": "克雷莫納",
+      "weight": 1.14,
+      "model_dir": "主",
+      "ts_dir": "主",
+      "same_dir": true,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-10-27 13:17:14"
+    },
+    {
+      "fid": "3040793",
+      "date": "2026-10-28",
+      "match_time": "2026-10-28 03:00",
+      "event": "意乙",
+      "home_team": "帕多瓦",
+      "away_team": "南蒂羅爾",
+      "weight": 1.14,
+      "model_dir": "主",
+      "ts_dir": "客",
+      "same_dir": false,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-10-27 13:17:14"
+    },
+    {
+      "fid": "2993836",
+      "date": "2026-10-28",
+      "match_time": "2026-10-28 03:45",
+      "event": "意甲",
+      "home_team": "羅馬",
+      "away_team": "卡利亞里",
+      "weight": 1.2,
+      "model_dir": "主",
+      "ts_dir": "主",
+      "same_dir": true,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-10-27 13:17:14"
+    },
+    {
+      "fid": "2993843",
+      "date": "2026-10-28",
+      "match_time": "2026-10-28 03:45",
+      "event": "意甲",
+      "home_team": "都靈",
+      "away_team": "科莫",
+      "weight": 1.2,
+      "model_dir": "客",
+      "ts_dir": "客",
+      "same_dir": true,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-10-27 13:17:14"
+    },
+    {
+      "fid": "2962699",
+      "date": "2026-10-28",
+      "match_time": "2026-10-28 06:00",
+      "event": "阿甲",
+      "home_team": "阿根廷青年人",
+      "away_team": "門多薩獨立",
+      "weight": 1.14,
+      "model_dir": "平",
+      "ts_dir": "主",
+      "same_dir": false,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-10-27 13:17:14"
     }
   ]
 }
