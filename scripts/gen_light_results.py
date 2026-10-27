@@ -29,16 +29,21 @@ KEEP_MATCH = {
     'ahbd_open_push',
     # 北单「过」盘口赢盘概率 (命中列 上/下 方向来源, 见 backfill_bd_probs.py)
     'ahbd_away_covers_prob', 'ahbd_home_covers_prob', 'ahbd_pred_desc', 'ahbd_push_prob',
-    'away_team', 'beidan_no', 'beidan_period', 'best_value', 'comparison', 'date', 'event', 'fid', 'hit',
+    'away_team', 'beidan_no', 'best_value', 'comparison', 'date', 'event', 'fid', 'hit',
     'home_team', 'importance_weight', 'jingcai_no', 'lgbm_confidence', 'lgbm_draw',
     'lgbm_loss', 'lgbm_prediction', 'lgbm_win', 'low_priority', 'match_time',
     'model_draw', 'model_loss', 'model_prediction', 'model_win', 'odds_win',
     'pin_comparison', 'postponed', 'score', 'similar_matches', 'source',
-    'total_goals_top3', 'ts_cutoff', 'ts_draw', 'ts_loss', 'ts_win', 'true_value', 'value_bets', 'warning',
+    'total_goals_top3', 'ts_draw', 'ts_loss', 'ts_win', 'warning',
 }
 
 # similar_matches 子项: script.js 只用 home_team/away_team/score/similarity/similarity_raw
 KEEP_SIM = {'home_team', 'away_team', 'score', 'similarity', 'similarity_raw'}
+
+# 时间窗口: 看板只列最近 14 天日期, 全量 matches 会无限增长 (2026-10-28: 7180 场=18MB, 手机加载卡死)
+WINDOW_DAYS = int(os.environ.get('LIGHT_DAYS', '30'))
+# similar_matches 只展示前 3 条 (script.js renderSimilarMatches 内 Math.min(...,3))
+MAX_SIM = 3
 
 # total_goals_top3 子项: script.js 只用 total_goals/prob
 KEEP_GOALS = {'total_goals', 'prob'}
@@ -65,7 +70,7 @@ def slim_match(m):
         if v is None:
             continue
         if k == 'similar_matches' and isinstance(v, list):
-            v = [slim_similar(s) for s in v]
+            v = [slim_similar(s) for s in v[:MAX_SIM]]
         elif k == 'total_goals_top3' and isinstance(v, list):
             v = [slim_goals(g) for g in v]
         out[k] = v
@@ -82,7 +87,23 @@ def main():
 
     full_size = os.path.getsize(SRC)
     light = dict(data)
-    light['matches'] = [slim_match(m) for m in data['matches']]
+    all_matches = data.get('matches', [])
+    dates = sorted({m.get('date') for m in all_matches if m.get('date')})
+    keep_dates = set(dates[-WINDOW_DAYS:]) if WINDOW_DAYS > 0 else set(dates)
+    trimmed = [m for m in all_matches if m.get('date') in keep_dates]
+    light['matches'] = [slim_match(m) for m in trimmed]
+
+    # 表头统计按窗口重算, 避免「7180 场」与实际行数不一致
+    scored = [m for m in trimmed if m.get('score') and m.get('hit')]
+    hit_n = sum(1 for m in scored if '\u2713' in (m.get('hit') or ''))
+    light['total_matches'] = len(trimmed)
+    light['hit_count'] = hit_n
+    light['total_scored'] = len(scored)
+    light['hit_rate'] = round(hit_n / len(scored), 4) if scored else 0
+    light['daily_stats'] = [x for x in data.get('daily_stats', []) if x.get('date') in keep_dates]
+    light['window_days'] = WINDOW_DAYS
+    if keep_dates:
+        light['date_range'] = f'{min(keep_dates)} ~ {max(keep_dates)}'
 
     with open(DST, 'w', encoding='utf-8') as f:
         json.dump(light, f, ensure_ascii=False, separators=(',', ':'))

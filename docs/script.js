@@ -247,6 +247,14 @@ function toggleImportantFilter(){
   applyFilters();
 }
 
+// 方向组合分组 (index.html 下拉 value: consistent/hd/ha/ad) → 组内 combo 键
+var COMBO_GROUP_MAP = {
+  consistent: ['home-home','draw-draw','away-away'],
+  hd: ['home-draw','draw-home'],
+  ha: ['home-away','away-home'],
+  ad: ['away-draw','draw-away']
+};
+
 function applyFilters(){
   var dateVal = document.getElementById('dateFilter').value;
   var srcVal = document.getElementById('sourceFilter').value;
@@ -257,7 +265,10 @@ function applyFilters(){
     if(srcVal!=='all' && m.source.indexOf(srcVal)===-1) return false;
     if(dirVal!=='all'){
       var comb = (m.model_prediction||'')+'-'+(m.lgbm_prediction||'');
-      if(comb!==dirVal) return false;
+      var grp = COMBO_GROUP_MAP[dirVal];
+      if(grp){
+        if(grp.indexOf(comb)===-1) return false;
+      }else if(comb!==dirVal) return false;
     }
     if(showWarnedOnly && matchTier(m)!=='weak') return false;
     if(showValueOnly && (!m.best_value||m.best_value.ev<=0.05)) return false;
