@@ -488,20 +488,32 @@ def main():
                 b['w'] += 1 if hit else 0
                 b['so'] += o
 
-        bands = {}
-        for e in completed:
-            o = e.get('odds') or 0
-            if o <= 0:
-                continue
-            b = bands.setdefault(_band(o), {'n': 0, 'w': 0, 'so': 0.0, 'p': 0.0})
-            b['n'] += 1
-            b['w'] += 1 if e['result'] == 'win' else 0
-            b['so'] += o
-            b['p'] += e.get('profit', 0)
+        def _bands_of(sel):
+            d = {}
+            for e in completed:
+                if not sel(e):
+                    continue
+                o = e.get('odds') or 0
+                if o <= 0:
+                    continue
+                b = d.setdefault(_band(o), {'n': 0, 'w': 0, 'so': 0.0, 'p': 0.0})
+                b['n'] += 1
+                b['w'] += 1 if e['result'] == 'win' else 0
+                b['so'] += o
+                b['p'] += e.get('profit', 0)
+            return d
 
-        if bands:
+        # 2026-10-28: 影子表按信号拆两段。原来混在一起, ⚡避雷标记(1642注)盖过真下注(511注),
+        # 命中率/ROI 读起来像战绩其实是标记场次 —— 汇报前必须分开看。
+        groups = (
+            ('真下注 value/truev', _bands_of(lambda e: e.get('signal') in ('value', 'truev'))),
+            ('⚡避雷标记 weight (不计战绩)', _bands_of(lambda e: e.get('signal') == 'weight')),
+        )
+        for title, bands in groups:
+            if not bands:
+                continue
             print()
-            print('🔬 影子追踪 (按赔率档观察, 不改选号规则):')
+            print(f'🔬 影子追踪 · {title} (按赔率档观察, 不改选号规则):')
             print('  档      注数  命中率   保本线   市场实际    ROI      盈亏')
             for k in ('<2', '2-4', '4-8', '8-15', '15-30', '30+'):
                 b = bands.get(k)

@@ -455,6 +455,46 @@ def main():
         else:
             print(f"(今日窗口 {win_label} 内及未来无未开赛三方一致主场次)")
 
+    # ===== 🔢按赔率档分组 (2026-10-28 用户指令: 清单里按档位分组, 2-4 档单独列块) =====
+    # 只展示, 不改 ① 筛场规则、不动模型输出; 前缀用 🔢(非①~③), 三个解析器天然不计入战绩
+    # 档位口径 = 该方向「平博即时赔」, 与账本 betting_ledger 真下注(value/truev)分档同源
+    _idx = {'主': 0, '平': 1, '客': 2}
+
+    def _tier_of(r):
+        arr = (r.get('pin_cur') or '').split('/')
+        i = _idx.get(r['dir'])
+        if i is None or len(arr) != 3:
+            return None, None
+        try:
+            o = float(arr[i])
+        except ValueError:
+            return None, None
+        if o <= 1.0:
+            return None, None
+        k = '<2' if o < 2 else ('2-4' if o < 4 else ('4-8' if o < 8 else '≥8'))
+        return k, o
+
+    _tiers = {'<2': [], '2-4': [], '4-8': [], '≥8': []}
+    for r in rows:
+        k, o = _tier_of(r)
+        if k:
+            _tiers[k].append((o, r))
+    print()
+    print(f"🔢①池按赔率档分组 (该方向平博即时赔; 只展示不改选号): 共{sum(len(v) for v in _tiers.values())}场")
+    print("   对照(账本真下注 value/truev 已结算511注): <2 62.1%ROI+1.4% · "
+          "2-4 45.2%ROI+14.5%(唯一正优势) · 4-8 22.2%ROI+4.2%(限赔5.0后基本停发)")
+    print("=" * 92)
+    for k in ('2-4', '<2', '4-8', '≥8'):
+        lst = sorted(_tiers[k], key=lambda x: (x[1]['mt'] or datetime.datetime.max, -x[1]['ev']))
+        note = '  ← 唯一真优势档' if k == '2-4' else ''
+        print(f"{k} 档 {len(lst)}场{note}")
+        if not lst:
+            print("   (无)")
+        for o, r in lst:
+            t = r['mt'].strftime('%m-%d %H:%M') if r['mt'] else r['date']
+            print(f"   {t} [{lg_tag(r['league'])}] {r['home']} vs {r['away']} →{r['dir']} "
+                  f"赔{o:.2f} EV{r['ev']:.2f} TS{r['ts_dir']}{r['ts_prob']*100:.0f}%{r.get('no', '')}")
+
     # 2026-09-23 用户拍板: 撤销「避雷汇总」段
     # 避雷场次照推 —— 不再单独汇总/警示, 只在各档位明细行保留 🚫/⚠️⚡ 标记, 是否跟由用户自判
 
