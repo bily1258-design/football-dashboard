@@ -459,7 +459,7 @@ def load_raw_matches() -> List[Dict]:
     # 对所有比赛跟踪队名, 只要有比分记录的无分幽灵条目就跳过
     # ⚠️ 必须加日期窗口: 同一对主客组合相隔多天 = 赛季不同回合(如蔚山HDvs江原FC 08-16 与 11-01),
     # 不能当重复条目丢掉, 否则次回合一进 results.json 就被抹掉。
-    PAIR_DEDUP_DAY_SPAN = 2
+    PAIR_DEDUP_DAY_SPAN = 1  # 相隔≥2天=不同场次(如10-29英聯杯/10-31英超 同为曼城vs白禮頓, 曾被当重复吞掉)
 
     def _parse_dt(s):
         try:
