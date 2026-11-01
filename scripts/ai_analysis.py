@@ -457,6 +457,16 @@ def load_raw_matches() -> List[Dict]:
 
     # 第二道去重: 按(主队,客队)去重 — 同一场比赛在不同日期文件里出现(不同fid)
     # 对所有比赛跟踪队名, 只要有比分记录的无分幽灵条目就跳过
+    # ⚠️ 必须加日期窗口: 同一对主客组合相隔多天 = 赛季不同回合(如蔚山HDvs江原FC 08-16 与 11-01),
+    # 不能当重复条目丢掉, 否则次回合一进 results.json 就被抹掉。
+    PAIR_DEDUP_DAY_SPAN = 2
+
+    def _parse_dt(s):
+        try:
+            return datetime.strptime(str(s)[:10], '%Y-%m-%d')
+        except Exception:
+            return None
+
     seen_pair = {}
     pair_deduped = []
     for m in deduped:
@@ -466,12 +476,21 @@ def load_raw_matches() -> List[Dict]:
             pair_deduped.append(m)
             continue
         key = f'{home}|{away}'
-        if key not in seen_pair:
-            seen_pair[key] = len(pair_deduped)
+        m_date = _parse_dt(m.get('match_time') or m.get('date') or '')
+        idx = None
+        for cand in seen_pair.get(key, []):
+            ex = pair_deduped[cand]
+            ex_date = _parse_dt(ex.get('match_time') or ex.get('date') or '')
+            if m_date and ex_date and abs((m_date - ex_date).days) > PAIR_DEDUP_DAY_SPAN:
+                continue  # 不同回合, 视为另一场
+            idx = cand
+            break
+        if idx is None:
+            seen_pair.setdefault(key, []).append(len(pair_deduped))
             pair_deduped.append(m)
+            continue
         else:
             # 同一队名组合再次出现
-            idx = seen_pair[key]
             existing = pair_deduped[idx]
             old_score = (existing.get('score') or '').strip()
             old_mt = existing.get('match_time', '')
