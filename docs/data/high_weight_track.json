@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-04 12:50:48",
+  "generated_at": "2026-11-04 22:54:33",
   "threshold": 1.14,
   "note": "⚡=importance_weight(联赛等级×紧迫). 历史场次紧迫系数跌至0.90, 仅临场窗口权重>=1.14. 逐轮记录攒样本.",
   "tracked": [
@@ -33279,6 +33279,21 @@
       "score": "",
       "hit": false,
       "recorded_at": "2026-11-04 12:50:48"
+    },
+    {
+      "fid": "3109614",
+      "date": "2026-11-05",
+      "match_time": "2026-11-05 09:00",
+      "event": "墨西乙",
+      "home_team": "特拉斯卡拉",
+      "away_team": "拉巴斯競技",
+      "weight": 1.14,
+      "model_dir": "客",
+      "ts_dir": "客",
+      "same_dir": true,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-11-04 22:54:33"
     }
   ]
 }
