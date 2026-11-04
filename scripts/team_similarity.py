@@ -512,6 +512,10 @@ def _compute_total_goals_top3(h_lambda: float, a_lambda: float,
     # 只保留概率 ≥ min_prob 的全部结果（不限数量），按概率降序
     filtered = sorted([(t, p) for t, p in total_probs.items() if p >= min_prob],
                       key=lambda x: -x[1])
+    if not filtered:
+        # 高λ场次（总进球均值大、方差大）单点概率全部低于 min_prob，
+        # 不能因此留空 —— 至少给出概率最高的 3 个总进球数
+        filtered = sorted(total_probs.items(), key=lambda x: -x[1])[:3]
     return [{'total_goals': t, 'prob': round(p, 3)} for t, p in filtered]
 
 
