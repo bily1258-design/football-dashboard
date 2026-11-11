@@ -51968,7 +51968,7 @@
     "fid": "3014161",
     "teams": "拉斯帕爾馬斯 vs 埃登斯",
     "match_time": "2026-11-09 01:30",
-    "score": "",
+    "score": "2 - 0",
     "signal": "weight",
     "signal_cn": "⚡高权重",
     "outcome": "home",
@@ -51977,7 +51977,10 @@
     "edge": 0,
     "kelly": 0,
     "weight": 1.14,
-    "same_dir": true
+    "same_dir": true,
+    "result": "win",
+    "profit": 1.09,
+    "settled_at": "2026-11-11T17:33:51.919971"
   },
   {
     "fid": "3023529",
@@ -52703,7 +52706,7 @@
     "fid": "2912932",
     "teams": "克里斯蒂安松 vs 瓦勒倫加",
     "match_time": "2026-11-10 02:00",
-    "score": "",
+    "score": "1-0",
     "signal": "weight",
     "signal_cn": "⚡高权重",
     "outcome": "home",
@@ -52712,13 +52715,16 @@
     "edge": 0,
     "kelly": 0,
     "weight": 1.14,
-    "same_dir": false
+    "same_dir": false,
+    "result": "win",
+    "profit": 1.72,
+    "settled_at": "2026-11-11T17:33:51.919993"
   },
   {
     "fid": "3014162",
     "teams": "薩瓦德爾 vs 皇家社會B隊",
     "match_time": "2026-11-10 03:30",
-    "score": "",
+    "score": "0 - 0",
     "signal": "weight",
     "signal_cn": "⚡高权重",
     "outcome": "home",
@@ -52727,7 +52733,10 @@
     "edge": 0,
     "kelly": 0,
     "weight": 1.14,
-    "same_dir": true
+    "same_dir": true,
+    "result": "loss",
+    "profit": -1.0,
+    "settled_at": "2026-11-11T17:33:51.920006"
   },
   {
     "fid": "3096239",
@@ -52836,5 +52845,59 @@
     "result": "win",
     "profit": 0.8,
     "settled_at": "2026-11-09T17:31:25.360719"
+  },
+  {
+    "fid": "3097338",
+    "teams": "諾霍斯 vs 斯達",
+    "match_time": "2026-10-06 23:00",
+    "score": "1 - 5",
+    "signal": "truev",
+    "signal_cn": "真价值",
+    "outcome": "away",
+    "odds": 1.51,
+    "ev": -0.2725,
+    "edge": 0.0306,
+    "true_edge": 0.0306,
+    "fair": 0.6147,
+    "kelly": 0.0,
+    "result": "win",
+    "profit": 0.51,
+    "settled_at": "2026-11-11T17:33:51.919330"
+  },
+  {
+    "fid": "3010667",
+    "teams": "哈特堡格 vs 阿爾塔奇",
+    "match_time": "2026-11-08 21:30",
+    "score": "3 - 0",
+    "signal": "truev",
+    "signal_cn": "真价值",
+    "outcome": "home",
+    "odds": 2.45,
+    "ev": 0.0322,
+    "edge": 0.032,
+    "true_edge": 0.032,
+    "fair": 0.3959,
+    "kelly": 0.0222,
+    "result": "win",
+    "profit": 1.45,
+    "settled_at": "2026-11-11T17:33:51.919516"
+  },
+  {
+    "fid": "3057229",
+    "teams": "拉科魯尼亞女足 vs 華倫西亞女足",
+    "match_time": "2026-11-10 04:00",
+    "score": "0-2",
+    "signal": "truev",
+    "signal_cn": "真价值",
+    "outcome": "home",
+    "odds": 1.62,
+    "ev": -0.2205,
+    "edge": 0.0374,
+    "true_edge": 0.0374,
+    "fair": 0.5689,
+    "kelly": 0.0,
+    "result": "loss",
+    "profit": -1.0,
+    "settled_at": "2026-11-11T17:33:51.919548"
   }
 ]
