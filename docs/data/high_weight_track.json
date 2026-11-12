@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-10 22:36:12",
+  "generated_at": "2026-11-12 15:13:47",
   "threshold": 1.14,
   "note": "⚡=importance_weight(联赛等级×紧迫). 历史场次紧迫系数跌至0.90, 仅临场窗口权重>=1.14. 逐轮记录攒样本.",
   "tracked": [
@@ -36321,6 +36321,21 @@
       "score": "",
       "hit": false,
       "recorded_at": "2026-11-09 12:45:22"
+    },
+    {
+      "fid": "3111966",
+      "date": "2026-11-12",
+      "match_time": "2026-11-12 10:00",
+      "event": "墨西乙",
+      "home_team": "皮拉塔斯",
+      "away_team": "拉巴斯競技",
+      "weight": 1.14,
+      "model_dir": "主",
+      "ts_dir": "客",
+      "same_dir": false,
+      "score": "1-1",
+      "hit": false,
+      "recorded_at": "2026-11-12 15:13:47"
     }
   ]
 }
