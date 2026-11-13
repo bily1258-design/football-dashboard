@@ -52922,7 +52922,7 @@
     "fid": "3013002",
     "teams": "拉普拉塔大學生(中) vs 門多薩獨立",
     "match_time": "2026-11-13 07:00",
-    "score": "",
+    "score": "2 - 2",
     "signal": "truev",
     "signal_cn": "真价值",
     "outcome": "away",
@@ -52931,6 +52931,39 @@
     "edge": 0.0306,
     "true_edge": 0.0306,
     "fair": 0.2883,
-    "kelly": 0.1387
+    "kelly": 0.1387,
+    "result": "loss",
+    "profit": -1.0,
+    "settled_at": "2026-11-13T13:04:05.563052"
+  },
+  {
+    "fid": "3014169",
+    "teams": "萊加內斯 vs 布爾戈斯",
+    "match_time": "2026-11-14 03:30",
+    "score": "",
+    "signal": "weight",
+    "signal_cn": "⚡高权重",
+    "outcome": "away",
+    "odds": 3.13,
+    "ev": 0,
+    "edge": 0,
+    "kelly": 0,
+    "weight": 1.14,
+    "same_dir": true
+  },
+  {
+    "fid": "3001120",
+    "teams": "佛得角 vs 利比里亞",
+    "match_time": "2026-11-14 00:00",
+    "score": "",
+    "signal": "truev",
+    "signal_cn": "真价值",
+    "outcome": "home",
+    "odds": 1.21,
+    "ev": -0.3541,
+    "edge": 0.0311,
+    "true_edge": 0.0311,
+    "fair": 0.7261,
+    "kelly": 0.0
   }
 ]
