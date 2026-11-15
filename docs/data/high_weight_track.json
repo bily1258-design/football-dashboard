@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-14 18:51:13",
+  "generated_at": "2026-11-15 12:57:12",
   "threshold": 1.14,
   "note": "⚡=importance_weight(联赛等级×紧迫). 历史场次紧迫系数跌至0.90, 仅临场窗口权重>=1.14. 逐轮记录攒样本.",
   "tracked": [
@@ -36409,9 +36409,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
+      "score": "3 - 3",
       "hit": false,
-      "recorded_at": "2026-11-14 12:36:23"
+      "recorded_at": "2026-11-14 12:36:23",
+      "updated_at": "2026-11-15 12:57:12"
     },
     {
       "fid": "3014175",
@@ -36424,9 +36425,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-11-14 12:36:23"
+      "score": "2 - 1",
+      "hit": true,
+      "recorded_at": "2026-11-14 12:36:23",
+      "updated_at": "2026-11-15 12:57:12"
     },
     {
       "fid": "2996545",
@@ -36439,9 +36441,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-11-14 12:36:23"
+      "score": "6 - 1",
+      "hit": true,
+      "recorded_at": "2026-11-14 12:36:23",
+      "updated_at": "2026-11-15 12:57:12"
     },
     {
       "fid": "2996546",
@@ -36454,9 +36457,10 @@
       "model_dir": "主",
       "ts_dir": "客",
       "same_dir": false,
-      "score": "",
+      "score": "1 - 2",
       "hit": false,
-      "recorded_at": "2026-11-14 12:36:23"
+      "recorded_at": "2026-11-14 12:36:23",
+      "updated_at": "2026-11-15 12:57:12"
     },
     {
       "fid": "2996547",
@@ -36469,9 +36473,10 @@
       "model_dir": "客",
       "ts_dir": "客",
       "same_dir": true,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-11-14 12:36:23"
+      "score": "1 - 2",
+      "hit": true,
+      "recorded_at": "2026-11-14 12:36:23",
+      "updated_at": "2026-11-15 12:57:12"
     },
     {
       "fid": "2996548",
@@ -36484,9 +36489,10 @@
       "model_dir": "主",
       "ts_dir": "客",
       "same_dir": false,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-11-14 12:36:23"
+      "score": "3 - 1",
+      "hit": true,
+      "recorded_at": "2026-11-14 12:36:23",
+      "updated_at": "2026-11-15 12:57:12"
     },
     {
       "fid": "2996549",
@@ -36499,9 +36505,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
+      "score": "1 - 2",
       "hit": false,
-      "recorded_at": "2026-11-14 12:36:23"
+      "recorded_at": "2026-11-14 12:36:23",
+      "updated_at": "2026-11-15 12:57:12"
     },
     {
       "fid": "2996550",
@@ -36514,9 +36521,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-11-14 12:36:23"
+      "score": "4 - 0",
+      "hit": true,
+      "recorded_at": "2026-11-14 12:36:23",
+      "updated_at": "2026-11-15 12:57:12"
     },
     {
       "fid": "3014171",
@@ -36529,9 +36537,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
+      "score": "1 - 2",
       "hit": false,
-      "recorded_at": "2026-11-14 12:36:23"
+      "recorded_at": "2026-11-14 12:36:23",
+      "updated_at": "2026-11-15 12:57:12"
     },
     {
       "fid": "2910972",
@@ -36544,9 +36553,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
+      "score": "0 - 0",
       "hit": false,
-      "recorded_at": "2026-11-14 12:36:23"
+      "recorded_at": "2026-11-14 12:36:23",
+      "updated_at": "2026-11-15 12:57:12"
     },
     {
       "fid": "2910829",
@@ -36559,9 +36569,100 @@
       "model_dir": "客",
       "ts_dir": "客",
       "same_dir": true,
+      "score": "0 - 2",
+      "hit": true,
+      "recorded_at": "2026-11-14 12:36:23",
+      "updated_at": "2026-11-15 12:57:12"
+    },
+    {
+      "fid": "3111968",
+      "date": "2026-11-15",
+      "match_time": "2026-11-15 11:00",
+      "event": "墨西乙",
+      "home_team": "拉巴斯競技",
+      "away_team": "皮拉塔斯",
+      "weight": 1.14,
+      "model_dir": "客",
+      "ts_dir": "主",
+      "same_dir": false,
       "score": "",
       "hit": false,
-      "recorded_at": "2026-11-14 12:36:23"
+      "recorded_at": "2026-11-15 12:57:12"
+    },
+    {
+      "fid": "3014173",
+      "date": "2026-11-15",
+      "match_time": "2026-11-15 21:00",
+      "event": "西乙",
+      "home_team": "特內里費",
+      "away_team": "休達",
+      "weight": 1.14,
+      "model_dir": "主",
+      "ts_dir": "主",
+      "same_dir": true,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-11-15 12:57:12"
+    },
+    {
+      "fid": "2996551",
+      "date": "2026-11-15",
+      "match_time": "2026-11-15 21:30",
+      "event": "荷乙",
+      "home_team": "馬斯特裏赫特",
+      "away_team": "維特斯",
+      "weight": 1.14,
+      "model_dir": "主",
+      "ts_dir": "客",
+      "same_dir": false,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-11-15 12:57:12"
+    },
+    {
+      "fid": "3014168",
+      "date": "2026-11-15",
+      "match_time": "2026-11-15 23:15",
+      "event": "西乙",
+      "home_team": "格拉納達",
+      "away_team": "拉斯帕爾馬斯",
+      "weight": 1.14,
+      "model_dir": "主",
+      "ts_dir": "主",
+      "same_dir": true,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-11-15 12:57:12"
+    },
+    {
+      "fid": "3014167",
+      "date": "2026-11-16",
+      "match_time": "2026-11-16 01:30",
+      "event": "西乙",
+      "home_team": "埃登斯",
+      "away_team": "薩瓦德爾",
+      "weight": 1.14,
+      "model_dir": "主",
+      "ts_dir": "主",
+      "same_dir": true,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-11-15 12:57:12"
+    },
+    {
+      "fid": "3014166",
+      "date": "2026-11-16",
+      "match_time": "2026-11-16 01:30",
+      "event": "西乙",
+      "home_team": "埃瓦爾",
+      "away_team": "加的斯",
+      "weight": 1.14,
+      "model_dir": "主",
+      "ts_dir": "主",
+      "same_dir": true,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-11-15 12:57:12"
     }
   ]
 }
