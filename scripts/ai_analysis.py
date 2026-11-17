@@ -2555,6 +2555,32 @@ tr:hover{background:#f0f6ff}
 
 # ─── 主流程 ──────────────────────────────────────
 
+def _load_prev_results_map() -> Dict[str, Dict]:
+    """上一轮 results.json 的 fid -> 分析结果（增量分析时供老场次直接复用）"""
+    out = {}
+    try:
+        rp = os.path.join(DOCS_DIR, 'data', 'results.json')
+        if not os.path.exists(rp):
+            return out
+        with open(rp, encoding='utf-8') as f:
+            data = json.load(f)
+        for m in (data.get('matches') or []):
+            fid = str(m.get('fid') or '').strip()
+            if fid and fid != '0':
+                out[fid] = m
+    except Exception as e:
+        logger.warning(f"上一轮结果载入失败(将全量重算): {e}")
+    return out
+
+
+def _match_day(m: Dict) -> str:
+    """比赛日期(YYYY-MM-DD)"""
+    d = (m.get('date') or '')[:10]
+    if not d:
+        d = (m.get('match_time') or '')[:10]
+    return d
+
+
 def main():
     logger.info("=" * 60)
     logger.info("🏟️  足彩智能分析系统 v3.0")
@@ -2568,10 +2594,52 @@ def main():
         logger.error("无原始数据，退出")
         return
 
-    # 2. 分析
-    logger.info(f"\n🔬 [2/3] 分析 ({len(matches)} 场)...")
-    league_priors = load_league_priors()
-    results = analyze_matches(matches, league_priors)
+    # 2. 分析 —— 增量模式: 只重算近 N 天(含未来场次) + 新增场次,
+    #    更老的场次直接沿用上一轮 results.json 的分析结果。
+    #    依据: load_raw_matches() 返回的是全部历史 ~8870 场, 每场边际约 0.12s → 18 分钟里
+    #    99% 花在为历史场次重复计算; 而比分回填只回看 3 天, 更老场次的赔率/赛果不再变动,
+    #    实测沿用 vs 重算 的概率中位差 0%、均值 1.1%。
+    #    AI_INC_DAYS=0 → 全量重算(应急开关)。
+    try:
+        inc_days = int(os.environ.get('AI_INC_DAYS', '3'))
+    except ValueError:
+        inc_days = 3
+    prev_map = _load_prev_results_map() if inc_days > 0 else {}
+    cutoff = (datetime.now() - timedelta(days=inc_days)).strftime('%Y-%m-%d') if inc_days > 0 else ''
+    if inc_days > 0 and prev_map:
+        recent, old = [], []
+        for m in matches:
+            md = _match_day(m)
+            if not md or md >= cutoff:
+                recent.append(m)
+            else:
+                old.append(m)
+        logger.info(f"\n🔬 [2/3] 增量分析: 近{inc_days}天+新增 {len(recent)} 场, 沿用历史 {len(old)} 场")
+        league_priors = load_league_priors()
+        fresh = analyze_matches(recent, league_priors)
+        if not fresh and old:
+            logger.error("增量分析本轮无结果，退出(保留上一轮 results.json)")
+            return
+        fresh_map = {}
+        for r in fresh:
+            f = str(r.get('fid') or '').strip()
+            if f:
+                fresh_map[f] = r
+        results, reused, missing = [], 0, 0
+        for m in matches:
+            f = str(m.get('fid') or m.get('id') or '').strip()
+            if f in fresh_map:
+                results.append(fresh_map[f])
+            elif f in prev_map:
+                results.append(prev_map[f])
+                reused += 1
+            else:
+                missing += 1
+        logger.info(f"   本轮重算 {len(fresh_map)} 场, 沿用上轮 {reused} 场, 无可用结果 {missing} 场")
+    else:
+        logger.info(f"\n🔬 [2/3] 分析 ({len(matches)} 场)...")
+        league_priors = load_league_priors()
+        results = analyze_matches(matches, league_priors)
 
     if not results:
         logger.warning("分析后无有效结果!")

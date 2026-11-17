@@ -33,19 +33,37 @@ if [ -f "docs/today_picks.md" ] && [ ! -f "docs/picks_${YDAY_C}.md" ]; then
 fi
 
 # ========== 比分回填：重新抓取今天+前3天，更新已完赛比分 ==========
+# 2026-11-17 并行化: 原来是 8 次串行(4天×北单/HKJC)共 5.9 分钟, 各任务写各自的
+# matches_*.json、互不依赖也不写 DB, 改为最多 4 个并发, 实测降到 ~2.5 分钟。
+BACK_PIDS=()
+BACK_MAX=4
+backfill_one() {  # $1=日期 $2=single|hkjc
+    if [ "$2" = "hkjc" ]; then
+        python3 scripts/fetch_hkjc_all.py --date "$1" --backfill
+    else
+        python3 scripts/fetch_zqdc.py --date "$1" --backfill
+    fi
+}
 for i in 0 1 2 3; do
     BACK_DATE=$(date -d "$DATE -$i day" '+%Y-%m-%d')
     BACK_FILE="data/matches_${BACK_DATE//-/}.json"
+    HKJC_FILE="data/matches_hkjc_${BACK_DATE//-/}.json"
     if [ -f "$BACK_FILE" ]; then
         echo "[$(date '+%H:%M:%S')] 回填 $BACK_DATE 比分(北单)..."
-        python3 scripts/fetch_zqdc.py --date "$BACK_DATE" --backfill
+        backfill_one "$BACK_DATE" single >> "$HOME/backfill_${DATE//-/}.log" 2>&1 &
+        BACK_PIDS+=($!)
     fi
-    HKJC_FILE="data/matches_hkjc_${BACK_DATE//-/}.json"
     if [ -f "$HKJC_FILE" ]; then
         echo "[$(date '+%H:%M:%S')] 回填 $BACK_DATE 比分(HKJC)..."
-        python3 scripts/fetch_hkjc_all.py --date "$BACK_DATE" --backfill
+        backfill_one "$BACK_DATE" hkjc >> "$HOME/backfill_${DATE//-/}.log" 2>&1 &
+        BACK_PIDS+=($!)
     fi
+    # 并发上限: 超过则等最早的一个结束
+    while [ "$(jobs -rp | wc -l)" -ge "$BACK_MAX" ]; do sleep 1; done
 done
+# 等全部回填结束(必须在 sync_results_to_db 之前完成, 它要读这些文件的最新比分)
+wait
+echo "[$(date '+%H:%M:%S')] 比分回填完成 (${#BACK_PIDS[@]} 个并发任务)"
 
 # ========== 同步 results.json → poisson_predictions（含比分补写，必须在 λ 重算之前） ==========
 echo "[$(date '+%H:%M:%S')] 同步AI分析结果到数据库..."
@@ -129,7 +147,28 @@ python3 scripts/high_weight_tracker.py
 python3 scripts/fetch_daily_xg.py
 
 echo "[$(date '+%H:%M:%S')] 推送至GitHub..."
-git add -A
+# 2026-11-17 推送瘦身: docs/data/results.json 约 74MB, 每天整份重写+整份上传要用
+# 4 分钟以上(远端还会告警 "results.json is 70.23 MB"), 而且几乎每轮都会被
+# "Connection to ssh.github.com closed by remote host" 掐断, 是 push 9.6 分钟的主因。
+# 前端看板只读 results_light.json(约 4MB), 各种 Python 脚本直读工作树里的这份文件,
+# 所以远端这份历史数据不需要每天刷新 → 改为每 7 天提交推送一次, 其余日期只推其它文件。
+# 需要立刻同步时: PUSH_FULL_RESULTS=1 运行本脚本。
+RES_DAYS=7
+NEED_RES=1
+BIG_RES="docs/data/results.json"
+if [ "${PUSH_FULL_RESULTS:-0}" != "1" ]; then
+    LAST_RES=$(git log -1 --format=%ct -- "$BIG_RES" 2>/dev/null)
+    [ -z "$LAST_RES" ] && LAST_RES=0
+    if [ $(( $(date +%s) - LAST_RES )) -lt $((RES_DAYS * 86400)) ]; then
+        NEED_RES=0
+    fi
+fi
+if [ "$NEED_RES" = "1" ]; then
+    git add -A
+else
+    git add -A -- . ":(exclude)$BIG_RES"
+    echo "[$(date '+%H:%M:%S')] results.json 本轮不入库(每 ${RES_DAYS} 天同步一次), 本地文件照常更新"
+fi
 git commit -m "数据+分析 $DATE" || echo "无新数据"
 
 # 2026-10-08 加护: 手机网络/ssh 抖动会让单次 push 以 rc=128 中断 (10-07、10-08 连续两次同因:
