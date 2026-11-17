@@ -35,6 +35,8 @@ KEEP_MATCH = {
     'model_draw', 'model_loss', 'model_prediction', 'model_win', 'odds_win',
     'pin_comparison', 'postponed', 'score', 'similar_matches', 'source',
     'total_goals_top3', 'ts_draw', 'ts_loss', 'ts_win', 'warning',
+    # H2H 一致性影子标记 (2026-11-17): 仅展示层, 不进星级/不过滤/不改账本
+    'h2h_consistency',
 }
 
 # similar_matches 子项: script.js 只用 home_team/away_team/score/similarity/similarity_raw

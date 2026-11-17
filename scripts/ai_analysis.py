@@ -1322,6 +1322,33 @@ def _h2h_gd_home_view(h2h_stats, home_team, away_team, limit=6):
     return gds
 
 
+def _h2h_consistency_tag(rec):
+    """H2H 一致性影子标记 (2026-11-17)。
+
+    LGBM 方向 vs 对赛净胜球方向(当前主队视角):
+      同向主/同向客 = 两者一致; 反向主/反向客 = 两者相反(LGBM 方向为准)。
+    仅展示层字段, 不进星级、不过滤、不改账本口径; 跟踪 1-2 周再评估。
+    历史基准: 同向 58.8% (n=922) / 反向 44.0% (n=475), 差 14.8pp。
+    """
+    try:
+        stats = rec.get('stats') or {}
+        gds = _h2h_gd_home_view(stats.get('h2h') or [],
+                               rec.get('home_team', ''), rec.get('away_team', ''))
+        if not gds:
+            return None
+        gd_r = sum(gds) / len(gds)
+        if gd_r == 0:
+            return None
+        lgbm_dir = rec.get('lgbm_prediction') or ''
+        if lgbm_dir not in ('home', 'away'):
+            return None
+        h2h_dir = 'home' if gd_r > 0 else 'away'
+        side = '主' if lgbm_dir == 'home' else '客'
+        return ('同向' if h2h_dir == lgbm_dir else '反向') + side
+    except Exception:
+        return None
+
+
 def compute_ah_probs(team_model, home_team, away_team,
                       home_form_pts=0, away_form_pts=0,
                       home_rank=0, away_rank=0,
@@ -2154,6 +2181,17 @@ def generate_frontend(results: List[Dict]):
         })
 
     # 写入 results.json
+    # H2H 一致性影子标记 (2026-11-17): LGBM 方向 vs 对赛净胜球方向
+    #   仅展示层字段, 不进星级/不过滤/不改账本口径; 跟踪 1-2 周后再评估
+    #   历史基准: 同向 58.8% (n=922) / 反向 44.0% (n=475), 差 14.8pp
+    _tag_n = {'同向主': 0, '同向客': 0, '反向主': 0, '反向客': 0}
+    for match in results:
+        tag = _h2h_consistency_tag(match)
+        match['h2h_consistency'] = tag
+        if tag:
+            _tag_n[tag] += 1
+    logger.info(f"H2H 一致性影子标记: {sum(_tag_n.values())} 场 {_tag_n}")
+
     rp = os.path.join(DOCS_DIR, 'data', 'results.json')
     with open(rp, 'w', encoding='utf-8') as f:
         json.dump(output, f, ensure_ascii=False, separators=(',', ':'))
