@@ -1251,6 +1251,54 @@ def ts_model_exante(match_date: str = '', db_path: str = DB_PATH) -> Optional[Di
     return _TS_EXANTE_CACHE[cutoff]
 
 
+# ── 对赛(H2H)方向折算 (2026-11-17 修) ───────────────────────────────
+# 旧写法 sum(home_score - away_score) 直接把对赛记录的「当时主队」比分当成
+# 「当前主队」比分用。titan007 对赛列表按当时主客排列, 实测当前主队有 52.6%
+# 的场次当时是作客 → 方向整段反掉, 等于往 λ 里注入反向噪声。
+# 回测(n=1397): 错方向命中 41.2% (低于随机), 折算到当前主队视角后 49.1%。
+_H2H_TEAM_CACHE: Dict[str, str] = {}
+_H2H_NO = re.compile(r'\d+')
+
+
+def _canon_h2h_team(name):
+    """队名规范化, 并去掉 titan007 对赛列表的序号标记 ('1塞雷那'/'天主教大學1')。"""
+    key = str(name or '')
+    hit = _H2H_TEAM_CACHE.get(key)
+    if hit is not None:
+        return hit
+    s = _H2H_NO.sub('', re.sub(r'\s+', '', key))
+    try:
+        from titan007_utils import canon_team_name
+        s = canon_team_name(s)
+    except Exception:
+        pass
+    _H2H_TEAM_CACHE[key] = s
+    return s
+
+
+def _h2h_gd_home_view(h2h_stats, home_team, away_team, limit=6):
+    """对赛记录 → 当前主队视角的净胜球明细; 对不上当前主队的记录直接丢弃。
+
+    方向判定只需「一支」队对上: 对赛记录里只有当前主客两队, 当前主队出现在
+    home 段 → 当时作主; 出现在 away 段 → 当时作客。对手名因跨译名体系
+    (飛燕諾/費耶諾德、珀斯光輝/珀斯光榮)不必强求一致, 强求会把 1/4 覆盖
+    压到 1/5。两支都对不上才跳过 —— 猜错方向的代价(负贡献)大于少用几条。
+    """
+    ht = _canon_h2h_team(home_team)
+    if not ht:
+        return []
+    gds = []
+    for m in (h2h_stats or [])[:limit]:
+        hh, ha = _canon_h2h_team(m.get('home')), _canon_h2h_team(m.get('away'))
+        hs = m.get('home_score', 0) or 0
+        asc = m.get('away_score', 0) or 0
+        if hh == ht and ha != ht:
+            gds.append(hs - asc)      # 当前主队当时作主
+        elif ha == ht and hh != ht:
+            gds.append(asc - hs)      # 当前主队当时作客
+    return gds
+
+
 def compute_ah_probs(team_model, home_team, away_team,
                       home_form_pts=0, away_form_pts=0,
                       home_rank=0, away_rank=0,
@@ -1301,14 +1349,14 @@ def compute_ah_probs(team_model, home_team, away_team,
         rf_h = 1.0 + 0.05 * (rr - 1.0)
         rf_a = 1.0 + 0.05 * (1.0 / rr - 1.0) if rr > 0 else 1.0
 
-    # 4. 对赛调整 (最近6场)
+    # 4. 对赛调整 (最近6场, 已折算到当前主队视角; 队名对不上则跳过该项)
     h2f_h, h2f_a = 1.0, 1.0
     if h2h_stats and len(h2h_stats) > 0:
-        recent = h2h_stats[:6]
-        gd = sum((m.get('home_score', 0) or 0) - (m.get('away_score', 0) or 0) for m in recent)
-        gd_r = gd / (len(recent) * max(league_avg, 0.5))
-        h2f_h = math.exp(0.12 * gd_r)
-        h2f_a = math.exp(-0.12 * gd_r)
+        gds = _h2h_gd_home_view(h2h_stats, home_team, away_team)
+        if gds:
+            gd_r = sum(gds) / (len(gds) * max(league_avg, 0.5))
+            h2f_h = math.exp(0.12 * gd_r)
+            h2f_a = math.exp(-0.12 * gd_r)
 
     adj_h = max(0.1, min(5.0, exp_h * ff_h * rf_h * h2f_h))
     adj_a = max(0.1, min(5.0, exp_a * ff_a * rf_a * h2f_a))
