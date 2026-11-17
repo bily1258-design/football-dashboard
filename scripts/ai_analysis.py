@@ -2258,6 +2258,20 @@ def generate_frontend(results: List[Dict]):
 </div>
 </body>
 </html>'''
+    # 缓存号动态化: 按 script.js/style.css 内容哈希生成 → 只有内容变化才换号, 避免
+    # 生成器每次用硬编码旧值覆盖 index.html 导致手机一直吃旧 script.js 缓存
+    try:
+        _h = hashlib.md5()
+        for _p in (os.path.join(SCRIPT_DIR, 'script.js'),
+                   os.path.join(DOCS_DIR, 'style.css')):
+            if os.path.exists(_p):
+                with open(_p, 'rb') as _f:
+                    _h.update(_f.read())
+        _fv = _h.hexdigest()[:8]
+    except Exception as _e:
+        logger.warning(f"缓存号生成失败, 沿用默认: {_e}")
+        _fv = '20261008c'
+    html = html.replace('20261008c', _fv)
     with open(os.path.join(DOCS_DIR, 'index.html'), 'w', encoding='utf-8') as f:
         f.write(html)
 
