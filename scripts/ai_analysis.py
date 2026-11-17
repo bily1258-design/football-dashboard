@@ -13,7 +13,7 @@ ai_analysis.py — 足彩智能分析系统 v3.0
   python3 scripts/ai_analysis.py --db data/football.db
   python3 scripts/ai_analysis.py --fetch-only   # 只抓取，不分析
 """
-import re, json, os, sys, math, sqlite3, glob, logging, hashlib, time
+import re, json, os, sys, math, sqlite3, glob, logging, hashlib, time, pickle
 import numpy as np
 from datetime import datetime, date, timezone, timedelta
 from collections import defaultdict
@@ -185,17 +185,49 @@ sys.path.insert(0, SCRIPT_DIR)
 from fetch_stats import fetch_match_stats
 
 STATS_CACHE_PATH = os.path.join(DATA_DIR, 'cache', 'stats_cache.json')
+STATS_CACHE_PKL = os.path.join(DATA_DIR, 'cache', 'stats_cache.pkl')
 
 def _load_stats_cache() -> dict:
-    """加载统计缓存（H2H+近期战绩）"""
+    """加载统计缓存（H2H+近期战绩）
+
+    优先读 pickle（220MB 缓存 json.load ≈7s / json.dump ≈30s，pickle 各≈1-2s，
+    且不需要在内存里拼一个 220MB 的大字符串）。首次会自动把旧 json 迁移成 pkl
+    并删掉旧 json 释放手机磁盘。
+    """
+    if os.path.exists(STATS_CACHE_PKL):
+        try:
+            with open(STATS_CACHE_PKL, 'rb') as f:
+                return pickle.load(f)
+        except Exception as e:
+            logger.warning(f"加载统计缓存(pkl)失败: {e}")
     if not os.path.exists(STATS_CACHE_PATH):
         return {}
     try:
         with open(STATS_CACHE_PATH, 'r', encoding='utf-8') as f:
-            return json.load(f)
+            data = json.load(f)
+        if _save_stats_cache(data):
+            try:
+                os.remove(STATS_CACHE_PATH)  # 迁移完成，删旧 json
+            except OSError:
+                pass
+        return data
     except Exception as e:
         logger.warning(f"加载统计缓存失败: {e}")
         return {}
+
+
+def _save_stats_cache(cache: dict) -> bool:
+    """原子写入 pickle 统计缓存"""
+    try:
+        os.makedirs(os.path.dirname(STATS_CACHE_PKL), exist_ok=True)
+        tmp = STATS_CACHE_PKL + '.tmp'
+        with open(tmp, 'wb') as f:
+            pickle.dump(cache, f, protocol=pickle.HIGHEST_PROTOCOL)
+        os.replace(tmp, STATS_CACHE_PKL)
+        return True
+    except Exception as e:
+        logger.warning(f"保存统计缓存失败: {e}")
+        return False
 
 def _format_stats(raw: dict) -> dict:
     """将缓存原始格式转为前端需要的 {home_recent, away_recent, h2h}
@@ -1948,12 +1980,7 @@ def analyze_matches(matches: List[Dict], league_priors: Dict[str, Tuple[float, f
                 logger.info(f"  即时抓取完成: {done_ok}/{len(miss_fids)} 场成功, 缓存已更新")
             
             # 保存回缓存文件
-            try:
-                os.makedirs(os.path.dirname(STATS_CACHE_PATH), exist_ok=True)
-                with open(STATS_CACHE_PATH, 'w', encoding='utf-8') as f:
-                    json.dump(stats_cache, f)
-            except Exception as e:
-                logger.warning(f"保存统计缓存失败: {e}")
+            _save_stats_cache(stats_cache)
         
         if stats_hit[0] > 0:
             logger.info(f"近期战绩: {stats_hit[1]}/{stats_hit[0]} 场来自缓存 ({stats_hit[1]*100//stats_hit[0]}%)")

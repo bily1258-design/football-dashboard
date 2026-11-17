@@ -585,7 +585,7 @@ def load_historical_matches(db_path: str = DB_PATH, limit: int = 3000) -> list:
     return matches
 
 
-def find_similar_matches(
+def _find_similar_matches_py(
     home_team: str, away_team: str, league: str,
     team_features: dict, historical_matches: list,
     rolling_stats: dict = None,
@@ -699,6 +699,289 @@ def find_similar_matches(
     if len(result) < top_k:  # 同联赛少于3场时，用跨联赛补足
         result = same_lg + cross_lg[:top_k - len(same_lg)]
     return result[:top_k]
+
+
+# ===========================================================================
+# 向量化相似度引擎（2026-11-17 加速）
+# 原实现每场 × 每条历史都做 Python 逐维余弦：8869 场 × 2000 历史池 ≈ 73 分钟。
+# 现改为一次性把球队特征 / 历史池 / 滚动形态编译成 numpy 矩阵后批量点积，
+# 权重、同联赛加成、时间衰减、排序/去重/同联赛优先规则与原实现完全一致；
+# numpy 不可用时自动回退 _find_similar_matches_py。
+# ===========================================================================
+try:
+    import numpy as _NP
+except Exception:  # pragma: no cover
+    _NP = None
+
+_SIM_ENGINE_CACHE = {}
+
+
+class _SimEngine:
+    __slots__ = (
+        'teams', 'tindex', 'T', 'Tn', 'n',
+        'hist_h_idx', 'hist_a_idx', 'HIST_H', 'HIST_A', 'hist_h_norm', 'hist_a_norm',
+        'row_ok', 'row_league', 'row_date_ord', 'row_pair', 'rows',
+        'roll_teams', 'roll_index', 'roll_vec', 'roll_norm',
+        'hist_hr', 'hist_ar', 'hist_hr_ok', 'hist_ar_ok',
+        'hist_hr_norm', 'hist_ar_norm', 'lg_cache',
+    )
+
+
+def _build_sim_engine(team_features: dict, historical_matches: list,
+                      rolling_stats: dict = None):
+    np = _NP
+    teams = [t for t, v in team_features.items() if v.get('_vec')]
+    tindex = {t: i for i, t in enumerate(teams)}
+    T = np.asarray([team_features[t]['_vec'] for t in teams], dtype=np.float64)
+    Tn = np.sqrt((T * T).sum(axis=1))
+
+    n = len(historical_matches)
+    e = _SimEngine()
+    e.teams = teams
+    e.tindex = tindex
+    e.T = T
+    e.Tn = Tn
+    e.n = n
+    e.rows = historical_matches
+    e.lg_cache = {}
+
+    hist_h_idx = np.full(n, -1, dtype=np.int64)
+    hist_a_idx = np.full(n, -1, dtype=np.int64)
+    row_date_ord = np.full(n, -10 ** 9, dtype=np.float64)
+    row_league = []
+    row_pair = []
+    for i, hm in enumerate(historical_matches):
+        row_league.append(hm.get('league') or '')
+        row_pair.append((hm.get('home_team'), hm.get('away_team')))
+        d = (hm.get('date') or '')[:10]
+        if d:
+            try:
+                row_date_ord[i] = _parse_date(d).toordinal()
+            except (ValueError, TypeError):
+                pass
+        hist_h_idx[i] = tindex.get(hm.get('home_team'), -1)
+        hist_a_idx[i] = tindex.get(hm.get('away_team'), -1)
+
+    e.row_league = row_league
+    e.row_pair = row_pair
+    e.row_date_ord = row_date_ord
+    e.hist_h_idx = hist_h_idx
+    e.hist_a_idx = hist_a_idx
+    e.row_ok = (hist_h_idx >= 0) & (hist_a_idx >= 0)
+    hi = np.where(e.row_ok, hist_h_idx, 0)
+    ai = np.where(e.row_ok, hist_a_idx, 0)
+    e.HIST_H = T[hi]
+    e.HIST_A = T[ai]
+    e.hist_h_norm = Tn[hi]
+    e.hist_a_norm = Tn[ai]
+
+    # 滚动形态（历史侧 pre_*_rolling，与当前球队 rolling 对比）
+    hr = [hm.get('pre_h_rolling') or None for hm in historical_matches]
+    ar = [hm.get('pre_a_rolling') or None for hm in historical_matches]
+    dim = 0
+    for v in hr:
+        if v:
+            dim = len(v)
+            break
+    if not dim:
+        for v in ar:
+            if v:
+                dim = len(v)
+                break
+    e.roll_teams = []
+    e.roll_index = {}
+    e.roll_vec = None
+    e.roll_norm = None
+    e.hist_hr = e.hist_ar = None
+    e.hist_hr_ok = e.hist_ar_ok = None
+    e.hist_hr_norm = e.hist_ar_norm = None
+    if dim and rolling_stats:
+        rt = [t for t, v in rolling_stats.items() if v and v.get('rolling')]
+        if rt:
+            e.roll_teams = rt
+            e.roll_index = {t: i for i, t in enumerate(rt)}
+            e.roll_vec = np.asarray([rolling_stats[t]['rolling'][:dim] for t in rt],
+                                    dtype=np.float64)
+            e.roll_norm = np.sqrt((e.roll_vec * e.roll_vec).sum(axis=1))
+            e.hist_hr = np.zeros((n, dim), dtype=np.float64)
+            e.hist_ar = np.zeros((n, dim), dtype=np.float64)
+            e.hist_hr_ok = np.zeros(n, dtype=bool)
+            e.hist_ar_ok = np.zeros(n, dtype=bool)
+            for i, v in enumerate(hr):
+                if v and len(v) == dim:
+                    e.hist_hr[i] = v
+                    e.hist_hr_ok[i] = True
+            for i, v in enumerate(ar):
+                if v and len(v) == dim:
+                    e.hist_ar[i] = v
+                    e.hist_ar_ok[i] = True
+            e.hist_hr_norm = np.sqrt((e.hist_hr * e.hist_hr).sum(axis=1))
+            e.hist_ar_norm = np.sqrt((e.hist_ar * e.hist_ar).sum(axis=1))
+    return e
+
+
+def _get_sim_engine(team_features: dict, historical_matches: list,
+                    rolling_stats: dict = None):
+    key = (id(team_features), id(historical_matches), len(historical_matches),
+           id(rolling_stats))
+    eng = _SIM_ENGINE_CACHE.get(key)
+    if eng is None:
+        if len(_SIM_ENGINE_CACHE) > 1:  # 只留最新一份，避免内存膨胀
+            _SIM_ENGINE_CACHE.clear()
+        try:
+            eng = _build_sim_engine(team_features, historical_matches, rolling_stats)
+        except Exception as exc:  # 回退到纯 Python 实现
+            logger.warning("相似度引擎构建失败，回退纯Python: %s", exc)
+            eng = False
+        _SIM_ENGINE_CACHE[key] = eng
+    return eng or None
+
+
+def _league_mask(eng, league: str):
+    np = _NP
+    key = league or ''
+    m = eng.lg_cache.get(key)
+    if m is None:
+        if not key:
+            m = np.zeros(eng.n, dtype=bool)
+        else:
+            m = np.fromiter(
+                (bool(lg and (lg == key or key in lg or lg in key))
+                 for lg in eng.row_league), dtype=bool, count=eng.n)
+        eng.lg_cache[key] = m
+    return m
+
+
+def find_similar_matches(
+    home_team: str, away_team: str, league: str,
+    team_features: dict, historical_matches: list,
+    rolling_stats: dict = None,
+    top_k: int = 5,
+) -> list:
+    """向量化版本，输出与 _find_similar_matches_py 完全一致。"""
+    if _NP is None:
+        return _find_similar_matches_py(home_team, away_team, league, team_features,
+                                        historical_matches, rolling_stats, top_k)
+    eng = _get_sim_engine(team_features, historical_matches, rolling_stats)
+    if eng is None:
+        return _find_similar_matches_py(home_team, away_team, league, team_features,
+                                        historical_matches, rolling_stats, top_k)
+    np = _NP
+    ti = eng.tindex.get(home_team, -1)
+    ai = eng.tindex.get(away_team, -1)
+    if ti < 0 or ai < 0:
+        return []
+
+    ok = eng.row_ok.copy()
+    # 排除同一场（含主客对调）
+    ok &= ~(((eng.hist_h_idx == ti) & (eng.hist_a_idx == ai)) |
+            ((eng.hist_h_idx == ai) & (eng.hist_a_idx == ti)))
+    if not ok.any():
+        return []
+
+    ht_vec = eng.T[ti]
+    at_vec = eng.T[ai]
+    nht = float(eng.Tn[ti])
+    nat = float(eng.Tn[ai])
+
+    den_h = eng.hist_h_norm * nht
+    den_a = eng.hist_a_norm * nat
+    sim_h = np.zeros(eng.n, dtype=np.float64)
+    sim_a = np.zeros(eng.n, dtype=np.float64)
+    np.divide(eng.HIST_H @ ht_vec, den_h, out=sim_h, where=den_h > 0)
+    np.divide(eng.HIST_A @ at_vec, den_a, out=sim_a, where=den_a > 0)
+    np.maximum(sim_h, 0.0, out=sim_h)
+    np.maximum(sim_a, 0.0, out=sim_a)
+    combined = np.sqrt(sim_h * sim_a)
+
+    # 滚动形态混合（双方都有滚动向量时才参与，权重 0.3）
+    if eng.roll_teams:
+        ri_h = eng.roll_index.get(home_team, -1)
+        ri_a = eng.roll_index.get(away_team, -1)
+        if ri_h >= 0 and ri_a >= 0:
+            m = ok & eng.hist_hr_ok & eng.hist_ar_ok
+            if m.any():
+                r_h = eng.roll_vec[ri_h]
+                r_a = eng.roll_vec[ri_a]
+                d1 = eng.hist_hr_norm * float(eng.roll_norm[ri_h])
+                d2 = eng.hist_ar_norm * float(eng.roll_norm[ri_a])
+                rs_h = np.zeros(eng.n, dtype=np.float64)
+                rs_a = np.zeros(eng.n, dtype=np.float64)
+                np.divide(eng.hist_hr @ r_h, d1, out=rs_h, where=d1 > 0)
+                np.divide(eng.hist_ar @ r_a, d2, out=rs_a, where=d2 > 0)
+                np.maximum(rs_h, 0.0, out=rs_h)
+                np.maximum(rs_a, 0.0, out=rs_a)
+                roll = np.sqrt(rs_h * rs_a)
+                combined = np.where(m, combined * 0.7 + roll * 0.3, combined)
+
+    raw_score = combined.copy()
+    lg_mask = _league_mask(eng, league)
+    combined = np.where(lg_mask, combined * SAME_LEAGUE_BONUS, combined)
+
+    # 时间衰减：90 天内无衰减，之后指数衰减（与标量实现同口径）
+    today_ord = datetime.now().toordinal()
+    days_ago = today_ord - eng.row_date_ord
+    valid = eng.row_date_ord > -1e8
+    tw = np.ones(eng.n, dtype=np.float64)
+    decay = valid & (days_ago >= 90)
+    if decay.any():
+        tw[decay] = np.exp(-(days_ago[decay] - 90) / 365.0)
+    combined = combined * tw
+    raw_score = raw_score * tw
+
+    rank = np.where(ok, np.round(combined, 3), -np.inf)
+    # rank_score 降序；并列时日期近的优先（等价两趟稳定排序）
+    order = np.lexsort((-eng.row_date_ord, -rank))
+
+    need_same = 3
+    need_cross = max(0, top_k - 3)
+    seen = set()
+    same_lg = []
+    cross_lg = []
+    for idx in order:
+        r = float(rank[idx])
+        if r == -np.inf:
+            break
+        pair = eng.row_pair[idx]
+        if pair in seen:
+            continue
+        seen.add(pair)
+        sl = bool(lg_mask[idx])
+        item = (int(idx), float(combined[idx]), float(raw_score[idx]), sl,
+                float(sim_h[idx]), float(sim_a[idx]))
+        if sl:
+            if len(same_lg) < need_same:
+                same_lg.append(item)
+        elif len(cross_lg) < max(need_cross, top_k):
+            cross_lg.append(item)
+        if len(same_lg) >= need_same and len(cross_lg) >= need_cross:
+            break
+
+    result = same_lg[:3] + cross_lg[:need_cross]
+    if len(result) < top_k:  # 同联赛少于3场时，用跨联赛补足
+        result = same_lg + cross_lg[:top_k - len(same_lg)]
+    result = result[:top_k]
+
+    out = []
+    for idx, comb, raw, sl, sh, sa in result:
+        hm = eng.rows[idx]
+        out.append({
+            'home_team': hm['home_team'],
+            'away_team': hm['away_team'],
+            'league': hm['league'],
+            'date': hm['date'],
+            'score': hm['score'],
+            'actual': hm['actual'],
+            'sim_h': round(sh, 3),
+            'sim_a': round(sa, 3),
+            'rank_score': round(comb, 3),
+            'similarity': round(min(comb, SIM_DISPLAY_CAP), 3),
+            'similarity_raw': round(min(raw, 1.0), 3),
+            'same_league': sl,
+            'total_goals_top3': _compute_total_goals_top3(
+                hm.get('home_lambda', 0), hm.get('away_lambda', 0)),
+        })
+    return out
 
 
 def run(results_path: str = RESULTS_PATH, db_path: str = DB_PATH,
