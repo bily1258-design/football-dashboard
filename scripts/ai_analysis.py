@@ -1257,35 +1257,54 @@ def ts_model_exante(match_date: str = '', db_path: str = DB_PATH) -> Optional[Di
 # 的场次当时是作客 → 方向整段反掉, 等于往 λ 里注入反向噪声。
 # 回测(n=1397): 错方向命中 41.2% (低于随机), 折算到当前主队视角后 49.1%。
 _H2H_TEAM_CACHE: Dict[str, str] = {}
+_H2H_ALIAS: Optional[Dict[str, str]] = None
 _H2H_NO = re.compile(r'\d+')
+_H2H_NEUTRAL = re.compile(r'[（(]中[）)]')
 
 
 def _canon_h2h_team(name):
-    """队名规范化, 并去掉 titan007 对赛列表的序号标记 ('1塞雷那'/'天主教大學1')。"""
+    """队名规范化: 去序号标记('1塞雷那'/'天主教大學1')、去中立场标记、跨译名归一。"""
     key = str(name or '')
     hit = _H2H_TEAM_CACHE.get(key)
     if hit is not None:
         return hit
     s = _H2H_NO.sub('', re.sub(r'\s+', '', key))
+    s = _H2H_NEUTRAL.sub('', s)      # '(中)' 只是场地标记, 不是队名的一部分
     try:
         from titan007_utils import canon_team_name
         s = canon_team_name(s)
     except Exception:
         pass
+    s = _load_h2h_alias().get(s, s)  # 跨译名体系归一 (飛燕諾/費耶諾德、小保加/博卡青年)
     _H2H_TEAM_CACHE[key] = s
     return s
 
 
-def _h2h_gd_home_view(h2h_stats, home_team, away_team, limit=6):
-    """对赛记录 → 当前主队视角的净胜球明细; 对不上当前主队的记录直接丢弃。
+def _load_h2h_alias():
+    """加载数据驱动的对赛队名映射表 data/team_alias_h2h.json; 缺失则退化为空表。"""
+    global _H2H_ALIAS
+    if _H2H_ALIAS is None:
+        _H2H_ALIAS = {}
+        try:
+            p = os.path.join(DATA_DIR, '..', 'data', 'team_alias_h2h.json')
+            with open(os.path.normpath(p), encoding='utf-8') as f:
+                _H2H_ALIAS = json.load(f).get('alias', {}) or {}
+        except Exception:
+            _H2H_ALIAS = {}
+    return _H2H_ALIAS
 
-    方向判定只需「一支」队对上: 对赛记录里只有当前主客两队, 当前主队出现在
-    home 段 → 当时作主; 出现在 away 段 → 当时作客。对手名因跨译名体系
-    (飛燕諾/費耶諾德、珀斯光輝/珀斯光榮)不必强求一致, 强求会把 1/4 覆盖
-    压到 1/5。两支都对不上才跳过 —— 猜错方向的代价(负贡献)大于少用几条。
+
+def _h2h_gd_home_view(h2h_stats, home_team, away_team, limit=6):
+    """对赛记录 → 当前主队视角的净胜球明细; 认不出当前主客队的记录直接丢弃。
+
+    方向判定只需「一支」队对上: 对赛记录里只有当前主客两队, 认出任意一支就能
+    反推另一支与主客位置, 因此四个角都要认 —— 只认「当前主队」那一角会漏掉
+    1/5 的场次。两支都认不出才跳过: 猜错方向的代价(往 lambda 里注入反向噪声)
+    大于少用几条样本。
     """
     ht = _canon_h2h_team(home_team)
-    if not ht:
+    at = _canon_h2h_team(away_team)
+    if not ht or not at or ht == at:
         return []
     gds = []
     for m in (h2h_stats or [])[:limit]:
@@ -1296,6 +1315,10 @@ def _h2h_gd_home_view(h2h_stats, home_team, away_team, limit=6):
             gds.append(hs - asc)      # 当前主队当时作主
         elif ha == ht and hh != ht:
             gds.append(asc - hs)      # 当前主队当时作客
+        elif hh == at and ha != at:
+            gds.append(asc - hs)      # 当前客队当时作主 → 主队视角度反
+        elif ha == at and hh != at:
+            gds.append(hs - asc)      # 当前客队当时作客 → 主队视角为正
     return gds
 
 
