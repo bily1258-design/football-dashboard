@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-17 17:16:54",
+  "generated_at": "2026-11-18 12:49:46",
   "threshold": 1.14,
   "note": "⚡=importance_weight(联赛等级×紧迫). 历史场次紧迫系数跌至0.90, 仅临场窗口权重>=1.14. 逐轮记录攒样本.",
   "tracked": [
@@ -36682,6 +36682,96 @@
       "hit": true,
       "recorded_at": "2026-11-16 13:56:51",
       "updated_at": "2026-11-17 14:37:06"
+    },
+    {
+      "fid": "2910968",
+      "date": "2026-11-19",
+      "match_time": "2026-11-19 06:30",
+      "event": "巴西甲",
+      "home_team": "科裏蒂巴",
+      "away_team": "桑托斯",
+      "weight": 1.14,
+      "model_dir": "客",
+      "ts_dir": "客",
+      "same_dir": true,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-11-18 12:49:46"
+    },
+    {
+      "fid": "2910973",
+      "date": "2026-11-19",
+      "match_time": "2026-11-19 07:00",
+      "event": "巴西甲",
+      "home_team": "瑞模貝雷",
+      "away_team": "沙佩科恩斯",
+      "weight": 1.14,
+      "model_dir": "主",
+      "ts_dir": "主",
+      "same_dir": true,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-11-18 12:49:46"
+    },
+    {
+      "fid": "2910970",
+      "date": "2026-11-19",
+      "match_time": "2026-11-19 07:30",
+      "event": "巴西甲",
+      "home_team": "弗拉門戈",
+      "away_team": "巴拉納競技",
+      "weight": 1.14,
+      "model_dir": "主",
+      "ts_dir": "主",
+      "same_dir": true,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-11-18 12:49:46"
+    },
+    {
+      "fid": "2910969",
+      "date": "2026-11-19",
+      "match_time": "2026-11-19 07:30",
+      "event": "巴西甲",
+      "home_team": "克魯塞羅",
+      "away_team": "帕爾梅拉斯",
+      "weight": 1.14,
+      "model_dir": "平",
+      "ts_dir": "客",
+      "same_dir": false,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-11-18 12:49:46"
+    },
+    {
+      "fid": "2910971",
+      "date": "2026-11-19",
+      "match_time": "2026-11-19 08:30",
+      "event": "巴西甲",
+      "home_team": "格雷米奧",
+      "away_team": "巴伊亞",
+      "weight": 1.14,
+      "model_dir": "平",
+      "ts_dir": "主",
+      "same_dir": false,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-11-18 12:49:46"
+    },
+    {
+      "fid": "2910967",
+      "date": "2026-11-19",
+      "match_time": "2026-11-19 08:30",
+      "event": "巴西甲",
+      "home_team": "科林蒂安",
+      "away_team": "博塔弗戈",
+      "weight": 1.14,
+      "model_dir": "主",
+      "ts_dir": "主",
+      "same_dir": true,
+      "score": "",
+      "hit": false,
+      "recorded_at": "2026-11-18 12:49:46"
     }
   ]
 }
