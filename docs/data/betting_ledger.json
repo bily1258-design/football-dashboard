@@ -54308,7 +54308,7 @@
     "fid": "3067162",
     "teams": "千葉市原女足 vs AC長野女足",
     "match_time": "2026-11-18 12:00",
-    "score": "",
+    "score": "0-1",
     "signal": "truev",
     "signal_cn": "真价值",
     "outcome": "home",
@@ -54317,7 +54317,10 @@
     "edge": 0.0378,
     "true_edge": 0.0378,
     "fair": 0.5332,
-    "kelly": 0.0
+    "kelly": 0.0,
+    "result": "loss",
+    "profit": -1.0,
+    "settled_at": "2026-11-18T17:35:26.198594"
   },
   {
     "fid": "3001050",
@@ -54495,5 +54498,23 @@
     "true_edge": 0.0417,
     "fair": 0.5914,
     "kelly": 0.0
+  },
+  {
+    "fid": "3109635",
+    "teams": "克羅地亞U21 vs 德國U21",
+    "match_time": "2026-11-18 01:00",
+    "score": "3-2",
+    "signal": "truev",
+    "signal_cn": "真价值",
+    "outcome": "home",
+    "odds": 3.55,
+    "ev": 0.392,
+    "edge": 0.0317,
+    "true_edge": 0.0317,
+    "fair": 0.2484,
+    "kelly": 0.1537,
+    "result": "win",
+    "profit": 2.55,
+    "settled_at": "2026-11-18T17:35:26.198104"
   }
 ]
