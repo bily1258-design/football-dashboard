@@ -139,6 +139,8 @@ if [ -f "$PICKS_FILE" ]; then
         # 校准报表 (Brier/LogLoss/校准曲线 + 众数基线, 只读零影响)
         echo "[$(date '+%H:%M:%S')] 生成校准报表 (校准报表.md)..." >> "$REVIEW_LOG"
         python3 scripts/calibration_report.py >> "$REVIEW_LOG" 2>&1
+        # Shin 去水影子落盘 (只读影子, 与 proportional 对跑)
+        python3 scripts/shin_shadow_dump.py --days 3 >> "$REVIEW_LOG" 2>&1
     fi
 fi
 
