@@ -136,6 +136,9 @@ if [ -f "$PICKS_FILE" ]; then
         # Excel 版复盘 (复盘.xlsx, ~/storage/shared/Documents/, 每日覆盖)
         echo "[$(date '+%H:%M:%S')] 生成 Excel 版复盘 (复盘.xlsx)..."
         python3 scripts/gen_review_xlsx.py >> "$REVIEW_LOG" 2>&1
+        # 校准报表 (Brier/LogLoss/校准曲线 + 众数基线, 只读零影响)
+        echo "[$(date '+%H:%M:%S')] 生成校准报表 (校准报表.md)..." >> "$REVIEW_LOG"
+        python3 scripts/calibration_report.py >> "$REVIEW_LOG" 2>&1
     fi
 fi
 
