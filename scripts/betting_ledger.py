@@ -35,6 +35,15 @@ EV_MIN = 0.05          # 价值投注 EV 门槛
 EDGE_MIN = 0.02        # edge 门槛 (2026-08-12 双门槛)
 AWAY_EV_MIN = 0.5      # 规则A: 客胜 EV>0.5
 WEIGHT_MIN = 1.14      # ⚡高权重门槛
+# ── 2026-11-21 用户拍板(B): 立即收窄, 只发 truev, 停发 weight ──
+# 依据(2026-11-21 校准报表+分层复盘, 全历史已结算):
+#   · weight(⚡高权重避雷标记, edge=0, 方向=模型argmax): 2177 注 命中 49.8% ROI −4.2%
+#     (CI −8.5~+0.3) 累计 −91.48 —— 单一最大亏损来源
+#   · truev(真edge≥0.03∧TS同向): 583 注 命中 58.0% ROI +7.9% (CI +0.0~+15.8) +46.28
+#   · 两档 ROI 置信区间刚好不重叠 → 停 weight 只留 truev
+# 口径: 只停止「新增」weight 行; 历史行全部保留(审计凭证), 但不再计入战绩统计。
+WEIGHT_EMIT = False         # False = 不再新增 weight 信号行 (清单行内 ⚠️⚡提示 不受影响)
+LEGACY_WEIGHT_STATS = False # False = 历史 weight 行不计入战绩/命中率 (单独列历史参考)
 # 2026-09-24 用户拍板(方案③): value/ruleA 限赔率 ≤5.0
 # 依据: 实测"宣称 edge/EV 无预测力"——宣称 edge 0.10-0.20 (n=229) 实际 -1.7pp,
 # edge>0.20 (n=63) 实际 -2.6pp (越高越差); 全月皆负 (6月-0.2pp/7月-3.2pp/8月-1.8pp/9月-1.6pp);
@@ -137,7 +146,7 @@ def collect_signals(matches, top_n=TOP_N_PER_DAY):
 
         # ── 信号3: ⚡高权重 (避雷, 不受限额) ──
         w = m.get('importance_weight', 0) or 0
-        if w >= WEIGHT_MIN:
+        if WEIGHT_EMIT and w >= WEIGHT_MIN:
             # 避雷方向: 模型==TS 同向
             def argmax3(w_, dr_, l_):
                 mx = max(w_, dr_, l_)
@@ -384,9 +393,10 @@ def main():
     # ── 统计 ──
     # 2026-09-23 用户拍板(撤销避雷汇总, 避雷场次照推): ⚡高权重(weight) 并入战绩统计
     # (旧口径 2026-09-16: weight 单列"避雷追踪标记, 非投注, 不计入战绩")
-    bets = [e for e in ledger if not e.get('dedup_same_match')]
+    bets = [e for e in ledger if not e.get('dedup_same_match')
+            and (LEGACY_WEIGHT_STATS or e.get('signal') != 'weight')]
     # ⚡追踪与战绩同population: 同场双计被剔除的 weight 行也不进⚡组, 否则两处口径打架
-    wtrack = [e for e in bets if e.get('signal') == 'weight']
+    wtrack = [e for e in ledger if not e.get('dedup_same_match') and e.get('signal') == 'weight']
     completed = [e for e in bets if e.get('result') in ('win', 'loss')]
     wins = [e for e in completed if e['result'] == 'win']
     losses = [e for e in completed if e['result'] == 'loss']
@@ -397,6 +407,9 @@ def main():
     print('═' * 50)
     print(f'总记录: {len(ledger)} (其中⚡高权重 {len(wtrack)}; 新增 {new_count}, '
           f'本次补比分 {refreshed}, 去重 {dropped}, 结算 {settled})')
+    if not WEIGHT_EMIT:
+        print(f'⚡高权重: 2026-11-21 起停发(只发 truev), 历史 {len(wtrack)} 行保留为凭证'
+              f'{"" if LEGACY_WEIGHT_STATS else ", 不计入战绩"}')
     if pruned:
         print(f'③ value 限赔率 ≤{VALUE_ODDS_MAX}: 剔除存量超限 {pruned} 条 '
               f'({", ".join(f"{k}:{v}" for k, v in pruned_detail.items())})')
@@ -460,7 +473,8 @@ def main():
         wp = sum(e.get('profit', 0) for e in wcomp)
         print()
         share = f'  占已结算{len(wcomp) / len(completed) * 100:.0f}%' if completed else ''
-        print('⚡高权重追踪 (避雷标记, 已并入上方战绩):')
+        print('⚡高权重历史 (2026-11-21 起停发, 仅凭证不计战绩):' if not LEGACY_WEIGHT_STATS
+              else '⚡高权重追踪 (避雷标记, 已并入上方战绩):')
         print(f"  {len(wcomp):4d}场  命中率{ww / len(wcomp) * 100:5.1f}%  " f'盈亏{wp:+.2f}{share}')
 
     # ── 影子追踪 (2026-09-16 立): 按赔率档只观察, 不改任何选号规则 ──
