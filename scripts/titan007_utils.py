@@ -271,17 +271,57 @@ def fetch_raw(url, timeout=10, headers=None, retries=3, backoff=1.2):
     Termux/移动网络下 titan007 偶发 "No address associated with hostname"(DNS)
     与 "_ssl.c: The handshake operation timed out"(SSL握手超时)，单次失败会让
     整轮抓取白跑(比分/赔率全空)，故对这些瞬时错误重试，全失败才抛异常。
+
+    2026-11-25 新增：zq.titan007.com 的 443 会「TLS握手完成后服务端直接断开、
+    不返回任何HTTP响应」(80端口仍正常，只回308到https)。此路径下直连必失败，
+    且与是否开VPN无关。故对分析页(analysis/*.htm)做 r.jina.ai 文本代理兜底，
+    加 x-respond-with: html 取回原始HTML，解析器无需改动。
+    连续直连失败2次后，后续请求直接走代理，避免每场白等3次重试。
     """
+    host_ok = any(h in url for h in JINA_FALLBACK_HOSTS)
+    if host_ok and _jina_strikes >= 2:
+        try:
+            return _fetch_via_jina(url)
+        except Exception:
+            pass  # 代理不行就退回直连
     last = None
     for i in range(max(1, retries)):
         try:
             req = urllib.request.Request(url, headers=headers or HEADERS)
-            return urllib.request.urlopen(req, timeout=timeout).read()
+            data = urllib.request.urlopen(req, timeout=timeout).read()
+            if data:
+                return data
+            last = RuntimeError('empty response')
         except Exception as e:
             last = e
             if i + 1 < retries:
                 time.sleep(backoff * (i + 1))
+    if host_ok:
+        try:
+            data = _fetch_via_jina(url)
+            if data:
+                return data
+        except Exception as e:
+            last = e
     raise last
+
+
+# ── r.jina.ai 代理兜底（zq.titan007.com 443 被掐时使用）──
+JINA_PROXY = 'https://r.jina.ai/'
+JINA_FALLBACK_HOSTS = ('zq.titan007.com',)
+_jina_strikes = 0
+
+
+def _fetch_via_jina(url, timeout=60):
+    """经 r.jina.ai 取原始HTML（x-respond-with: html）。成功会累积降级计数。"""
+    global _jina_strikes
+    hdrs = {'x-respond-with': 'html', 'User-Agent': HEADERS.get('User-Agent', 'Mozilla/5.0')}
+    req = urllib.request.Request(JINA_PROXY + url, headers=hdrs)
+    raw = urllib.request.urlopen(req, timeout=timeout).read()
+    if not raw or len(raw) < 500:
+        raise RuntimeError(f'jina 返回过短({len(raw or b"")}B)')
+    _jina_strikes += 1
+    return raw
 
 
 def fetch_url(url, encoding=None, timeout=15):
