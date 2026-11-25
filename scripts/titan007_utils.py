@@ -9,7 +9,7 @@ titan007_utils.py — titan007.com 数据源公用工具模块
   - get_analysis_data(sid)     → {h2h, home_form, away_form, eOdds, hOdds}
   - sid_to_oddsid(sid)         → 1555xxxxx 赔率页面ID
 """
-import re, json, time, urllib.request, ssl, opencc
+import re, json, time, urllib.request, ssl, opencc, threading
 from datetime import datetime
 
 _s2t = opencc.OpenCC('s2t')  # 简体→繁体转换，用于统一队名匹配
@@ -310,18 +310,33 @@ def fetch_raw(url, timeout=10, headers=None, retries=3, backoff=1.2):
 JINA_PROXY = 'https://r.jina.ai/'
 JINA_FALLBACK_HOSTS = ('zq.titan007.com',)
 _jina_strikes = 0
+# 代理免费额度对高并发很敏感（15线程实测会返回 401/429），限流到4并发 + 退避重试
+_JINA_SEM = threading.Semaphore(4)
 
 
-def _fetch_via_jina(url, timeout=60):
-    """经 r.jina.ai 取原始HTML（x-respond-with: html）。成功会累积降级计数。"""
+def _fetch_via_jina(url, timeout=60, attempts=4):
+    """经 r.jina.ai 取原始HTML（x-respond-with: html）。
+
+    限流4并发；遇 401/429/5xx 或过短响应退避重试。成功累积降级计数。
+    """
     global _jina_strikes
     hdrs = {'x-respond-with': 'html', 'User-Agent': HEADERS.get('User-Agent', 'Mozilla/5.0')}
-    req = urllib.request.Request(JINA_PROXY + url, headers=hdrs)
-    raw = urllib.request.urlopen(req, timeout=timeout).read()
-    if not raw or len(raw) < 500:
-        raise RuntimeError(f'jina 返回过短({len(raw or b"")}B)')
-    _jina_strikes += 1
-    return raw
+    last = None
+    for i in range(max(1, attempts)):
+        try:
+            with _JINA_SEM:
+                raw = urllib.request.urlopen(
+                    urllib.request.Request(JINA_PROXY + url, headers=hdrs),
+                    timeout=timeout).read()
+            if raw and len(raw) >= 2000:
+                _jina_strikes += 1
+                return raw
+            last = RuntimeError(f'jina 返回过短({len(raw or b"")}B)')
+        except Exception as e:
+            last = e
+        if i + 1 < attempts:
+            time.sleep(3.0 * (i + 1))
+    raise last
 
 
 def fetch_url(url, encoding=None, timeout=15):
