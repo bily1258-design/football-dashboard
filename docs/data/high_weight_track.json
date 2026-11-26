@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-25 16:33:14",
+  "generated_at": "2026-11-26 13:01:43",
   "threshold": 1.14,
   "note": "⚡=importance_weight(联赛等级×紧迫). 历史场次紧迫系数跌至0.90, 仅临场窗口权重>=1.14. 逐轮记录攒样本.",
   "tracked": [
@@ -39689,9 +39689,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
+      "score": "0 - 1",
       "hit": false,
-      "recorded_at": "2026-11-25 12:57:07"
+      "recorded_at": "2026-11-25 12:57:07",
+      "updated_at": "2026-11-26 13:01:43"
     },
     {
       "fid": "3040831",
@@ -39704,9 +39705,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-11-25 12:57:07"
+      "score": "3 - 0",
+      "hit": true,
+      "recorded_at": "2026-11-25 12:57:07",
+      "updated_at": "2026-11-26 13:01:43"
     },
     {
       "fid": "3040832",
@@ -39719,9 +39721,10 @@
       "model_dir": "平",
       "ts_dir": "主",
       "same_dir": false,
-      "score": "",
+      "score": "1 - 2",
       "hit": false,
-      "recorded_at": "2026-11-25 12:57:07"
+      "recorded_at": "2026-11-25 12:57:07",
+      "updated_at": "2026-11-26 13:01:43"
     },
     {
       "fid": "3040834",
@@ -39734,9 +39737,10 @@
       "model_dir": "主",
       "ts_dir": "客",
       "same_dir": false,
-      "score": "",
+      "score": "1 - 1",
       "hit": false,
-      "recorded_at": "2026-11-25 12:57:07"
+      "recorded_at": "2026-11-25 12:57:07",
+      "updated_at": "2026-11-26 13:01:43"
     },
     {
       "fid": "3008352",
@@ -39749,9 +39753,10 @@
       "model_dir": "客",
       "ts_dir": "客",
       "same_dir": true,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-11-25 12:57:07"
+      "score": "1 - 3",
+      "hit": true,
+      "recorded_at": "2026-11-25 12:57:07",
+      "updated_at": "2026-11-26 13:01:43"
     },
     {
       "fid": "3008355",
@@ -39764,9 +39769,10 @@
       "model_dir": "客",
       "ts_dir": "客",
       "same_dir": true,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-11-25 12:57:07"
+      "score": "0 - 1",
+      "hit": true,
+      "recorded_at": "2026-11-25 12:57:07",
+      "updated_at": "2026-11-26 13:01:43"
     },
     {
       "fid": "3008353",
@@ -39779,9 +39785,10 @@
       "model_dir": "主",
       "ts_dir": "客",
       "same_dir": false,
-      "score": "",
+      "score": "0 - 2",
       "hit": false,
-      "recorded_at": "2026-11-25 12:57:07"
+      "recorded_at": "2026-11-25 12:57:07",
+      "updated_at": "2026-11-26 13:01:43"
     },
     {
       "fid": "3008354",
@@ -39794,9 +39801,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
-      "hit": false,
-      "recorded_at": "2026-11-25 12:57:07"
+      "score": "2 - 1",
+      "hit": true,
+      "recorded_at": "2026-11-25 12:57:07",
+      "updated_at": "2026-11-26 13:01:43"
     },
     {
       "fid": "2910978",
@@ -39809,9 +39817,10 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
-      "score": "",
+      "score": "1 - 1",
       "hit": false,
-      "recorded_at": "2026-11-25 12:57:07"
+      "recorded_at": "2026-11-25 12:57:07",
+      "updated_at": "2026-11-26 13:01:43"
     },
     {
       "fid": "3111913",
@@ -39824,9 +39833,25 @@
       "model_dir": "主",
       "ts_dir": "主",
       "same_dir": true,
+      "score": "2 - 0",
+      "hit": true,
+      "recorded_at": "2026-11-25 12:57:07",
+      "updated_at": "2026-11-26 13:01:43"
+    },
+    {
+      "fid": "2910995",
+      "date": "2026-11-27",
+      "match_time": "2026-11-27 07:00",
+      "event": "巴西甲",
+      "home_team": "聖保羅",
+      "away_team": "瑞模貝雷",
+      "weight": 1.14,
+      "model_dir": "主",
+      "ts_dir": "主",
+      "same_dir": true,
       "score": "",
       "hit": false,
-      "recorded_at": "2026-11-25 12:57:07"
+      "recorded_at": "2026-11-26 13:01:43"
     }
   ]
 }
